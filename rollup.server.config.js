@@ -1,0 +1,42 @@
+import resolve from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs';
+
+// import json from 'rollup-plugin-json';
+// import builtins from 'rollup-plugin-node-builtins';
+// import globals from 'rollup-plugin-node-globals';
+
+import pkg from './package.json';
+
+import serve from 'rollup-plugin-serve'
+import livereload from 'rollup-plugin-livereload'
+
+const plugins = [
+	resolve(),
+	commonjs(),
+	// json(),
+	// globals(),
+	// builtins(),
+	serve({
+		port: 9090,
+		contentBase: './',
+		headers: {
+			"Access-Control-Allow-Origin": "*",
+			"Service-Worker-Allowed": "/",
+		}
+	}),
+	livereload({
+		watch: ['dist', 'examples']
+	})
+];
+
+export default [
+	{
+		input: pkg.module,
+		output: {
+			name: 'Paged',
+			file: pkg.browser,
+			format: 'umd'
+		},
+		plugins: plugins
+	}
+];

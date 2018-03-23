@@ -1,0 +1,229 @@
+// Apply a natural box layout model to all elements
+// but allowing components to change
+// http://www.paulirish.com/2012/box-sizing-border-box-ftw/
+html {
+    box-sizing: border-box;
+}
+*, *:before, *:after {
+    box-sizing: border-box;
+}
+
+:root {
+    --width: 8.5in;
+    --height: 11in;
+    --margin: 1.2in;
+}
+
+@page {
+  size: var(--width) var(--height);
+  margin: 0;
+  padding: 0;
+
+  @top-left {
+    content: "Hamlet";
+  }
+  @top-right {
+    content: "Page " counter(page);
+  }
+}
+
+/* section {
+  break-before: column;
+} */
+
+@media screen {
+
+  body {
+    background-color: whitesmoke;
+  }
+
+  .scaled {
+    transform: scale(.6);
+    transform-origin: 0 0;
+  }
+
+  .page {
+    background-color: #fdfdfd;
+    margin-bottom: calc(var(--margin) / 2);
+    flex: none;
+  }
+
+  .pages {
+    width: calc(var(--width) * 2);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    transform-origin: 0 0;
+  }
+
+  .pages > .section {
+    width: calc(var(--width) * 2);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  #controls {
+    margin: 20px 0;
+    text-align: center;
+  }
+}
+
+@media print {
+  body {
+    width: var(--width);
+    height: var(--height);
+    margin: 0;
+    padding: 0;
+  }
+
+  .pages {
+    width: var(--width);
+    flex-direction: column;
+    transform: none !important;
+  }
+
+  .page {
+    margin-bottom: 0;
+    flex: none;
+    page-break-before: always;
+  }
+
+  #controls {
+    display: none;
+  }
+
+}
+
+.page {
+  /* border: 1px solid black; */
+  width: var(--width);
+  height: var(--height);
+  overflow: hidden;
+  position: relative;
+  display: grid;
+  grid-template-columns: [left] var(--margin) [center] calc(var(--width) - var(--margin) * 2) [right] var(--margin);
+  grid-template-rows: [header] var(--margin) [page] calc(var(--height) - var(--margin) * 2) [footer] var(--margin);
+}
+
+.page.right_page {
+  grid-template-columns: [left] calc(var(--margin) * 1.4) [center] calc(var(--width) - var(--margin) - calc(var(--margin) * 1.4)) [right] var(--margin);
+}
+
+.page.left_page {
+  grid-template-columns: [left] var(--margin) [center] calc(var(--width) - var(--margin) - calc(var(--margin) * 1.4)) [right] calc(var(--margin) * 1.4);
+}
+
+.right_page .left, .right_page .top .top-left-corner, .right_page .bottom .bottom-left-corner {
+  width: calc(var(--margin) * 1.4);
+}
+
+.left_page .right, .left_page .top .top-right-corner, .left_page .bottom .bottom-right-corner {
+  width: calc(var(--margin) * 1.4);
+}
+
+.top {
+  width: var(--width);
+  height: var(--margin);
+  display: flex;
+  grid-column: left / right;
+  grid-row: header;
+}
+
+.top .top-left-corner,
+.top .top-right-corner {
+  width: var(--margin);
+  height: var(--margin);
+  flex: none;
+}
+
+.top > div {
+  flex-grow: 1;
+}
+
+.right {
+  height: calc(var(--height) - (var(--margin) * 2));
+  width: var(--margin);
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  right: 0;
+  grid-column: right;
+  grid-row: page;
+}
+
+.right > div {
+  flex-grow: 1;
+}
+
+.bottom {
+  width: var(--width);
+  height: var(--margin);
+  display: flex;
+  grid-column: left / right;
+  grid-row: footer;
+}
+
+.bottom .bottom-left-corner,
+.bottom .bottom-right-corner {
+  width: var(--margin);
+  height: var(--margin);
+  flex: none;
+}
+
+.bottom > div {
+  flex-grow: 1;
+}
+
+.left {
+  height: calc(var(--height) - (var(--margin) * 2));
+  width: var(--margin);
+  top: var(--margin);
+  display: flex;
+  flex-direction: column;
+  grid-column: left;
+  grid-row: page;
+}
+
+.left > div {
+  flex-grow: 1;
+}
+
+.page > .area {
+  grid-column: center;
+  grid-row: page;
+  width: 100%;
+  height: 100%;
+}
+
+
+
+@media screen {
+  .top .top-left-corner,
+  .top .top-right-corner {
+    border: 1px dotted tomato;
+  }
+
+  .top > div {
+    border: 1px dotted teal;
+  }
+
+  .right > div {
+    border: 1px dotted mediumseagreen;
+  }
+
+  .bottom .bottom-left-corner,
+  .bottom .bottom-right-corner {
+    border: 1px solid orange;
+  }
+
+  .bottom > div {
+    border: 1px dotted darkblue;
+  }
+
+  .left > div {
+    border: 1px dotted sienna;
+  }
+}

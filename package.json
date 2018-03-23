@@ -1,0 +1,38 @@
+{
+  "name": "pagedjs",
+  "version": "0.0.1",
+  "description": "Chunks up a document into paged media flows and applies print styles",
+  "author": "Fred Chasen",
+  "license": "MIT",
+  "homepage": "https://pagedmedia.org",
+  "main": "lib/index.js",
+  "module": "src/index.js",
+  "browser": "dist/paged.js",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.1",
+    "rollup": "^0.57.0",
+    "rollup-plugin-commonjs": "^9.1.0",
+    "rollup-plugin-livereload": "^0.6.0",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-serve": "^0.4.2"
+  },
+  "scripts": {
+    "build": "./node_modules/.bin/rollup -c",
+    "start": "./node_modules/.bin/rollup -w -c rollup.server.config.js",
+    "test": "node test/test.js",
+    "compile": "./node_modules/.bin/babel src/ -d lib/",
+    "pretest": "npm run build",
+    "prepare": "npm run build && npm run compile"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.pagedmedia.org/polyfills/pagedjs.git"
+  },
+  "files": [
+    "dist",
+    "lib"
+  ]
+}

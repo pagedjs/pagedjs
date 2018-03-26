@@ -1,6 +1,5 @@
 import { getBoundingClientRect } from "../utils/utils";
 import { walk, after, stackChildren } from "../utils/dom";
-import Parser from "./parser";
 
 /**
  * Layout
@@ -11,7 +10,6 @@ class Layout {
   constructor(element, wrapper, parser) {
     this.element = element;
     this.wrapper = wrapper;
-    this.parser = parser || new Parser();
 
     let space = this.element.getBoundingClientRect();
     this.width = Math.round(space.width);
@@ -483,11 +481,41 @@ class Layout {
     }
   }
 
+  getOverflow() {
+    let overflow = this.overflow(this.element);
+
+    if (overflow) {
+      let extracted = overflow.extractContents();
+      this._onOverflow && this._onOverflow(extracted);
+    }
+  }
+
+  getUnderflow() {
+    this._onUnderflow && this._onUnderflow();
+  }
+
   listeners() {
+    if (typeof ResizeObserver !== "undefined") {
+      this.addResizeObserver();
+    } else {
+      this.element.addEventListener("overflow", this.getOverflow.bind(this), false);
+      this.element.addEventListener("underflow", this.getUnderflow.bind(this), false);
+    }
+    // TODO: fall back to mutation observer?
+
+
+    // Key scroll width from changing
+    this.element.addEventListener("scroll", () => {
+      this.element.scrollLeft = 0;
+    });
+
+    return true;
+  }
+
+  addResizeObserver() {
     let wrapper = this.wrapper;
     let prevHeight = wrapper.getBoundingClientRect().height;
-
-    let ro = new ResizeObserver( entries => {
+    this.ro = new ResizeObserver( entries => {
       for (let entry of entries) {
         const cr = entry.contentRect;
 
@@ -514,12 +542,17 @@ class Layout {
       }
     });
 
-    ro.observe(wrapper);
+    this.ro.observe(wrapper);
+  }
 
-    // Key scroll width from changing
-    this.element.addEventListener("scroll", () => {
-      this.element.scrollLeft = 0;
-    })
+  destroy() {
+    this.element.removeEventListener("overflow", this.getOverflow.bind(this), false);
+    this.element.removeEventListener("underflow", this.getUnderflow.bind(this), false);
+
+    this.ro.disconnect();
+
+    this.element = element;
+    this.wrapper = wrapper;
   }
 
 }

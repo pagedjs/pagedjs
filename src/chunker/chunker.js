@@ -50,13 +50,9 @@ class Chunker {
 		// frag.appendChild(section);
 
 		for (let sectionContent of sections) {
-			// Turn section into a fragment
-			let fragment = document.createDocumentFragment();
-			let section = sectionContent.cloneNode(true);
-			fragment.appendChild(section);
 
 			// Wait for section to finish rendering before adding the next section
-			let rendered = await this.section(fragment).then((section) => {
+			let rendered = await this.section(sectionContent).then((section) => {
 				this.total += section.total;
 				this.sectionsTotal += 1;
 			});

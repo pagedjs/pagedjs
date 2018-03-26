@@ -1,4 +1,3 @@
-// import Mapping from "./utils/mapping";
 import Layout from "./layout";
 import Renderer from "./renderer";
 

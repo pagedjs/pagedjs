@@ -1,4 +1,5 @@
-// import Mapping from "./utils/mapping";
+import { getBoundingClientRect } from "../utils/utils";
+import { walk, after, stackChildren } from "../utils/dom";
 import Parser from "./parser";
 
 /**
@@ -40,7 +41,7 @@ class Layout {
       start = this.getStart(content, breakToken);
     }
 
-    let walker = this.walk(start);
+    let walker = walk(start, content);
 
     let node;
     let done;
@@ -71,8 +72,8 @@ class Layout {
         rendered = this.render(node, this.wrapper, breakToken, shallow);
 
         if (!shallow) {
-          next = this.after(node);
-          walker = this.walk(next);
+          next = after(node, content);
+          walker = walk(next, content);
         }
 
       } else {
@@ -116,7 +117,7 @@ class Layout {
 
   render(node, dest, breakToken, shallow=true, rebuild=true) {
 
-    let clone = this.createDOMNode(node);
+    let clone = this.createDOMNode(node, !shallow);
 
     if (node.parentNode && node.parentNode.nodeType === 1) {
       let parent = dest.querySelector("[ref='" + node.parentNode.getAttribute("ref") + "']");
@@ -144,21 +145,17 @@ class Layout {
       dest.appendChild(clone);
     }
 
-    if (!shallow && node.childNodes) {
-      for (let child of node.childNodes) {
-        this.render(child, dest, breakToken, shallow, rebuild);
-      }
-    }
+    // if (!shallow && node.childNodes) {
+    //   for (let child of node.childNodes) {
+    //     this.render(child, dest, breakToken, shallow, rebuild);
+    //   }
+    // }
 
     return clone;
   }
 
-  createDOMNode(n) {
-    // let node = serialize(n, { shallow: true });
-    // let frag = document.createRange().createContextualFragment(node);
-    // return frag;
-
-    let node = n.cloneNode(false);
+  createDOMNode(n, deep=false) {
+    let node = n.cloneNode(deep);
 
     return node;
   }
@@ -242,16 +239,7 @@ class Layout {
 
   removeEmpty() {
     // Clean Empty Nodes
-    let stack = [];
-    (function recurse(currentNode) {
-
-      stack.unshift(currentNode);
-
-      let children = currentNode.children;
-      for (var i = 0, length = children.length; i < length; i++) {
-        recurse(children[i]);
-      }
-    })(this.wrapper);
+    let stack = stackChildren(this.wrapper);
 
     stack.forEach((currentNode) => {
 
@@ -279,14 +267,14 @@ class Layout {
   }
 
   floats(area) {
-    let bounds = this.getBoundingClientRect(this.element);
+    let bounds = getBoundingClientRect(this.element);
 
     let start = Math.round(bounds.left);
     let end = Math.round(bounds.right);
 
     let range;
 
-    let walker = this.walk(this.wrapper.firstChild, this.wrapper);
+    let walker = walk(this.wrapper.firstChild, this.wrapper);
 
     // Find Start
     let startContainer, startOffset;
@@ -297,7 +285,7 @@ class Layout {
       node = next.value;
 
       if (node) {
-        let pos = this.getBoundingClientRect(node);
+        let pos = getBoundingClientRect(node);
         let left = Math.floor(pos.left);
         let right = Math.floor(pos.right);
 
@@ -321,32 +309,15 @@ class Layout {
     this._onUnderflow = func;
   }
 
-  /**
- * Generates a UUID
- * based on: http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
- * @returns {string} uuid
- */
-  uuid() {
-  	var d = new Date().getTime();
-    if (typeof performance !== 'undefined' && typeof performance.now === 'function'){
-        d += performance.now(); //use high-precision timer if available
-    }
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = (d + Math.random() * 16) % 16 | 0;
-        d = Math.floor(d / 16);
-        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-    });
-  }
-
   overflow(area) {
-    let bounds = this.getBoundingClientRect(this.element);
+    let bounds = getBoundingClientRect(this.element);
 
     let start = Math.round(bounds.left);
     let end =  Math.round(bounds.right);
 
     let range;
 
-    let walker = this.walk(this.wrapper.firstChild, this.wrapper);
+    let walker = walk(this.wrapper.firstChild, this.wrapper);
 
     // Find Start
     let startContainer, startOffset;
@@ -357,7 +328,7 @@ class Layout {
       node = next.value;
 
       if (node) {
-        let pos = this.getBoundingClientRect(node);
+        let pos = getBoundingClientRect(node);
         let left = Math.floor(pos.left);
         let right = Math.floor(pos.right);
 
@@ -396,9 +367,9 @@ class Layout {
         // Skip children
         if (right < end) {
 
-          next = this.after(node, this.wrapper);
+          next = after(node, this.wrapper);
           if (next) {
-            walker = this.walk(next, this.wrapper);
+            walker = walk(next, this.wrapper);
           }
 
         }
@@ -425,7 +396,7 @@ class Layout {
         break;
       }
 
-      pos = this.getBoundingClientRect(word);
+      pos = getBoundingClientRect(word);
 
       left = Math.floor(pos.left);
       if (left >= end) {
@@ -463,67 +434,9 @@ class Layout {
     }
   }
 
-  *walk(start, limiter) {
-    let node = start;
-
-    while (node) {
-
-      yield node;
-
-      if (node.childNodes.length) {
-        node = node.firstChild;
-      } else if (node.nextSibling) {
-        node = node.nextSibling;
-      } else {
-        while (node) {
-          node = node.parentNode;
-          if (limiter && node === limiter) {
-            node = undefined;
-            break;
-          }
-          if (node && node.nextSibling) {
-            node = node.nextSibling;
-            break;
-          }
-
-        }
-      }
-    }
-  }
-
-  skip(walker) {
-    let next = walker.next();
-    let node = next.value;
-
-    for (let child of node.childNodes) {
-      this.skip(walker);
-    }
-  }
-
-  after(node, limiter) {
-    let after = node;
-    if (after.nextSibling) {
-      after = after.nextSibling;
-    } else {
-      while (after) {
-        after = after.parentNode;
-        if (limiter && after === limiter) {
-          after = undefined;
-          break;
-        }
-        if (after && after.nextSibling) {
-          after = after.nextSibling;
-          break;
-        }
-      }
-    }
-
-    return after;
-  }
-
   prepend(fragment, rebuild=true) {
     // this.element.insertBefore(fragment, this.element.firstChild);
-    let walker = this.walk(fragment.firstChild, this.wrapper);
+    let walker = walk(fragment.firstChild, this.wrapper);
     let next, node, done;
     let parent;
     while (!done) {
@@ -568,21 +481,6 @@ class Layout {
     if (!this.listened) {
       this.listened = this.listeners();
     }
-  }
-
-  getBoundingClientRect(element) {
-    if (!element) {
-      return;
-    }
-    let rect;
-    if (element.getBoundingClientRect) {
-      rect = element.getBoundingClientRect();
-    } else {
-      let range = document.createRange();
-      range.selectNode(element);
-      rect = range.getBoundingClientRect();
-    }
-    return rect;
   }
 
   listeners() {

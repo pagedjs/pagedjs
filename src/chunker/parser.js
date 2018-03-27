@@ -4,7 +4,7 @@ import { UUID } from "../utils/utils";
  * Render a flow of text offscreen
  * @class
  */
-class Parser {
+class ContentParser {
 
 	constructor(content, cb) {
 		if (content && content.nodeType) {
@@ -88,4 +88,4 @@ class Parser {
 	}
 }
 
-export default Parser;
+export default ContentParser;

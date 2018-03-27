@@ -1,3 +1,47 @@
+@page {
+  size: 8.5in 11in;
+  margin: 20mm 15mm;
+  marks: crop;
+
+  @footnote {
+    margin: 0.6em 0 0 0;
+    padding: 0.3em 0 0 0;
+    max-height: 10em;
+  }
+
+  @top-center {
+    vertical-align: bottom;
+    padding-bottom: 10mm;
+  }
+}
+
+@page :left {
+  @top-left {
+    vertical-align: bottom;
+    padding-bottom: 10mm;
+    content: string(page-number, first-except);
+    letter-spacing: 0.1em;
+    margin-left: -1em;
+    font-size: 0.9em;
+ }
+}
+
+@page :right {
+  @top-right {
+    vertical-align: bottom;
+    padding-bottom: 10mm;
+    content: string(page-number, first-except);
+    letter-spacing: 0.08em;
+    margin-right: -1em;
+    font-size: 0.9em;
+ }
+}
+
+@page cover {
+  size: 'letter';          /* measured from scanned book */
+}
+
+
 @font-face {
 font-family: 'Stix';
 font-weight: normal;

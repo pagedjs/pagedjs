@@ -8,14 +8,18 @@
   "main": "lib/index.js",
   "module": "src/index.js",
   "browser": "dist/paged.js",
-  "dependencies": {},
+  "dependencies": {
+    "css-tree": "^1.0.0-alpha.28"
+  },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
     "rollup": "^0.57.0",
     "rollup-plugin-commonjs": "^9.1.0",
+    "rollup-plugin-json": "^2.3.0",
     "rollup-plugin-livereload": "^0.6.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-serve": "^0.4.2"
   },

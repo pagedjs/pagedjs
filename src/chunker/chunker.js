@@ -1,9 +1,9 @@
 import Section from "./section";
 import Page from "./page";
-import Parser from "./parser";
+import ContentParser from "./parser";
 // import PagedBody from "../utils/paged-body.js";
 
-const MAX_SECTIONS = false;
+const MAX_SECTIONS = 1;
 
 /**
  * Chop up text into flows
@@ -24,7 +24,7 @@ class Chunker {
 		if (content) {
 			this.content = content;
 
-			let parsed = new Parser(content);
+			let parsed = new ContentParser(content);
 
 			let sections = [...parsed.children];
 

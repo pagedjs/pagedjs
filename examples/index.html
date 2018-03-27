@@ -8,7 +8,7 @@
     <script src="../dist/paged.js"></script>
 
     <link rel="stylesheet" type="text/css" href="assets/styles/index.css">
-    <link rel="stylesheet" type="text/css" href="assets/styles/mody-dick.css">
+    <!-- <link rel="stylesheet" type="text/css" href="assets/styles/mody-dick.css"> -->
 </head>
 <body>
   <script>
@@ -27,6 +27,10 @@
 
       pages.style.transform = `scale(${scale}) translate(${(window.innerWidth / 2) - ((pages.offsetWidth * scale / 2) ) }px, 0)`;
 
+      // styles
+      let styles = new Paged.Styler();
+      let moby = await styles.add("assets/styles/mody-dick.css");
+      console.log(moby);
       let flowText = document.querySelector("#flow");
 
       let t0 = performance.now();

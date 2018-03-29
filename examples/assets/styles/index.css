@@ -1,47 +1,3 @@
-@page {
-  size: 115mm 200mm;          /* measured from scanned book */
-  margin: 20mm 15mm;
-  marks: crop;
-  font: small-caps 600 1.3em "Adobe Caslon Pro", serif;
-
-  @footnote {
-    margin: 0.6em 0 0 0;
-    padding: 0.3em 0 0 0;
-    max-height: 10em;
-  }
-
-  @top-center {
-    vertical-align: bottom;
-    padding-bottom: 10mm;
-  }
-}
-
-@page :left {
-  @top-left {
-    vertical-align: bottom;
-    padding-bottom: 10mm;
-    content: string(page-number, first-except);
-    letter-spacing: 0.1em;
-    margin-left: -1em;
-    font-size: 0.9em;
- }
-}
-
-@page :right {
-  @top-right {
-    vertical-align: bottom;
-    padding-bottom: 10mm;
-    content: string(page-number, first-except);
-    letter-spacing: 0.08em;
-    margin-right: -1em;
-    font-size: 0.9em;
- }
-}
-
-@page cover {
-  size: 125mm 210mm;          /* measured from scanned book */
-}
-
 html {
     box-sizing: border-box;
 }
@@ -50,8 +6,8 @@ html {
 }
 
 :root {
-    --width: 8.5in;
-    --height: 11in;
+    /* --width: 8.5in; */
+    /* --height: 11in; */
     --margin: 1.2in;
 }
 
@@ -59,13 +15,6 @@ html {
   size: var(--width) var(--height);
   margin: 0;
   padding: 0;
-
-  @top-left {
-    content: "Hamlet";
-  }
-  @top-right {
-    content: "Page " counter(page);
-  }
 }
 
 /* section {
@@ -78,10 +27,10 @@ html {
     background-color: whitesmoke;
   }
 
-  .scaled {
+  /* .scaled {
     transform: scale(.6);
     transform-origin: 0 0;
-  }
+  } */
 
   .page {
     background-color: #fdfdfd;
@@ -145,38 +94,27 @@ html {
   overflow: hidden;
   position: relative;
   display: grid;
-  grid-template-columns: [left] var(--margin) [center] calc(var(--width) - var(--margin) * 2) [right] var(--margin);
-  grid-template-rows: [header] var(--margin) [page] calc(var(--height) - var(--margin) * 2) [footer] var(--margin);
-}
-
-.page.right_page {
-  grid-template-columns: [left] calc(var(--margin) * 1.4) [center] calc(var(--width) - var(--margin) - calc(var(--margin) * 1.4)) [right] var(--margin);
-}
-
-.page.left_page {
-  grid-template-columns: [left] var(--margin) [center] calc(var(--width) - var(--margin) - calc(var(--margin) * 1.4)) [right] calc(var(--margin) * 1.4);
-}
-
-.right_page .left, .right_page .top .top-left-corner, .right_page .bottom .bottom-left-corner {
-  width: calc(var(--margin) * 1.4);
-}
-
-.left_page .right, .left_page .top .top-right-corner, .left_page .bottom .bottom-right-corner {
-  width: calc(var(--margin) * 1.4);
+  grid-template-columns: [left] var(--margin-left) [center] calc(var(--width) - var(--margin-left) - var(--margin-right)) [right] var(--margin-right);
+  grid-template-rows: [header] var(--margin-top) [page] calc(var(--height) - var(--margin-top) - var(--margin-bottom)) [footer] var(--margin-bottom);
 }
 
 .top {
   width: var(--width);
-  height: var(--margin);
+  height: var(--margin-top);
   display: flex;
   grid-column: left / right;
   grid-row: header;
 }
 
-.top .top-left-corner,
+.top .top-left-corner {
+  width: var(--margin-left);
+  height: var(--margin-top);
+  flex: none;
+}
+
 .top .top-right-corner {
-  width: var(--margin);
-  height: var(--margin);
+  width: var(--margin-right);
+  height: var(--margin-top);
   flex: none;
 }
 
@@ -185,8 +123,8 @@ html {
 }
 
 .right {
-  height: calc(var(--height) - (var(--margin) * 2));
-  width: var(--margin);
+  height: calc(var(--height) - var(--margin-top) - var(--margin-bottom));
+  width: var(--margin-right);
   display: flex;
   flex-direction: column;
   position: absolute;
@@ -201,16 +139,21 @@ html {
 
 .bottom {
   width: var(--width);
-  height: var(--margin);
+  height: var(--margin-bottom);
   display: flex;
   grid-column: left / right;
   grid-row: footer;
 }
 
-.bottom .bottom-left-corner,
+.bottom .bottom-left-corner {
+  width: var(--margin-left);
+  height: var(--margin-bottom);
+  flex: none;
+}
+
 .bottom .bottom-right-corner {
-  width: var(--margin);
-  height: var(--margin);
+  width: var(--margin-right);
+  height: var(--margin-bottom);
   flex: none;
 }
 
@@ -219,9 +162,9 @@ html {
 }
 
 .left {
-  height: calc(var(--height) - (var(--margin) * 2));
-  width: var(--margin);
-  top: var(--margin);
+  height: calc(var(--height) - var(--margin-top) - var(--margin-bottom));
+  width: var(--margin-left);
+  top: var(--margin-top);
   display: flex;
   flex-direction: column;
   grid-column: left;
@@ -239,6 +182,23 @@ html {
   height: 100%;
 }
 
+.page .top .top-right {
+  /* position: relative; */
+  /* flex: none; */
+}
+
+.page {
+  counter-increment: page;
+}
+
+
+.page .content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 
 @media screen {

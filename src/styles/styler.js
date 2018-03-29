@@ -15,6 +15,10 @@ class Styler {
 			});
 	}
 
+	root() {
+
+	}
+
 }
 
 export default Styler;

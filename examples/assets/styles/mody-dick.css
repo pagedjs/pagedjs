@@ -1,6 +1,6 @@
 @page {
   size: 8.5in 11in;
-  margin: 20mm 15mm;
+  margin: 20mm 25mm;
   marks: crop;
 
   @footnote {
@@ -16,6 +16,8 @@
 }
 
 @page :left {
+  margin: 20mm 40mm 20mm 30mm;
+
   @top-left {
     vertical-align: bottom;
     padding-bottom: 10mm;
@@ -24,9 +26,15 @@
     margin-left: -1em;
     font-size: 0.9em;
  }
+
+ @bottom-left-corner {
+   content: counter(page);
+ }
 }
 
 @page :right {
+  margin: 20mm 30mm 20mm 40mm;
+
   @top-right {
     vertical-align: bottom;
     padding-bottom: 10mm;
@@ -34,6 +42,10 @@
     letter-spacing: 0.08em;
     margin-right: -1em;
     font-size: 0.9em;
+ }
+
+ @bottom-right-corner {
+   content: counter(page);
  }
 }
 

@@ -22,15 +22,21 @@
         }
       }
 
-      let pages = document.querySelector(".pages");
-      let scale = ((window.innerWidth * .9 ) / pages.offsetWidth);
-
-      pages.style.transform = `scale(${scale}) translate(${(window.innerWidth / 2) - ((pages.offsetWidth * scale / 2) ) }px, 0)`;
-
       // styles
       let styles = new Paged.Styler();
       let moby = await styles.add("assets/styles/mody-dick.css");
       console.log(moby);
+
+      let resizer = () => {
+        let pages = document.querySelector(".pages");
+        let scale = ((window.innerWidth * .9 ) / pages.offsetWidth);
+
+        pages.style.transform = `scale(${scale}) translate(${(window.innerWidth / 2) - ((pages.offsetWidth * scale / 2) ) }px, 0)`;
+      };
+      resizer();
+
+      window.addEventListener("resize", resizer, false);
+
       let flowText = document.querySelector("#flow");
 
       let t0 = performance.now();
@@ -46,28 +52,28 @@
     <template id="page-template">
     <div class="page">
       <div class="top">
-        <div class="top-left-corner"></div>
-        <div class="top-left"></div>
-        <div class="top-center"></div>
-        <div class="top-right"></div>
-        <div class="top-right-corner"></div>
+        <div class="top-left-corner"><div class="content"></div></div>
+        <div class="top-left"><div class="content"></div></div>
+        <div class="top-center"><div class="content"></div></div>
+        <div class="top-right"><div class="content"></div></div>
+        <div class="top-right-corner"><div class="content"></div></div>
       </div>
       <div class="right">
-        <div class="right-top"></div>
-        <div class="right-middle"></div>
-        <div class="right-bottom"></div>
+        <div class="right-top"><div class="content"></div></div>
+        <div class="right-middle"><div class="content"></div></div>
+        <div class="right-bottom"><div class="content"></div></div>
       </div>
       <div class="left">
-        <div class="left-top"></div>
-        <div class="left-middle"></div>
-        <div class="left-bottom"></div>
+        <div class="left-top"><div class="content"></div></div>
+        <div class="left-middle"><div class="content"></div></div>
+        <div class="left-bottom"><div class="content"></div></div>
       </div>
       <div class="bottom">
-        <div class="bottom-left-corner"></div>
-        <div class="bottom-left"></div>
-        <div class="bottom-center"></div>
-        <div class="bottom-right"></div>
-        <div class="bottom-right-corner"></div>
+        <div class="bottom-left-corner"><div class="content"></div></div>
+        <div class="bottom-left"><div class="content"></div></div>
+        <div class="bottom-center"><div class="content"></div></div>
+        <div class="bottom-right"><div class="content"></div></div>
+        <div class="bottom-right-corner"><div class="content"></div></div>
       </div>
       <div class="area"></div>
     </div>

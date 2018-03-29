@@ -9,6 +9,14 @@ class Sheet {
 
   parse(text) {
     let parser = new StylesParser(text);
+
+    // Add root vars
+    let rootVars = `:root {
+      --width: ${parser.width};
+      --height: ${parser.height};
+    }`;
+    this.add(rootVars);
+
     return parser.text;
   }
 

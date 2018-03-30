@@ -120,6 +120,7 @@ html {
 
 .top > div {
   flex-grow: 1;
+  position: relative;
 }
 
 .right {
@@ -135,6 +136,7 @@ html {
 
 .right > div {
   flex-grow: 1;
+  position: relative;
 }
 
 .bottom {
@@ -159,6 +161,7 @@ html {
 
 .bottom > div {
   flex-grow: 1;
+  position: relative;
 }
 
 .left {
@@ -173,6 +176,7 @@ html {
 
 .left > div {
   flex-grow: 1;
+  position: relative;
 }
 
 .page > .area {
@@ -193,11 +197,11 @@ html {
 
 
 .page .content {
-  width: 100%;
+  /* width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center; */
 }
 
 

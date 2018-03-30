@@ -27,6 +27,16 @@
       let moby = await styles.add("assets/styles/mody-dick.css");
       console.log(moby);
 
+      let flowText = document.querySelector("#flow");
+
+      let t0 = performance.now();
+
+      let flow = new Paged.Chunker(flowText.content, undefined, preview).then((flow) => {
+        let t1 = performance.now();
+
+        console.log("Rendering " + flow.total + " pages took " + (t1 - t0) + " milliseconds.");
+      });
+
       let resizer = () => {
         let pages = document.querySelector(".pages");
         let scale = ((window.innerWidth * .9 ) / pages.offsetWidth);
@@ -37,49 +47,8 @@
 
       window.addEventListener("resize", resizer, false);
 
-      let flowText = document.querySelector("#flow");
-
-      let t0 = performance.now();
-
-      let flow = new Paged.Chunker(flowText.content, preview).then((flow) => {
-        let t1 = performance.now();
-
-        console.log("Rendering " + flow.total + " pages took " + (t1 - t0) + " milliseconds.");
-      });
     });
   </script>
-  <div class="pages">
-    <template id="page-template">
-    <div class="page">
-      <div class="top">
-        <div class="top-left-corner"><div class="content"></div></div>
-        <div class="top-left"><div class="content"></div></div>
-        <div class="top-center"><div class="content"></div></div>
-        <div class="top-right"><div class="content"></div></div>
-        <div class="top-right-corner"><div class="content"></div></div>
-      </div>
-      <div class="right">
-        <div class="right-top"><div class="content"></div></div>
-        <div class="right-middle"><div class="content"></div></div>
-        <div class="right-bottom"><div class="content"></div></div>
-      </div>
-      <div class="left">
-        <div class="left-top"><div class="content"></div></div>
-        <div class="left-middle"><div class="content"></div></div>
-        <div class="left-bottom"><div class="content"></div></div>
-      </div>
-      <div class="bottom">
-        <div class="bottom-left-corner"><div class="content"></div></div>
-        <div class="bottom-left"><div class="content"></div></div>
-        <div class="bottom-center"><div class="content"></div></div>
-        <div class="bottom-right"><div class="content"></div></div>
-        <div class="bottom-right-corner"><div class="content"></div></div>
-      </div>
-      <div class="area"></div>
-    </div>
-    </template>
-  </div>
-
   <template id="flow">
     <section class="body-rw Chapter-rw" epub:type="bodymatter chapter">
     <header>

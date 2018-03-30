@@ -19,18 +19,26 @@ class Page {
   }
 
   create(pgnum, section, template) {
+    //let documentFragment = document.createRange().createContextualFragment( TEMPLATE );
+    //let page = documentFragment.children[0];
     let clone = document.importNode(this.pageTemplate.content, true);
+
     let id = `section-${section || 0}-page-${pgnum}`;
 
     this.id = id;
 
     this.pagesArea.appendChild(clone);
 
-    let page = this.pagesArea.children[pgnum];
+    let page = this.pagesArea.lastChild;
+    // let page = this.pagesArea.children[pgnum];
 
     let area = page.querySelector(".area");
 
     page.id = id;
+
+    if (pgnum === 0) {
+      page.classList.add("first_page");
+    }
 
     if (pgnum % 2 !== 0) {
       page.classList.add("right_page");
@@ -52,13 +60,13 @@ class Page {
     this.width = Math.round(size.width);
     this.height = Math.round(size.height);
 
-    this.element = clone;
+    this.element = page;
     this.area = area;
 
     let wrapper = document.createElement("div");
 
-    wrapper.style.outline = "none";
-    wrapper.setAttribute("contenteditable", true);
+    // wrapper.style.outline = "none";
+    // wrapper.setAttribute("contenteditable", true);
 
 
     area.appendChild(wrapper);
@@ -67,7 +75,7 @@ class Page {
 
     // this.render = new Renderer(area);
 
-    return clone;
+    return page;
   }
 
   /*

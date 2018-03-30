@@ -35,10 +35,10 @@ class StylesParser {
 						width: undefined,
 						height: undefined,
 						margin : {
-							top: undefined,
-							right: undefined,
-							left: undefined,
-							bottom: undefined
+							top: {value: 0, unit: "px"},
+							right: {value: 0, unit: "px"},
+							left: {value: 0, unit: "px"},
+							bottom: {value: 0, unit: "px"}
 						},
 						block: {},
 						marks: undefined
@@ -68,8 +68,8 @@ class StylesParser {
 								});
 
 								if (margins.length === 1) {
-									for (let m of page.margin) {
-										m = margins[0];
+									for (let m in page.margin) {
+										page.margin[m] = margins[0];
 									}
 								} else if (margins.length === 2) {
 									page.margin.top = margins[0];
@@ -95,7 +95,7 @@ class StylesParser {
 										property: "--margin-" + m,
 										value: {
 											type: "Raw",
-											value: page.margin[m].value + page.margin[m].unit
+											value: page.margin[m].value + (page.margin[m].unit || '')
 										}
 									});
 									dList.insert(mVar, dItem);
@@ -104,6 +104,20 @@ class StylesParser {
 
 								// console.log(dList);
 								dList.remove(dItem);
+							}
+
+							if (prop.indexOf("margin-") === 0) {
+								let m = prop.substring("margin-".length);
+								page.margin[m] = declaration.value.children.first();
+								let mVar = dList.createItem({
+									type: 'Declaration',
+									property: "--margin-" + m,
+									value: {
+										type: "Raw",
+										value: page.margin[m].value + (page.margin[m].unit || '')
+									}
+								});
+								dList.replace(dItem, mVar);
 							}
 
 							if (prop === "size") {

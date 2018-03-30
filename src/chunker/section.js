@@ -8,14 +8,14 @@ const MAX_PAGES = 10000000000;
  * @class
  */
 class Section {
-  constructor(pagesArea, pageTemplate, preview=true) {
+  constructor(pagesArea, pageTemplate, total, preview=true) {
     this.pagesArea = pagesArea;
     this.pageTemplate = pageTemplate;
 
     this.preview = preview;
 
     this.pages = [];
-    this.total = 0;
+    this.total = total || 0;
   }
 
   create(section, startPage) {
@@ -87,7 +87,7 @@ class Section {
 
   addPage() {
     // Create a new page from the template
-    let page = new Page(this.element, this.pageTemplate);
+    let page = new Page(this.pagesArea, this.pageTemplate);
     let total = this.pages.push(page);
 
     // Create the pages

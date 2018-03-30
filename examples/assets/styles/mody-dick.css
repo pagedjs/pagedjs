@@ -2,7 +2,7 @@
   size: 8.5in 11in;
   margin: 20mm 25mm;
   marks: crop;
-
+  
   @footnote {
     margin: 0.6em 0 0 0;
     padding: 0.3em 0 0 0;
@@ -12,6 +12,7 @@
   @top-center {
     vertical-align: bottom;
     padding-bottom: 10mm;
+    content: string(booktitle);
   }
 }
 
@@ -76,6 +77,10 @@ font-style: italic;
 font-family:'Stix';
 font-weight: bold;
 font-style: italic;
+}
+
+#c001s0000 {
+  string-set: booktitle "hi";
 }
 
 

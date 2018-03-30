@@ -99,8 +99,8 @@
           return sections(this.book.spine);
         }).then((text) => {
           let t0 = performance.now();
-
-          let flow = new Paged.Chunker(text, preview).then((flow) => {
+          let viewer = document.querySelector("#viewer");
+          let flow = new Paged.Chunker(text, viewer, preview).then((flow) => {
             let t1 = performance.now();
 
             console.log("Rendering " + flow.total + " pages took " + (t1 - t0) + " milliseconds.");
@@ -117,36 +117,6 @@
     <input type="file" id="input">
 	</div>
 
-  <div class="pages">
-    <template id="page-template">
-    <div class="page">
-      <div class="top">
-        <div class="top-left-corner"></div>
-        <div class="top-left"></div>
-        <div class="top-center"></div>
-        <div class="top-right"></div>
-        <div class="top-right-corner"></div>
-      </div>
-      <div class="right">
-        <div class="right-top"></div>
-        <div class="right-middle"></div>
-        <div class="right-bottom"></div>
-      </div>
-      <div class="left">
-        <div class="left-top"></div>
-        <div class="left-middle"></div>
-        <div class="left-bottom"></div>
-      </div>
-      <div class="bottom">
-        <div class="bottom-left-corner"></div>
-        <div class="bottom-left"></div>
-        <div class="bottom-center"></div>
-        <div class="bottom-right"></div>
-        <div class="bottom-right-corner"></div>
-      </div>
-      <div class="area"></div>
-    </div>
-    </template>
-  </div>
+  <div id="viewer"></div>
 </body>
 </html>

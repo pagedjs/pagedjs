@@ -322,7 +322,7 @@ class StylesParser {
 						visit: "TypeSelector",
 						enter: (node, item, list) => {
 
-							name = node.name + "_page";
+							name = node.name + "_named_page";
 
 							sel.insert(sel.createItem({
 								type: 'ClassSelector',
@@ -443,7 +443,7 @@ class StylesParser {
 				}
 			}
 		});
-
+		console.log(this.pages);
 		return csstree.generate(ast);
 	}
 

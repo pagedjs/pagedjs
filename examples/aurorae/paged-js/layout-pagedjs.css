@@ -28,6 +28,10 @@ html{
 
   }
 
+  @page fred {
+    background-image:  none;
+  }
+
   @page:first {
     margin: 0;
     background: url("/examples/aurorae/images/cover.jpg");

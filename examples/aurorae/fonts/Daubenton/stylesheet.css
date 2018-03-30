@@ -1,0 +1,10 @@
+@font-face {
+    font-family: 'daubenton';
+    src: url('daubentonwebfont.woff') format('woff'),
+        url('daubentonwebfont.ttf') format('truetype'),
+        url('daubentonwebfont.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+

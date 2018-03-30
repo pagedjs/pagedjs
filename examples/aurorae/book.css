@@ -1,0 +1,566 @@
+/* counters, page-breaks, figure */
+
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+body {
+  counter-reset: footnote numpart numchap numapp numplate;
+  /*
+  --serif: 'spectral', serif;
+  --sans-serif: 'hk-grotesk', sans-serif;
+  --font-size: 13px;
+  --font-size-notes: 9px;
+  --line-height: 15px;
+  --line-height-notes: 10px;
+  --indent: 6mm
+  */
+}
+
+p:not(.shorter), li, h4:not(.h4-appe), #appendix-e h5  {
+  font-family: 'spectral', serif;
+  font-size: 13px;
+  line-height: 15px;
+  font-weight: 400
+}
+
+p:not(.shorter), li {
+  text-indent: 6mm;
+  text-align: justify;
+  margin: 0;
+  orphans: 2;
+  widows: 2;
+  hyphens: auto;
+  hyphenate-before: 4;
+  hyphenate-after: 3;
+}
+
+.greek {
+  font-size: 0.9em
+}
+
+
+h1, h2, h3, .h4-appe {
+  font-family: 'daubenton';
+  font-weight: normal;
+  margin-top: 0;
+  margin-bottom: 0
+}
+
+
+
+
+#cover h1 {
+  color:transparent;
+}
+
+.titlechapter + p,
+.shorter + p,
+h2+p,
+h3+p,
+h4+p,
+h5+p,
+h6+p,
+h3+div+p,
+h4+div+p,
+h2+span+p,
+h3+span+p,
+h4+span+p,
+h5+span+p,
+h6+span+p,
+table+p,
+.center+p,
+.note-titre+p,
+.center,
+.separator + p {
+  text-indent: 0!important;
+}
+
+.center+p {
+  margin-top: 15px;
+}
+
+h3, h2 {
+  display: block;
+  height: 47.7mm; /* 63.5mm - 15.8mm */
+  padding-top: 15.8mm;
+  font-size: 18px; /* 21 */
+  line-height: 23px;
+  text-align: center;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.part h2 {
+  text-transform: uppercase;
+}
+
+.part h2 {
+  counter-increment: numpart;
+}
+
+.part h2:before {
+  content: "– Part " counter(numpart, upper-roman) " –";
+}
+
+.chapter .titlechapter {
+  counter-increment: numchap;
+}
+
+.chapter .titlechapter:before {
+  content: "– " counter(numchap) " –";
+}
+
+.appendix .titleapp {
+  counter-increment: numapp;
+}
+
+.appendix .titleapp:before {
+  content: "– Appendix " counter(numapp, upper-alpha) " –";
+}
+
+h3:before, h2:before {
+  display: block;
+  font-size: 13px;
+  line-height: 15px;
+  margin-bottom: 9px;
+  
+}
+
+h4:not(.h4-appe), #appendix-e h5 {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 7px;
+  padding-bottom: 8px;
+  margin-top: 15px;
+  font-style: italic;
+}
+
+h4:not(.h4-appe) {
+  text-align: left;
+}
+
+table caption {
+  font-family: 'spectral', serif;
+  font-size: 0.7em;
+  line-height: 15px;
+  font-weight: 400;
+  padding-top: 10px;
+  padding-bottom: 5px;
+  /* padding-top + padding-bottom : 15px;*/
+  margin-top: 15px;
+  text-align: center;
+}
+
+.center {
+  text-align: center!important;
+}
+
+.separator{
+  display:block;
+  height: 15px;
+}
+
+
+/* sidenote */
+
+.sidenote {
+  font-family: 'hk-grotesk', sans-serif;
+  font-size: 9px;
+  line-height: 10px;
+  font-weight: 600!important;
+  margin-top: 3px;
+  /* break-inside: avoid; */
+  hyphens: none!important;
+}
+
+/* Footnotes */
+
+.footnote {
+  float: footnote;
+  padding-left: 6mm;
+  font-size: 9px;
+  line-height: 10px;
+  text-indent: 0px!important
+}
+
+.footnote::footnote-call, .footnote::footnote-marker {
+  vertical-align: inherit;
+  font-family: 'hk-grotesk', sans-serif;
+  font-weight: 600;
+}
+
+.footnote::footnote-marker {
+  display: inline-block;
+  width: 0mm;
+  position: relative;
+  left: -6mm;
+}
+
+.footnote::footnote-call {
+  content: counter(footnote);
+  position: relative;
+  top: -3px;
+}
+
+/* frontmatter */
+
+#absolute-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80%
+}
+
+#absolute-bottom p {
+  font-family: 'spectral', sans-serif;
+  text-align: left;
+  font-size: 9px;
+  text-indent: 0;
+  margin-top: 15px;
+}
+
+section[data-type="half-title"] h1 {
+  margin-top: 95px;
+  text-align: center;
+}
+
+section[data-type="half-title"] h1 .smaller {
+  font-size: 0.8em!important;
+  display: block;
+  margin-top: 5px;
+}
+
+section[data-type="titlepage"] h1 {
+  font-size: 40px;
+  text-align: center;
+  margin-top: 83px;
+  line-height: 44px;
+}
+
+section[data-type="titlepage"] h1 .smaller {
+  display: block;
+  font-size: 0.7em!important;
+  line-height: 30px!important;
+  margin-top: 11px;
+}
+
+section[data-type="titlepage"] #editor {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  margin-left: 5mm;
+  width: 100%;
+}
+
+section[data-type="titlepage"] #author {
+  margin-top: 58px;
+  text-align: center!important;
+  text-indent: 0!important;
+  font-size: 20px!important;
+}
+
+section[data-type="titlepage"] #author span {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 13px!important;
+  display: block;
+}
+
+section[data-type="titlepage"] #editor p {
+  text-align: center!important;
+  text-indent: 0!important;
+  margin-top: 15px;
+}
+
+
+
+section[data-type="copyright"] p {
+  text-indent: 0!important;
+  text-align: center!important;
+  margin-top: 32px;
+  margin-bottom: 32px;
+}
+
+section[data-type="dedication"], section[data-type="epigraph"] {
+  margin-top: 105px;
+}
+
+section[data-type="epigraph"] blockquote {
+  margin: 0;
+  padding: 0;
+}
+
+section[data-type="dedication"] p, section[data-type="epigraph"] blockquote p {
+  text-indent: 0!important;
+  font-style: italic;
+}
+
+section[data-type="dedication"] p {
+  text-align: center!important;
+}
+
+section[data-type="epigraph"] .caption {
+  font-style: normal;
+  padding-top: 10px;
+  padding-bottom: 20px;
+}
+
+section[data-type="epigraph"] .caption:before {
+  content: "— ";
+  font-style: normal;
+}
+
+/* Page break */
+
+#cover {
+  page-break-after: always;
+}
+
+#pre {
+  page-break-after: always;
+}
+
+section[data-type="half-title"], section[data-type="titlepage"], section[data-type="epigraph"] {
+  page-break-before: right;
+  page-break-after: always;
+}
+
+section[data-type="copyright"] {
+  page-break-before: always;
+  page-break-after: always;
+}
+
+#toc {
+  page-break-before: right;
+  page-break-after: always;
+}
+
+.list-plates {
+  page-break-before: right;
+  page-break-after: always;
+}
+
+.part {
+  page-break-before: right;
+  page-break-after: always;
+}
+
+.part h2 {
+  page-break-after: always;
+}
+
+.part h3 {
+  page-break-before: right;
+}
+
+.chapter, .preface, .introduction, #appendices, .appendix {
+  page-break-before: right;
+  page-break-after: always;
+}
+
+figure {
+  /* break-inside: avoid; */
+  page-break-inside: avoid;
+}
+
+.dedication {
+  page-break-before: always;
+  page-break-after: always;
+}
+
+/* table of content */
+
+.toc-part, .toc-chap, .toc-subchap, .toc-app {
+  /* break-inside: avoid; */
+}
+
+#toc ul {
+  margin-top: 50px;
+  list-style: none;
+  padding: 0;
+}
+
+#toc li {
+  text-indent: 0!important;
+  text-align: left!important;
+}
+
+.toc-part a[href]::before, .toc-part a[href]::after, .toc-part-app a[href]::before {
+  display: block;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.toc-part {
+  margin-bottom: 30px;
+}
+
+.toc-part:first-of-type{
+  margin-bottom: 0px;
+}
+
+.toc-chap, .toc-app {
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
+
+.toc-subchap+.toc-chap {
+  margin-top: 30px;
+}
+
+.toc-chap a, .toc-app a{
+  display: block;
+}
+
+.toc-subchap {
+  font-style: italic;
+  margin-left: 6mm;
+}
+
+/* Tables */
+
+td, th {
+  font-size: 9px;
+  line-height: 10px;
+  font-weight: normal;
+  text-indent: 0px!important
+}
+
+table {
+  border-collapse: collapse;
+  margin: 0 auto;
+  box-decoration-break: slice;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+h5 + table {
+  margin-top: -15px!important;
+  break-inside: avoid;
+}
+
+table{
+  break-inside: avoid;
+}
+table:not(.table-noborder), th {
+  border: solid 1pt black;
+}
+
+th, td {
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+th {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+td {
+  vertical-align: top;
+}
+
+table tr:nth-of-type(2) td, #table-appc-01 tr:nth-of-type(2) td {
+  padding-top: 6px;
+}
+
+table tr:last-of-type td, #table-appc-01 tr:last-of-type td {
+  padding-bottom: 6px;
+}
+
+.borders td {
+  border-right: thin solid black;
+}
+
+.bt {
+  border-top: thin solid black;
+}
+
+.bb {
+  border-bottom: thin solid black;
+}
+
+.bl {
+  border-left: thin solid black;
+}
+
+.borders .nobr {
+  border-right: none;
+}
+
+.tdr {
+  text-align: right;
+}
+
+
+
+/* Appendix */
+
+.note-titre {
+  position: relative;
+  top: -90px!important;
+  text-align: center!important;
+  width: 70%;
+  hyphens: none!important;
+  margin: 0 auto;
+}
+
+#appendix-a p {
+  text-indent: -6mm!important;
+  padding-left: 6mm;
+}
+
+#appendix-d table {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  /* break-inside: avoid; */
+}
+
+#appendix-e {
+  counter-reset: h4appe;
+}
+
+.h4-appe {
+  font-size: 0.7em;
+  line-height: 15px;
+  margin: 30px auto 15px auto;
+  text-align: center!important;
+  counter-increment: h4appe;
+  width: 85%;
+}
+
+.h4-appe:before {
+  content: counter(h4appe, upper-roman) ". ";
+}
+
+#appendix-e h5 {
+  counter-reset: table-caption;
+  counter-increment: h5-appe
+}
+
+#appendix-e h5:before {
+  content: counter(h5-appe, decimal) ". ";
+}
+
+#appendix-e table caption {
+  counter-increment: table-caption
+}
+
+#appendix-e table {
+  width: 80%
+}
+
+#appendix-e table caption:before {
+  content: counter(table-caption, lower-alpha) ". ";
+}
+
+
+
+#appendix-e h5+table {
+  margin-top: 0;
+  padding-top: 0;
+}

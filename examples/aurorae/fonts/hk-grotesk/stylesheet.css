@@ -1,0 +1,167 @@
+
+
+
+@font-face {
+    font-family: 'hk-grotesk';
+    src: url('HKGrotesk-SemiBold.woff2') format('woff2'),
+         url('HKGrotesk-SemiBold.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'hk-grotesk';
+    src: url('HKGrotesk-SemiBoldItalic.woff2') format('woff2'),
+         url('HKGrotesk-SemiBoldItalic.woff') format('woff');
+    font-weight: 600;
+    font-style: italic;
+
+}
+
+/*
+
+@font-face {
+    font-family: 'spectral';
+    src: url('spectral-bold-webfont.woff2') format('woff2'),
+         url('spectral-bold-webfont.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+
+}
+
+
+
+
+@font-face {
+    font-family: 'spectral';
+    src: url('spectral-bolditalic-webfont.woff2') format('woff2'),
+         url('spectral-bolditalic-webfont.woff') format('woff');
+    font-weight: 700;
+    font-style: italic;
+
+}
+
+
+
+
+@font-face {
+    font-family: 'spectral';
+    src: url('spectral-extrabold-webfont.woff2') format('woff2'),
+         url('spectral-extrabold-webfont.woff') format('woff');
+    font-weight: 800;
+    font-style: normal;
+
+}
+
+
+
+
+@font-face {
+    font-family: 'spectral';
+    src: url('spectral-extrabolditalic-webfont.woff2') format('woff2'),
+         url('spectral-extrabolditalic-webfont.woff') format('woff');
+    font-weight: 800;
+    font-style: italic;
+
+}
+
+
+
+
+@font-face {
+    font-family: 'spectral';
+    src: url('spectral-extralight-webfont.woff2') format('woff2'),
+         url('spectral-extralight-webfont.woff') format('woff');
+    font-weight: 200;
+    font-style: normal;
+
+}
+
+
+
+
+@font-face {
+    font-family: 'spectral';
+    src: url('spectral-extralightitalic-webfont.woff2') format('woff2'),
+         url('spectral-extralightitalic-webfont.woff') format('woff');
+    font-weight: 200;
+    font-style: italic;
+
+}
+
+
+
+
+
+
+
+@font-face {
+    font-family: 'spectral';
+    src: url('spectral-light-webfont.woff2') format('woff2'),
+         url('spectral-light-webfont.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+
+}
+
+
+
+
+@font-face {
+    font-family: 'spectral';
+    src: url('spectral-lightitalic-webfont.woff2') format('woff2'),
+         url('spectral-lightitalic-webfont.woff') format('woff');
+    font-weight: 300;
+    font-style: italic;
+
+}
+
+*/
+
+
+
+@font-face {
+    font-family:'hk-grotesk';
+    src: url('HKGrotesk-Medium.woff2') format('woff2'),
+         url('HKGrotesk-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+
+}
+
+
+
+
+@font-face {
+    font-family: 'hk-grotesk';
+    src: url('HKGrotesk-MediumItalic.woff2') format('woff2'),
+         url('HKGrotesk-MediumItalic.woff') format('woff');
+    font-weight: 500;
+    font-style: italic;
+
+}
+
+
+
+/*
+@font-face {
+    font-family: 'hk-grotesk';
+    src: url('HKGrotesk-Regular.woff2') format('woff2'),
+         url('HKGrotesk-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+
+}
+
+
+
+@font-face {
+    font-family: 'hk-grotesk';
+    src: url('HKGrotesk-Italic.woff2') format('woff2'),
+         url('HKGrotesk-Italic.woff') format('woff');
+    font-weight: 400;
+    font-style: italic;
+
+}
+*/

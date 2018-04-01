@@ -1,5 +1,7 @@
 /* CSS DEMO pagedjs*/
-
+#fred .ok {
+  
+}
 .sidenote, .footnote {
     display:none!important;
 }
@@ -20,7 +22,7 @@ html{
   }
 
   @page {
-    size: 148mm 210mm;
+    size: 148mm 210mm portait;
 
     background-image:  repeating-linear-gradient(180deg, transparent  0, transparent 14px , rgba(0,255,0,0.7) var(--baseline)) ;
     background-size: cover;
@@ -34,7 +36,7 @@ html{
 
   @page:first {
     margin: 0;
-    background: url("/examples/aurorae/images/cover.jpg");
+    background: url("../images/cover.jpg");
     background-position: center;
     background-size: 104%;
     background-repeat: no-repeat;

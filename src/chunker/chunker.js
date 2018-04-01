@@ -3,7 +3,7 @@ import Page from "./page";
 import ContentParser from "./parser";
 // import PagedBody from "../utils/paged-body.js";
 
-const MAX_SECTIONS = 1;
+const MAX_SECTIONS = false;
 
 const TEMPLATE = `<div class="page">
 	<div class="top">

@@ -11,11 +11,13 @@ class Styler {
 			.then((response) => {
 				return response.text();
 			}).then((original) => {
-				sheet = new Sheet(original);
+				sheet = new Sheet(original, href);
 
 				let text = sheet.toString();
-				console.log(text);
+
 				this.insert(text);
+
+        return text;
 			});
 	}
 

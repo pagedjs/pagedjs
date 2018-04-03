@@ -52,11 +52,11 @@ class Section {
     }
 
     if (this.breaks.before === "right" && this.startPage % 2 > 0) {
-      this.addPage();
+      this.addPage(true);
     }
 
     if (this.breaks.before === "left" && this.startPage % 2 === 0) {
-      this.addPage();
+      this.addPage(true);
     }
 
     while (!done) {
@@ -99,9 +99,9 @@ class Section {
 
   }
 
-  addPage() {
+  addPage(blank) {
     // Create a new page from the template
-    let page = new Page(this.pagesArea, this.pageTemplate, this.name);
+    let page = new Page(this.pagesArea, this.pageTemplate, this.name, blank);
     let total = this.pages.push(page);
 
     // Create the pages

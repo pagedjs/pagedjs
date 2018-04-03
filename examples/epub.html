@@ -24,11 +24,6 @@
         }
       }
 
-      let pages = document.querySelector(".pages");
-      let scale = ((window.innerWidth * .9 ) / pages.offsetWidth);
-
-      pages.style.transform = `scale(${scale}) translate(${(window.innerWidth / 2) - ((pages.offsetWidth * scale / 2) ) }px, 0)`;
-
       let inputElement = document.getElementById("input");
 
       inputElement.addEventListener('change', function (e) {
@@ -105,6 +100,16 @@
 
             console.log("Rendering " + flow.total + " pages took " + (t1 - t0) + " milliseconds.");
           });
+
+          let resizer = () => {
+            let pages = document.querySelector(".pages");
+            let scale = ((window.innerWidth * .9 ) / pages.offsetWidth);
+
+            pages.style.transform = `scale(${scale}) translate(${(window.innerWidth / 2) - ((pages.offsetWidth * scale / 2) ) }px, 0)`;
+          };
+          resizer();
+
+          window.addEventListener("resize", resizer, false);
 
           epub = undefined;
         });

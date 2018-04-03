@@ -6,10 +6,11 @@ import Renderer from "./renderer";
  * @class
  */
 class Page {
-  constructor(pagesArea, pageTemplate, name) {
+  constructor(pagesArea, pageTemplate, name, blank) {
     this.pagesArea = pagesArea;
     this.pageTemplate = pageTemplate;
     this.name = name;
+    this.blank = blank;
 
     // this.mapper = new Mapping(undefined, undefined, undefined, true);
 
@@ -40,7 +41,11 @@ class Page {
     if (this.name) {
       page.classList.add(this.name + "_page");
     }
-    
+
+    if (this.blank) {
+      page.classList.add("blank_page");
+    }
+
     if (pgnum === 0) {
       page.classList.add("first_page");
     }

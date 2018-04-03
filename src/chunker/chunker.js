@@ -1,6 +1,7 @@
 import Section from "./section";
 import Page from "./page";
 import ContentParser from "./parser";
+import { split } from "../utils/dom";
 // import PagedBody from "../utils/paged-body.js";
 
 const MAX_SECTIONS = false;
@@ -70,8 +71,6 @@ class Chunker {
 				sections = [...parsed.children];
 			}
 
-			this.namedPages = this.findNamedPages(parsed, breaks);
-
 			if (sections.length > 0) {
 				return this.sections(sections).then(() => {
 					return this;
@@ -91,25 +90,68 @@ class Chunker {
 	processBreaks(parsed, breaks) {
 		let selectors = [];
 		for (let b in breaks) {
-			selectors.push(b);
-		}
-		let s = selectors.join(",");
-		let parts = parsed.querySelectorAll(s);
-		return parts;
-	}
-
-	findNamedPages(parsed, breaks) {
-		let named = {};
-		for (let b in breaks) {
-			for (let p of breaks[b]) {
-				if (p.name) {
-					let parts = parsed.querySelectorAll(b);
-					named[p.name] = parts;
+			// Find elements
+			let elements = parsed.querySelectorAll(b);
+			// Add break data
+			for (var i = 0; i < elements.length; i++) {
+				for (let prop of breaks[b]) {
+					elements[i].setAttribute("data-" + prop.property, prop.value);
 				}
 			}
+			// Add to global selector
+			selectors.push(b);
 		}
-		return named;
+
+		// Add any other direct children
+		for (var i = 0; i < parsed.children.length; i++) {
+			selectors.push("[ref='"+parsed.children[i].getAttribute("ref")+"']");
+		}
+
+		let s = selectors.join(",");
+		let parts = Array.from(parsed.querySelectorAll(s));
+
+		let part;
+		let sections = [];
+
+		for (var i = 0; i < parts.length; i++) {
+			part = parts[i];
+			if (part.parentNode && part.parentNode.nodeType === 1) {
+				let parent = part.parentNode;
+				let before = part.dataset.breakBefore;
+				let after = part.dataset.breakAfter;
+				let index = Array.prototype.indexOf.call(parent.childNodes, part);
+
+				// Get the top parent
+				let topParent = part.parentNode;
+				while (topParent) {
+					if(topParent.parentNode.nodeType === 1) {
+						topParent = topParent.parentNode;
+					} else {
+						break;
+					}
+				}
+
+				// Split
+				let dup = split(topParent, part, before);
+
+				if (dup) {
+					// console.log("dup", part, dup);
+
+					sections.concat(sections, dup);
+				} else {
+					// console.log("topParent", topParent);
+					sections.push(topParent);
+				}
+			} else {
+				// console.log("parT", part);
+
+				sections.push(part);
+			}
+		}
+
+		return sections;
 	}
+
 
 	async sections(sections) {
 		// let sectionContent = sections.shift();
@@ -132,20 +174,7 @@ class Chunker {
 	}
 
 	section(sectionContent) {
-		let name;
-		for (let named in this.namedPages) {
-			for (let element of this.namedPages[named]) {
-				if(sectionContent == element) {
-					name = named;
-					break;
-				}
-			}
-			if (name) {
-				break;
-			}
-		}
-
-		let section = new Section(this.pagesArea, this.pageTemplate, this.total, name, this.preview);
+		let section = new Section(this.pagesArea, this.pageTemplate, this.total, this.preview);
 
 		// section.create(this.sectionsTotal, this.total);
 

@@ -8,13 +8,13 @@ const MAX_PAGES = 10000000000;
  * @class
  */
 class Section {
-  constructor(pagesArea, pageTemplate, total, name, preview=true) {
+  constructor(pagesArea, pageTemplate, total, preview=true) {
     this.pagesArea = pagesArea;
     this.pageTemplate = pageTemplate;
-    this.name = name;
     this.preview = preview;
 
     this.pages = [];
+    this.startPage = total || 0;
     this.total = total || 0;
   }
 
@@ -44,6 +44,20 @@ class Section {
 
     let done = false;
     let result;
+
+    this.name = parsed.dataset.page;
+    this.breaks = {
+      before: parsed.dataset.breakBefore,
+      after: parsed.dataset.breakAfter
+    }
+
+    if (this.breaks.before === "right" && this.startPage % 2 > 0) {
+      this.addPage();
+    }
+
+    if (this.breaks.before === "left" && this.startPage % 2 === 0) {
+      this.addPage();
+    }
 
     while (!done) {
       if (this.preview) {
@@ -106,7 +120,7 @@ class Section {
     });
 
     page.onUnderflow(() => {
-      console.log("underflow on", page.id);
+      // console.log("underflow on", page.id);
     });
 
     this.total += 1;

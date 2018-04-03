@@ -33,7 +33,7 @@ class Sheet {
 		// send to csstree
 		let ast = csstree.parse(text);
 		// return ast
-		console.log(ast);
+		// console.log(ast);
 		return ast;
 	}
 
@@ -733,7 +733,7 @@ class Sheet {
 
 							if (property === "page") {
 								name = value;
-								value = "always";
+								// value = "always";
 							}
 
 							let breaker = {

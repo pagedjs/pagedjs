@@ -1,7 +1,4 @@
 /* CSS DEMO pagedjs*/
-#fred .ok {
-  
-}
 .sidenote, .footnote {
     display:none!important;
 }
@@ -30,11 +27,20 @@ html{
 
   }
 
-  @page fred {
-    background-image:  none;
-  }
+  /*@page:first {
+    margin: 0;
+    background: url("../images/cover.jpg");
+    background-position: center;
+    background-size: 104%;
+    background-repeat: no-repeat;
 
-  @page:first {
+    @top-left{ content: none; }
+    @top-center{ content: none; }
+    @top-right{ content: none; }
+    @bottom-left{ content: none; }
+  }*/
+
+  @page cover {
     margin: 0;
     background: url("../images/cover.jpg");
     background-position: center;
@@ -160,6 +166,10 @@ html{
     string-set: booktitle content(text);
   }
 
+  #cover {
+    page: cover;
+  }
+
   .shorter{
     position: running(shorter);
     font-weight: 400;
@@ -171,9 +181,6 @@ html{
     /* font-style: italic; */
     font-variant-numeric: oldstyle-nums;
   }
-
-
-
 
 
   /* flexbox */
@@ -192,13 +199,7 @@ html{
 
 }
 
-
-
-
-
-
 /* table of content */
-
 #toc{
   counter-reset: chaptoc apptoc;
 }

@@ -1,28 +1,56 @@
 import Sheet from './sheet.js';
 
 class Styler {
-  constructor() {
+	constructor() {
 		this.sheets = [];
-  }
+	}
 
-	async add(href) {
-		let sheet;
-	 	return await fetch(href)
-			.then((response) => {
+	async add() {
+		let fetched = [];
+		for (var i = 0; i < arguments.length; i++) {
+			let f = fetch(arguments[i]).then((response) => {
 				return response.text();
-			}).then((original) => {
-				sheet = new Sheet(original, href);
+			})
+			fetched.push(f);
+		}
 
-				let text = sheet.toString();
+		return await Promise.all(fetched)
+			.then((originals) => {
+				let text;
+				let pageBreaks = {};
+
+				originals.forEach((original, index) => {
+					let href = arguments[index];
+					let sheet = new Sheet(original, href);
+
+					this.sheets.push(sheet);
+
+					this.mergeBreaks(pageBreaks, sheet.pageBreaks);
+
+ 					text += sheet.toString();
+				})
 
 				this.insert(text);
 
-        return text;
+				this.breaks = pageBreaks;
+
+				return text;
 			});
 	}
 
 	root() {
 
+	}
+
+	mergeBreaks(pageBreaks, newBreaks) {
+		for (let b in newBreaks) {
+			if (b in pageBreaks) {
+				pageBreaks[b] = pageBreaks[b].concat(newBreaks[b]);
+			} else {
+				pageBreaks[b] = newBreaks[b];
+			}
+		}
+		return pageBreaks;
 	}
 
 	insert(text){

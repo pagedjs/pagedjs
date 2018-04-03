@@ -6,9 +6,10 @@ import Renderer from "./renderer";
  * @class
  */
 class Page {
-  constructor(pagesArea, pageTemplate) {
+  constructor(pagesArea, pageTemplate, name) {
     this.pagesArea = pagesArea;
     this.pageTemplate = pageTemplate;
+    this.name = name;
 
     // this.mapper = new Mapping(undefined, undefined, undefined, true);
 
@@ -36,6 +37,10 @@ class Page {
 
     page.id = id;
 
+    if (this.name) {
+      page.classList.add(this.name + "_page");
+    }
+    
     if (pgnum === 0) {
       page.classList.add("first_page");
     }
@@ -45,7 +50,6 @@ class Page {
     } else {
       page.classList.add("left_page");
     }
-
 
     let size = area.getBoundingClientRect();
 

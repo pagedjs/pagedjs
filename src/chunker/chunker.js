@@ -38,7 +38,7 @@ const TEMPLATE = `<div class="page">
  * @class
  */
 class Chunker {
-	constructor(content, renderTo, preview) {
+	constructor(content, renderTo, breaks, preview) {
 		this.pagesArea = document.createElement("div");
 		this.pagesArea.classList.add("pages");
 
@@ -59,10 +59,18 @@ class Chunker {
 
 		if (content) {
 			this.content = content;
+			this.breaks = breaks;
 
 			let parsed = new ContentParser(content);
 
-			let sections = [...parsed.children];
+			let sections;
+			if (breaks) {
+				sections = this.processBreaks(parsed, breaks);
+			} else {
+				sections = [...parsed.children];
+			}
+
+			this.namedPages = this.findNamedPages(parsed, breaks);
 
 			if (sections.length > 0) {
 				return this.sections(sections).then(() => {
@@ -78,6 +86,29 @@ class Chunker {
 			}
 
 		}
+	}
+
+	processBreaks(parsed, breaks) {
+		let selectors = [];
+		for (let b in breaks) {
+			selectors.push(b);
+		}
+		let s = selectors.join(",");
+		let parts = parsed.querySelectorAll(s);
+		return parts;
+	}
+
+	findNamedPages(parsed, breaks) {
+		let named = {};
+		for (let b in breaks) {
+			for (let p of breaks[b]) {
+				if (p.name) {
+					let parts = parsed.querySelectorAll(b);
+					named[p.name] = parts;
+				}
+			}
+		}
+		return named;
 	}
 
 	async sections(sections) {
@@ -101,8 +132,20 @@ class Chunker {
 	}
 
 	section(sectionContent) {
+		let name;
+		for (let named in this.namedPages) {
+			for (let element of this.namedPages[named]) {
+				if(sectionContent == element) {
+					name = named;
+					break;
+				}
+			}
+			if (name) {
+				break;
+			}
+		}
 
-		let section = new Section(this.pagesArea, this.pageTemplate, this.total, this.preview);
+		let section = new Section(this.pagesArea, this.pageTemplate, this.total, name, this.preview);
 
 		// section.create(this.sectionsTotal, this.total);
 

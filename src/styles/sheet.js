@@ -13,6 +13,13 @@ class Sheet {
 		// Scope
 		this.id = UUID();
 		// this.addScope(this.ast, this.uuid);
+
+		// Get page selectors
+		// this.namedPageSelectors = this.getNamedPageSelectors(this.ast);
+
+		// Get page brekas
+		this.pageBreaks = this.replacePageBreaks(this.ast);
+
 		// Remove @page rules
 		this.pages = this.replacePages(this.ast);
 
@@ -26,7 +33,8 @@ class Sheet {
 		// send to csstree
 		let ast = csstree.parse(text);
 		// return ast
-		return ast
+		console.log(ast);
+		return ast;
 	}
 
 	pageModel(selector) {
@@ -64,19 +72,12 @@ class Sheet {
 
 					if (node.prelude) {
 						named = this.getTypeSelector(node);
-						if (named) {
-							selector += named;
-						}
-
 						psuedo = this.getPsuedoSelector(node);
-						if (psuedo && selector) {
-							selector += " :" + psuedo;
-						} else if (psuedo) {
-							selector = ":" + psuedo;
-						}
+						selector = csstree.generate(node.prelude);
 					} else {
 						selector = "*";
 					}
+
 
 					let page = this.pageModel(selector);
 
@@ -638,6 +639,126 @@ class Sheet {
 				}));
 			}
 		});
+	}
+
+	/*
+	getNamedPageSelectors(ast) {
+		let record = false;
+		let namedPageSelectors = {};
+		csstree.walk(ast, {
+			// visit: 'Declaration',
+			leave: (node, item, list) => {
+				if(record && node.type === "Rule"){
+					record.selector = csstree.generate(node.prelude);
+				}
+
+				if (node.type === "Declaration" && node.property === "page") {
+					let name = node.value.children.first().name;
+					namedPageSelectors[name] = {
+						name: name,
+						selector: ''
+					}
+					record = namedPageSelectors[name];
+				}
+			},
+			enter: (node, item, list) => {
+				if (record) {
+					record = false;
+				}
+			}
+		});
+	}
+	*/
+
+	getNamedPageSelectors(ast) {
+		let namedPageSelectors = {};
+		csstree.walk(ast, {
+			visit: 'Rule',
+			enter: (node, item, list) => {
+				csstree.walk(node, {
+					visit: 'Declaration',
+					enter: (declaration, dItem, dList) => {
+						if (declaration.property === "page") {
+							let value = declaration.value.children.first();
+							let name = value.name;
+							let selector = csstree.generate(node.prelude);
+							namedPageSelectors[name] = {
+								name: name,
+								selector: selector
+							}
+
+							// dList.remove(dItem);
+
+							// Add in page break
+							declaration.property = "break-before";
+							value.type = "Identifier";
+							value.name = "always";
+
+						}
+					}
+				});
+			}
+		});
+		return namedPageSelectors;
+	}
+
+	replacePageBreaks(ast) {
+		let breaks = {};
+
+		csstree.walk(ast, {
+			visit: 'Rule',
+			enter: (node, item, list) => {
+				csstree.walk(node, {
+					visit: 'Declaration',
+					enter: (declaration, dItem, dList) => {
+						let property = declaration.property;
+
+						if (property === "break-before" ||
+								property === "break-after" ||
+								property === "page-break-before" ||
+								property === "page-break-after" ||
+								property === "page"
+						) {
+
+							let children = declaration.value.children.first();
+							let value = children.name;
+							let selector = csstree.generate(node.prelude);
+							let name;
+
+							if (property === "page-break-before") {
+								property = "break-before";
+							} else if (property === "page-break-after") {
+								property = "break-after";
+							}
+
+							if (property === "page") {
+								name = value;
+								value = "always";
+							}
+
+							let breaker = {
+								property: property,
+								value: value,
+								selector: selector,
+								name: name
+							};
+
+							selector.split(",").forEach((s) => {
+								if (!breaks[s]) {
+									breaks[s] = [breaker];
+								} else {
+									breaks[s].push(breaker);
+								}
+							})
+
+							dList.remove(dItem);
+						}
+					}
+				});
+			}
+		});
+
+		return breaks;
 	}
 
 	// generate string

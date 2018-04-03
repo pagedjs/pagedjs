@@ -10,7 +10,7 @@
     <link rel="coverpage" href="images/cover.jpg" />
 
 
-    <link href="book.css" rel="stylesheet" type='text/css'>
+    <!-- <link href="book.css" rel="stylesheet" type='text/css'> -->
 
 
     <!-- Paged js-->
@@ -53,14 +53,14 @@
 
       // styles
       let styles = new Paged.Styler();
-      let moby = await styles.add("paged-js/layout-pagedjs.css");
-      console.log(moby);
+      let moby = await styles.add("book.css", "paged-js/layout-pagedjs.css");
+      // console.log(moby);
 
       let flowText = document.querySelector("#flow");
 
       let t0 = performance.now();
 
-      let flow = new Paged.Chunker(flowText.content, undefined, preview).then((flow) => {
+      let flow = new Paged.Chunker(flowText.content, undefined, styles.breaks, preview).then((flow) => {
         let t1 = performance.now();
 
         console.log("Rendering " + flow.total + " pages took " + (t1 - t0) + " milliseconds.");

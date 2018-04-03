@@ -9,7 +9,8 @@
   "module": "src/index.js",
   "browser": "dist/paged.js",
   "dependencies": {
-    "css-tree": "^1.0.0-alpha.28"
+    "css-tree": "^1.0.0-alpha.28",
+    "lodash": "^4.17.5"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

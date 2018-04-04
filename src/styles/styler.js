@@ -1,8 +1,10 @@
 import Sheet from './sheet.js';
+import baseStyles from './base.js';
 
 class Styler {
 	constructor() {
 		this.sheets = [];
+		this.addBase();
 	}
 
 	async add() {
@@ -16,7 +18,7 @@ class Styler {
 
 		return await Promise.all(fetched)
 			.then((originals) => {
-				let text;
+				let text = "";
 				let pageBreaks = {};
 
 				originals.forEach((original, index) => {
@@ -38,8 +40,8 @@ class Styler {
 			});
 	}
 
-	root() {
-
+	addBase() {
+		this.insert(baseStyles);
 	}
 
 	mergeBreaks(pageBreaks, newBreaks) {

@@ -25,6 +25,7 @@ class Sheet {
 
 		if ("*" in this.pages) {
 			this.addRootVars(this.ast, this.pages["*"].width, this.pages["*"].height);
+			this.addRootPage(this.ast, this.pages["*"].width, this.pages["*"].height);
 		}
 	}
 
@@ -33,7 +34,6 @@ class Sheet {
 		// send to csstree
 		let ast = csstree.parse(text);
 		// return ast
-		// console.log(ast);
 		return ast;
 	}
 
@@ -120,16 +120,6 @@ class Sheet {
 
 		this.addPageClasses(pages, ast);
 		// return collection of pages
-		/*
-		{
-			":" : {},
-			":left" : {},
-			":right" : {},
-			":first" : {},
-			":black" : {},
-			"named" : {},
-		}
-		*/
 		return pages;
 	}
 
@@ -348,13 +338,6 @@ class Sheet {
 		let selectors = new csstree.List();
 		let name;
 
-		// let selector = selectorList.createItem({
-		// 	type: 'Selector',
-		// 	children: selectors
-		// });
-    //
-		// selectorList.insert(selectors);
-
 		selectors.insert(selectors.createItem({
 			type: 'ClassSelector',
 			name: 'page'
@@ -368,12 +351,12 @@ class Sheet {
 			}));
 		}
 
-		if (page.name && page.psuedo) {
-			selectors.insert(selectors.createItem({
-				type: 'Combinator',
-				name: " "
-			}));
-		}
+		// if (page.name && page.psuedo) {
+		// 	selectors.insert(selectors.createItem({
+		// 		type: 'Combinator',
+		// 		name: " "
+		// 	}));
+		// }
 
 		// PsuedoSelector
 		if (page.psuedo) {
@@ -485,8 +468,8 @@ class Sheet {
 	}
 
 	addMarginalia(page, list, item) {
-		for (let name in page.marginalia) {
-			let item = page.marginalia[name];
+		for (let loc in page.marginalia) {
+			let item = page.marginalia[loc];
 			let selectorList = new csstree.List();
 			let selectors = new csstree.List();
 
@@ -526,7 +509,7 @@ class Sheet {
 
 			selectors.insert(selectors.createItem({
 				type: 'ClassSelector',
-				name: name
+				name: loc
 			}));
 
 			selectors.insert(selectors.createItem({
@@ -610,6 +593,87 @@ class Sheet {
 				loc: null,
 				children: selectorList
 			},
+			block: {
+					type: 'Block',
+					loc: null,
+					children: children
+			}
+		});
+
+		ast.children.append(rule);
+	}
+
+	addRootPage(ast, width, height) {
+		/*
+		@page {
+		  size: var(--width) var(--height);
+		  margin: 0;
+		  padding: 0;
+		}
+		*/
+		let children = new csstree.List();
+		let dimensions = new csstree.List();
+
+		dimensions.append(dimensions.createItem({
+			type: 'Dimension',
+			unit: width.unit,
+			value: width.value
+		}));
+
+		dimensions.append(dimensions.createItem({
+			type: 'WhiteSpace',
+			value: " "
+		}));
+
+		dimensions.append(dimensions.createItem({
+			type: 'Dimension',
+			unit: height.unit,
+			value: height.value
+		}));
+
+		children.append(children.createItem({
+			type: 'Declaration',
+			property: "size",
+			loc: null,
+			value: {
+				type: "Value",
+				children: dimensions
+			}
+		}));
+
+		children.append(children.createItem({
+			type: 'Declaration',
+			property: "margin",
+			loc: null,
+			value: {
+				type: "Value",
+				children: [{
+					type: 'Dimension',
+					unit: 'px',
+					value: 0
+				}]
+			}
+		}));
+
+		children.append(children.createItem({
+			type: 'Declaration',
+			property: "padding",
+			loc: null,
+			value: {
+				type: "Value",
+				children: [{
+					type: 'Dimension',
+					unit: 'px',
+					value: 0
+				}]
+			}
+		}));
+
+
+		let rule = ast.children.createItem({
+			type: 'Atrule',
+			prelude: null,
+			name: "page",
 			block: {
 					type: 'Block',
 					loc: null,

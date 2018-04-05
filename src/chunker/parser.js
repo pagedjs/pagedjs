@@ -55,9 +55,9 @@ class ContentParser {
 			let uuid = UUID();
 
 			node.setAttribute("ref", uuid);
-			node.setAttribute("children", node.childNodes.length);
+			node.setAttribute("data-children", node.childNodes.length);
 
-			node.setAttribute("text", node.textContent.trim().length);
+			node.setAttribute("data-text", node.textContent.trim().length);
 		}
 	}
 

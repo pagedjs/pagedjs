@@ -10,7 +10,7 @@
     <script src="../dist/paged.js"></script>
 
     <link rel="stylesheet" type="text/css" href="assets/styles/index.css">
-    <!-- <link rel="stylesheet" type="text/css" href="assets/styles/mody-dick.css"> -->
+    <!-- <link rel="stylesheet" type="text/css" href="assets/styles/moby-dick.css"> -->
 </head>
 <body>
   <script>
@@ -69,32 +69,40 @@
         return text;
       }
 
-      function addStyles(resources) {
+      function addStyles(styles, resources) {
         let head = document.querySelector("head");
-        let styles = resources.filter((r) => {
+        let stylesArray = resources.filter((r) => {
           return r.type === "text/css";
         });
-        for (let style of styles) {
-          let link = document.createElement("link");
-          link.rel = "stylesheet";
-          link.type = "text/css";
-          link.href = style.href;
-          head.appendChild(link);
+        let toAdd = ["assets/styles/moby-dick.css"];
+        for (let style of stylesArray) {
+          // let link = document.createElement("link");
+          // link.rel = "stylesheet";
+          // link.type = "text/css";
+          // link.href = style.href;
+          // head.appendChild(link);
+          toAdd.push(style.href);
         }
+        return styles.add.apply(styles, toAdd);
       }
 
-      function openBook(e){
+      async function openBook(e){
         var bookData = e.target.result;
 
         let epub = ePub(bookData, {replacements: true} ).then((book) => {
           this.book = book;
-
-          addStyles(this.book.resources)
-
+          return book;
+        }).then((book) => {
+          let styles = new Paged.Styler();
+          return addStyles(styles, this.book.resources);
+        }).then(() => {
           return sections(this.book.spine);
         }).then((text) => {
           let t0 = performance.now();
           let viewer = document.querySelector("#viewer");
+
+          // let moby = await styles.add("assets/styles/moby-dick.css");
+
           let flow = new Paged.Chunker(text, viewer, preview).then((flow) => {
             let t1 = performance.now();
 

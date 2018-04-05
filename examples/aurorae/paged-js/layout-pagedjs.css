@@ -20,11 +20,14 @@ html{
 
   @page {
     size: 148mm 210mm portait;
+  }
 
-    background-image:  repeating-linear-gradient(180deg, transparent  0, transparent 14px , rgba(0,255,0,0.7) var(--baseline)) ;
-    background-size: cover;
-    background-position:  0 -3px , 0 0
-
+  @media screen {
+    .page {
+      background-image:  repeating-linear-gradient(180deg, transparent  0, transparent 14px , rgba(0,255,0,0.7) var(--baseline)) ;
+      background-size: cover;
+      background-position:  0 -3px , 0 0
+    }
   }
 
   /*@page:first {
@@ -212,7 +215,7 @@ html{
 .toc-chap a[href]::before,
 .toc-part-app a[href]::before,
 .toc-app a[href]::before {
-  content: target-text(attr(href), content);
+  content: target-text(attr(href url), content);
 }
 
 .toc-chap{

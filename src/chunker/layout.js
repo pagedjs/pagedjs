@@ -248,12 +248,12 @@ class Layout {
 
       if (currentNode.childNodes.length === 0) {
         // Check in original
-        let original = currentNode.getAttribute("children");
+        let original = currentNode.getAttribute("data-children");
         if (original != 0) {
           currentNode.remove();
         }
       } else if (currentNode.textContent.trim().length === 0) {
-        let original = currentNode.getAttribute("text");
+        let original = currentNode.getAttribute("data-text");
         if (original != 0) {
           currentNode.remove();
         }

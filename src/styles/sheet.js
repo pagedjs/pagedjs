@@ -27,6 +27,14 @@ class Sheet {
 			this.addRootVars(this.ast, this.pages["*"].width, this.pages["*"].height);
 			this.addRootPage(this.ast, this.pages["*"].width, this.pages["*"].height);
 		}
+
+		this.stringSets = this.getStringSets(this.ast);
+
+		let targets = this.getTargets(this.ast);
+		this.counterTargets = targets.counterTargets;
+		this.textTargets = targets.textTargets;
+
+		this.replaceContents(this.ast);
 	}
 
 	// parse
@@ -542,8 +550,172 @@ class Sheet {
 		}
 	}
 
-	addPageResets(ast, width, height) {
+	getStringSets(ast) {
+		let stringSetSelectors = {};
+		csstree.walk(ast, {
+			visit: 'Rule',
+			enter: (node, item, list) => {
+				csstree.walk(node, {
+					visit: 'Declaration',
+					enter: (declaration, dItem, dList) => {
+						if (declaration.property === "string-set") {
+							let selector = csstree.generate(node.prelude);
 
+							let identifier = declaration.value.children.first().name
+
+							let value;
+							csstree.walk(declaration, {
+								visit: 'Function',
+								enter: (node, item, list) => {
+									value = csstree.generate(node);
+								}
+							});
+
+							stringSetSelectors[identifier] = {
+								identifier: identifier,
+								value: value,
+								selector: selector
+							}
+						}
+					}
+				});
+			}
+		});
+		return stringSetSelectors;
+	}
+
+	getTargets(ast) {
+		let textTargets = {};
+		let counterTargets = {};
+		csstree.walk(ast, {
+			visit: 'Rule',
+			enter: (node, item, list) => {
+				csstree.walk(node, {
+					visit: 'Declaration',
+					enter: (declaration, dItem, dList) => {
+						if (declaration.property === "content") {
+
+							csstree.walk(declaration, {
+								visit: 'Function',
+								enter: (funcNode, fItem, fList) => {
+									if (funcNode.name === "target-text") {
+
+										let selector = csstree.generate(node.prelude);
+										let first = funcNode.children.first();
+										let last = funcNode.children.last();
+										let func = first.name;
+
+										let value = csstree.generate(funcNode);
+
+										let args = []
+
+										first.children.forEach((child) => {
+											if (child.type === "Identifier") {
+												args.push(child.name);
+											}
+										});
+
+										let style;
+										if (last !== first) {
+											style = last.name;
+										}
+
+										selector.split(",").forEach((s) => {
+											textTargets[s] = {
+												func: func,
+												args: args,
+												value: value,
+												style: style,
+												selector: s,
+												fullSelector: selector
+											}
+										});
+
+									}
+
+									if (funcNode.name === "target-counter") {
+										let selector = csstree.generate(node.prelude);
+										let first = funcNode.children.first();
+										let last = funcNode.children.last();
+										let func = first.name;
+
+										let value = csstree.generate(funcNode);
+
+										let args = []
+
+										first.children.forEach((child) => {
+											if (child.type === "Identifier") {
+												args.push(child.name);
+											}
+										});
+
+										let counter;
+										if (last !== first) {
+											counter = last.name;
+										}
+
+										selector.split(",").forEach((s) => {
+											counterTargets[s] = {
+												func: func,
+												args: args,
+												value: value,
+												counter: counter,
+												selector: s,
+												fullSelector: selector
+											}
+										});
+
+									}
+								}
+							});
+
+
+						}
+					}
+				});
+			}
+		});
+
+		return {
+			textTargets,
+			counterTargets
+		};
+	}
+
+	replaceContents(ast) {
+		csstree.walk(ast, {
+			visit: 'Declaration',
+			enter: (declaration, dItem, dList) => {
+				if (declaration.property === "content") {
+					csstree.walk(declaration, {
+						visit: 'Function',
+						enter: (func, fItem, fList) => {
+							// console.log(func);
+
+							if (func.name === "string") {
+								let identifier = func.children && func.children.first().name;
+								func.name = "var";
+								func.children = new csstree.List();
+
+								func.children.append(func.children.createItem({
+									type: "Identifier",
+									loc: null,
+									name: "--string-" + identifier
+								}));
+							}
+
+							if (func.name === "target-text") {
+								// console.log(func);
+							}
+
+							if (func.name === "target-counter") {
+								// console.log(func);
+							}
+						}
+					});
+				}
+			}
+		});
 	}
 
 	addRootVars(ast, width, height) {

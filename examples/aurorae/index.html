@@ -50,13 +50,13 @@
           preview = (pair[1] === "true");
         }
       }
+      let flowText = document.querySelector("#flow");
 
       // styles
       let styles = new Paged.Styler();
-      let moby = await styles.add("book.css", "paged-js/layout-pagedjs.css");
+      let styleText = await styles.add("book.css", "paged-js/layout-pagedjs.css");
+      styles.contents(flowText.content);
       // console.log(moby);
-
-      let flowText = document.querySelector("#flow");
 
       let t0 = performance.now();
 
@@ -64,6 +64,9 @@
         let t1 = performance.now();
 
         console.log("Rendering " + flow.total + " pages took " + (t1 - t0) + " milliseconds.");
+
+        // let pages = document.querySelector(".pages");
+        // styles.counters(pages);
       });
 
       let resizer = () => {

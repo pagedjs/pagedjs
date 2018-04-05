@@ -2,7 +2,7 @@
   size: 8.5in 11in;
   margin: 20mm 25mm;
   marks: crop;
-  
+
   @footnote {
     margin: 0.6em 0 0 0;
     padding: 0.3em 0 0 0;
@@ -48,10 +48,16 @@
  @bottom-right-corner {
    content: counter(page);
  }
+
+ @top-center{
+   content: string(booktitle);
+  }
 }
 
 @page cover {
-  size: 'letter';          /* measured from scanned book */
+  @top-center{
+    content: none;
+   }
 }
 
 
@@ -79,8 +85,8 @@ font-weight: bold;
 font-style: italic;
 }
 
-#c001s0000 {
-  string-set: booktitle "hi";
+section:nth-child(1) h1 {
+  string-set: booktitle content(text);
 }
 
 

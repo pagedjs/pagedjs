@@ -1,4 +1,13 @@
 export default `
+:root {
+  --width: 8.5in;
+  --height: 11in;
+  --margin-top: 1in;
+  --margin-right: 1in;
+  --margin-bottom: 1in;
+  --margin-left: 1in;
+}
+
 .page {
   box-sizing: border-box;
   width: var(--width);

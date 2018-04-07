@@ -71,7 +71,9 @@ class Layout {
 
         if (!shallow) {
           next = after(node, content);
-          walker = walk(next, content);
+          if (next) {
+            walker = walk(next, content);
+          }
         }
 
       } else {
@@ -88,11 +90,15 @@ class Layout {
 
         let overflow = this.overflow(this.element);
         if (overflow) {
+
           newBreakToken = this.findBreakToken(overflow);
 
-          this.removeOverflow(overflow);
+          if (newBreakToken && newBreakToken.node) {
+            this.removeOverflow(overflow);
+          }
 
           break;
+
         } else {
           // Underflow
           hasOverflow = false;
@@ -193,7 +199,7 @@ class Layout {
     let offset = overflow.startOffset;
     let node, ref, parent, index, temp;
 
-    if (overflow.startContainer.nodeType === 1 && offset) {
+    if (overflow.startContainer.nodeType === 1) {
       // node = children.querySelector("[ref='" + overflow.startContainer.childNodes[offset].getAttribute("ref") + "']");
       temp = overflow.startContainer.childNodes[offset];
 
@@ -209,17 +215,16 @@ class Layout {
         node = parent.childNodes[index];
         offset = 0;
       }
-
-    } else if (overflow.startContainer.nodeType === 1) {
-      // node = children.querySelector("[ref='" + overflow.startContainer.getAttribute("ref") + "']");
-      ref = overflow.startContainer.getAttribute("ref");
-      node = this.wrapper.querySelector("[ref='" + ref + "']");
     } else {
       index = Array.prototype.indexOf.call(overflow.startContainer.parentNode.childNodes, overflow.startContainer);
       // let parent = children.querySelector("[ref='" + overflow.startContainer.parentNode.getAttribute("ref") + "']");
       ref = overflow.startContainer.parentNode.getAttribute("ref");
       parent = this.wrapper.querySelector("[ref='" + ref + "']");
       node = parent.childNodes[index];
+    }
+
+    if (!node) {
+      return;
     }
 
     return {

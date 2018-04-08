@@ -4,7 +4,12 @@ import { UUID } from "../utils/utils";
 
 class Sheet {
 	constructor(text, url) {
-		this.url = new URL(url, window.location.href);
+		try {
+			this.url = new URL(url, window.location.href);
+		} catch (e) {
+			this.url = new URL(window.location.href);
+		}
+
 		this.original = text;
 		// Parse the text
 		this.ast = this.parse(text);
@@ -244,7 +249,8 @@ class Sheet {
 		csstree.walk(declaration, {
 			visit: 'String',
 			enter: (node, item, list) => {
-				let s = pageSizes[node];
+				let name = node.value.replace(/["|']/g, '');
+				let s = pageSizes[name];
 				if (s) {
 					width = s.width;
 					height = s.height;
@@ -625,7 +631,7 @@ class Sheet {
 												func: func,
 												args: args,
 												value: value,
-												style: style,
+												style: style || "content",
 												selector: s,
 												fullSelector: selector
 											}

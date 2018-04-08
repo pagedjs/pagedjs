@@ -39,6 +39,7 @@
     flex-wrap: wrap;
     justify-content: flex-start;
     transform-origin: 0 0;
+    margin: 0 auto;
   }
 
   .pages > .section {

@@ -30,7 +30,7 @@
 
       let t0 = performance.now();
 
-      let flow = new Paged.Chunker(flowText.content, undefined, preview).then((flow) => {
+      let flow = new Paged.Chunker(flowText.content, undefined, undefined, preview).then((flow) => {
         let t1 = performance.now();
 
         console.log("Rendering " + flow.total + " pages took " + (t1 - t0) + " milliseconds.");
@@ -40,7 +40,11 @@
         let pages = document.querySelector(".pages");
         let scale = ((window.innerWidth * .9 ) / pages.offsetWidth);
 
-        pages.style.transform = `scale(${scale}) translate(${(window.innerWidth / 2) - ((pages.offsetWidth * scale / 2) ) }px, 0)`;
+        if (scale < 1) {
+          pages.style.transform = `scale(${scale}) translate(${(window.innerWidth / 2) - ((pages.offsetWidth * scale / 2) ) }px, 0)`;
+        } else {
+          pages.style.transform = "none";
+        }
       };
       resizer();
 

@@ -1,5 +1,6 @@
 import Layout from "./layout";
 import Renderer from "./renderer";
+import EventEmitter from "event-emitter";
 
 /**
  * Render a page
@@ -164,5 +165,8 @@ class Page {
 
   }
 }
+
+EventEmitter(Page.prototype);
+
 
 export default Page;

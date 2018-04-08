@@ -35,6 +35,7 @@
     <link rel="stylesheet" href="fonts/hk-grotesk/stylesheet.css" />
 
     <link rel="stylesheet" type="text/css" href="../assets/styles/index.css">
+    <link rel="stylesheet" type="text/css" href="../assets/styles/examples.css">
     <script>this.ready=new Promise(function($){document.addEventListener('DOMContentLoaded',$,{once:true})})</script>
     <script src="../../dist/paged.js"></script>
 
@@ -54,26 +55,29 @@
 
       // styles
       let styles = new Paged.Styler();
-      let styleText = await styles.add("book.css", "paged-js/layout-pagedjs.css");
-      styles.contents(flowText.content);
+      let styleText = await styles.add("book.css");
       // console.log(moby);
 
       let t0 = performance.now();
 
-      let flow = new Paged.Chunker(flowText.content, undefined, styles.breaks, preview).then((flow) => {
+      let chunker = new Paged.Chunker(flowText.content, undefined, styles, preview).then((flow) => {
         let t1 = performance.now();
 
         console.log("Rendering " + flow.total + " pages took " + (t1 - t0) + " milliseconds.");
 
-        // let pages = document.querySelector(".pages");
-        // styles.counters(pages);
+
       });
+
 
       let resizer = () => {
         let pages = document.querySelector(".pages");
         let scale = ((window.innerWidth * .9 ) / pages.offsetWidth);
 
-        pages.style.transform = `scale(${scale}) translate(${(window.innerWidth / 2) - ((pages.offsetWidth * scale / 2) ) }px, 0)`;
+        if (scale < 1) {
+          pages.style.transform = `scale(${scale}) translate(${(window.innerWidth / 2) - ((pages.offsetWidth * scale / 2) ) }px, 0)`;
+        } else {
+          pages.style.transform = "none";
+        }
       };
       resizer();
 

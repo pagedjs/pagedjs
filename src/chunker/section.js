@@ -1,5 +1,6 @@
 import Page from "./page";
 import Parser from "./parser";
+import EventEmitter from "event-emitter";
 
 const MAX_PAGES = 10000000000;
 
@@ -123,6 +124,8 @@ class Section {
       // console.log("underflow on", page.id);
     });
 
+    this.emit("page", page);
+
     this.total += 1;
 
     return page;
@@ -132,5 +135,7 @@ class Section {
 
   }
 }
+
+EventEmitter(Section.prototype);
 
 export default Section;

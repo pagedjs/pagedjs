@@ -5,7 +5,9 @@ import { UUID } from '../utils/utils';
 class Styler {
 	constructor() {
 		this.sheets = [];
-		this.addBase();
+		this.inserted = [];
+		this.base = this.addBase();
+		this.inserted.push(this.base);
 		this.styleEl = document.createElement("style");
 		document.head.appendChild(this.styleEl);
 		this.styleSheet = this.styleEl.sheet;
@@ -13,10 +15,26 @@ class Styler {
 
 	async add() {
 		let fetched = [];
+		let urls = [];
 		for (var i = 0; i < arguments.length; i++) {
-			let f = fetch(arguments[i]).then((response) => {
-				return response.text();
-			})
+			let f;
+
+			if (typeof arguments[i] === "object") {
+				for (let url in arguments[i]) {
+					let obj = arguments[i];
+					f = new Promise(function(resolve, reject) {
+						urls.push(url);
+						resolve(obj[url]);
+					});
+				}
+			} else {
+				urls.push(arguments[i]);
+				f = fetch(arguments[i]).then((response) => {
+					return response.text();
+				})
+			}
+
+
 			fetched.push(f);
 		}
 
@@ -29,7 +47,7 @@ class Styler {
 				let counterTargets = {};
 
 				originals.forEach((original, index) => {
-					let href = arguments[index];
+					let href = urls[index];
 					let sheet = new Sheet(original, href);
 
 					this.sheets.push(sheet);
@@ -42,7 +60,8 @@ class Styler {
  					text += sheet.toString();
 				})
 
-				this.insert(text);
+				let s = this.insert(text);
+				this.inserted.push(s);
 
 				this.breaks = pageBreaks;
 
@@ -56,7 +75,7 @@ class Styler {
 	}
 
 	addBase() {
-		this.insert(baseStyles);
+		return this.insert(baseStyles);
 	}
 
 	mergeBreaks(pageBreaks, newBreaks) {
@@ -78,10 +97,11 @@ class Styler {
 		style.appendChild(document.createTextNode(text));
 
 		head.appendChild(style);
+
+		return style;
 	}
 
 	contents(fragment) {
-		// console.log(fragment);
 		for (let name of Object.keys(this.stringSets)) {
 			let set = this.stringSets[name];
 			let selected = fragment.querySelector(set.selector);
@@ -131,16 +151,45 @@ class Styler {
 			let target = this.counterTargets[name];
 			let split = target.selector.split("::");
 			let query = split[0];
-			let queried = root.querySelectorAll(query);
+			let queried = root.querySelectorAll(query + ":not([data-target-counter])");
+
 			queried.forEach((selected, index) => {
+				// TODO: handle func other than attr
+				if (target.func !== "attr") {
+					return;
+				}
 				let val = this.attr(selected, target.args);
-				let element = fragment.querySelector(val);
+				let element = root.querySelector(val);
 
 				if (element) {
-					console.log("element", element);
+					let selector = UUID();
+					selected.setAttribute("data-target-counter", selector);
+					// TODO: handle other counter types (by query)
+					if (target.counter === "page") {
+						let pages = root.querySelectorAll(".page");
+						let pg = 0;
+						for (var i = 0; i < pages.length; i++) {
+							pg += 1;
+							if (pages[i].contains( element )){
+								break;
+							}
+						}
+
+						let psuedo = "";
+						if (split.length > 1) {
+							psuedo += "::" + split[1];
+						}
+
+						this.styleSheet.insertRule(`[data-target-counter="${selector}"]${psuedo} { content: "${pg}"; }`, this.styleSheet.cssRules.length);
+
+					}
 				}
 			});
 		});
+	}
+
+	targetText(element) {
+
 	}
 
 	attr(element, attributes) {
@@ -151,6 +200,13 @@ class Styler {
 		}
 	}
 
+	destroy() {
+		this.styleEl.remove();
+		this.inserted.forEach((s) => {
+			s.remove();
+		});
+		this.sheets = [];
+	}
 }
 
 export default Styler;

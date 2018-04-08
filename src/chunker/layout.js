@@ -1,5 +1,6 @@
 import { getBoundingClientRect } from "../utils/utils";
 import { walk, after, stackChildren } from "../utils/dom";
+import EventEmitter from "event-emitter";
 
 /**
  * Layout
@@ -89,6 +90,7 @@ class Layout {
       if (hasOverflow) {
 
         let overflow = this.overflow(this.element);
+
         if (overflow) {
 
           newBreakToken = this.findBreakToken(overflow);
@@ -238,7 +240,7 @@ class Layout {
 
     overflow.extractContents();
 
-    requestIdleCallback(() => this.removeEmpty());
+    // requestIdleCallback(() => this.removeEmpty());
   }
 
   removeEmpty() {
@@ -562,5 +564,7 @@ class Layout {
   }
 
 }
+
+EventEmitter(Layout.prototype);
 
 export default Layout;

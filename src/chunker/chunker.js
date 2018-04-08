@@ -2,6 +2,8 @@ import Section from "./section";
 import Page from "./page";
 import ContentParser from "./parser";
 import { split } from "../utils/dom";
+import EventEmitter from "event-emitter";
+
 // import PagedBody from "../utils/paged-body.js";
 
 const MAX_SECTIONS = false;
@@ -39,10 +41,10 @@ const TEMPLATE = `<div class="page">
  * @class
  */
 class Chunker {
-	constructor(content, renderTo, breaks, preview) {
+	constructor(content, renderTo, styler, preview) {
 		this.pagesArea = document.createElement("div");
 		this.pagesArea.classList.add("pages");
-
+		this.styles = styler;
 		if (renderTo) {
 			renderTo.appendChild(this.pagesArea);
 		} else {
@@ -58,32 +60,47 @@ class Chunker {
 		this.total = 0;
 		this.sectionsTotal = 0;
 
+		this.content = content;
+		this.breaks = this.styles && this.styles.breaks;
+
 		if (content) {
-			this.content = content;
-			this.breaks = breaks;
+			this.flowed = this.flow(content, this.breaks);
+		} else {
+			this.flowed = new new Promise(function(resolve, reject) {
+				// TODO: handle deffered
+			});
+		}
 
-			let parsed = new ContentParser(content);
+		return this;
+	}
 
-			let sections;
-			if (breaks) {
-				sections = this.processBreaks(parsed, breaks);
-			} else {
-				sections = [...parsed.children];
-			}
+	then() {
+	  return this.flowed.then;
+	}
 
-			if (sections.length > 0) {
-				return this.sections(sections).then(() => {
+	flow(content, breaks) {
+		let parsed = new ContentParser(content);
+
+		this.styles && this.styles.contents(parsed);
+
+		let sections;
+		if (breaks) {
+			sections = this.processBreaks(parsed, breaks);
+		} else {
+			sections = [...parsed.children];
+		}
+
+		if (sections.length > 0) {
+			return this.sections(sections).then(() => {
+				return this;
+			});
+		} else {
+			return this.section(parsed)
+				.then((section) => {
+					this.total += section.total;
+					this.sectionsTotal += 1;
 					return this;
 				});
-			} else {
-				return this.section(parsed)
-					.then((section) => {
-						this.total += section.total;
-						this.sectionsTotal += 1;
-						return this;
-					});
-			}
-
 		}
 	}
 
@@ -177,10 +194,15 @@ class Chunker {
 		let section = new Section(this.pagesArea, this.pageTemplate, this.total, this.preview);
 
 		// section.create(this.sectionsTotal, this.total);
+		section.on("page", (page) => {
+			this.styles && this.styles.counters(this.pagesArea);
+		})
 
 		return section.render(sectionContent);
 	}
 
 }
+
+EventEmitter(Chunker.prototype);
 
 export default Chunker;

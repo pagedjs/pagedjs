@@ -7,6 +7,11 @@
       The Project Gutenberg eBook of Auroræ: Their Characters and Spectra, by J. Rand Capron.
     </title>
 
+		<script src="https://cdn.jsdelivr.net/npm/codemirror@5.36.0/lib/codemirror.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/codemirror@5.36.0/lib/codemirror.css">
+		<script src="https://cdn.jsdelivr.net/npm/codemirror@5.36.0/mode/css/css.js"></script>
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
     <link rel="coverpage" href="images/cover.jpg" />
 
     <!-- Typos -->
@@ -16,7 +21,8 @@
     <link rel="stylesheet" href="aurorae/fonts/noto-serif/stylesheet.css" />
     <link rel="stylesheet" href="aurorae/fonts/hk-grotesk/stylesheet.css" />
 
-    <link rel="stylesheet" type="text/css" href="assets/styles/index.css">
+		<link rel="stylesheet" type="text/css" href="assets/styles/index.css">
+    <link rel="stylesheet" type="text/css" href="assets/styles/examples.css">
     <script>this.ready=new Promise(function($){document.addEventListener('DOMContentLoaded',$,{once:true})})</script>
     <script src="../dist/paged.js"></script>
 
@@ -24,43 +30,93 @@
 <body>
   <script>
     ready.then(async function () {
-      let preview = true;
-      let url = new URL(window.location);
-      let params = new URLSearchParams(url.search);
-      for(var pair of params.entries()) {
-        if(pair[0] === "preview") {
-          preview = (pair[1] === "true");
-        }
-      }
-      let flowText = document.querySelector("#flow");
+			// Codemirror
+			let cssTextArea = document.getElementById('codemirror');
 
-      // styles
-      let styles = new Paged.Styler();
-      let styleText = await styles.add("aurorae/book.css", "aurorae/paged-js/layout-pagedjs.css");
-      styles.contents(flowText.content);
-      // console.log(moby);
+			await fetch("aurorae/book.css")
+			.then((response) => {
+				return response.text();
+			}).then((text) => {
+				cssTextArea.value = text;
+			});
 
-      // let t0 = performance.now();
+			let updateButton = document.getElementById('update');
+			var editable = CodeMirror.fromTextArea(cssTextArea, {
+        mode: "css",
+        theme: "default",
+				lineNumbers: false
+    	});
 
-      // let flow = new Paged.Chunker(flowText.content, undefined, styles.breaks, preview).then((flow) => {
-      //   let t1 = performance.now();
-      //
-      //   console.log("Rendering " + flow.total + " pages took " + (t1 - t0) + " milliseconds.");
-      // });
-			/*
+			let styles;
+			let styleText;
+			let flowText = document.querySelector("#flow");
+
+			updateButton.addEventListener("click", (c) => {
+				let val = editable.getValue();
+				updateStyles(val);
+			}, false)
+
+			async function updateStyles(str) {
+				if (styles) {
+					styles.destroy();
+				}
+
+				styles = new Paged.Styler();
+				styleText = await styles.add({ "aurorae/book.css": str});
+				styles.contents(flowText.content);
+
+				let pages = document.querySelector(".pages");
+				styles.counters(pages);
+
+				let main = document.querySelector("#main");
+				main.style.visibility = "visible";
+
+				resizer();
+			}
+
+			updateStyles(cssTextArea.value);
+
+
+
       let resizer = () => {
         let pages = document.querySelector(".pages");
         let scale = ((window.innerWidth * .9 ) / pages.offsetWidth);
-
-        pages.style.transform = `scale(${scale}) translate(${(window.innerWidth / 2) - ((pages.offsetWidth * scale / 2) ) }px, 0)`;
+				if (scale < 1) {
+					pages.style.transform = `scale(${scale}) translate(${(window.innerWidth / 2) - ((pages.offsetWidth * scale / 2) ) }px, 0)`;
+				} else {
+					pages.style.transform = "none";
+				}
       };
-      resizer();
 
       window.addEventListener("resize", resizer, false);
-			*/
+
+			var nav = document.getElementById("navigation");
+	    var opener = document.getElementById("opener");
+	    opener.addEventListener("click", function(e){
+	      nav.classList.add("open");
+	    }, false);
+
+	    var closer = document.getElementById("closer");
+	    closer.addEventListener("click", function(e){
+	      nav.classList.remove("open");
+	    }, false);
     });
   </script>
-
+	<a id="opener">
+    <i class="material-icons">color_lens</i>
+  </a>
+	<div id="navigation">
+		<div id="header">
+	    <a id="closer">
+	      <i class="material-icons">close</i>
+	    </a>
+			<i class="material-icons" id="update">refresh</i>
+		</div>
+		<div class="editor">
+		<textarea id="codemirror"></textarea>
+		</div>
+	</div>
+	<div id="main" style="visibility: hidden;">
 	<div class="pages">
 
 		<div class="page left_page" id="section-0-page-20">
@@ -119,7 +175,184 @@
 		    <p ref="9d702948-3290-4898-966e-7c9cb1dc01c1" data-children="1" data-text="433">“Sometimes a star shines forth; at times there are fire-glows, sometimes
 		    fixed and persistent, sometimes flitting. Of these many sorts may be distinguished.
 		    There are Bothynoë, when, as within a surrounding corona, the
-		    fiery recess of the sky is like to a cave dug out of space. There </p></section></div></div>
+		    fiery recess of the sky is like to a cave dug out of space. There </p>
+
+				<p>“There are Chasmata, when a certain portion of the sky opens, and gaping
+				displays the flame as in a porch. The colours also of all these are many.
+				Certain are of the brightest red, some of a flitting and light flame-colour,
+				some of a white light, others shining, some steadily and yellow without
+				eruptions or rays.</p>
+
+				<p class="separator"></p>
+
+
+				<p>“Amongst these we may notice, what we frequently read of in history, the
+				sky is seen to burn, the glow of which is occasionally so high that it may be
+				seen amongst the stars themselves, sometimes so near the Earth (humilis) that
+				it assumes the form of a distant fire. Under Tiberius Cæsar the cohorts ran
+				together in aid of the colony of Ostia as if it were in flames, when the
+				glowing of the sky lasted through a great part of the night, shining dimly
+				like a vast and smoking fire.”</p>
+
+
+				<p>From the above passages many striking particulars of the Aurora may be
+				gathered; and by the division of the forms of Aurora into classes it is
+				evident they were, at that period, the subject of frequent observation.
+				The expression <span class="sidenote"> Auroræ frequently read of in history.</span>“et quod frequenter in historiis legimus” shows, too, that the
+				phenomena of Auroral displays were a matter of record and discussion with
+				the writers of the day.</p>
+
+				<p>Various forms of Aurora may be recognized in the passages from Chap. xiv.;
+				while in those from Chap. xv. a careful distinction is drawn between the
+				Auroræ seen in the zenith or the upper regions of the sky, and those seen on
+				the horizon or apparently (and no doubt in some cases actually) near the
+				Earth’s surface.</p>
+
+
+				<p>The description of the cohorts running to the fire only to find it an Aurora,
+				calls to mind the many similar events happening in our own days. Not,
+				however, but that a mistake may sometimes occur in an opposite direction.
+				<span class="sidenote">A spurious Aurora.</span>“In the memoirs of Baron Stockmar an amusing anecdote is related of one
+				Herr von Radowitz, who was given to making the most of easily picked up
+				information. A friend of the Baron’s went to an evening party near Frankfort,
+				where he expected to meet Herr von Radowitz. On his way he saw a
+				barn burning, stopped his carriage, assisted the people, and waited till the
+				flames were nearly extinguished. When he arrived at his friend’s house he
+				found Herr von Radowitz, who had previously taken the party to the top of
+				the building to see an Aurora, dilating on terrestrial magnetism, electricity,
+				and so forth. Radowitz asked Stockmar’s friend, “Have you seen the beautiful
+				Aurora Borealis?” He replied, “Certainly; I was there myself; it will soon
+				be over.” An explanation followed as to the barn on fire: Radowitz was
+				silent some ten minutes, then took up his hat and quietly disappeared.</p>
+
+
+
+				<p>It is probable that many of the phantom combats which are recorded to
+				have appeared in forms of fire in the air on the evenings preceding great
+				battles might be traced to Auroræ, invested with distinct characteristics by
+				the imagination of the beholders. <span class="sidenote">Auroræ as portents.</span>Auroræ are said to have appeared in the
+				shape of armies of horse and foot engaged in battle in the sky before the
+				death of Julius Cæsar, which they were supposed to foretell. For more than
+				a year before the siege and destruction of Jerusalem by Titus Vespasian, the
+				Aurora was said to have been frequently visible in Palestine.</p>
+
+				<p>Josephus, in his ‘Wars of the Jews’ (Whiston’s Translation, Book VI.
+				chap. v. sect. 3), in referring to the signs and wonders preceding the destruction
+				of Jerusalem, speaks of a star or comet, and that a great light shone
+				round about the altar and the holy house, which light lasted for half an hour,
+				and that a few days after the feast of unleavened bread a certain prodigious
+				and incredible phenomenon appeared—“for before sunsetting chariots and
+				troops of soldiers in their armour were seen running about among the clouds,
+				and surrounding of cities.” (This, if an Aurora, must have been an instance
+				of a daylight one.)</p>
+
+				<p>We find in Book II. of Maccabees, chap. v. verses 1, 2, 3, 4 (<span class="smcapuc">B.C.</span> about
+				176 years):</p>
+
+
+					<p>“1. About this same time Antiochus prepared his second voyage into Egypt:</p>
+
+					<p>“2. And then it happened that through all the city, for the space almost of
+					forty days, there were seen horsemen running in the air, in cloth of gold, and
+					armed with lances like a band of soldiers.</p>
+
+					<p>“3. And troops of horsemen in array, encountering and running one against
+					another, with shaking of shields and multitude of pikes, and drawing of
+					swords and casting of darts, and glittering of golden ornaments and harness
+					of all sorts.</p>
+
+					<p>“4. Wherefore every man prayed that that apparition might turn to
+					good.”</p>
+
+
+
+				<p><span class="sidenote">Early descriptions of Auroræ.</span>In Aristotle’s ‘De Meteoris,’ Lib. I. c. iv. and v., the Aurora is described
+				as an appearance resembling flame mingled with smoke, and of a purple red
+				or blue colour. Pliny (Lib. II. c. xxvii.) speaks of a bloody appearance of
+				the heavens which seemed like a fire descending on the earth, seen in the
+				third year of the 107th Olympiad, and of a light seen in the nighttime
+				equal to the brightness of the day, in the Consulship of Cæcilius and Papirius
+				(Lib. II. c. xxxiii.), both of which may be referred to Auroræ.</p>
+
+				<p>In the ‘Annals of Philosophy,’ vol. ix. p. 250, it is stated that the Aurora
+				among English writers is first described by Matthew of Westminster, who
+				relates that in <span class="smcapuc">A.D.</span> 555 lances were seen in the air (“quasi species lancearum
+				in aëre visæ sunt a septentrionali usque ad occidentem”).</p>
+
+				<p>In the article in the ‘Edinb. Encyc.’ vol. iii. (1830), the Aurora (known to the
+				vulgar as “streamers” or “merry dancers”) is distinguished in two kinds—the
+				“tranquil” and the “varying.” Musschenbroek enumerates as forms:—<i>trabs</i>,
+				“the beam,” an oblong tract parallel to the horizon; <i>sagitta</i>, “the
+				arrow;” <i>faces</i>, “the torch;” <i>capra saltans</i>, “the dancing goat;” <i>bothynoë</i>,
+				“the cave,” a luminous cloud having the appearance of a recess or hollow in
+				the heavens, surrounded by a corona; <i>pithiæ</i>, “the tun,” an Aurora resembling
+				a large luminous <i>cask</i>. The two sorts of Auroræ distinguished as
+				the “bothynoë” and “pithiæ” are evidently taken from the passage in Seneca’s
+				‘Quæstiones’ before quoted. In ‘Liberti Fromondi Meteorologicorum’
+				(London, 1656), Lib. II. cap. v. “De Meteoris supremæ regionis aëris,”
+				art. 1. De Capra, Trabe, Pyramide, &amp;c., these and other fantastic forms
+				attributable to Auroræ are more fully described.</p>
+
+				<p>In the article “Aurora Polaris,” Encyc. Brit. edit. ix., we find noted that
+				from a curious passage in Sirr’s ‘Ceylon and the Cingalese,’ vol. ii. p. 117, it
+				would seem that the Aurora, or something like it, is visible occasionally in
+				Ceylon, where the natives call it “Buddha Lights,” and that in many parts
+				of Ireland a scarlet Aurora is supposed to be a shower of blood. The earliest
+				mentioned Aurora (in Ireland) was in 688, in the ‘Annals of Cloon-mac-noise,’
+				after a battle between Leinster and Munster, in which Foylcher O’Moyloyer
+				was slain.</p>
+
+				<p>In the article in the Edinb. Encyc. before referred to it is stated that it was
+				not much more than a century ago that the phenomenon had been noticed to
+				occur with frequency in our latitudes.</p>
+
+				<p>Dr. Halley had begun to despair of seeing one till the fine display of
+				1716.</p>
+
+				<p><span class="sidenote">Early notices of Auroræ not frequent in our latitudes.</span> The first account on record in an English work is said to be in a book
+				entitled ‘A Description of Meteors by W. F. D. D.’ (reprinted, London, 1654),
+				which speaks of “burning spears” being seen January 30, 1560. The next
+				is recorded by Stow as occurring on October 7, 1564; and, according to Stow
+				and Camden, an Aurora was seen on two nights, 14th and 15th November,
+				1574.</p>
+
+				<p>Twice, again, an Aurora was seen in Brabant, 13th February and 28th
+				September, 1575. Cornelius Gemma compared these to spears, fortified
+				cities, and armies fighting in the air. Auroræ were seen in 1580 and 1581
+				in Wirtemberg, Germany.</p>
+
+				<p>Then we have no record till 1621, when an Aurora, described by Gassendi
+				in his ‘Physics,’ was seen all over France, September 2nd of that year.</p>
+
+				<p>In November 1623 another, described by Kepler, was seen all over
+				Germany.</p>
+
+				<p>From 1666 to 1716 no appearance is recorded in the ‘Transactions of the
+				French Academy of Sciences;’ but in 1707 one was seen in Ireland and at
+				Copenhagen; while in 1707 and 1708 the Aurora was seen five times.</p>
+
+				<p>The Aurora of 1716, occurring after an interval of eighty years, which
+				Dr. Halley describes, was very brilliant and extended over much country,
+				being seen from the west of Ireland to the confines of Russia and the east of
+				Poland, extending nearly 30° of longitude, and from about the 50th degree of
+				latitude, over almost all the north of Europe, and in all places exhibiting at
+				the same time appearances similar to those observed in London. An Aurora
+				observed in Bologna in 1723 was stated to be the first that had ever been
+				seen there; and one recorded in the ‘Berlin Miscellany’ for 1797 is called a
+				very unusual phenomenon. Nor did Auroræ appear more frequent in the
+				Polar Regions at that time, for Cælius states that the oldest inhabitants of
+				Upsala considered the phenomenon as quite rare before 1716. Anderson, of
+				Hamburg, writing about the same time, says that in Iceland the inhabitants
+				themselves were astonished at the frequent Auroræ then beginning to take
+				place; while Torfæus, the Icelander, who wrote in 1706, was old enough
+				to remember the time when the Aurora was an object of terror in his native
+				country.</p>
+
+				<p>According to M. Mairan, 1441 Auroræ were observed between <span class="smcapuc">A.D.</span> 583
+				and 1751, of which 972 were observed in the winter half-years and 469
+				during the summer half-years. In our next Chapter we propose to give some
+				general descriptions of Auroræ from comparatively early sources.</p>
+			</section></div></div>
 		</div>
 
 		<div class="page right_page" id="section-0-page-21">
@@ -199,10 +432,185 @@
 	    be over.” An explanation followed as to the barn on fire: Radowitz was
 	    silent some ten minutes, then took up his hat and quietly disappeared.</p>
 
+			<p>“There are Chasmata, when a certain portion of the sky opens, and gaping
+			displays the flame as in a porch. The colours also of all these are many.
+			Certain are of the brightest red, some of a flitting and light flame-colour,
+			some of a white light, others shining, some steadily and yellow without
+			eruptions or rays.</p>
 
+			<p class="separator"></p>
+
+
+			<p>“Amongst these we may notice, what we frequently read of in history, the
+			sky is seen to burn, the glow of which is occasionally so high that it may be
+			seen amongst the stars themselves, sometimes so near the Earth (humilis) that
+			it assumes the form of a distant fire. Under Tiberius Cæsar the cohorts ran
+			together in aid of the colony of Ostia as if it were in flames, when the
+			glowing of the sky lasted through a great part of the night, shining dimly
+			like a vast and smoking fire.”</p>
+
+
+			<p>From the above passages many striking particulars of the Aurora may be
+			gathered; and by the division of the forms of Aurora into classes it is
+			evident they were, at that period, the subject of frequent observation.
+			The expression <span class="sidenote"> Auroræ frequently read of in history.</span>“et quod frequenter in historiis legimus” shows, too, that the
+			phenomena of Auroral displays were a matter of record and discussion with
+			the writers of the day.</p>
+
+			<p>Various forms of Aurora may be recognized in the passages from Chap. xiv.;
+			while in those from Chap. xv. a careful distinction is drawn between the
+			Auroræ seen in the zenith or the upper regions of the sky, and those seen on
+			the horizon or apparently (and no doubt in some cases actually) near the
+			Earth’s surface.</p>
+
+
+			<p>The description of the cohorts running to the fire only to find it an Aurora,
+			calls to mind the many similar events happening in our own days. Not,
+			however, but that a mistake may sometimes occur in an opposite direction.
+			<span class="sidenote">A spurious Aurora.</span>“In the memoirs of Baron Stockmar an amusing anecdote is related of one
+			Herr von Radowitz, who was given to making the most of easily picked up
+			information. A friend of the Baron’s went to an evening party near Frankfort,
+			where he expected to meet Herr von Radowitz. On his way he saw a
+			barn burning, stopped his carriage, assisted the people, and waited till the
+			flames were nearly extinguished. When he arrived at his friend’s house he
+			found Herr von Radowitz, who had previously taken the party to the top of
+			the building to see an Aurora, dilating on terrestrial magnetism, electricity,
+			and so forth. Radowitz asked Stockmar’s friend, “Have you seen the beautiful
+			Aurora Borealis?” He replied, “Certainly; I was there myself; it will soon
+			be over.” An explanation followed as to the barn on fire: Radowitz was
+			silent some ten minutes, then took up his hat and quietly disappeared.</p>
+
+
+
+			<p>It is probable that many of the phantom combats which are recorded to
+			have appeared in forms of fire in the air on the evenings preceding great
+			battles might be traced to Auroræ, invested with distinct characteristics by
+			the imagination of the beholders. <span class="sidenote">Auroræ as portents.</span>Auroræ are said to have appeared in the
+			shape of armies of horse and foot engaged in battle in the sky before the
+			death of Julius Cæsar, which they were supposed to foretell. For more than
+			a year before the siege and destruction of Jerusalem by Titus Vespasian, the
+			Aurora was said to have been frequently visible in Palestine.</p>
+
+			<p>Josephus, in his ‘Wars of the Jews’ (Whiston’s Translation, Book VI.
+			chap. v. sect. 3), in referring to the signs and wonders preceding the destruction
+			of Jerusalem, speaks of a star or comet, and that a great light shone
+			round about the altar and the holy house, which light lasted for half an hour,
+			and that a few days after the feast of unleavened bread a certain prodigious
+			and incredible phenomenon appeared—“for before sunsetting chariots and
+			troops of soldiers in their armour were seen running about among the clouds,
+			and surrounding of cities.” (This, if an Aurora, must have been an instance
+			of a daylight one.)</p>
+
+			<p>We find in Book II. of Maccabees, chap. v. verses 1, 2, 3, 4 (<span class="smcapuc">B.C.</span> about
+			176 years):</p>
+
+
+				<p>“1. About this same time Antiochus prepared his second voyage into Egypt:</p>
+
+				<p>“2. And then it happened that through all the city, for the space almost of
+				forty days, there were seen horsemen running in the air, in cloth of gold, and
+				armed with lances like a band of soldiers.</p>
+
+				<p>“3. And troops of horsemen in array, encountering and running one against
+				another, with shaking of shields and multitude of pikes, and drawing of
+				swords and casting of darts, and glittering of golden ornaments and harness
+				of all sorts.</p>
+
+				<p>“4. Wherefore every man prayed that that apparition might turn to
+				good.”</p>
+
+
+
+			<p><span class="sidenote">Early descriptions of Auroræ.</span>In Aristotle’s ‘De Meteoris,’ Lib. I. c. iv. and v., the Aurora is described
+			as an appearance resembling flame mingled with smoke, and of a purple red
+			or blue colour. Pliny (Lib. II. c. xxvii.) speaks of a bloody appearance of
+			the heavens which seemed like a fire descending on the earth, seen in the
+			third year of the 107th Olympiad, and of a light seen in the nighttime
+			equal to the brightness of the day, in the Consulship of Cæcilius and Papirius
+			(Lib. II. c. xxxiii.), both of which may be referred to Auroræ.</p>
+
+			<p>In the ‘Annals of Philosophy,’ vol. ix. p. 250, it is stated that the Aurora
+			among English writers is first described by Matthew of Westminster, who
+			relates that in <span class="smcapuc">A.D.</span> 555 lances were seen in the air (“quasi species lancearum
+			in aëre visæ sunt a septentrionali usque ad occidentem”).</p>
+
+			<p>In the article in the ‘Edinb. Encyc.’ vol. iii. (1830), the Aurora (known to the
+			vulgar as “streamers” or “merry dancers”) is distinguished in two kinds—the
+			“tranquil” and the “varying.” Musschenbroek enumerates as forms:—<i>trabs</i>,
+			“the beam,” an oblong tract parallel to the horizon; <i>sagitta</i>, “the
+			arrow;” <i>faces</i>, “the torch;” <i>capra saltans</i>, “the dancing goat;” <i>bothynoë</i>,
+			“the cave,” a luminous cloud having the appearance of a recess or hollow in
+			the heavens, surrounded by a corona; <i>pithiæ</i>, “the tun,” an Aurora resembling
+			a large luminous <i>cask</i>. The two sorts of Auroræ distinguished as
+			the “bothynoë” and “pithiæ” are evidently taken from the passage in Seneca’s
+			‘Quæstiones’ before quoted. In ‘Liberti Fromondi Meteorologicorum’
+			(London, 1656), Lib. II. cap. v. “De Meteoris supremæ regionis aëris,”
+			art. 1. De Capra, Trabe, Pyramide, &amp;c., these and other fantastic forms
+			attributable to Auroræ are more fully described.</p>
+
+			<p>In the article “Aurora Polaris,” Encyc. Brit. edit. ix., we find noted that
+			from a curious passage in Sirr’s ‘Ceylon and the Cingalese,’ vol. ii. p. 117, it
+			would seem that the Aurora, or something like it, is visible occasionally in
+			Ceylon, where the natives call it “Buddha Lights,” and that in many parts
+			of Ireland a scarlet Aurora is supposed to be a shower of blood. The earliest
+			mentioned Aurora (in Ireland) was in 688, in the ‘Annals of Cloon-mac-noise,’
+			after a battle between Leinster and Munster, in which Foylcher O’Moyloyer
+			was slain.</p>
+
+			<p>In the article in the Edinb. Encyc. before referred to it is stated that it was
+			not much more than a century ago that the phenomenon had been noticed to
+			occur with frequency in our latitudes.</p>
+
+			<p>Dr. Halley had begun to despair of seeing one till the fine display of
+			1716.</p>
+
+			<p><span class="sidenote">Early notices of Auroræ not frequent in our latitudes.</span> The first account on record in an English work is said to be in a book
+			entitled ‘A Description of Meteors by W. F. D. D.’ (reprinted, London, 1654),
+			which speaks of “burning spears” being seen January 30, 1560. The next
+			is recorded by Stow as occurring on October 7, 1564; and, according to Stow
+			and Camden, an Aurora was seen on two nights, 14th and 15th November,
+			1574.</p>
+
+			<p>Twice, again, an Aurora was seen in Brabant, 13th February and 28th
+			September, 1575. Cornelius Gemma compared these to spears, fortified
+			cities, and armies fighting in the air. Auroræ were seen in 1580 and 1581
+			in Wirtemberg, Germany.</p>
+
+			<p>Then we have no record till 1621, when an Aurora, described by Gassendi
+			in his ‘Physics,’ was seen all over France, September 2nd of that year.</p>
+
+			<p>In November 1623 another, described by Kepler, was seen all over
+			Germany.</p>
+
+			<p>From 1666 to 1716 no appearance is recorded in the ‘Transactions of the
+			French Academy of Sciences;’ but in 1707 one was seen in Ireland and at
+			Copenhagen; while in 1707 and 1708 the Aurora was seen five times.</p>
+
+			<p>The Aurora of 1716, occurring after an interval of eighty years, which
+			Dr. Halley describes, was very brilliant and extended over much country,
+			being seen from the west of Ireland to the confines of Russia and the east of
+			Poland, extending nearly 30° of longitude, and from about the 50th degree of
+			latitude, over almost all the north of Europe, and in all places exhibiting at
+			the same time appearances similar to those observed in London. An Aurora
+			observed in Bologna in 1723 was stated to be the first that had ever been
+			seen there; and one recorded in the ‘Berlin Miscellany’ for 1797 is called a
+			very unusual phenomenon. Nor did Auroræ appear more frequent in the
+			Polar Regions at that time, for Cælius states that the oldest inhabitants of
+			Upsala considered the phenomenon as quite rare before 1716. Anderson, of
+			Hamburg, writing about the same time, says that in Iceland the inhabitants
+			themselves were astonished at the frequent Auroræ then beginning to take
+			place; while Torfæus, the Icelander, who wrote in 1706, was old enough
+			to remember the time when the Aurora was an object of terror in his native
+			country.</p>
+
+			<p>According to M. Mairan, 1441 Auroræ were observed between <span class="smcapuc">A.D.</span> 583
+			and 1751, of which 972 were observed in the winter half-years and 469
+			during the summer half-years. In our next Chapter we propose to give some
+			general descriptions of Auroræ from comparatively early sources.</p>
 
 	    </section></div></div>
 		</div>
+	</div>
 
 	</div>
 

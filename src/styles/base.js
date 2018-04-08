@@ -129,4 +129,20 @@ export default `
   justify-content: center;
   align-items: center;
 }
+
+@media print {
+  body {
+    width: var(--width);
+    height: var(--height);
+    margin: 0;
+    padding: 0;
+  }
+  .pages {
+    width: var(--width);
+    flex-direction: column;
+  }
+  .page {
+    break-before: always;
+  }
+}
 `;

@@ -9,8 +9,9 @@
 
     <link rel="coverpage" href="images/cover.jpg" />
 
+    <script src="../../dist/paged.polyfill.js"></script>
 
-    <!-- <link href="book.css" rel="stylesheet" type='text/css'> -->
+    <link href="book.css" rel="stylesheet" type='text/css'>
 
 
     <!-- Paged js-->
@@ -35,58 +36,9 @@
     <link rel="stylesheet" href="fonts/hk-grotesk/stylesheet.css" />
 
     <link rel="stylesheet" type="text/css" href="../assets/styles/index.css">
-    <link rel="stylesheet" type="text/css" href="../assets/styles/examples.css">
-    <script>this.ready=new Promise(function($){document.addEventListener('DOMContentLoaded',$,{once:true})})</script>
-    <script src="../../dist/paged.js"></script>
 
   </head>
 <body>
-  <script>
-    ready.then(async function () {
-      let preview = true;
-      let url = new URL(window.location);
-      let params = new URLSearchParams(url.search);
-      for(var pair of params.entries()) {
-        if(pair[0] === "preview") {
-          preview = (pair[1] === "true");
-        }
-      }
-      let flowText = document.querySelector("#flow");
-
-      // styles
-      let styles = new Paged.Styler();
-      let styleText = await styles.add("book.css");
-      // console.log(moby);
-
-      let t0 = performance.now();
-
-      let chunker = new Paged.Chunker(flowText.content, undefined, styles, preview).then((flow) => {
-        let t1 = performance.now();
-
-        console.log("Rendering " + flow.total + " pages took " + (t1 - t0) + " milliseconds.");
-
-
-      });
-
-
-      let resizer = () => {
-        let pages = document.querySelector(".pages");
-        let scale = ((window.innerWidth * .9 ) / pages.offsetWidth);
-
-        if (scale < 1) {
-          pages.style.transform = `scale(${scale}) translate(${(window.innerWidth / 2) - ((pages.offsetWidth * scale / 2) ) }px, 0)`;
-        } else {
-          pages.style.transform = "none";
-        }
-      };
-      resizer();
-
-      window.addEventListener("resize", resizer, false);
-    });
-  </script>
-  <template id="flow">
-
-
 
   <section id="cover">
     <h1>Auroræ : their characters and spectra</h1>
@@ -14488,7 +14440,6 @@ is not entirely a phenomenon of perspective, but that the rays have a true curva
 
   </section>
 
-</template>
 
 
 

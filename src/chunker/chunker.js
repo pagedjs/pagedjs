@@ -61,47 +61,37 @@ class Chunker {
 		this.sectionsTotal = 0;
 
 		this.content = content;
-		this.breaks = this.styles && this.styles.breaks;
 
 		if (content) {
-			this.flowed = this.flow(content, this.breaks);
-		} else {
-			this.flowed = new new Promise(function(resolve, reject) {
-				// TODO: handle deffered
-			});
+			return this.flow(content, styler);
 		}
-
-		return this;
 	}
 
-	then() {
-	  return this.flowed.then;
-	}
-
-	flow(content, breaks) {
+	async flow(content, styler) {
 		let parsed = new ContentParser(content);
 
+		this.styles = styler;
+		this.breaks = this.styles && this.styles.breaks;
 		this.styles && this.styles.contents(parsed);
 
 		let sections;
-		if (breaks) {
-			sections = this.processBreaks(parsed, breaks);
+		if (this.breaks) {
+			sections = this.processBreaks(parsed, this.breaks);
 		} else {
 			sections = [...parsed.children];
 		}
 
 		if (sections.length > 0) {
-			return this.sections(sections).then(() => {
-				return this;
-			});
+			await this.sections(sections);
 		} else {
-			return this.section(parsed)
+			await this.section(parsed)
 				.then((section) => {
 					this.total += section.total;
 					this.sectionsTotal += 1;
-					return this;
 				});
 		}
+
+		return this;
 	}
 
 	processBreaks(parsed, breaks) {
@@ -120,8 +110,12 @@ class Chunker {
 		}
 
 		// Add any other direct children
+		let child;
 		for (var i = 0; i < parsed.children.length; i++) {
-			selectors.push("[ref='"+parsed.children[i].getAttribute("ref")+"']");
+			child = parsed.children[i];
+			if ((child.noteType === 1 || child.nodeType === "3") && child.nodeName !== "SCRIPT") {
+				selectors.push("[ref='"+child.getAttribute("ref")+"']");
+			}
 		}
 
 		let s = selectors.join(",");
@@ -174,6 +168,7 @@ class Chunker {
 		// let sectionContent = sections.shift();
 		// let frag = document.createDocumentFragment();
 		// frag.appendChild(section);
+		let renderedSections = [];
 
 		for (let sectionContent of sections) {
 
@@ -182,15 +177,18 @@ class Chunker {
 				this.total = section.total;
 				this.sectionsTotal += 1;
 			});
+			renderedSections.push(rendered);
 
 			if (MAX_SECTIONS && this.sectionsTotal >= MAX_SECTIONS) {
 				break;
 			}
 
 		}
+
+		return renderedSections;
 	}
 
-	section(sectionContent) {
+	async section(sectionContent) {
 		let section = new Section(this.pagesArea, this.pageTemplate, this.total, this.preview);
 
 		// section.create(this.sectionsTotal, this.total);

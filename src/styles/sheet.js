@@ -328,14 +328,14 @@ class Sheet {
 			let right = this.createPage(pages[":right"], ast.children);
 			ast.children.insert(right);
 		}
-		// Add :first & :empty
+		// Add :first & :blank
 		if (":first" in pages) {
 			let first = this.createPage(pages[":first"], ast.children);
 			ast.children.insert(first);
 		}
-		if (":empty" in pages) {
-			let empty = this.createPage(pages[":empty"], ast.children);
-			ast.children.insert(empty);
+		if (":blank" in pages) {
+			let blank = this.createPage(pages[":blank"], ast.children);
+			ast.children.insert(blank);
 		}
 		// Add named pages
 		for (let pg in pages) {

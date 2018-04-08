@@ -38,5 +38,15 @@ export default [
 			format: 'umd'
 		},
 		plugins: plugins
+	},
+
+	{
+		input: "./src/polyfill/polyfill.js",
+		output: {
+			name: 'PagedPolyfill',
+			file: "./dist/paged.polyfill.js",
+			format: 'umd'
+		},
+		plugins: plugins
 	}
 ];

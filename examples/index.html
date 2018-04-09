@@ -34,6 +34,11 @@
         let t1 = performance.now();
 
         console.log("Rendering " + flow.total + " pages took " + (t1 - t0) + " milliseconds.");
+
+        let editable = document.querySelectorAll(".page .area > div");
+        for (var i = 0; i < editable.length; i++) {
+          editable[i].setAttribute("contenteditable", true);
+        }
       });
 
       let resizer = () => {

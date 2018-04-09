@@ -4,9 +4,14 @@ import Styler from '../styles/styler';
 // let ready = new Promise(function($){document.addEventListener('DOMContentLoaded',$,{once:true})});
 
 let ready = new Promise(function(resolve, reject){
+	if (document.readyState === "interactive" || document.readyState === "complete") {
+		resolve(document.readyState);
+		return;
+	}
+
 	document.onreadystatechange = function ($) {
 		if (document.readyState === "interactive") {
-			resolve($);
+			resolve(document.readyState);
 		}
 	}
 });
@@ -59,6 +64,12 @@ ready.then(async function () {
 	let flow = await chunker.flow(template.content, styles);
 
 	let endTime = performance.now();
-	console.log("Rendering " + flow.total + " pages took " + (endTime - startTime) + " milliseconds.");
+	let msg = "Rendering " + flow.total + " pages took " + (endTime - startTime) + " milliseconds.";
+
+	console.log(msg);
+
+	if (typeof window.onPagesRendered !== "undefined") {
+		window.onPagesRendered(msg, styles.width.value + styles.width.unit, styles.height.value + styles.height.unit, styles.orientation);
+	}
 
 });

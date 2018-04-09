@@ -52,6 +52,18 @@ class Styler {
 
 					this.sheets.push(sheet);
 
+					if (typeof sheet.width !== "undefined") {
+						this.width = sheet.width;
+					}
+
+					if (typeof sheet.height !== "undefined") {
+						this.height = sheet.height;
+					}
+
+					if (typeof sheet.orientation !== "undefined") {
+						this.orientation = sheet.orientation;
+					}
+
 					this.mergeBreaks(pageBreaks, sheet.pageBreaks);
 					stringSets = Object.assign(stringSets, sheet.stringSets);
 					textTargets = Object.assign(textTargets, sheet.textTargets);

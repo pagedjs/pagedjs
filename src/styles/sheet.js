@@ -29,8 +29,12 @@ class Sheet {
 		this.pages = this.replacePages(this.ast);
 
 		if ("*" in this.pages) {
-			this.addRootVars(this.ast, this.pages["*"].width, this.pages["*"].height);
-			this.addRootPage(this.ast, this.pages["*"].width, this.pages["*"].height);
+			this.width = this.pages["*"].width;
+			this.height = this.pages["*"].height;
+			this.orientation = this.pages["*"].orientation;
+
+			this.addRootVars(this.ast, this.width, this.height);
+			this.addRootPage(this.ast, this.width, this.height);
 		}
 
 		this.stringSets = this.getStringSets(this.ast);

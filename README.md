@@ -1,6 +1,22 @@
 Paged.js - Paged Media Tools
 ===========
 
+## NPM Module
+```sh
+$ npm install pagedjs
+```
+
+```js
+import { Chunker, Styler} from 'pagedjs';
+
+let styles = new Styler();
+let styleText = await styles.add("path/to/css/file.css");
+
+let chunker = new Chunker(DOMContent, document.body, styles).then((flow) => {
+	console.log("Rendered", flow.total, "pages.");
+})
+```
+
 ## Polyfill
 
 Add the the `paged.polyfill.js` script to replace all `@page` css and render the html page with the Paged Media styles applied:

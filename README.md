@@ -1,9 +1,31 @@
-Paged.js - Paged Media Polyfill
+Paged.js - Paged Media Tools
 ===========
 
-Chunks up a document into paged media flows and applies print styles.
+## Polyfill
 
-Process the first 50 pages of Moby Dick: [https://s3.amazonaws.com/pagedmedia/chunker/index.html](https://s3.amazonaws.com/pagedmedia/chunker/index.html).
+Add the the `paged.polyfill.js` script to display an html `@page` with Paged Media styles applied:
+
+```html
+<script src="https://s3.amazonaws.com/pagedmedia/pagedjs/dist/paged.polyfill.js"></script>
+```
+
+Test with Aurorae: [https://s3.amazonaws.com/pagedmedia/pagedjs/examples/aurorae/index.html](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/aurorae/index.html).
+
+## Chunker
+Chunks up a document into paged media flows and applies print classes.
+
+Process the first 50 pages of Moby Dick: [https://s3.amazonaws.com/pagedmedia/pagedjs/examples/index.html](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/index.html).
+
+Upload and chunk an Epub (using Epub.js): [https://s3.amazonaws.com/pagedmedia/pagedjs/examples/epub.html](https://s3.amazonaws.com/pagedmedia/examples/epub.html).
+
+## Styler
+Converts `@page` css to classes, and applies counters and content.
+
+Test styles for Aurorae: [https://s3.amazonaws.com/pagedmedia/pagedjs/examples/styler.html](https://s3.amazonaws.com/pagedmedia/examples/styler.html).
+
+### CLI
+
+Command line interface to render out PDFs of HTML files using Puppeteer: [https://gitlab.pagedmedia.org/polyfills/pagedjs-cli](https://gitlab.pagedmedia.org/polyfills/pagedjs-cli).
 
 ## Setup
 Install dependencies
@@ -12,12 +34,13 @@ $ npm install
 ```
 
 ## Development
-Run the local webpack-dev-server with livereload and autocompile on [http://localhost:8080/](http://localhost:8080/)
+Run the local dev-server with livereload and autocompile on [http://localhost:8080/](http://localhost:8080/)
 ```sh
 $ npm start
 ```
+
 ## Deployment
-Build the current application
+Build the `dist` output
 ```sh
-$ npm run build
+$ npm run prepare
 ```

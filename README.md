@@ -3,7 +3,7 @@ Paged.js - Paged Media Tools
 
 ## Polyfill
 
-Add the the `paged.polyfill.js` script to display an html `@page` with Paged Media styles applied:
+Add the the `paged.polyfill.js` script to replace all `@page` css and render the html page with the Paged Media styles applied:
 
 ```html
 <script src="https://s3.amazonaws.com/pagedmedia/pagedjs/dist/paged.polyfill.js"></script>

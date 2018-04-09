@@ -9,8 +9,12 @@
     <script src="https://unpkg.com/epubjs@0.4.2/dist/epub.min.js"></script>
     <script src="../dist/paged.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="assets/styles/index.css">
+    <!-- <link rel="stylesheet" type="text/css" href="assets/styles/index.css"> -->
     <!-- <link rel="stylesheet" type="text/css" href="assets/styles/moby-dick.css"> -->
+    <link rel="stylesheet" type="text/css" href="assets/styles/examples.css">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 </head>
 <body>
   <script>
@@ -23,11 +27,72 @@
           preview = (pair[1] === "true");
         }
       }
+      let scale;
+      // Sidebar
+      var nav = document.getElementById("navigation");
+	    var opener = document.getElementById("opener");
+      opener.style.visibility = "hidden";
+	    opener.addEventListener("click", function(e){
+	      nav.classList.add("open");
+	    }, false);
+
+	    var closer = document.getElementById("closer");
+	    closer.addEventListener("click", function(e){
+	      nav.classList.remove("open");
+	    }, false);
+
+      // Dropper
+      let form = document.getElementById("form");
+
+      form.addEventListener("dragenter", dragenter, false);
+      form.addEventListener("dragover", dragover, false);
+      form.addEventListener("dragleave", dragleave, false);
+      form.addEventListener("drop", drop, false);
+
+      function dragenter(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        form.classList.add("is-dragover");
+      }
+
+      function dragover(e) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+
+      function dragleave(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        form.classList.remove("is-dragover");
+      }
+
+      function drop(e) {
+        e.stopPropagation();
+        e.preventDefault();
+
+        var dt = e.dataTransfer;
+        var files = dt.files;
+        upload(files[0]);
+
+        form.style.display = "none";
+      }
 
       let inputElement = document.getElementById("input");
 
-      inputElement.addEventListener('change', function (e) {
+      let choose = document.getElementById("choose");
+      choose.addEventListener("click", () => {
+        inputElement.click();
+      }, false);
+
+
+      inputElement.addEventListener('change', (e) => {
         var file = e.target.files[0];
+        upload(file);
+        form.style.display = "none";
+      });
+
+      function upload(file) {
+        // var file = e.target.files[0];
         if (window.FileReader) {
           var reader = new FileReader();
           reader.onload = openBook;
@@ -38,7 +103,7 @@
             pages[i].remove();
           }
         }
-      });
+      }
 
       async function sections(spine) {
         let text = "";
@@ -56,7 +121,8 @@
               styles = links.exec(t);
               return matches && matches.length && matches[1];
             });
-          text += "<paged-body>";
+          let id = encodeURIComponent(section.href);
+          text += "<paged-body id='"+id+"'>";
 
           // if (styles) {
           //   for (let i = 0; i < styles.length; i++) {
@@ -74,7 +140,7 @@
         let stylesArray = resources.filter((r) => {
           return r.type === "text/css";
         });
-        let toAdd = ["assets/styles/moby-dick.css"];
+        let toAdd = ["assets/styles/epub.css"];
         for (let style of stylesArray) {
           // let link = document.createElement("link");
           // link.rel = "stylesheet";
@@ -83,17 +149,81 @@
           // head.appendChild(link);
           toAdd.push(style.href);
         }
-        return styles.add.apply(styles, toAdd);
+        return styles.add(...toAdd) //.apply(styles, toAdd);
       }
 
       async function openBook(e){
         var bookData = e.target.result;
-
+        let styles;
         let epub = ePub(bookData, {replacements: true} ).then((book) => {
           this.book = book;
+
+            let toc = book.navigation.toc;
+
+            var $nav = document.getElementById("toc"),
+                docfrag = document.createDocumentFragment();
+
+            var processTocItem = function(chapter, parent) {
+              var item = document.createElement("li");
+              var link = document.createElement("a");
+              link.id = "chap-" + chapter.id;
+              link.textContent = chapter.title;
+              link.href = "#" + encodeURIComponent(chapter.href);
+              item.appendChild(link);
+              parent.appendChild(item);
+
+              link.onclick = function(){
+                nav.classList.remove("open");
+              };
+
+              if (chapter.subitems && chapter.subitems.length) {
+                var ul = document.createElement("ul");
+                item.appendChild(ul);
+                chapter.subitems.forEach(function(subchapter) {
+                  processTocItem(subchapter, ul);
+                });
+              }
+
+              // link.onclick = function(){
+              //   var url = link.getAttribute("href");
+              //   console.log(url)
+              //   rendition.display(url);
+              //   return false;
+              // };
+
+            }
+
+            toc.forEach(function(chapter) {
+              processTocItem(chapter, docfrag);
+            });
+
+            $nav.appendChild(docfrag);
+
+            opener.style.visibility = "visible";
+
+
+
+          let meta = book.metadata;
+
+            var $title = document.getElementById("title");
+            var $author = document.getElementById("author");
+            var $cover = document.getElementById("cover");
+            var $nav = document.getElementById('navigation');
+
+            $title.textContent = meta.title;
+            $author.textContent = meta.creator;
+
+            if (book.cover) {
+              $cover.src = book.cover;
+            } else {
+              $cover.style.display = "none";
+            }
+
+
+
           return book;
         }).then((book) => {
-          let styles = new Paged.Styler();
+          styles = new Paged.Styler();
           return addStyles(styles, this.book.resources);
         }).then(() => {
           return sections(this.book.spine);
@@ -102,8 +232,7 @@
           let viewer = document.querySelector("#viewer");
 
           // let moby = await styles.add("assets/styles/moby-dick.css");
-
-          let flow = new Paged.Chunker(text, viewer, preview).then((flow) => {
+          let flow = new Paged.Chunker(text, viewer, styles, preview).then((flow) => {
             let t1 = performance.now();
 
             console.log("Rendering " + flow.total + " pages took " + (t1 - t0) + " milliseconds.");
@@ -111,25 +240,380 @@
 
           let resizer = () => {
             let pages = document.querySelector(".pages");
-            let scale = ((window.innerWidth * .9 ) / pages.offsetWidth);
+            scale = ((window.innerWidth ) / pages.offsetWidth) * .75;
 
-            pages.style.transform = `scale(${scale}) translate(${(window.innerWidth / 2) - ((pages.offsetWidth * scale / 2) ) }px, 0)`;
+            if (scale < 1) {
+              pages.style.transform = `scale(${scale})`;
+              pages.style.marginLeft = `${(window.innerWidth / 2) - ((pages.offsetWidth/ 2) )  * scale }px`;
+            } else {
+              pages.style.transform = "none";
+              pages.style.marginLeft = "0";
+
+            }
           };
           resizer();
 
           window.addEventListener("resize", resizer, false);
+
+
+          setTimeout(() => {
+            let page = document.querySelector(".page");
+            let height = (page.offsetHeight + 51) * scale;
+            var next = document.getElementById("next");
+
+            next.style.visibility = "visible";
+            next.addEventListener("click", function(e){
+              window.scrollBy(0, height);
+              e.preventDefault();
+            }, false);
+
+            var prev = document.getElementById("prev");
+            prev.style.visibility = "visible";
+
+            prev.addEventListener("click", function(e){
+              window.scrollBy(0, -height);
+              e.preventDefault();
+            }, false);
+
+            var keyListener = function(e){
+
+              // Left Key
+              if ((e.keyCode || e.which) == 37) {
+                window.scrollBy(0, -height);
+              }
+
+              // Right Key
+              if ((e.keyCode || e.which) == 39) {
+                window.scrollBy(0, height);
+              }
+
+            };
+
+            document.addEventListener("keyup", keyListener, false);
+          }, 200);
+
 
           epub = undefined;
         });
       }
     });
   </script>
+  <style>
+
+  :root {
+      /* --width: 8.5in; */
+      /* --height: 11in; */
+      --margin: 100px;
+  }
+
+  /* section {
+    break-before: column;
+  } */
+
+    @media screen {
+
+      body {
+        background-color: whitesmoke;
+      }
+
+      #main {
+        display: block;
+      }
+
+      #viewer {
+        /* width: calc(var(--width) * 2);
+        height: var(--height);
+        overflow: scroll;
+        margin-top: 80px; */
+      }
+      /* .scaled {
+        transform: scale(.6);
+        transform-origin: 0 0;
+      } */
+
+      .page {
+        background-color: #fdfdfd;
+        margin-bottom: calc(var(--margin) / 2);
+        flex: none;
+      }
+
+      .pages {
+        width: calc(var(--width) * 2);
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        transform-origin: 0 0;
+        margin: 0 auto;
+      }
+
+      .pages > .section {
+        width: calc(var(--width) * 2);
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+      }
+
+      #controls {
+        margin: 20px 0;
+        text-align: center;
+      }
+    }
+
+    .box {
+      font-size: 1.25rem; /* 20 */
+      background-color: #ddd;
+      position: relative;
+      padding: 100px 20px;
+
+      outline: 2px dashed #ccc;
+      outline-offset: -10px;
+
+      -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+      transition: outline-offset .15s ease-in-out, background-color .15s linear;
+
+      width: 400px;
+      margin: 80px auto;
+    }
+
+    .box.is-dragover {
+      outline-offset: -20px;
+      outline-color: #000;
+      background-color: #ccc;
+    }
+
+    .box .box__dragndrop {
+      display: inline;
+    }
+
+    .box .box__icon {
+      width: 100%;
+      height: 80px;
+      fill: #92b0b3;
+      display: block;
+      margin-bottom: 40px;
+      font-size: 100px;
+    }
+
+    .box.is-uploading .box__input,
+    .box.is-success .box__input,
+    .box.is-error .box__input
+    {
+      visibility: hidden;
+    }
+
+    .box__uploading,
+    .box__success,
+    .box__error
+    {
+      display: none;
+    }
+
+    .box.is-uploading .box__uploading,
+    .box.is-success .box__success,
+    .box.is-error .box__error
+    {
+      display: block;
+      position: absolute;
+      top: 50%;
+      right: 0;
+      left: 0;
+
+      -webkit-transform: translateY( -50% );
+      transform: translateY( -50% );
+    }
+
+    .box__uploading
+    {
+      font-style: italic;
+    }
+    .box__success
+    {
+      -webkit-animation: appear-from-inside .25s ease-in-out;
+      animation: appear-from-inside .25s ease-in-out;
+    }
+
+    @-webkit-keyframes appear-from-inside
+    {
+      from	{ -webkit-transform: translateY( -50% ) scale( 0 ); }
+      75%		{ -webkit-transform: translateY( -50% ) scale( 1.1 ); }
+      to		{ -webkit-transform: translateY( -50% ) scale( 1 ); }
+    }
+    @keyframes appear-from-inside
+    {
+      from	{ transform: translateY( -50% ) scale( 0 ); }
+      75%		{ transform: translateY( -50% ) scale( 1.1 ); }
+      to		{ transform: translateY( -50% ) scale( 1 ); }
+    }
+
+    .box__file + label
+		{
+			max-width: 80%;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			cursor: pointer;
+			display: inline-block;
+			overflow: hidden;
+		}
+
+    #input {
+      display: none;
+    }
+
+    .arrow {
+      position: fixed;
+      top: 50%;
+      margin-top: -32px;
+      font-size: 64px;
+      color: #E2E2E2;
+      font-family: arial, sans-serif;
+      font-weight: bold;
+      cursor: pointer;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+      text-decoration: none;
+    }
+
+    #prev {
+      left: 0;
+    }
+
+    #next {
+      right: 0;
+    }
+
+    .arrow .material-icons {
+      font-size: 64px;
+    }
+
+.navlink {
+  margin: 14px;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  color: #ccc;
+}
+
+.arrow:hover, .navlink:hover {
+  color: #777;
+}
+
+.arrow:active, .navlink:hover {
+  color: #000;
+}
+
+#toc {
+  display: block;
+  margin: 10px auto;
+}
+
+#navigation h1 {
+  width: 200px;
+  font-size: 16px;
+  font-weight: normal;
+  color: #232323;
+  margin-bottom: 10px;
+  margin-left: 24px;
+}
+
+#navigation h2 {
+  font-size: 14px;
+  font-weight: normal;
+  color: #B0B0B0;
+  margin-bottom: 20px;
+  text-align: left;
+  margin-left: 24px;
+}
+
+#navigation ul {
+  padding-left: 36px;
+  margin-left: 0;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  width: 340px;
+}
+
+#navigation ul li {
+  list-style: decimal;
+  margin-bottom: 10px;
+  color: #cccddd;
+  font-size: 12px;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+#navigation ul li a {
+  color: #ccc;
+  text-decoration: none;
+}
+
+#navigation ul li a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+#navigation ul li a.active {
+  color: #fff;
+}
+
+#navigation #cover {
+  display: block;
+  margin: 24px auto;
+}
+
+#opener {
+  position: fixed;
+}
+
+#next, #prev {
+  visibility: hidden;
+}
+  </style>
 <body>
 
-  <div id="controls">
-    <input type="file" id="input">
+  <a id="opener">
+    <i class="material-icons">menu</i>
+  </a>
+	<div id="navigation">
+		<div id="header">
+	    <a id="closer">
+	      <i class="material-icons">close</i>
+	    </a>
+		</div>
+    <h1 id="title">...</h1>
+    <image id="cover" width="150px"/>
+    <h2 id="author">...</h2>
+    <ul id="toc"></ul>
 	</div>
 
+	<div id="main">
+  <div id="controls">
+    <!-- <input type="file" id="input"> -->
+
+    <form id="form" class="box" method="post" action="" enctype="multipart/form-data">
+      <div class="box__input">
+        <i class="material-icons box__icon">file_download</i>
+
+        <input class="box__file" type="file" name="files[]" id="input" />
+        <label for="file"><a id="choose"><strong>Choose an ePub</strong></a><span class="box__dragndrop"> or drag it here</span>.</label>
+
+      </div>
+      <div class="box__uploading">Uploading&hellip;</div>
+      <div class="box__success">Done!</div>
+      <div class="box__error">Error! <span></span>.</div>
+    </form>
+	 </div>
+
   <div id="viewer"></div>
+
+  <a id="prev" href="#prev" class="arrow">
+    <i class="material-icons">chevron_left</i>
+  </a>
+  <a id="next" href="#next" class="arrow">
+    <i class="material-icons">chevron_right</i>
+  </a>
+  </div>
 </body>
 </html>

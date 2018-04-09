@@ -113,7 +113,8 @@ class Chunker {
 		let child;
 		for (var i = 0; i < parsed.children.length; i++) {
 			child = parsed.children[i];
-			if ((child.noteType === 1 || child.nodeType === "3") && child.nodeName !== "SCRIPT") {
+			if ((child.noteType === 1 || child.nodeType === "3" || typeof child.noteType === "undefined")
+			 		&& child.nodeName !== "SCRIPT") {
 				selectors.push("[ref='"+child.getAttribute("ref")+"']");
 			}
 		}

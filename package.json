@@ -1,11 +1,11 @@
 {
   "name": "pagedjs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Chunks up a document into paged media flows and applies print styles",
   "author": "Fred Chasen",
   "license": "MIT",
   "homepage": "https://pagedmedia.org",
-  "main": "lib/index.js",
+  "main": "dist/paged.js",
   "module": "src/index.js",
   "browser": "dist/paged.js",
   "dependencies": {

@@ -65,6 +65,8 @@ class Chunker {
 		if (content) {
 			return this.flow(content, styler);
 		}
+
+		return this;
 	}
 
 	async flow(content, styler) {
@@ -195,6 +197,7 @@ class Chunker {
 		// section.create(this.sectionsTotal, this.total);
 		section.on("page", (page) => {
 			this.styles && this.styles.counters(this.pagesArea);
+			this.emit("page", page);
 		})
 
 		return section.render(sectionContent);

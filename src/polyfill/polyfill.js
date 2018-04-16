@@ -58,6 +58,14 @@ ready.then(async function () {
 	// Chunk contents
 	let chunker = new Chunker(undefined, body, styles, preview);
 
+	let counter = 0;
+	chunker.on("page", () => {
+		counter += 1;
+		if (typeof window.PuppeteerLogger !== "undefined") {
+			window.PuppeteerLogger("page");
+		}
+	})
+
 	let startTime = performance.now();
 
 	// Render flow
@@ -65,8 +73,6 @@ ready.then(async function () {
 
 	let endTime = performance.now();
 	let msg = "Rendering " + flow.total + " pages took " + (endTime - startTime) + " milliseconds.";
-
-	console.log(msg);
 
 	if (typeof window.onPagesRendered !== "undefined") {
 		window.onPagesRendered(msg, styles.width.value + styles.width.unit, styles.height.value + styles.height.unit, styles.orientation);

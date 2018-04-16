@@ -31,7 +31,8 @@
     "test": "node test/test.js",
     "compile": "./node_modules/.bin/babel src/ -d lib/",
     "pretest": "npm run build",
-    "prepare": "npm run build && npm run compile"
+    "prepare": "npm run build && npm run compile",
+    "watch": "./node_modules/.bin/rollup -w -c"
   },
   "repository": {
     "type": "git",

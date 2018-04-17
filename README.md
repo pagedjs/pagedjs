@@ -37,7 +37,7 @@ Upload and chunk an Epub (using Epub.js): [https://s3.amazonaws.com/pagedmedia/p
 ## Styler
 Converts `@page` css to classes, and applies counters and content.
 
-Test styles for Aurorae: [https://s3.amazonaws.com/pagedmedia/pagedjs/examples/styler.html](https://s3.amazonaws.com/pagedmedia/examples/styler.html).
+Test styles for Aurorae: [https://s3.amazonaws.com/pagedmedia/pagedjs/examples/styler.html](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/styler.html).
 
 ### CLI
 

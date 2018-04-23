@@ -1,7 +1,7 @@
 import Chunker from './chunker/chunker';
-import Styler from './styles/styler';
+import Polisher from './polisher/polisher';
 
 export {
   Chunker,
-  Styler
+  Polisher
 };

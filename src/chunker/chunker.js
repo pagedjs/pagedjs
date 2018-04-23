@@ -41,10 +41,10 @@ const TEMPLATE = `<div class="page">
  * @class
  */
 class Chunker {
-	constructor(content, renderTo, styler, preview) {
+	constructor(content, renderTo, polisher, preview) {
 		this.pagesArea = document.createElement("div");
 		this.pagesArea.classList.add("pages");
-		this.styles = styler;
+		this.styles = polisher;
 		if (renderTo) {
 			renderTo.appendChild(this.pagesArea);
 		} else {
@@ -63,16 +63,16 @@ class Chunker {
 		this.content = content;
 
 		if (content) {
-			return this.flow(content, styler);
+			return this.flow(content, polisher);
 		}
 
 		return this;
 	}
 
-	async flow(content, styler) {
+	async flow(content, polisher) {
 		let parsed = new ContentParser(content);
 
-		this.styles = styler;
+		this.styles = polisher;
 		this.breaks = this.styles && this.styles.breaks;
 		this.styles && this.styles.contents(parsed);
 

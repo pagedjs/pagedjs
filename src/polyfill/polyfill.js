@@ -1,5 +1,5 @@
 import Chunker from '../chunker/chunker';
-import Styler from '../styles/styler';
+import Polisher from '../polisher/polisher';
 
 // let ready = new Promise(function($){document.addEventListener('DOMContentLoaded',$,{once:true})});
 
@@ -51,7 +51,7 @@ ready.then(async function () {
 	// TODO: add inline styles
 
 	// Process styles
-	let styles = new Styler();
+	let styles = new Polisher();
 	let styleText = await styles.add(...hrefs);
 
 

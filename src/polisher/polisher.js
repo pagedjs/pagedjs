@@ -2,7 +2,7 @@ import Sheet from './sheet';
 import baseStyles from './base';
 import { UUID } from '../utils/utils';
 
-class Styler {
+class Polisher {
 	constructor() {
 		this.sheets = [];
 		this.inserted = [];
@@ -221,4 +221,4 @@ class Styler {
 	}
 }
 
-export default Styler;
+export default Polisher;

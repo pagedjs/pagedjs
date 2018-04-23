@@ -9,7 +9,7 @@ $ npm install pagedjs
 ```js
 import { Chunker, Styler} from 'pagedjs';
 
-let styles = new Styler();
+let styles = new Polisher();
 let styleText = await styles.add("path/to/css/file.css");
 
 let chunker = new Chunker(DOMContent, document.body, styles).then((flow) => {
@@ -34,7 +34,7 @@ Process the first 50 pages of Moby Dick: [https://s3.amazonaws.com/pagedmedia/pa
 
 Upload and chunk an Epub (using Epub.js): [https://s3.amazonaws.com/pagedmedia/pagedjs/examples/epub.html](https://s3.amazonaws.com/pagedmedia/examples/epub.html).
 
-## Styler
+## Polisher
 Converts `@page` css to classes, and applies counters and content.
 
 Test styles for Aurorae: [https://s3.amazonaws.com/pagedmedia/pagedjs/examples/styler.html](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/styler.html).

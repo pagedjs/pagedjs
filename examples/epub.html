@@ -223,7 +223,7 @@
 
           return book;
         }).then((book) => {
-          styles = new Paged.Styler();
+          styles = new Paged.Polisher();
           return addStyles(styles, this.book.resources);
         }).then(() => {
           return sections(this.book.spine);

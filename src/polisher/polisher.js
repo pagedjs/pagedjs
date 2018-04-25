@@ -150,7 +150,21 @@ class Polisher {
 		});
 	}
 
-	headers(fragment) {
+	removeHeaders(fragment) {
+		for (let name of Object.keys(this.running)) {
+			let set = this.running[name];
+			let selected = Array.from(fragment.querySelectorAll(set.selector));
+
+			if (set.identifier === "running") {
+				for (let header of selected) {
+					header.style.display = "none";
+				}
+			}
+
+		}
+	}
+
+	pageHeaders(fragment) {
 		for (let name of Object.keys(this.running)) {
 			let set = this.running[name];
 			let selected = fragment.querySelector(set.selector);
@@ -161,7 +175,6 @@ class Polisher {
 					// this.styleSheet.insertRule(`:root { --string-${name}: "${cssVar}"; }`, this.styleSheet.cssRules.length);
 					// fragment.style.setProperty(`--string-${name}`, `"${cssVar}"`);
 					set.first = selected;
-					selected.style.display = "none";
 				} else {
 					console.log(set.value + "needs css replacement");
 				}

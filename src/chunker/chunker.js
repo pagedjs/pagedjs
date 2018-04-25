@@ -74,7 +74,7 @@ class Chunker {
 
 		this.styles = polisher;
 		this.breaks = this.styles && this.styles.breaks;
-		this.styles && this.styles.contents(parsed);
+		this.styles && this.styles.targetText(parsed);
 
 		let sections;
 		if (this.breaks) {
@@ -198,6 +198,12 @@ class Chunker {
 		section.on("page", (page) => {
 			this.styles && this.styles.counters(this.pagesArea);
 			this.emit("page", page);
+		});
+
+		section.on("renderedPage", (page) => {
+			this.styles && this.styles.contents(page.element);
+			this.styles && this.styles.headers(page.element);
+			this.emit("renderedPage", page);
 		})
 
 		return section.render(sectionContent);

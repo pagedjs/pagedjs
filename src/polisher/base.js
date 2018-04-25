@@ -118,7 +118,6 @@ export default `
 .page .bottom > div {
   height: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
 }
 
@@ -126,8 +125,14 @@ export default `
 .page .right > div {
   width: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
+}
+
+.pages .left .content::after,
+.pages .top .content::after,
+.pages .right .content::after,
+.pages .bottom .content::after {
+  display: block;
 }
 
 @media print {

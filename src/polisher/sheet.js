@@ -39,6 +39,9 @@ class Sheet {
 
 		this.stringSets = this.getStringSets(this.ast);
 
+		this.running = this.getRunning(this.ast);
+		this.elements = this.getElements(this.ast);
+
 		let targets = this.getTargets(this.ast);
 		this.counterTargets = targets.counterTargets;
 		this.textTargets = targets.textTargets;
@@ -487,7 +490,99 @@ class Sheet {
 
 	addMarginalia(page, list, item) {
 		for (let loc in page.marginalia) {
-			let item = page.marginalia[loc];
+			let item = csstree.clone(page.marginalia[loc]);
+			csstree.walk(item, {
+				visit: "Declaration",
+				enter: (node, item, list) => {
+					if (node.property === "content") {
+						list.remove(item);
+					}
+				}
+			});
+
+			let selectorList = new csstree.List();
+			let selectors = new csstree.List();
+
+			let selector = selectorList.createItem({
+				type: 'Selector',
+				children: selectors
+			});
+
+			selectorList.insert(selector);
+
+			selectors.insert(selectors.createItem({
+				type: 'ClassSelector',
+				name: 'page'
+			}));
+
+			// Named page
+			if (page.name) {
+				name = page.name + "_page";
+				selectors.insert(selectors.createItem({
+					type: 'ClassSelector',
+					name: page.name + "_page"
+				}));
+			}
+
+			// PsuedoSelector
+			if (page.psuedo) {
+				selectors.insert(selectors.createItem({
+					type: 'ClassSelector',
+					name: page.psuedo + "_page"
+				}));
+			}
+
+			selectors.insert(selectors.createItem({
+				type: 'Combinator',
+				name: " "
+			}));
+
+			selectors.insert(selectors.createItem({
+				type: 'ClassSelector',
+				name: loc
+			}));
+
+			selectors.insert(selectors.createItem({
+				type: 'Combinator',
+				name: ">"
+			}));
+
+			selectors.insert(selectors.createItem({
+				type: 'ClassSelector',
+				name: "content"
+			}));
+
+			// selectors.insert(selectors.createItem({
+			// 	type: 'PseudoElementSelector',
+			// 	name: "after",
+			// 	children: null
+			// }));
+
+			let rule = list.createItem({
+				type: 'Rule',
+				prelude: {
+					type: 'SelectorList',
+					children: selectorList
+				},
+				block: item
+			});
+
+			list.append(rule);
+
+		}
+
+		// Just content
+		for (let loc in page.marginalia) {
+			let content = csstree.clone(page.marginalia[loc]);
+			csstree.walk(content, {
+				visit: "Declaration",
+				enter: (node, item, list) => {
+					if (node.property !== "content") {
+						list.remove(item);
+					}
+				}
+			});
+
 			let selectorList = new csstree.List();
 			let selectors = new csstree.List();
 
@@ -552,7 +647,7 @@ class Sheet {
 					type: 'SelectorList',
 					children: selectorList
 				},
-				block: item
+				block: content
 			});
 
 			list.append(rule);
@@ -592,6 +687,103 @@ class Sheet {
 			}
 		});
 		return stringSetSelectors;
+	}
+
+	getRunning(ast) {
+		let runningSelectors = {};
+		csstree.walk(ast, {
+			visit: 'Rule',
+			enter: (node, item, list) => {
+				csstree.walk(node, {
+					visit: 'Declaration',
+					enter: (declaration, dItem, dList) => {
+						if (declaration.property === "position") {
+							let selector = csstree.generate(node.prelude);
+
+							let identifier = declaration.value.children.first().name
+
+							if (identifier === "running") {
+								let value;
+								csstree.walk(declaration, {
+									visit: 'Function',
+									enter: (node, item, list) => {
+										value = node.children.first().name;
+									}
+								});
+
+								runningSelectors[value] = {
+									identifier: identifier,
+									value: value,
+									selector: selector
+								}
+							}
+
+						}
+					}
+				});
+			}
+		});
+		return runningSelectors;
+	}
+
+	getElements(ast) {
+		let elements = {};
+
+		csstree.walk(ast, {
+			visit: 'Rule',
+			enter: (node, item, list) => {
+				csstree.walk(node, {
+					visit: 'Declaration',
+					enter: (declaration, dItem, dList) => {
+						if (declaration.property === "content") {
+
+							// Handle Raw
+							// element(x) is not parsed
+							csstree.walk(declaration, {
+								visit: 'Raw',
+								enter: (funcNode, fItem, fList) => {
+									if (funcNode.value.indexOf("element") > -1) {
+
+										let selector = csstree.generate(node.prelude);
+										let parsed = funcNode.value.match(/([^(]+)\(([^)]+)\)/);
+
+										let func = parsed[1];
+
+										let value = funcNode.value;
+
+										let args = [];
+
+										if (parsed.length >= 3) {
+											args.push(parsed[2]);
+										}
+
+										// we only handle first for now
+										let style = "first";
+
+										selector.split(",").forEach((s) => {
+											// remove before / after
+											s = s.replace(/::after|::before/, "");
+
+											elements[s] = {
+												func: func,
+												args: args,
+												value: value,
+												style: style || "first",
+												selector: s,
+												fullSelector: selector
+											}
+										});
+									}
+
+								}
+							});
+						}
+					}
+				})
+			}
+		});
+
+		return elements;
 	}
 
 	getTargets(ast) {
@@ -720,6 +912,10 @@ class Sheet {
 
 							if (func.name === "target-counter") {
 								// console.log(func);
+							}
+
+							if (func.name === "element") {
+								console.log("element", func);
 							}
 						}
 					});

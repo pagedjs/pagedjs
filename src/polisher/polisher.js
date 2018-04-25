@@ -45,6 +45,8 @@ class Polisher {
 				let stringSets = {};
 				let textTargets = {};
 				let counterTargets = {};
+				let running = {};
+				let elements = {};
 
 				originals.forEach((original, index) => {
 					let href = urls[index];
@@ -68,6 +70,8 @@ class Polisher {
 					stringSets = Object.assign(stringSets, sheet.stringSets);
 					textTargets = Object.assign(textTargets, sheet.textTargets);
 					counterTargets = Object.assign(counterTargets, sheet.counterTargets);
+					running = Object.assign(running, sheet.running);
+					elements = Object.assign(elements, sheet.elements);
 
  					text += sheet.toString();
 				})
@@ -81,6 +85,9 @@ class Polisher {
 
 				this.textTargets = textTargets;
 				this.counterTargets = counterTargets;
+
+				this.running = running;
+				this.elements = elements;
 
 				return text;
 			});
@@ -113,22 +120,7 @@ class Polisher {
 		return style;
 	}
 
-	contents(fragment) {
-		for (let name of Object.keys(this.stringSets)) {
-			let set = this.stringSets[name];
-			let selected = fragment.querySelector(set.selector);
-
-			if (selected) {
-				let cssVar;
-				if (set.value === "content" || set.value === "content(text)") {
-					cssVar = selected.textContent.replace(/\\([\s\S])|(["|'])/g,"\\$1$2");
-					this.styleSheet.insertRule(`:root { --string-${name}: "${cssVar}"; }`, this.styleSheet.cssRules.length);
-				} else {
-					console.log(set.value + "needs css replacement");
-				}
-			}
-		}
-
+	targetText(fragment) {
 		Object.keys(this.textTargets).forEach((name) => {
 			let target = this.textTargets[name];
 			let split = target.selector.split("::");
@@ -156,6 +148,64 @@ class Polisher {
 			});
 
 		});
+	}
+
+	headers(fragment) {
+		for (let name of Object.keys(this.running)) {
+			let set = this.running[name];
+			let selected = fragment.querySelector(set.selector);
+			if (selected) {
+				let cssVar;
+				if (set.identifier === "running") {
+					// cssVar = selected.textContent.replace(/\\([\s\S])|(["|'])/g,"\\$1$2");
+					// this.styleSheet.insertRule(`:root { --string-${name}: "${cssVar}"; }`, this.styleSheet.cssRules.length);
+					// fragment.style.setProperty(`--string-${name}`, `"${cssVar}"`);
+					set.first = selected;
+					selected.style.display = "none";
+				} else {
+					console.log(set.value + "needs css replacement");
+				}
+			}
+		}
+
+		// move elements
+		for (let selector of Object.keys(this.elements)) {
+			if (selector) {
+				let el = this.elements[selector];
+				let selected = fragment.querySelector(selector);
+				if (selected) {
+					let running = this.running[el.args[0]];
+					if (running.first) {
+						let clone = running.first.cloneNode(true);
+						clone.style.display = null;
+						selected.appendChild(clone);
+					}
+				}
+			}
+		}
+	}
+
+	contents(fragment) {
+		for (let name of Object.keys(this.stringSets)) {
+			let set = this.stringSets[name];
+			let selected = fragment.querySelector(set.selector);
+			if (selected) {
+				let cssVar;
+				if (set.value === "content" || set.value === "content(text)") {
+					cssVar = selected.textContent.replace(/\\([\s\S])|(["|'])/g,"\\$1$2");
+					// this.styleSheet.insertRule(`:root { --string-${name}: "${cssVar}"; }`, this.styleSheet.cssRules.length);
+					// fragment.style.setProperty(`--string-${name}`, `"${cssVar}"`);
+					set.first = cssVar;
+				} else {
+					console.log(set.value + "needs css replacement");
+				}
+			} else {
+				// Use the previous values
+				if (set.first) {
+					fragment.style.setProperty(`--string-${name}`, `"${set.first}"`);
+				}
+			}
+		}
 	}
 
 	counters(root) {
@@ -198,10 +248,6 @@ class Polisher {
 				}
 			});
 		});
-	}
-
-	targetText(element) {
-
 	}
 
 	attr(element, attributes) {

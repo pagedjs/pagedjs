@@ -93,6 +93,8 @@ class Section {
       // Layout content in the page, starting from the breakToken
       breakToken = page.layout(content, breakToken);
 
+      this.emit("renderedPage", page);
+
       yield breakToken;
 
       // Stop if we get undefined, showing we have reached the end of the content

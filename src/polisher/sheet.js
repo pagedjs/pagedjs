@@ -62,6 +62,7 @@ class Sheet {
 			selector: selector,
 			name: undefined,
 			psuedo: undefined,
+			nth: undefined,
 			marginalia: {},
 			width: undefined,
 			height: undefined,
@@ -88,11 +89,12 @@ class Sheet {
 				if (basename === "page") {
 					let selector = "";
 					let name = "";
-					let named, psuedo;
+					let named, psuedo, nth;
 
 					if (node.prelude) {
 						named = this.getTypeSelector(node);
 						psuedo = this.getPsuedoSelector(node);
+						nth = this.getNthSelector(node);
 						selector = csstree.generate(node.prelude);
 					} else {
 						selector = "*";
@@ -103,6 +105,7 @@ class Sheet {
 
 					page.name = named;
 					page.psuedo = psuedo;
+					page.nth = nth;
 
 					if (name in pages) {
 						// TODO: already present, need to merge
@@ -160,15 +163,32 @@ class Sheet {
 	getPsuedoSelector(ast) {
 		// Find if it has :left & :right & :black & :first
 		let name;
-
 		csstree.walk(ast, {
 			visit: "PseudoClassSelector",
 			enter: (node, item, list) => {
-				name = node.name;
+				if (node.name !== "nth") {
+					name = node.name;
+				}
 			}
 		});
 
 		return name;
+	}
+
+	getNthSelector(ast) {
+		// Find if it has :nth
+		let nth;
+		csstree.walk(ast, {
+			visit: "PseudoClassSelector",
+			enter: (node, item, list) => {
+				if (node.name === "nth" && node.children) {
+					let raw = node.children.first();
+					nth = raw.value;
+				}
+			}
+		});
+
+		return nth;
 	}
 
 	replaceMarginalia(ast) {
@@ -344,6 +364,14 @@ class Sheet {
 			let blank = this.createPage(pages[":blank"], ast.children);
 			ast.children.insert(blank);
 		}
+		// Add nth pages
+		for (let pg in pages) {
+			if (pages[pg].nth) {
+				let nth = this.createPage(pages[pg], ast.children);
+				ast.children.insert(nth);
+			}
+		}
+
 		// Add named pages
 		for (let pg in pages) {
 			if (pages[pg].name) {
@@ -387,6 +415,43 @@ class Sheet {
 			}));
 		}
 
+		// Nth
+		if (page.nth) {
+			let nthlist = new csstree.List();
+			let nth = page.nth;
+			let n = nth.indexOf("n");
+			let plus = nth.indexOf("+");
+			let splitN = page.nth.split("n");
+			let splitP = page.nth.split("+");
+			let a = null;
+			let b = null;
+			if (n > -1) {
+				a = splitN[0];
+				if (plus > -1) {
+					b = splitP[1];
+				}
+			} else {
+				b = nth;
+			}
+
+			nthlist.insert(nthlist.createItem({
+				type: 'Nth',
+				loc: null,
+				selector: null,
+				nth: {
+					type: "AnPlusB",
+					loc: null,
+					a: a,
+					b: b
+				}
+			}));
+
+			selectors.insert(selectors.createItem({
+				type: 'PseudoClassSelector',
+				name: 'nth-of-type',
+				children: nthlist
+			}));
+		}
 
 		let rule = ruleList.createItem({
 			type: 'Rule',

@@ -17,9 +17,11 @@ class Section {
     this.pages = [];
     this.startPage = total || 0;
     this.total = total || 0;
+
+    this.rendered = false;
   }
 
-  create(section, startPage) {
+  create(section, startPage, location) {
     let element = document.createElement("div");
 
     let id = `section-${section || 0}`;
@@ -28,8 +30,12 @@ class Section {
     element.classList.add("section");
 
     this.id = id;
-
-    this.pagesArea.appendChild(element);
+    if (location) {
+      let referenceNode = this.pagesArea.children[location];
+      this.pagesArea.insertBefore(element, referenceNode);
+    } else {
+      this.pagesArea.appendChild(element);
+    }
 
     this.element = element;
 
@@ -100,26 +106,28 @@ class Section {
       // Stop if we get undefined, showing we have reached the end of the content
     }
 
+    this.rendered = true;
   }
 
   addPage(blank) {
+    let lastPage = this.pages[this.pages.length - 1];
     // Create a new page from the template
     let page = new Page(this.pagesArea, this.pageTemplate, this.name, blank);
     let total = this.pages.push(page);
 
     // Create the pages
-    page.create(this.total, this.id);
+    page.create(this.total, this.id, undefined, lastPage && lastPage.element);
 
     // Listen for page overflow
     page.onOverflow((overflow) => {
-      if (total < this.pages.length) {
-        requestIdleCallback(() => {
-          this.pages[total].prepend(overflow)
-        })
-      } else {
-        let newPage = this.addPage();
-        newPage.prepend(overflow);
-      }
+      requestIdleCallback(() => {
+        if (total < this.pages.length) {
+          this.pages[total].prepend(overflow);
+        } else {
+          let newPage = this.addPage();
+          newPage.prepend(overflow);
+        }
+      })
     });
 
     page.onUnderflow(() => {

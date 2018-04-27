@@ -21,7 +21,7 @@ class Page {
     // this.element = this.create(this.pageTemplate);
   }
 
-  create(pgnum, section, template) {
+  create(pgnum, section, template, after) {
     //let documentFragment = document.createRange().createContextualFragment( TEMPLATE );
     //let page = documentFragment.children[0];
     let clone = document.importNode(this.pageTemplate.content, true);
@@ -30,10 +30,15 @@ class Page {
 
     this.id = id;
 
-    this.pagesArea.appendChild(clone);
-
-    let page = this.pagesArea.lastChild;
-    // let page = this.pagesArea.children[pgnum];
+    let page;
+    if (after) {
+      this.pagesArea.insertBefore(clone, after.nextSibling);
+      let index = Array.prototype.indexOf.call(this.pagesArea.children, after.nextSibling);
+      page = this.pagesArea.children[index];
+    } else {
+      this.pagesArea.appendChild(clone);
+      page = this.pagesArea.lastChild;
+    }
 
     let area = page.querySelector(".area");
 
@@ -78,8 +83,7 @@ class Page {
     // wrapper.style.outline = "none";
     // wrapper.setAttribute("contenteditable", true);
 
-
-    area.appendChild(wrapper);
+    this.area.appendChild(wrapper);
 
     this.wrapper = wrapper;
 

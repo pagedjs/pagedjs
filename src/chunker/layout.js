@@ -183,6 +183,15 @@ class Layout {
     for (var i = 0; i < ancestors.length; i++) {
       // parent = this.createDOMNode(ancestors[i]);
       parent = ancestors[i].cloneNode(false);
+
+      parent.setAttribute("data-split-from", parent.getAttribute("ref"));
+
+      if (parent.hasAttribute("id")) {
+        let dataID = parent.getAttribute("id");
+        parent.setAttribute("data-id", dataID);
+        parent.removeAttribute("id");
+      }
+
       if (added.length) {
         // let container = this.wrapper.querySelector("[ref='" + ancestors[i].parent.attribs.ref + "']");
         let container = added[added.length-1];

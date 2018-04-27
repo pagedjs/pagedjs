@@ -19,6 +19,9 @@ class Sheet {
 		this.id = UUID();
 		// this.addScope(this.ast, this.uuid);
 
+		// Add date-id
+		this.replaceIds(this.ast);
+
 		// Get page selectors
 		// this.namedPageSelectors = this.getNamedPageSelectors(this.ast);
 
@@ -1266,6 +1269,27 @@ class Sheet {
 		});
 
 		return breaks;
+	}
+
+	replaceIds(ast) {
+		csstree.walk(ast, {
+			visit: 'Rule',
+			enter: (node, item, list) => {
+
+				csstree.walk(node, {
+					visit: 'IdSelector',
+					enter: (idNode, idItem, idList) => {
+						console.log(idNode.name);
+						let name = idNode.name;
+						idNode.flags = null;
+						idNode.matcher = "=";
+						idNode.name = {type: "Identifier", loc: null, name: "data-id"};
+						idNode.type = "AttributeSelector";
+						idNode.value = {type: "String", loc: null, value: `"${name}"`};
+					}
+				});
+			}
+		});
 	}
 
 	// generate string

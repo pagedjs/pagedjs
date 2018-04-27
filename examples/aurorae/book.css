@@ -1,3 +1,7 @@
+[data-id="fred"] {
+  margin: 0;
+}
+
 html{
   --serif: 'spectral', serif;
   --sans-serif: 'hk-grotesk', sans-serif;
@@ -10,7 +14,7 @@ html{
 }
 
 @page {
-  size: 148mm 210mm portait;
+  size: 148mm 210mm portaitr
 }
 
 @media screen {

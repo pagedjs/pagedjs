@@ -135,6 +135,26 @@ export default `
   display: block;
 }
 
+.pages > .page > .area > div [data-split-from] {
+  text-indent: unset;
+  margin-top: unset;
+  padding-top: unset;
+  initial-letter: unset;
+}
+
+.pages > .page > .area > div [data-split-from] > *::first-letter,
+.pages > .page > .area > div [data-split-from]::first-letter {
+  color: unset;
+  font-size: unset;
+  font-wieght: unset;
+  font-family: unset;
+  color: unset;
+  line-height: unset;
+  float: unset;
+  padding: unset;
+  margin: unset;
+}
+
 @media print {
   body {
     width: var(--width);

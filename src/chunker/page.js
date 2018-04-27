@@ -51,7 +51,7 @@ class Page {
       page.classList.add("first_page");
     }
 
-    if (pgnum % 2 !== 0) {
+    if (pgnum % 2 !== 1) {
       page.classList.add("right_page");
     } else {
       page.classList.add("left_page");

@@ -8,10 +8,6 @@ export default `
   --margin-left: 1in;
 }
 
-.first_page {
- margin-left: 50%;
-}
-
 .page {
   box-sizing: border-box;
   width: var(--width);

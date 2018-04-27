@@ -19,7 +19,7 @@ class Sheet {
 		this.id = UUID();
 		// this.addScope(this.ast, this.uuid);
 
-		// Add date-id
+		// Replace IDs with data-id
 		this.replaceIds(this.ast);
 
 		// Get page selectors
@@ -1279,7 +1279,6 @@ class Sheet {
 				csstree.walk(node, {
 					visit: 'IdSelector',
 					enter: (idNode, idItem, idList) => {
-						console.log(idNode.name);
 						let name = idNode.name;
 						idNode.flags = null;
 						idNode.matcher = "=";

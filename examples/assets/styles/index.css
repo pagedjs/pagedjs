@@ -58,6 +58,10 @@
     margin: 20px 0;
     text-align: center;
   }
+
+  .first_page {
+    margin-left: 50%;
+  }
 }
 
 @media print {

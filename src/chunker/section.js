@@ -58,11 +58,11 @@ class Section {
       after: parsed.dataset.breakAfter
     }
 
-    if (this.breaks.before === "right" && this.startPage % 2 > 0) {
+    if (this.breaks.before === "left" && this.startPage % 2 > 0) {
       this.addPage(true);
     }
 
-    if (this.breaks.before === "left" && this.startPage % 2 === 0) {
+    if (this.breaks.before === "right" && this.startPage % 2 === 0) {
       this.addPage(true);
     }
 

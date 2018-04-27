@@ -317,7 +317,7 @@ class Sheet {
 		});
 
 		if (margins.length === 1) {
-			for (let m in page.margin) {
+			for (let m in margin) {
 				margin[m] = margins[0];
 			}
 		} else if (margins.length === 2) {

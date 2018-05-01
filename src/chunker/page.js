@@ -68,7 +68,7 @@ class Page {
     area.style.columnWidth = Math.round(size.width) + "px";
     area.style.columnGap = "10px";
     area.style.columnFill = "auto";
-    area.style.overflow = "hidden";
+    // area.style.overflow = "hidden";
     // area.style.overflow = "scroll";
     area.style.position = "relative";
 

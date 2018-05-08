@@ -8,6 +8,10 @@ export default `
   --margin-left: 1in;
 }
 
+@page {
+  size: var(--width) var(--height);
+}
+
 .page {
   box-sizing: border-box;
   width: var(--width);

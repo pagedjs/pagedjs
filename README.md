@@ -60,3 +60,6 @@ Build the `dist` output
 ```sh
 $ npm run prepare
 ```
+## Testing
+
+`brew install ghostscript`

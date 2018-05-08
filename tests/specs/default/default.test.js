@@ -38,7 +38,7 @@ describe('break', async () => {
 
 		it('should render text', async () => {
 			let text = await page.evaluate(() => document.body.textContent);
-			expect(text).toContain('Auroræ');
+			expect(text).toContain('Chapter 1. Loomings.');
 		})
 
 		it('should render 1 page', async () => {

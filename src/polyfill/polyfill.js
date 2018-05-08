@@ -48,7 +48,14 @@ ready.then(async function () {
 		return sheet.href;
 	});
 
-	// TODO: add inline styles
+	// Get inline styles
+	let inlineStyles = Array.from(document.querySelectorAll("style"));
+	inlineStyles.forEach((inlineStyle) => {
+		let obj = {};
+		obj[window.location.href] = inlineStyle.textContent;
+		hrefs.push(obj);
+		inlineStyle.remove();
+	});
 
 	// Process styles
 	let styles = new Polisher();

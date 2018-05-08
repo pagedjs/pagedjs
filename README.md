@@ -62,4 +62,26 @@ $ npm run prepare
 ```
 ## Testing
 
-`brew install ghostscript`
+To test the pdf output, you'll need to install ghostscript locally.
+
+```bash
+brew install ghostscript
+```
+
+Then run the jest tests in puppeteer.
+
+```bash
+npm test
+```
+
+To debug the results of a test in a browser you can add `NODE_ENV=debug`
+
+```bash
+NODE_ENV=debug npm test
+```
+
+To update the stored pdf images you can run
+
+```bash
+npm test -- -u
+```

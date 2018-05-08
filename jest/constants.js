@@ -8,11 +8,18 @@ const PORT = 9999;
 const ORIGIN = `http://localhost:${PORT}`;
 const CI = process.env.CI === 'true';
 
+const PDF_SETTINGS = {
+		printBackground: true,
+		displayHeaderFooter: false,
+		margin: { top: 0, right: 0, bottom: 0, left: 0 }
+	};
+
 module.exports = {
 	DIR,
 	WS_ENDPOINT_PATH,
 	DEBUG,
 	PORT,
 	ORIGIN,
-	CI
+	CI,
+	PDF_SETTINGS
 }

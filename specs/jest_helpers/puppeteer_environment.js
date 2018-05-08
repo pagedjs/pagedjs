@@ -58,7 +58,7 @@ class PuppeteerEnvironment extends NodeEnvironment {
 			renderedResolve(msg, width, height, orientation);
 		});
 
-		await page.goto(ORIGIN + '/tests/specs/' + path, { waitUntil: 'networkidle2' });
+		await page.goto(ORIGIN + '/specs/' + path, { waitUntil: 'networkidle2' });
 
 		return page;
 	}

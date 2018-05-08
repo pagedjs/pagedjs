@@ -35,7 +35,8 @@
   "scripts": {
     "build": "./node_modules/.bin/rollup -c",
     "start": "./node_modules/.bin/rollup -w -c rollup.server.config.js",
-    "test": "jest",
+    "test": "jest --config=test/jest.config.js",
+    "specs": "jest --config=specs/jest.config.js",
     "compile": "./node_modules/.bin/babel src/ -d lib/",
     "pretest": "npm run build",
     "prepare": "npm run build && npm run compile",

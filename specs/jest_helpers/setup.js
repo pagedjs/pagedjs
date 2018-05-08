@@ -13,7 +13,7 @@ const { WS_ENDPOINT_PATH, DIR, DEBUG, CI, PORT } = require('./constants');
 module.exports = async function() {
 
 	DEBUG && console.log(chalk.green('Starting Static Server\n'));
-	app.use(express.static(path.join(__dirname, '../')));
+	app.use(express.static(path.join(__dirname, '../../')));
 	const server = app.listen(PORT);
 	global.server = server;
 	global.origin = `http://localhost:${PORT}`;

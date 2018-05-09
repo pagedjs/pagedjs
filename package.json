@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-jest": "^22.4.3",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
     "chalk": "^2.4.1",
@@ -35,7 +36,7 @@
   "scripts": {
     "build": "./node_modules/.bin/rollup -c",
     "start": "./node_modules/.bin/rollup -w -c rollup.server.config.js",
-    "test": "jest --config=test/jest.config.js",
+    "test": "jest --config=tests/jest.config.js",
     "specs": "jest --config=specs/jest.config.js",
     "compile": "./node_modules/.bin/babel src/ -d lib/",
     "pretest": "npm run build",

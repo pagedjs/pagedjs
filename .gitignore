@@ -2,3 +2,4 @@
 node_modules
 dist
 lib
+__diff_output__

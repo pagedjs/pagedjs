@@ -48,7 +48,14 @@ ready.then(async function () {
 		return sheet.href;
 	});
 
-	// TODO: add inline styles
+	// Get inline styles
+	let inlineStyles = Array.from(document.querySelectorAll("style"));
+	inlineStyles.forEach((inlineStyle) => {
+		let obj = {};
+		obj[window.location.href] = inlineStyle.textContent;
+		hrefs.push(obj);
+		inlineStyle.remove();
+	});
 
 	// Process styles
 	let styles = new Polisher();
@@ -75,7 +82,7 @@ ready.then(async function () {
 	let msg = "Rendering " + flow.total + " pages took " + (endTime - startTime) + " milliseconds.";
 
 	if (typeof window.onPagesRendered !== "undefined") {
-		window.onPagesRendered(msg, styles.width.value + styles.width.unit, styles.height.value + styles.height.unit, styles.orientation);
+		window.onPagesRendered(msg, styles.width && styles.width.value + styles.width.unit, styles.height && styles.height.value + styles.height.unit, styles.orientation);
 	}
 
 });

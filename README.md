@@ -60,9 +60,26 @@ Build the `dist` output
 ```sh
 $ npm run prepare
 ```
+
 ## Testing
 
-To test the pdf output, you'll need to install ghostscript locally.
+Testing for Paged.js uses [Jest](https://facebook.github.io/jest/en/) but is split into Tests and Specs.
+
+### Tests
+
+Unit tests for Chunker and Polisher methods are run in node using JSDOM.
+
+```bash
+npm run tests
+```
+
+### Specs
+
+Specs run a html file in Chrome (using puppeteer) to test against CSS specifications.
+
+They can also output a pdf and compare pages (one at a time) in that PDF with samples PDFs (saved as images).
+
+To test the pdf output of specs, you'll need to install ghostscript locally.
 
 ```bash
 brew install ghostscript
@@ -71,17 +88,17 @@ brew install ghostscript
 Then run the jest tests in puppeteer.
 
 ```bash
-npm test
+npm run specs
 ```
 
 To debug the results of a test in a browser you can add `NODE_ENV=debug`
 
 ```bash
-NODE_ENV=debug npm test
+NODE_ENV=debug npm run specs
 ```
 
 To update the stored pdf images you can run
 
 ```bash
-npm test -- -u
+npm run specs -- --updateSnapshot
 ```

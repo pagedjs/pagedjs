@@ -7,30 +7,19 @@
     <script>this.ready=new Promise(function($){document.addEventListener('DOMContentLoaded',$,{once:true})})</script>
     <script src="../dist/paged.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="assets/styles/index.css">
-    <!-- <link rel="stylesheet" type="text/css" href="assets/styles/moby-dick.css"> -->
+    <link rel="stylesheet" type="text/css" href="assets/styles/preview.css">
+    <link rel="stylesheet" type="text/css" href="assets/styles/moby-dick.css">
 </head>
 <body>
   <script>
     ready.then(async function () {
-      let preview = true;
-      let url = new URL(window.location);
-      let params = new URLSearchParams(url.search);
-      for(var pair of params.entries()) {
-        if(pair[0] === "preview") {
-          preview = (pair[1] === "true");
-        }
-      }
-
-      // styles
-      let styles = new Paged.Polisher();
-      let moby = await styles.add("assets/styles/moby-dick.css");
-
       let flowText = document.querySelector("#flow");
 
       let t0 = performance.now();
 
-      let flow = new Paged.Chunker(flowText.content, undefined, undefined, preview).then((flow) => {
+      let paged = new Paged.Previewer()
+
+      paged.preview(flowText.content).then((flow) => {
         let t1 = performance.now();
 
         console.log("Rendering " + flow.total + " pages took " + (t1 - t0) + " milliseconds.");
@@ -43,17 +32,23 @@
 
       let resizer = () => {
         let pages = document.querySelector(".pages");
-        let scale = ((window.innerWidth * .9 ) / pages.offsetWidth);
 
-        if (scale < 1) {
-          pages.style.transform = `scale(${scale}) translate(${(window.innerWidth / 2) - ((pages.offsetWidth * scale / 2) ) }px, 0)`;
-        } else {
-          pages.style.transform = "none";
+        if (pages) {
+          let scale = ((window.innerWidth * .9 ) / pages.offsetWidth);
+          if (scale < 1) {
+            pages.style.transform = `scale(${scale}) translate(${(window.innerWidth / 2) - ((pages.offsetWidth * scale / 2) ) }px, 0)`;
+          } else {
+            pages.style.transform = "none";
+          }
         }
       };
       resizer();
 
       window.addEventListener("resize", resizer, false);
+
+      paged.on("rendering", () => {
+        resizer();
+      });
 
     });
   </script>

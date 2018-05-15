@@ -7,10 +7,9 @@ import EventEmitter from "event-emitter";
  * @class
  */
 class Page {
-  constructor(pagesArea, pageTemplate, name, blank) {
+  constructor(pagesArea, pageTemplate, blank) {
     this.pagesArea = pagesArea;
     this.pageTemplate = pageTemplate;
-    this.name = name;
     this.blank = blank;
 
     // this.mapper = new Mapping(undefined, undefined, undefined, true);
@@ -21,14 +20,10 @@ class Page {
     // this.element = this.create(this.pageTemplate);
   }
 
-  create(pgnum, section, template, after) {
+  create(template, after) {
     //let documentFragment = document.createRange().createContextualFragment( TEMPLATE );
     //let page = documentFragment.children[0];
     let clone = document.importNode(this.pageTemplate.content, true);
-
-    let id = `section-${section || 0}-page-${pgnum}`;
-
-    this.id = id;
 
     let page;
     if (after) {
@@ -42,25 +37,6 @@ class Page {
 
     let area = page.querySelector(".area");
 
-    page.id = id;
-
-    if (this.name) {
-      page.classList.add(this.name + "_page");
-    }
-
-    if (this.blank) {
-      page.classList.add("blank_page");
-    }
-
-    if (pgnum === 0) {
-      page.classList.add("first_page");
-    }
-
-    if (pgnum % 2 !== 1) {
-      page.classList.add("right_page");
-    } else {
-      page.classList.add("left_page");
-    }
 
     let size = area.getBoundingClientRect();
 
@@ -92,6 +68,38 @@ class Page {
     return page;
   }
 
+  index(pgnum) {
+    this._index = pgnum;
+
+    let page = this.element;
+
+    let id = `page-${pgnum}`;
+
+    this.id = id;
+
+    page.id = id;
+
+    if (this.name) {
+      page.classList.add(this.name + "_page");
+    }
+
+    if (this.blank) {
+      page.classList.add("blank_page");
+    }
+
+    if (pgnum === 0) {
+      page.classList.add("first_page");
+    }
+
+    if (pgnum % 2 !== 1) {
+      page.classList.remove("left_page");
+      page.classList.add("right_page");
+    } else {
+      page.classList.remove("right_page");
+      page.classList.add("left_page");
+    }
+  }
+
   /*
   size(width, height) {
     if (width === this.width && height === this.height) {
@@ -121,9 +129,40 @@ class Page {
 
     breakToken = this.l.layout(size, contents, {}, {}, breakToken);
 
+    // Lift data attributes
+    this.getAttributes();
+
     return breakToken;
   }
 
+
+  getAttributes() {
+    let first = this.wrapper.children && this.wrapper.children[0];
+    let name = first.dataset.page;
+
+    // for (let d in first.dataset) {
+    //   this.element.setAttribute("data-"+d, first.dataset[d]);
+    // }
+    if (first.dataset.breakBefore) {
+      this.breakBefore = first.dataset.breakBefore;
+      this.element.setAttribute("data-break-before", first.dataset.breakBefore);
+    }
+
+    if (first.dataset.breakAfter) {
+      this.breakAfter = first.dataset.breakAfter;
+      this.element.setAttribute("data-break-after", first.dataset.breakAfter);
+    }
+
+    if (first.dataset.splitFrom) {
+      this.splitFrom = first.dataset.splitFrom;
+      this.element.setAttribute("data-split-from", first.dataset.splitFrom);
+    }
+
+    if (name) {
+      this.name = name;
+      this.element.classList.add(name + "_page");
+    }
+  }
 
   getByParent(ref, entries) {
     let e;

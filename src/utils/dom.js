@@ -118,6 +118,10 @@ export function rebuildAncestors(node) {
 			parent.removeAttribute("id");
 		}
 
+		if (parent.hasAttribute("data-break-before")) {
+			parent.removeAttribute("data-break-before");
+		}
+
 		if (added.length) {
 			let container = added[added.length-1];
 			container.appendChild(parent);

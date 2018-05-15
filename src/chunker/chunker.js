@@ -1,12 +1,11 @@
 import Section from "./section";
 import Page from "./page";
 import ContentParser from "./parser";
-import { split } from "../utils/dom";
 import EventEmitter from "event-emitter";
+import Hook from "../utils/hook";
 
-// import PagedBody from "../utils/paged-body.js";
-
-const MAX_SECTIONS = false;
+// const MAX_SECTIONS = false;
+const MAX_PAGES = 10000000000;
 
 const TEMPLATE = `<div class="page">
 	<div class="top">
@@ -41,10 +40,29 @@ const TEMPLATE = `<div class="page">
  * @class
  */
 class Chunker {
-	constructor(content, renderTo, polisher, preview) {
+	constructor(content, renderTo) {
+		// this.preview = preview;
+
+		this.hooks = {};
+		this.hooks.afterParsed = new Hook(this);
+		this.hooks.beforePageLayout = new Hook(this);
+		this.hooks.afterPageLayout = new Hook(this);
+		this.hooks.afterRendered = new Hook(this);
+
+		this.pages = [];
+		this.total = 0;
+
+		this.content = content;
+
+		if (content) {
+			this.flow(content, renderTo);
+		}
+	}
+
+	setup(renderTo) {
 		this.pagesArea = document.createElement("div");
 		this.pagesArea.classList.add("pages");
-		this.styles = polisher;
+
 		if (renderTo) {
 			renderTo.appendChild(this.pagesArea);
 		} else {
@@ -53,161 +71,154 @@ class Chunker {
 
 		this.pageTemplate = document.createElement("template");
 		this.pageTemplate.innerHTML = TEMPLATE;
-
-		this.preview = preview;
-
-		this.pages = [];
-		this.total = 0;
-		this.sectionsTotal = 0;
-
-		this.content = content;
-
-		if (content) {
-			return this.flow(content, polisher);
-		}
-
-		return this;
 	}
 
-	async flow(content, polisher) {
+	async flow(content, renderTo) {
 		let parsed = new ContentParser(content);
 
-		this.styles = polisher;
-		this.breaks = this.styles && this.styles.breaks;
-		this.styles && this.styles.targetText(parsed);
-		this.styles && this.styles.removeHeaders(parsed);
+		this.setup(renderTo);
 
-		let sections;
-		if (this.breaks) {
-			sections = this.processBreaks(parsed, this.breaks);
-		} else {
-			sections = [...parsed.children];
-		}
+		this.emit("rendering", content);
 
-		if (sections.length > 0) {
-			await this.sections(sections);
-		} else {
-			await this.section(parsed)
-				.then((section) => {
-					this.total += section.total;
-					this.sectionsTotal += 1;
-				});
+		await this.hooks.afterParsed.trigger(parsed, this);
+
+		await this.render(parsed, renderTo);
+
+		await this.hooks.afterRendered.trigger(this.pages, this);
+
+		this.emit("rendered", this.pages);
+
+		return this;
+	}
+
+	async render(parsed, renderTo) {
+		let renderer = this.layout(parsed);
+
+		let done = false;
+		let result;
+
+		while (!done) {
+			result = await this.renderOnIdle(renderer);
+			done = result.done;
 		}
 
 		return this;
 	}
 
-	processBreaks(parsed, breaks) {
-		let selectors = [];
-		for (let b in breaks) {
-			// Find elements
-			let elements = parsed.querySelectorAll(b);
-			// Add break data
-			for (var i = 0; i < elements.length; i++) {
-				for (let prop of breaks[b]) {
-					elements[i].setAttribute("data-" + prop.property, prop.value);
-				}
-			}
-			// Add to global selector
-			selectors.push(b);
-		}
-
-		// Add any other direct children
-		let child;
-		for (var i = 0; i < parsed.children.length; i++) {
-			child = parsed.children[i];
-			if ((child.noteType === 1 || child.nodeType === "3" || typeof child.noteType === "undefined")
-			 		&& child.nodeName !== "SCRIPT") {
-				selectors.push("[ref='"+child.getAttribute("ref")+"']");
-			}
-		}
-
-		let s = selectors.join(",");
-		let parts = Array.from(parsed.querySelectorAll(s));
-
-		let part;
-		let sections = [];
-
-		for (var i = 0; i < parts.length; i++) {
-			part = parts[i];
-			if (part.parentNode && part.parentNode.nodeType === 1) {
-				let parent = part.parentNode;
-				let before = part.dataset.breakBefore;
-				let after = part.dataset.breakAfter;
-				let index = Array.prototype.indexOf.call(parent.childNodes, part);
-
-				// Get the top parent
-				let topParent = part.parentNode;
-				while (topParent) {
-					if(topParent.parentNode.nodeType === 1) {
-						topParent = topParent.parentNode;
-					} else {
-						break;
-					}
-				}
-
-				// Split
-				let dup = split(topParent, part, before);
-
-				if (dup) {
-					// console.log("dup", part, dup);
-
-					sections.concat(sections, dup);
-				} else {
-					// console.log("topParent", topParent);
-					sections.push(topParent);
-				}
-			} else {
-				// console.log("parT", part);
-
-				sections.push(part);
-			}
-		}
-
-		return sections;
-	}
-
-
-	async sections(sections) {
-		// let sectionContent = sections.shift();
-		// let frag = document.createDocumentFragment();
-		// frag.appendChild(section);
-		let renderedSections = [];
-
-		for (let sectionContent of sections) {
-
-			// Wait for section to finish rendering before adding the next section
-			let rendered = await this.section(sectionContent).then((section) => {
-				this.total = section.total;
-				this.sectionsTotal += 1;
+	renderOnIdle(renderer) {
+		return new Promise(resolve => {
+			requestIdleCallback(() => {
+				let result = renderer.next();
+				resolve(result);
 			});
-			renderedSections.push(rendered);
-
-			if (MAX_SECTIONS && this.sectionsTotal >= MAX_SECTIONS) {
-				break;
-			}
-
-		}
-
-		return renderedSections;
+		});
 	}
 
-	async section(sectionContent) {
-		let section = new Section(this.pagesArea, this.pageTemplate, this.total, this.preview);
 
-		// section.create(this.sectionsTotal, this.total);
-		section.on("page", (page) => {
-			this.styles && this.styles.counters(this.pagesArea);
+	async *layout(content) {
+		let breakToken = false;
+
+		while (breakToken !== undefined && this.total < MAX_PAGES) {
+			let page = this.addPage();
+
+			await this.hooks.beforePageLayout.trigger(page, this);
 			this.emit("page", page);
+
+			// Layout content in the page, starting from the breakToken
+			breakToken = page.layout(content, breakToken);
+
+			if (page.breakBefore === "right" && this.total > 1 && this.total % 2 === 0) {
+				this.insertPage(this.total - 2, true);
+			}
+
+			if (page.breakBefore === "left" && this.total % 2 > 0) {
+				this.insertPage(this.total - 2, true);
+			}
+
+			await this.hooks.afterPageLayout.trigger(page.element, page, breakToken, this);
+			this.emit("renderedPage", page);
+
+			yield breakToken;
+
+			// Stop if we get undefined, showing we have reached the end of the content
+		}
+
+		this.rendered = true;
+	}
+
+	addPage(blank) {
+		let lastPage = this.pages[this.pages.length - 1];
+		// Create a new page from the template
+		let page = new Page(this.pagesArea, this.pageTemplate, blank);
+		let total = this.pages.push(page);
+
+		// Create the pages
+		page.create(undefined, lastPage && lastPage.element);
+
+		page.index(this.total);
+		// Listen for page overflow
+		page.onOverflow((overflow) => {
+			requestIdleCallback(() => {
+				if (total < this.pages.length) {
+					this.pages[total].prepend(overflow);
+				} else {
+					let newPage = this.addPage();
+					newPage.prepend(overflow);
+				}
+			})
 		});
 
-		section.on("renderedPage", (page) => {
-			this.styles && this.styles.contents(page.element);
-			this.styles && this.styles.pageHeaders(page.element);
-			this.emit("renderedPage", page);
-		})
+		page.onUnderflow(() => {
+			// console.log("underflow on", page.id);
+		});
 
-		return section.render(sectionContent);
+		this.total += 1;
+
+		return page;
+	}
+
+	insertPage(index, blank) {
+		let lastPage = this.pages[index];
+		// Create a new page from the template
+		let page = new Page(this.pagesArea, this.pageTemplate, blank);
+
+		let total = this.pages.splice(index, 0, page);
+
+		// Create the pages
+		page.create(undefined, lastPage && lastPage.element);
+
+		page.index(index + 1);
+
+		for (let i = index + 2; i < this.pages.length; i++) {
+			this.pages[i].index(i);
+		}
+
+		if (!blank) {
+			// Listen for page overflow
+			page.onOverflow((overflow) => {
+				requestIdleCallback(() => {
+					if (total < this.pages.length) {
+						this.pages[total].prepend(overflow);
+					} else {
+						let newPage = this.addPage();
+						newPage.prepend(overflow);
+					}
+				})
+			});
+
+			page.onUnderflow(() => {
+				// console.log("underflow on", page.id);
+			});
+		}
+
+		this.total += 1;
+
+		return page;
+	}
+
+	destroy() {
+		this.pagesArea.remove()
+		this.pageTemplate.remove();
 	}
 
 }

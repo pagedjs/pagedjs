@@ -1,0 +1,101 @@
+:root {
+    --margin: 1.2in;
+}
+
+[contenteditable]:focus {
+    outline: 0px solid transparent;
+}
+
+@media screen {
+
+  body {
+    background-color: whitesmoke;
+  }
+
+  .page {
+    background-color: #fdfdfd;
+    margin-bottom: calc(var(--margin) / 2);
+    flex: none;
+  }
+
+  .pages {
+    width: calc(var(--width) * 2);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    transform-origin: 0 0;
+    margin: 0 auto;
+  }
+
+  .pages > .section {
+    width: calc(var(--width) * 2);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  #controls {
+    margin: 20px 0;
+    text-align: center;
+  }
+
+  .first_page {
+    margin-left: 50%;
+  }
+}
+
+@media print {
+  body {
+    width: var(--width);
+    height: var(--height);
+    margin: 0;
+    padding: 0;
+  }
+
+  .pages {
+    width: var(--width);
+    flex-direction: column;
+    transform: none !important;
+  }
+
+  .page {
+    margin-bottom: 0;
+    flex: none;
+    page-break-before: always;
+  }
+
+  #controls {
+    display: none;
+  }
+
+}
+
+@media screen {
+  .top .top-left-corner,
+  .top .top-right-corner {
+    border: 1px dotted tomato;
+  }
+
+  .top > div {
+    border: 1px dotted teal;
+  }
+
+  .right > div {
+    border: 1px dotted mediumseagreen;
+  }
+
+  .bottom .bottom-left-corner,
+  .bottom .bottom-right-corner {
+    border: 1px solid orange;
+  }
+
+  .bottom > div {
+    border: 1px dotted darkblue;
+  }
+
+  .left > div {
+    border: 1px dotted sienna;
+  }
+}

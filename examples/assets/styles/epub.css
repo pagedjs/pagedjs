@@ -115,11 +115,11 @@ font-style: italic;
 }
 
 
-paged-body:nth-child(1) h1 {
+article.section:nth-child(1) h1 {
   string-set: booktitle content(text);
 }
 
-paged-body {
+article.section {
   break-before: right;
   break-after: always;
 }

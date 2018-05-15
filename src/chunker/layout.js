@@ -1,5 +1,5 @@
 import { getBoundingClientRect } from "../utils/utils";
-import { walk, after, stackChildren } from "../utils/dom";
+import { walk, after, stackChildren, rebuildAncestors } from "../utils/dom";
 import EventEmitter from "event-emitter";
 
 /**
@@ -132,7 +132,7 @@ class Layout {
       if (parent) {
         parent.appendChild(clone);
       } else if (rebuild) {
-        let fragment = this.rebuildAncestors(node);
+        let fragment = rebuildAncestors(node);
         parent = fragment.querySelector("[ref='" + node.parentNode.getAttribute("ref") + "']");
         if (breakToken && breakToken.node.nodeType === 3 && breakToken.offset > 0) {
           clone.textContent = clone.textContent.substring(breakToken.offset);
@@ -166,45 +166,45 @@ class Layout {
     return node;
   }
 
-  rebuildAncestors(node) {
-    let parent;
-    let ancestors = [];
-    let added = [];
-
-    let fragment = document.createDocumentFragment();
-
-    // Gather all ancestors
-    let element = node;
-    while(element.parentNode && element.parentNode.nodeType === 1) {
-      ancestors.unshift(element.parentNode);
-      element = element.parentNode;
-    }
-
-    for (var i = 0; i < ancestors.length; i++) {
-      // parent = this.createDOMNode(ancestors[i]);
-      parent = ancestors[i].cloneNode(false);
-
-      parent.setAttribute("data-split-from", parent.getAttribute("ref"));
-
-      if (parent.hasAttribute("id")) {
-        let dataID = parent.getAttribute("id");
-        parent.setAttribute("data-id", dataID);
-        parent.removeAttribute("id");
-      }
-
-      if (added.length) {
-        // let container = this.wrapper.querySelector("[ref='" + ancestors[i].parent.attribs.ref + "']");
-        let container = added[added.length-1];
-        container.appendChild(parent);
-      } else {
-        fragment.appendChild(parent);
-      }
-      added.push(parent);
-    }
-
-    added = undefined;
-    return fragment;
-  }
+  // rebuildAncestors(node) {
+  //   let parent;
+  //   let ancestors = [];
+  //   let added = [];
+  //
+  //   let fragment = document.createDocumentFragment();
+  //
+  //   // Gather all ancestors
+  //   let element = node;
+  //   while(element.parentNode && element.parentNode.nodeType === 1) {
+  //     ancestors.unshift(element.parentNode);
+  //     element = element.parentNode;
+  //   }
+  //
+  //   for (var i = 0; i < ancestors.length; i++) {
+  //     // parent = this.createDOMNode(ancestors[i]);
+  //     parent = ancestors[i].cloneNode(false);
+  //
+  //     parent.setAttribute("data-split-from", parent.getAttribute("ref"));
+  //
+  //     if (parent.hasAttribute("id")) {
+  //       let dataID = parent.getAttribute("id");
+  //       parent.setAttribute("data-id", dataID);
+  //       parent.removeAttribute("id");
+  //     }
+  //
+  //     if (added.length) {
+  //       // let container = this.wrapper.querySelector("[ref='" + ancestors[i].parent.attribs.ref + "']");
+  //       let container = added[added.length-1];
+  //       container.appendChild(parent);
+  //     } else {
+  //       fragment.appendChild(parent);
+  //     }
+  //     added.push(parent);
+  //   }
+  //
+  //   added = undefined;
+  //   return fragment;
+  // }
 
   findBreakToken(overflow) {
     let offset = overflow.startOffset;

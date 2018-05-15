@@ -113,3 +113,11 @@ export function findCssSelector(ele) {
 
   return selector;
 };
+
+export function attr(element, attributes) {
+	for (var i = 0; i < attributes.length; i++) {
+		if(element.hasAttribute(attributes[i])) {
+			return element.getAttribute(attributes[i]);
+		}
+	}
+}

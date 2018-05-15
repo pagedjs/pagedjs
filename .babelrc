@@ -1,4 +1,4 @@
 {
   "presets": ["env"],
-	"plugins": ["transform-runtime"]
+	"plugins": ["transform-async-generator-functions", "transform-runtime"]
 }

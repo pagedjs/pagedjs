@@ -91,7 +91,7 @@ class Previewer {
 		return hrefs;
 	}
 
-	async preview(content, stylesheets) {
+	async preview(content, stylesheets, renderTo) {
 		if (!stylesheets) {
 			stylesheets = this.removeStyles();
 		}
@@ -109,7 +109,7 @@ class Previewer {
 		let startTime = performance.now();
 
 		// Render flow
-		let flow = await this.chunker.flow(content);
+		let flow = await this.chunker.flow(content, renderTo);
 
 		let endTime = performance.now();
 		let msg = "Rendering " + flow.total + " pages took " + (endTime - startTime) + " milliseconds.";

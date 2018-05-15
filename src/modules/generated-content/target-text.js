@@ -74,10 +74,6 @@ class TargetText extends Handler {
 
 		});
 	}
-
-	afterPageLayout(fragment) {
-
-	}
 }
 
 export default TargetText;

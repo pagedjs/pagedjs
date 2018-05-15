@@ -9,8 +9,6 @@
     <script src="https://unpkg.com/epubjs@0.4.2/dist/epub.min.js"></script>
     <script src="../dist/paged.js"></script>
 
-    <!-- <link rel="stylesheet" type="text/css" href="assets/styles/index.css"> -->
-    <!-- <link rel="stylesheet" type="text/css" href="assets/styles/moby-dick.css"> -->
     <link rel="stylesheet" type="text/css" href="assets/styles/examples.css">
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -19,14 +17,6 @@
 <body>
   <script>
     ready.then(async function () {
-      let preview = true;
-      let url = new URL(window.location);
-      let params = new URLSearchParams(url.search);
-      for(var pair of params.entries()) {
-        if(pair[0] === "preview") {
-          preview = (pair[1] === "true");
-        }
-      }
       let scale;
       // Sidebar
       var nav = document.getElementById("navigation");
@@ -122,7 +112,7 @@
               return matches && matches.length && matches[1];
             });
           let id = encodeURIComponent(section.href);
-          text += "<paged-body id='"+id+"'>";
+          text += "<article id='"+id+"' class='section'>";
 
           // if (styles) {
           //   for (let i = 0; i < styles.length; i++) {
@@ -130,12 +120,12 @@
           //   }
           // }
 
-          text += html + "</paged-body>";
+          text += html + "</article>";
         }
         return text;
       }
 
-      function addStyles(styles, resources) {
+      function addStyles(polisher, resources) {
         let head = document.querySelector("head");
         let stylesArray = resources.filter((r) => {
           return r.type === "text/css";
@@ -149,12 +139,12 @@
           // head.appendChild(link);
           toAdd.push(style.href);
         }
-        return styles.add(...toAdd) //.apply(styles, toAdd);
+        return polisher.add(...toAdd) //.apply(styles, toAdd);
       }
 
       async function openBook(e){
         var bookData = e.target.result;
-        let styles;
+        let chunker, polisher;
         let epub = ePub(bookData, {replacements: true} ).then((book) => {
           this.book = book;
 
@@ -223,16 +213,19 @@
 
           return book;
         }).then((book) => {
-          styles = new Paged.Polisher();
-          return addStyles(styles, this.book.resources);
+          chunker = new Paged.Chunker()
+          polisher = new Paged.Polisher();
+
+          Paged.initializeHandlers(chunker, polisher);
+
+          return addStyles(polisher, this.book.resources);
         }).then(() => {
           return sections(this.book.spine);
         }).then((text) => {
           let t0 = performance.now();
           let viewer = document.querySelector("#viewer");
 
-          // let moby = await styles.add("assets/styles/moby-dick.css");
-          let flow = new Paged.Chunker(text, viewer, styles, preview).then((flow) => {
+          let flow = chunker.flow(text, viewer).then((flow) => {
             let t1 = performance.now();
 
             console.log("Rendering " + flow.total + " pages took " + (t1 - t0) + " milliseconds.");

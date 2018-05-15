@@ -89,6 +89,11 @@ section:nth-child(1) h1 {
   string-set: booktitle content(text);
 }
 
+section {
+  break-before: right;
+  break-after: always;
+}
+
 
 body {
 font-size: 1em;

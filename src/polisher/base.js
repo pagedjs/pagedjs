@@ -159,6 +159,14 @@ export default `
   margin: unset;
 }
 
+[data-page], [data-break-before]:not([data-split-from]) {
+  break-before: column;
+}
+
+[data-page], [data-break-after] {
+  break-after: column;
+}
+
 @media print {
   body {
     width: var(--width);

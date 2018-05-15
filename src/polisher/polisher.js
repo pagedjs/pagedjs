@@ -1,21 +1,41 @@
 import Sheet from './sheet';
 import baseStyles from './base';
 import { UUID } from '../utils/utils';
+import Hook from "../utils/hook";
 
 class Polisher {
-	constructor() {
+	constructor(setup) {
 		this.sheets = [];
 		this.inserted = [];
+
+		this.hooks = {};
+		this.hooks.onUrl = new Hook(this);
+		this.hooks.onAtPage = new Hook(this);
+		this.hooks.onRule = new Hook(this);
+		this.hooks.onDeclaration = new Hook(this);
+		this.hooks.onContent = new Hook(this);
+
+		this.hooks.beforeTreeWalk = new Hook(this);
+		this.hooks.afterTreeWalk = new Hook(this);
+
+		if (setup !== false) {
+			this.setup();
+		}
+	}
+
+	setup() {
 		this.base = this.addBase();
 		this.inserted.push(this.base);
 		this.styleEl = document.createElement("style");
 		document.head.appendChild(this.styleEl);
 		this.styleSheet = this.styleEl.sheet;
+		return this.styleSheet;
 	}
 
 	async add() {
 		let fetched = [];
 		let urls = [];
+
 		for (var i = 0; i < arguments.length; i++) {
 			let f;
 
@@ -41,16 +61,10 @@ class Polisher {
 		return await Promise.all(fetched)
 			.then((originals) => {
 				let text = "";
-				let pageBreaks = {};
-				let stringSets = {};
-				let textTargets = {};
-				let counterTargets = {};
-				let running = {};
-				let elements = {};
 
 				originals.forEach((original, index) => {
 					let href = urls[index];
-					let sheet = new Sheet(original, href);
+					let sheet = new Sheet(original, href, this.hooks);
 
 					this.sheets.push(sheet);
 
@@ -66,28 +80,11 @@ class Polisher {
 						this.orientation = sheet.orientation;
 					}
 
-					this.mergeBreaks(pageBreaks, sheet.pageBreaks);
-					stringSets = Object.assign(stringSets, sheet.stringSets);
-					textTargets = Object.assign(textTargets, sheet.textTargets);
-					counterTargets = Object.assign(counterTargets, sheet.counterTargets);
-					running = Object.assign(running, sheet.running);
-					elements = Object.assign(elements, sheet.elements);
-
  					text += sheet.toString();
 				})
 
 				let s = this.insert(text);
 				this.inserted.push(s);
-
-				this.breaks = pageBreaks;
-
-				this.stringSets = stringSets;
-
-				this.textTargets = textTargets;
-				this.counterTargets = counterTargets;
-
-				this.running = running;
-				this.elements = elements;
 
 				return text;
 			});
@@ -97,178 +94,18 @@ class Polisher {
 		return this.insert(baseStyles);
 	}
 
-	mergeBreaks(pageBreaks, newBreaks) {
-		for (let b in newBreaks) {
-			if (b in pageBreaks) {
-				pageBreaks[b] = pageBreaks[b].concat(newBreaks[b]);
-			} else {
-				pageBreaks[b] = newBreaks[b];
-			}
-		}
-		return pageBreaks;
-	}
 
 	insert(text){
 		let head = document.querySelector("head");
 		let style = document.createElement("style");
 		style.type = "text/css";
+		style.setAttribute("data-pagedjs-inserted-styles", "true");
 
 		style.appendChild(document.createTextNode(text));
 
 		head.appendChild(style);
 
 		return style;
-	}
-
-	targetText(fragment) {
-		Object.keys(this.textTargets).forEach((name) => {
-			let target = this.textTargets[name];
-			let split = target.selector.split("::");
-			let query = split[0];
-			let queried = fragment.querySelectorAll(query);
-			queried.forEach((selected, index) => {
-				let val = this.attr(selected, target.args);
-				let element = fragment.querySelector(val);
-
-				if (element) {
-					if (target.style === "content") {
-						let text = element.textContent;
-						let selector = UUID();
-
-						selected.setAttribute("data-target-text", selector);
-
-						let psuedo = "";
-						if (split.length > 1) {
-							psuedo += "::" + split[1];
-						}
-
-						this.styleSheet.insertRule(`[data-target-text="${selector}"]${psuedo} { content: "${element.textContent}"; }`, this.styleSheet.cssRules.length);
-					}
-				}
-			});
-
-		});
-	}
-
-	removeHeaders(fragment) {
-		for (let name of Object.keys(this.running)) {
-			let set = this.running[name];
-			let selected = Array.from(fragment.querySelectorAll(set.selector));
-
-			if (set.identifier === "running") {
-				for (let header of selected) {
-					header.style.display = "none";
-				}
-			}
-
-		}
-	}
-
-	pageHeaders(fragment) {
-		for (let name of Object.keys(this.running)) {
-			let set = this.running[name];
-			let selected = fragment.querySelector(set.selector);
-			if (selected) {
-				let cssVar;
-				if (set.identifier === "running") {
-					// cssVar = selected.textContent.replace(/\\([\s\S])|(["|'])/g,"\\$1$2");
-					// this.styleSheet.insertRule(`:root { --string-${name}: "${cssVar}"; }`, this.styleSheet.cssRules.length);
-					// fragment.style.setProperty(`--string-${name}`, `"${cssVar}"`);
-					set.first = selected;
-				} else {
-					console.log(set.value + "needs css replacement");
-				}
-			}
-		}
-
-		// move elements
-		for (let selector of Object.keys(this.elements)) {
-			if (selector) {
-				let el = this.elements[selector];
-				let selected = fragment.querySelector(selector);
-				if (selected) {
-					let running = this.running[el.args[0]];
-					if (running.first) {
-						let clone = running.first.cloneNode(true);
-						clone.style.display = null;
-						selected.appendChild(clone);
-					}
-				}
-			}
-		}
-	}
-
-	contents(fragment) {
-		for (let name of Object.keys(this.stringSets)) {
-			let set = this.stringSets[name];
-			let selected = fragment.querySelector(set.selector);
-			if (selected) {
-				let cssVar;
-				if (set.value === "content" || set.value === "content(text)") {
-					cssVar = selected.textContent.replace(/\\([\s\S])|(["|'])/g,"\\$1$2");
-					// this.styleSheet.insertRule(`:root { --string-${name}: "${cssVar}"; }`, this.styleSheet.cssRules.length);
-					// fragment.style.setProperty(`--string-${name}`, `"${cssVar}"`);
-					set.first = cssVar;
-				} else {
-					console.log(set.value + "needs css replacement");
-				}
-			} else {
-				// Use the previous values
-				if (set.first) {
-					fragment.style.setProperty(`--string-${name}`, `"${set.first}"`);
-				}
-			}
-		}
-	}
-
-	counters(root) {
-		Object.keys(this.counterTargets).forEach((name) => {
-			let target = this.counterTargets[name];
-			let split = target.selector.split("::");
-			let query = split[0];
-			let queried = root.querySelectorAll(query + ":not([data-target-counter])");
-
-			queried.forEach((selected, index) => {
-				// TODO: handle func other than attr
-				if (target.func !== "attr") {
-					return;
-				}
-				let val = this.attr(selected, target.args);
-				let element = root.querySelector(val);
-
-				if (element) {
-					let selector = UUID();
-					selected.setAttribute("data-target-counter", selector);
-					// TODO: handle other counter types (by query)
-					if (target.counter === "page") {
-						let pages = root.querySelectorAll(".page");
-						let pg = 0;
-						for (var i = 0; i < pages.length; i++) {
-							pg += 1;
-							if (pages[i].contains( element )){
-								break;
-							}
-						}
-
-						let psuedo = "";
-						if (split.length > 1) {
-							psuedo += "::" + split[1];
-						}
-
-						this.styleSheet.insertRule(`[data-target-counter="${selector}"]${psuedo} { content: "${pg}"; }`, this.styleSheet.cssRules.length);
-
-					}
-				}
-			});
-		});
-	}
-
-	attr(element, attributes) {
-		for (var i = 0; i < attributes.length; i++) {
-			if(element.hasAttribute(attributes[i])) {
-				return element.getAttribute(attributes[i]);
-			}
-		}
 	}
 
 	destroy() {

@@ -1,20 +1,40 @@
 import csstree from 'css-tree';
-import pageSizes from './sizes';
 import { UUID } from "../utils/utils";
+import Hook from "../utils/hook";
 
 class Sheet {
-	constructor(text, url) {
+	constructor(text, url, hooks) {
+
+		if (hooks) {
+			this.hooks = hooks;
+		} else {
+			this.hooks = {};
+			this.hooks.onUrl = new Hook(this);
+			this.hooks.onAtPage = new Hook(this);
+			this.hooks.onRule = new Hook(this);
+			this.hooks.onDeclaration = new Hook(this);
+			this.hooks.onContent = new Hook(this);
+
+			this.hooks.beforeTreeWalk = new Hook(this);
+			this.hooks.afterTreeWalk = new Hook(this);
+		}
+
 		try {
 			this.url = new URL(url, window.location.href);
 		} catch (e) {
 			this.url = new URL(window.location.href);
 		}
 
-		this.original = text;
+		// this.original = text;
+
 		// Parse the text
 		this.ast = this.parse(text);
+
+		this.hooks.beforeTreeWalk.trigger(this.ast);
+
 		// Replace urls
 		this.replaceUrls(this.ast);
+
 		// Scope
 		this.id = UUID();
 		// this.addScope(this.ast, this.uuid);
@@ -22,34 +42,12 @@ class Sheet {
 		// Replace IDs with data-id
 		this.replaceIds(this.ast);
 
-		// Get page selectors
-		// this.namedPageSelectors = this.getNamedPageSelectors(this.ast);
+		// Trigger Hooks
+		this.urls(this.ast);
+		this.rules(this.ast);
+		this.pages(this.ast);
 
-		// Get page brekas
-		this.pageBreaks = this.replacePageBreaks(this.ast);
-
-		// Remove @page rules
-		this.pages = this.replacePages(this.ast);
-
-		if ("*" in this.pages) {
-			this.width = this.pages["*"].width;
-			this.height = this.pages["*"].height;
-			this.orientation = this.pages["*"].orientation;
-
-			this.addRootVars(this.ast, this.width, this.height);
-			this.addRootPage(this.ast, this.width, this.height);
-		}
-
-		this.stringSets = this.getStringSets(this.ast);
-
-		this.running = this.getRunning(this.ast);
-		this.elements = this.getElements(this.ast);
-
-		let targets = this.getTargets(this.ast);
-		this.counterTargets = targets.counterTargets;
-		this.textTargets = targets.textTargets;
-
-		this.replaceContents(this.ast);
+		this.hooks.afterTreeWalk.trigger(this.ast, this);
 	}
 
 	// parse
@@ -60,191 +58,68 @@ class Sheet {
 		return ast;
 	}
 
-	pageModel(selector) {
-		return {
-			selector: selector,
-			name: undefined,
-			psuedo: undefined,
-			nth: undefined,
-			marginalia: {},
-			width: undefined,
-			height: undefined,
-			orientation: undefined,
-			margin : {
-				top: {value: 0, unit: "px"},
-				right: {value: 0, unit: "px"},
-				left: {value: 0, unit: "px"},
-				bottom: {value: 0, unit: "px"}
-			},
-			block: {},
-			marks: undefined
-		}
+	insertRule(rule) {
+		let inserted = this.ast.children.insert(rule);
+		inserted.forEach((item) => {
+			this.declarations(item);
+		})
 	}
 
-	replacePages(ast) {
-		let pages = {};
-		// Find and Remove @page rules
+	urls(ast) {
+		csstree.walk(ast, {
+			visit: 'Url',
+			enter: (node, item, list) => {
+				this.hooks.onUrl.trigger(node, item, list);
+			}
+		});
+	}
+
+	pages(ast) {
 		csstree.walk(ast, {
 			visit: 'Atrule',
 			enter: (node, item, list) => {
 				const basename = csstree.keyword(node.name).basename;
 
 				if (basename === "page") {
-					let selector = "";
-					let name = "";
-					let named, psuedo, nth;
-
-					if (node.prelude) {
-						named = this.getTypeSelector(node);
-						psuedo = this.getPsuedoSelector(node);
-						nth = this.getNthSelector(node);
-						selector = csstree.generate(node.prelude);
-					} else {
-						selector = "*";
-					}
-
-
-					let page = this.pageModel(selector);
-
-					page.name = named;
-					page.psuedo = psuedo;
-					page.nth = nth;
-
-					if (name in pages) {
-						// TODO: already present, need to merge
-						console.log("page needs merge");
-					} else {
-						pages[selector] = page;
-					}
-
-					page.marginalia = this.replaceMarginalia(node);
-
-					let declarations = this.replaceDeclartations(node);
-
-					if (declarations.size) {
-						page.width = declarations.size.width;
-						page.height = declarations.size.height;
-						page.orientation = declarations.size.orientation;
-					}
-
-					if (declarations.margin) {
-						page.margin = declarations.margin;
-					}
-
-					if (declarations.marks) {
-						page.marks = declarations.marks;
-					}
-
-					page.block = node.block;
-
-
-					// Remove the rule
-					list.remove(item);
-				}
-			}
-		})
-
-		this.addPageClasses(pages, ast);
-		// return collection of pages
-		return pages;
-	}
-
-	getTypeSelector(ast) {
-		// Find page name
-		let name;
-
-		csstree.walk(ast, {
-			visit: "TypeSelector",
-			enter: (node, item, list) => {
-				name = node.name
-			}
-		});
-
-		return name;
-	}
-
-	getPsuedoSelector(ast) {
-		// Find if it has :left & :right & :black & :first
-		let name;
-		csstree.walk(ast, {
-			visit: "PseudoClassSelector",
-			enter: (node, item, list) => {
-				if (node.name !== "nth") {
-					name = node.name;
+					this.hooks.onAtPage.trigger(node, item, list);
+					this.declarations(node, item, list);
 				}
 			}
 		});
-
-		return name;
 	}
 
-	getNthSelector(ast) {
-		// Find if it has :nth
-		let nth;
-		csstree.walk(ast, {
-			visit: "PseudoClassSelector",
-			enter: (node, item, list) => {
-				if (node.name === "nth" && node.children) {
-					let raw = node.children.first();
-					nth = raw.value;
-				}
-			}
-		});
-
-		return nth;
-	}
-
-	replaceMarginalia(ast) {
+	rules(ast) {
 		let parsed = {};
+		csstree.walk(ast, {
+			visit: 'Rule',
+			enter: (ruleNode, ruleItem, rulelist) => {
+				// console.log("rule", ruleNode);
 
-		csstree.walk(ast.block, {
-			visit: 'Atrule',
-			enter: (node, item, list) => {
-				let name = node.name;
-				parsed[name] = node.block;
-				list.remove(item);
+				this.hooks.onRule.trigger(ruleNode, ruleItem, rulelist);
+				this.declarations(ruleNode, ruleItem, rulelist);
 			}
 		});
-
-		return parsed;
 	}
 
-	replaceDeclartations(ast) {
-		let parsed = {};
-
-		csstree.walk(ast.block, {
+	declarations(ruleNode, ruleItem, rulelist) {
+		csstree.walk(ruleNode, {
 			visit: 'Declaration',
-			enter: (declaration, dItem, dList) => {
-				let prop = csstree.property(declaration.property).name;
-				let value = declaration.value;
+			enter: (declarationNode, dItem, dList) => {
+				// console.log(declarationNode);
 
-				if (prop === "marks") {
-					parsed.marks = value.children.first().name;
-					dList.remove(dItem);
-				} else if (prop === "margin") {
-					parsed.margin = this.getMargins(declaration);
-					dList.remove(dItem);
-				} else if (prop.indexOf("margin-") === 0) {
-					let m = prop.substring("margin-".length);
-					if (!parsed.margin) {
-						parsed.margin = {
-							top: {value: 0, unit: "px"},
-							right: {value: 0, unit: "px"},
-							left: {value: 0, unit: "px"},
-							bottom: {value: 0, unit: "px"}
-						};
-					}
-					parsed.margin[m] = declaration.value.children.first();
-					dList.remove(dItem);
-				} else if (prop === "size") {
-					parsed.size = this.getSize(declaration);
-					dList.remove(dItem);
+				this.hooks.onDeclaration.trigger(declarationNode, dItem, dList, {ruleNode, ruleItem, rulelist});
+
+				if (declarationNode.property === "content") {
+					csstree.walk(declarationNode, {
+						visit: 'Function',
+						enter: (funcNode, fItem, fList) => {
+							this.hooks.onContent.trigger(funcNode, fItem, fList, {declarationNode, dItem, dList}, {ruleNode, ruleItem, rulelist});
+						}
+					});
 				}
 
 			}
-		})
-
-		return parsed;
+		});
 	}
 
 	replaceUrls(ast) {
@@ -256,878 +131,6 @@ class Sheet {
 				node.value.value = url.toString();
 			}
 		});
-	}
-
-	getSize(declaration) {
-		let width, height, orientation;
-
-		// Get size: Xmm Ymm
-		csstree.walk(declaration, {
-			visit: 'Dimension',
-			enter: (node, item, list) => {
-				// console.log("Dimension", node);
-				let {value, unit} = node;
-				if (typeof width === "undefined") {
-					width = { value, unit };
-				} else if (typeof height === "undefined") {
-					height = { value, unit };
-				}
-			}
-		});
-
-		// Get size: a4
-		csstree.walk(declaration, {
-			visit: 'String',
-			enter: (node, item, list) => {
-				let name = node.value.replace(/["|']/g, '');
-				let s = pageSizes[name];
-				if (s) {
-					width = s.width;
-					height = s.height;
-				}
-			}
-		});
-
-		// Get Landscape or Portrait
-		csstree.walk(declaration, {
-			visit: "Identifier",
-			enter: (node, item, list) => {
-				orientation = node.name;
-			}
-		});
-
-		return {
-			width,
-			height,
-			orientation
-		}
-	}
-
-	getMargins(declaration) {
-		let margins = [];
-		let margin = {
-			top: {value: 0, unit: "px"},
-			right: {value: 0, unit: "px"},
-			left: {value: 0, unit: "px"},
-			bottom: {value: 0, unit: "px"}
-		};
-
-		csstree.walk(declaration, {
-			visit: 'Dimension',
-			enter: (node, item, list) => {
-				margins.push(node);
-			}
-		});
-
-		if (margins.length === 1) {
-			for (let m in margin) {
-				margin[m] = margins[0];
-			}
-		} else if (margins.length === 2) {
-			margin.top = margins[0];
-			margin.right = margins[1];
-			margin.bottom = margins[0];
-			margin.left = margins[1];
-		} else if (margins.length === 3) {
-			margin.top = margins[0];
-			margin.right = margins[1];
-			margin.bottom = margins[2];
-			margin.left = margins[1];
-		} else if (margins.length === 4) {
-			margin.top = margins[0];
-			margin.right = margins[1];
-			margin.bottom = margins[2];
-			margin.left = margins[3];
-		}
-
-		return margin;
-	}
-
-	addPageClasses(pages, ast) {
-		// First add * page
-		if ("*" in pages) {
-			let p = this.createPage(pages["*"], ast.children);
-			ast.children.insert(p);
-		}
-		// Add :left & :right
-		if (":left" in pages) {
-			let left = this.createPage(pages[":left"], ast.children);
-			ast.children.insert(left);
-		}
-		if (":right" in pages) {
-			let right = this.createPage(pages[":right"], ast.children);
-			ast.children.insert(right);
-		}
-		// Add :first & :blank
-		if (":first" in pages) {
-			let first = this.createPage(pages[":first"], ast.children);
-			ast.children.insert(first);
-		}
-		if (":blank" in pages) {
-			let blank = this.createPage(pages[":blank"], ast.children);
-			ast.children.insert(blank);
-		}
-		// Add nth pages
-		for (let pg in pages) {
-			if (pages[pg].nth) {
-				let nth = this.createPage(pages[pg], ast.children);
-				ast.children.insert(nth);
-			}
-		}
-
-		// Add named pages
-		for (let pg in pages) {
-			if (pages[pg].name) {
-				let named = this.createPage(pages[pg], ast.children);
-				ast.children.insert(named);
-			}
-		}
-
-	}
-
-	createPage(page, ruleList) {
-		let selectorList = new csstree.List();
-		let selectors = new csstree.List();
-		let name;
-
-		selectors.insert(selectors.createItem({
-			type: 'ClassSelector',
-			name: 'page'
-		}));
-
-		// Named page
-		if (page.name) {
-			selectors.insert(selectors.createItem({
-				type: 'ClassSelector',
-				name: page.name + "_page"
-			}));
-		}
-
-		// if (page.name && page.psuedo) {
-		// 	selectors.insert(selectors.createItem({
-		// 		type: 'Combinator',
-		// 		name: " "
-		// 	}));
-		// }
-
-		// PsuedoSelector
-		if (page.psuedo) {
-			selectors.insert(selectors.createItem({
-				type: 'ClassSelector',
-				name: page.psuedo + "_page"
-			}));
-		}
-
-		// Nth
-		if (page.nth) {
-			let nthlist = new csstree.List();
-			let nth = page.nth;
-			let n = nth.indexOf("n");
-			let plus = nth.indexOf("+");
-			let splitN = page.nth.split("n");
-			let splitP = page.nth.split("+");
-			let a = null;
-			let b = null;
-			if (n > -1) {
-				a = splitN[0];
-				if (plus > -1) {
-					b = splitP[1];
-				}
-			} else {
-				b = nth;
-			}
-
-			nthlist.insert(nthlist.createItem({
-				type: 'Nth',
-				loc: null,
-				selector: null,
-				nth: {
-					type: "AnPlusB",
-					loc: null,
-					a: a,
-					b: b
-				}
-			}));
-
-			selectors.insert(selectors.createItem({
-				type: 'PseudoClassSelector',
-				name: 'nth-of-type',
-				children: nthlist
-			}));
-		}
-
-		let rule = ruleList.createItem({
-			type: 'Rule',
-			prelude: {
-				type: 'Selector',
-				loc: 0,
-				children: selectors
-			},
-			block: {
-					type: 'Block',
-					loc: 0,
-					children: page.block.children.copy()
-			}
-		});
-
-		let children = rule.data.block.children;
-		this.addMarginVars(page.margin, children, children.first());
-
-		if (page.width) {
-			this.addDimensions(page.width, page.height, children, children.first());
-		}
-
-		if (page.marginalia) {
-			this.addMarginalia(page, ruleList, rule);
-		}
-
-		return rule;
-	}
-
-	addMarginVars(margin, list, item) {
-		// variables for margins
-		for (let m in margin) {
-			let value = margin[m].value + (margin[m].unit || '');
-			let mVar = list.createItem({
-				type: 'Declaration',
-				property: "--margin-" + m,
-				value: {
-					type: "Raw",
-					value: value
-				}
-			});
-			list.append(mVar, item);
-		}
-	}
-
-	addDimensions(width, height, list, item) {
-		// width dimension
-		let widthList = new csstree.List();
-		widthList.insert(widthList.createItem({
-			type: "Dimension",
-			value: width.value,
-			unit: width.unit
-		}));
-		let w = list.createItem({
-			type: 'Declaration',
-			property: "width",
-			value: {
-				type: 'Value',
-				children: widthList
-			}
-		});
-		list.append(w);
-		// width variable
-		let wVar = list.createItem({
-			type: 'Declaration',
-			property: "--width",
-			value: {
-				type: "Raw",
-				value: width.value + (width.unit || '')
-			}
-		});
-		list.append(wVar);
-
-		// height dimension
-		let heightList = new csstree.List();
-		heightList.insert(heightList.createItem({
-			type: "Dimension",
-			value: height.value,
-			unit: height.unit
-		}));
-		let h = list.createItem({
-			type: 'Declaration',
-			property: "height",
-			value: {
-				type: 'Value',
-				children: heightList
-			}
-		});
-		list.append(h);
-		// height variable
-		let hVar = list.createItem({
-			type: 'Declaration',
-			property: "--height",
-			value: {
-				type: "Raw",
-				value: height.value + (height.unit || '')
-			}
-		});
-		list.append(hVar);
-	}
-
-	addMarginalia(page, list, item) {
-		for (let loc in page.marginalia) {
-			let item = csstree.clone(page.marginalia[loc]);
-			csstree.walk(item, {
-				visit: "Declaration",
-				enter: (node, item, list) => {
-					if (node.property === "content") {
-						list.remove(item);
-					}
-				}
-			});
-
-			let selectorList = new csstree.List();
-			let selectors = new csstree.List();
-
-			let selector = selectorList.createItem({
-				type: 'Selector',
-				children: selectors
-			});
-
-			selectorList.insert(selector);
-
-			selectors.insert(selectors.createItem({
-				type: 'ClassSelector',
-				name: 'page'
-			}));
-
-			// Named page
-			if (page.name) {
-				name = page.name + "_page";
-				selectors.insert(selectors.createItem({
-					type: 'ClassSelector',
-					name: page.name + "_page"
-				}));
-			}
-
-			// PsuedoSelector
-			if (page.psuedo) {
-				selectors.insert(selectors.createItem({
-					type: 'ClassSelector',
-					name: page.psuedo + "_page"
-				}));
-			}
-
-			selectors.insert(selectors.createItem({
-				type: 'Combinator',
-				name: " "
-			}));
-
-			selectors.insert(selectors.createItem({
-				type: 'ClassSelector',
-				name: loc
-			}));
-
-			selectors.insert(selectors.createItem({
-				type: 'Combinator',
-				name: ">"
-			}));
-
-			selectors.insert(selectors.createItem({
-				type: 'ClassSelector',
-				name: "content"
-			}));
-
-			// selectors.insert(selectors.createItem({
-			// 	type: 'PseudoElementSelector',
-			// 	name: "after",
-			// 	children: null
-			// }));
-
-			let rule = list.createItem({
-				type: 'Rule',
-				prelude: {
-					type: 'SelectorList',
-					children: selectorList
-				},
-				block: item
-			});
-
-			list.append(rule);
-
-		}
-
-		// Just content
-		for (let loc in page.marginalia) {
-			let content = csstree.clone(page.marginalia[loc]);
-			csstree.walk(content, {
-				visit: "Declaration",
-				enter: (node, item, list) => {
-					if (node.property !== "content") {
-						list.remove(item);
-					}
-				}
-			});
-
-			let selectorList = new csstree.List();
-			let selectors = new csstree.List();
-
-			let selector = selectorList.createItem({
-				type: 'Selector',
-				children: selectors
-			});
-
-			selectorList.insert(selector);
-
-			selectors.insert(selectors.createItem({
-				type: 'ClassSelector',
-				name: 'page'
-			}));
-
-			// Named page
-			if (page.name) {
-				name = page.name + "_page";
-				selectors.insert(selectors.createItem({
-					type: 'ClassSelector',
-					name: page.name + "_page"
-				}));
-			}
-
-			// PsuedoSelector
-			if (page.psuedo) {
-				selectors.insert(selectors.createItem({
-					type: 'ClassSelector',
-					name: page.psuedo + "_page"
-				}));
-			}
-
-			selectors.insert(selectors.createItem({
-				type: 'Combinator',
-				name: " "
-			}));
-
-			selectors.insert(selectors.createItem({
-				type: 'ClassSelector',
-				name: loc
-			}));
-
-			selectors.insert(selectors.createItem({
-				type: 'Combinator',
-				name: ">"
-			}));
-
-			selectors.insert(selectors.createItem({
-				type: 'ClassSelector',
-				name: "content"
-			}));
-
-			selectors.insert(selectors.createItem({
-				type: 'PseudoElementSelector',
-				name: "after",
-				children: null
-			}));
-
-			let rule = list.createItem({
-				type: 'Rule',
-				prelude: {
-					type: 'SelectorList',
-					children: selectorList
-				},
-				block: content
-			});
-
-			list.append(rule);
-
-		}
-	}
-
-	getStringSets(ast) {
-		let stringSetSelectors = {};
-		csstree.walk(ast, {
-			visit: 'Rule',
-			enter: (node, item, list) => {
-				csstree.walk(node, {
-					visit: 'Declaration',
-					enter: (declaration, dItem, dList) => {
-						if (declaration.property === "string-set") {
-							let selector = csstree.generate(node.prelude);
-
-							let identifier = declaration.value.children.first().name
-
-							let value;
-							csstree.walk(declaration, {
-								visit: 'Function',
-								enter: (node, item, list) => {
-									value = csstree.generate(node);
-								}
-							});
-
-							stringSetSelectors[identifier] = {
-								identifier: identifier,
-								value: value,
-								selector: selector
-							}
-						}
-					}
-				});
-			}
-		});
-		return stringSetSelectors;
-	}
-
-	getRunning(ast) {
-		let runningSelectors = {};
-		csstree.walk(ast, {
-			visit: 'Rule',
-			enter: (node, item, list) => {
-				csstree.walk(node, {
-					visit: 'Declaration',
-					enter: (declaration, dItem, dList) => {
-						if (declaration.property === "position") {
-							let selector = csstree.generate(node.prelude);
-
-							let identifier = declaration.value.children.first().name
-
-							if (identifier === "running") {
-								let value;
-								csstree.walk(declaration, {
-									visit: 'Function',
-									enter: (node, item, list) => {
-										value = node.children.first().name;
-									}
-								});
-
-								runningSelectors[value] = {
-									identifier: identifier,
-									value: value,
-									selector: selector
-								}
-							}
-
-						}
-					}
-				});
-			}
-		});
-		return runningSelectors;
-	}
-
-	getElements(ast) {
-		let elements = {};
-
-		csstree.walk(ast, {
-			visit: 'Rule',
-			enter: (node, item, list) => {
-				csstree.walk(node, {
-					visit: 'Declaration',
-					enter: (declaration, dItem, dList) => {
-						if (declaration.property === "content") {
-
-							// Handle Raw
-							// element(x) is not parsed
-							csstree.walk(declaration, {
-								visit: 'Raw',
-								enter: (funcNode, fItem, fList) => {
-									if (funcNode.value.indexOf("element") > -1) {
-
-										let selector = csstree.generate(node.prelude);
-										let parsed = funcNode.value.match(/([^(]+)\(([^)]+)\)/);
-
-										let func = parsed[1];
-
-										let value = funcNode.value;
-
-										let args = [];
-
-										if (parsed.length >= 3) {
-											args.push(parsed[2]);
-										}
-
-										// we only handle first for now
-										let style = "first";
-
-										selector.split(",").forEach((s) => {
-											// remove before / after
-											s = s.replace(/::after|::before/, "");
-
-											elements[s] = {
-												func: func,
-												args: args,
-												value: value,
-												style: style || "first",
-												selector: s,
-												fullSelector: selector
-											}
-										});
-									}
-
-								}
-							});
-						}
-					}
-				})
-			}
-		});
-
-		return elements;
-	}
-
-	getTargets(ast) {
-		let textTargets = {};
-		let counterTargets = {};
-		csstree.walk(ast, {
-			visit: 'Rule',
-			enter: (node, item, list) => {
-				csstree.walk(node, {
-					visit: 'Declaration',
-					enter: (declaration, dItem, dList) => {
-						if (declaration.property === "content") {
-
-							csstree.walk(declaration, {
-								visit: 'Function',
-								enter: (funcNode, fItem, fList) => {
-									if (funcNode.name === "target-text") {
-
-										let selector = csstree.generate(node.prelude);
-										let first = funcNode.children.first();
-										let last = funcNode.children.last();
-										let func = first.name;
-
-										let value = csstree.generate(funcNode);
-
-										let args = []
-
-										first.children.forEach((child) => {
-											if (child.type === "Identifier") {
-												args.push(child.name);
-											}
-										});
-
-										let style;
-										if (last !== first) {
-											style = last.name;
-										}
-
-										selector.split(",").forEach((s) => {
-											textTargets[s] = {
-												func: func,
-												args: args,
-												value: value,
-												style: style || "content",
-												selector: s,
-												fullSelector: selector
-											}
-										});
-
-									}
-
-									if (funcNode.name === "target-counter") {
-										let selector = csstree.generate(node.prelude);
-										let first = funcNode.children.first();
-										let last = funcNode.children.last();
-										let func = first.name;
-
-										let value = csstree.generate(funcNode);
-
-										let args = []
-
-										first.children.forEach((child) => {
-											if (child.type === "Identifier") {
-												args.push(child.name);
-											}
-										});
-
-										let counter;
-										if (last !== first) {
-											counter = last.name;
-										}
-
-										selector.split(",").forEach((s) => {
-											counterTargets[s] = {
-												func: func,
-												args: args,
-												value: value,
-												counter: counter,
-												selector: s,
-												fullSelector: selector
-											}
-										});
-
-									}
-								}
-							});
-
-
-						}
-					}
-				});
-			}
-		});
-
-		return {
-			textTargets,
-			counterTargets
-		};
-	}
-
-	replaceContents(ast) {
-		csstree.walk(ast, {
-			visit: 'Declaration',
-			enter: (declaration, dItem, dList) => {
-				if (declaration.property === "content") {
-					csstree.walk(declaration, {
-						visit: 'Function',
-						enter: (func, fItem, fList) => {
-							// console.log(func);
-
-							if (func.name === "string") {
-								let identifier = func.children && func.children.first().name;
-								func.name = "var";
-								func.children = new csstree.List();
-
-								func.children.append(func.children.createItem({
-									type: "Identifier",
-									loc: null,
-									name: "--string-" + identifier
-								}));
-							}
-
-							if (func.name === "target-text") {
-								// console.log(func);
-							}
-
-							if (func.name === "target-counter") {
-								// console.log(func);
-							}
-
-							if (func.name === "element") {
-								console.log("element", func);
-							}
-						}
-					});
-				}
-			}
-		});
-	}
-
-	addRootVars(ast, width, height) {
-		let selectorList = new csstree.List();
-		let selectors = new csstree.List();
-		let children = new csstree.List();
-
-		let wVar = children.createItem({
-			type: 'Declaration',
-			property: "--width",
-			value: {
-				type: "Raw",
-				value: width.value + (width.unit || '')
-			},
-			children: null
-		});
-		children.append(wVar);
-
-		let hVar = children.createItem({
-			type: 'Declaration',
-			property: "--height",
-			value: {
-				type: "Raw",
-				value: height.value + (height.unit || '')
-			},
-			children: null
-		});
-		children.append(hVar);
-
-		selectors.insert(selectors.createItem({
-			type: "PseudoClassSelector",
-			name: "root",
-			children: null
-		}));
-
-		let selector = selectorList.createItem({
-			type: 'Selector',
-			children: selectors
-		});
-
-		selectorList.append(selector);
-
-		let rule = ast.children.createItem({
-			type: 'Rule',
-			prelude: {
-				type: 'SelectorList',
-				loc: null,
-				children: selectorList
-			},
-			block: {
-					type: 'Block',
-					loc: null,
-					children: children
-			}
-		});
-
-		ast.children.append(rule);
-	}
-
-	addRootPage(ast, width, height) {
-		/*
-		@page {
-		  size: var(--width) var(--height);
-		  margin: 0;
-		  padding: 0;
-		}
-		*/
-		let children = new csstree.List();
-		let dimensions = new csstree.List();
-
-		dimensions.append(dimensions.createItem({
-			type: 'Dimension',
-			unit: width.unit,
-			value: width.value
-		}));
-
-		dimensions.append(dimensions.createItem({
-			type: 'WhiteSpace',
-			value: " "
-		}));
-
-		dimensions.append(dimensions.createItem({
-			type: 'Dimension',
-			unit: height.unit,
-			value: height.value
-		}));
-
-		children.append(children.createItem({
-			type: 'Declaration',
-			property: "size",
-			loc: null,
-			value: {
-				type: "Value",
-				children: dimensions
-			}
-		}));
-
-		children.append(children.createItem({
-			type: 'Declaration',
-			property: "margin",
-			loc: null,
-			value: {
-				type: "Value",
-				children: [{
-					type: 'Dimension',
-					unit: 'px',
-					value: 0
-				}]
-			}
-		}));
-
-		children.append(children.createItem({
-			type: 'Declaration',
-			property: "padding",
-			loc: null,
-			value: {
-				type: "Value",
-				children: [{
-					type: 'Dimension',
-					unit: 'px',
-					value: 0
-				}]
-			}
-		}));
-
-
-		let rule = ast.children.createItem({
-			type: 'Atrule',
-			prelude: null,
-			name: "page",
-			block: {
-					type: 'Block',
-					loc: null,
-					children: children
-			}
-		});
-
-		ast.children.append(rule);
 	}
 
 	addScope(ast, id) {
@@ -1150,35 +153,6 @@ class Sheet {
 			}
 		});
 	}
-
-	/*
-	getNamedPageSelectors(ast) {
-		let record = false;
-		let namedPageSelectors = {};
-		csstree.walk(ast, {
-			// visit: 'Declaration',
-			leave: (node, item, list) => {
-				if(record && node.type === "Rule"){
-					record.selector = csstree.generate(node.prelude);
-				}
-
-				if (node.type === "Declaration" && node.property === "page") {
-					let name = node.value.children.first().name;
-					namedPageSelectors[name] = {
-						name: name,
-						selector: ''
-					}
-					record = namedPageSelectors[name];
-				}
-			},
-			enter: (node, item, list) => {
-				if (record) {
-					record = false;
-				}
-			}
-		});
-	}
-	*/
 
 	getNamedPageSelectors(ast) {
 		let namedPageSelectors = {};
@@ -1210,65 +184,6 @@ class Sheet {
 			}
 		});
 		return namedPageSelectors;
-	}
-
-	replacePageBreaks(ast) {
-		let breaks = {};
-
-		csstree.walk(ast, {
-			visit: 'Rule',
-			enter: (node, item, list) => {
-				csstree.walk(node, {
-					visit: 'Declaration',
-					enter: (declaration, dItem, dList) => {
-						let property = declaration.property;
-
-						if (property === "break-before" ||
-								property === "break-after" ||
-								property === "page-break-before" ||
-								property === "page-break-after" ||
-								property === "page"
-						) {
-
-							let children = declaration.value.children.first();
-							let value = children.name;
-							let selector = csstree.generate(node.prelude);
-							let name;
-
-							if (property === "page-break-before") {
-								property = "break-before";
-							} else if (property === "page-break-after") {
-								property = "break-after";
-							}
-
-							if (property === "page") {
-								name = value;
-								// value = "always";
-							}
-
-							let breaker = {
-								property: property,
-								value: value,
-								selector: selector,
-								name: name
-							};
-
-							selector.split(",").forEach((s) => {
-								if (!breaks[s]) {
-									breaks[s] = [breaker];
-								} else {
-									breaks[s].push(breaker);
-								}
-							})
-
-							dList.remove(dItem);
-						}
-					}
-				});
-			}
-		});
-
-		return breaks;
 	}
 
 	replaceIds(ast) {

@@ -7,12 +7,10 @@ $ npm install pagedjs
 ```
 
 ```js
-import { Chunker, Styler} from 'pagedjs';
+import { Previewer } from 'pagedjs';
 
-let styles = new Polisher();
-let styleText = await styles.add("path/to/css/file.css");
-
-let chunker = new Chunker(DOMContent, document.body, styles).then((flow) => {
+let paged = new Previewer();
+let flow = paged.preview(DOMContent, ["path/to/css/file.css"], document.body).then((flow) => {
 	console.log("Rendered", flow.total, "pages.");
 })
 ```
@@ -37,11 +35,50 @@ Upload and chunk an Epub (using Epub.js): [https://s3.amazonaws.com/pagedmedia/p
 ## Polisher
 Converts `@page` css to classes, and applies counters and content.
 
-Test styles for Aurorae: [https://s3.amazonaws.com/pagedmedia/pagedjs/examples/styler.html](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/styler.html).
+Test styles for Aurorae: [https://s3.amazonaws.com/pagedmedia/pagedjs/examples/polisher.html](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/polisher.html).
 
 ### CLI
 
 Command line interface to render out PDFs of HTML files using Puppeteer: [https://gitlab.pagedmedia.org/polyfills/pagedjs-cli](https://gitlab.pagedmedia.org/polyfills/pagedjs-cli).
+
+## Modules
+
+Modules are groups of handlers for that apply the layout and styles of a CSS module, such as Generated Content.
+
+New handlers can be registered from `import { registerHandlers } from 'pagedjs'` or by calling `Paged.registerHandlers` on an html page.
+
+```html
+<script src="https://s3.amazonaws.com/pagedmedia/pagedjs/dist/paged.polyfill.js"></script>
+<script>
+	class myHandler() extends Paged.Handler {
+		constructor(chunker, polisher, caller) {
+			super(chunker, polisher, caller);
+		}
+
+		afterPageLayout(pageFragment, page) {
+			console.log(pageFragment);
+		}
+	}
+	Paged.registerHandlers(myHandler);
+</script>
+```
+
+Handlers have methods that correspond to the hooks for the parsing, layout and rendering of the Chunker and Polisher. Returning an promise or `async` function from a method in a handler will complete that task before continuing with the other registered methods for that hook.
+
+```js
+// Chunker
+afterParsed(parsed)
+beforePageLayout(page)
+afterPageLayout(pageElement, page, breakToken)
+afterRendered(pages)
+
+// Polisher
+onUrl(urlNode)
+onAtPage(atPageNode)
+onRule(ruleNode)
+onDeclaration(declarationNode, ruleNode)
+onContent(contentNode, declarationNode, ruleNode)
+```
 
 ## Setup
 Install dependencies

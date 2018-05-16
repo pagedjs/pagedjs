@@ -1,6 +1,5 @@
 import Handler from "../handler";
 import csstree from 'css-tree';
-import pageSizes from '../../polisher/sizes';
 
 class StringSets extends Handler {
 	constructor(chunker, polisher, caller) {

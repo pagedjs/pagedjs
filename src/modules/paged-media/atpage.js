@@ -1,5 +1,6 @@
 import Handler from "../handler";
 import csstree from 'css-tree';
+import pageSizes from '../../polisher/sizes';
 
 class AtPage extends Handler {
 	constructor(chunker, polisher, caller) {

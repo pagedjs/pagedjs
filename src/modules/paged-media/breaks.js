@@ -89,9 +89,10 @@ class Breaks extends Handler {
 				}
 			}
 			// Add to global selector
-			selectors.push(b);
+			//selectors.push(b);
 		}
 
+		/*
 		// Add any other direct children
 		let child;
 		for (var i = 0; i < parsed.children.length; i++) {
@@ -146,6 +147,7 @@ class Breaks extends Handler {
 		}
 
 		return sections;
+		*/
 	}
 
 	mergeBreaks(pageBreaks, newBreaks) {
@@ -157,6 +159,42 @@ class Breaks extends Handler {
 			}
 		}
 		return pageBreaks;
+	}
+
+	addBreakAttributes(page) {
+		let before = page.wrapper.querySelector("[data-break-before]");
+		let after = page.wrapper.querySelector("[data-break-after]");
+		let named = page.wrapper.querySelector("[data-page]");
+
+		if (before) {
+			if (before.dataset.splitFrom) {
+				page.splitFrom = before.dataset.splitFrom;
+				page.element.setAttribute("data-split-from", before.dataset.splitFrom);
+			} else {
+				page.breakBefore = before.dataset.breakBefore;
+				page.element.setAttribute("data-break-before", before.dataset.breakBefore);
+			}
+		}
+
+		if (after) {
+			if (after.dataset.splitTo) {
+				page.splitTo = after.dataset.splitTo;
+				page.element.setAttribute("data-split-to", after.dataset.splitTo);
+			} else {
+				page.breakAfter = after.dataset.breakAfter;
+				page.element.setAttribute("data-break-after", after.dataset.breakAfter);
+			}
+		}
+
+
+		if (named) {
+			page.name = named.dataset.page;
+			page.element.classList.add(named.dataset.page + "_page");
+		}
+	}
+
+	layout(pageElement, page) {
+		this.addBreakAttributes(page);
 	}
 }
 

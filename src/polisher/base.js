@@ -159,11 +159,11 @@ export default `
   margin: unset;
 }
 
-[data-page], [data-break-before]:not([data-split-from]) {
+[data-page]:not([data-split-from]), [data-break-before]:not([data-split-from]) {
   break-before: column;
 }
 
-[data-page], [data-break-after] {
+[data-page]:not([data-split-to]), [data-break-after]:not([data-split-to]) {
   break-after: column;
 }
 

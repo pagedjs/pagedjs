@@ -94,7 +94,7 @@ export function stackChildren(currentNode, stacked) {
 }
 
 export function rebuildAncestors(node) {
-	let parent;
+	let parent, ancestor;
 	let ancestors = [];
 	let added = [];
 
@@ -108,9 +108,11 @@ export function rebuildAncestors(node) {
 	}
 
 	for (var i = 0; i < ancestors.length; i++) {
-		parent = ancestors[i].cloneNode(false);
+		ancestor = ancestors[i];
+		parent = ancestor.cloneNode(false);
 
 		parent.setAttribute("data-split-from", parent.getAttribute("ref"));
+		ancestor.setAttribute("data-split-to", parent.getAttribute("ref"));
 
 		if (parent.hasAttribute("id")) {
 			let dataID = parent.getAttribute("id");
@@ -118,8 +120,13 @@ export function rebuildAncestors(node) {
 			parent.removeAttribute("id");
 		}
 
+		// This is handled by css :not, but also tidied up here
 		if (parent.hasAttribute("data-break-before")) {
 			parent.removeAttribute("data-break-before");
+		}
+
+		if (ancestor.hasAttribute("data-break-after")) {
+			ancestor.removeAttribute("data-break-after");
 		}
 
 		if (added.length) {

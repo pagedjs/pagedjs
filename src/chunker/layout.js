@@ -1,6 +1,7 @@
 import { getBoundingClientRect } from "../utils/utils";
 import { walk, after, stackChildren, rebuildAncestors } from "../utils/dom";
 import EventEmitter from "event-emitter";
+import Hook from "../utils/hook";
 
 /**
  * Layout
@@ -8,13 +9,20 @@ import EventEmitter from "event-emitter";
  */
 class Layout {
 
-  constructor(element, wrapper, parser) {
+  constructor(element, wrapper, hooks) {
     this.element = element;
     this.wrapper = wrapper;
 
     let space = this.element.getBoundingClientRect();
     this.width = Math.round(space.width);
 
+    if (hooks) {
+      this.hooks = hooks;
+    } else {
+      this.hooks = {};
+      this.hooks.render = new Hook();
+      this.hooks.overflow = new Hook();
+    }
   }
 
   getStart(content, breakToken) {
@@ -124,6 +132,8 @@ class Layout {
   render(node, dest, breakToken, shallow=true, rebuild=true) {
 
     let clone = this.createDOMNode(node, !shallow);
+
+    this.hooks.render.trigger(clone);
 
     if (node.parentNode && node.parentNode.nodeType === 1) {
       let parent = dest.querySelector("[ref='" + node.parentNode.getAttribute("ref") + "']");
@@ -393,6 +403,9 @@ class Layout {
     }
     if (range) {
       range.setEndAfter(this.wrapper.lastChild);
+
+      this.hooks.overflow.trigger(range);
+
       return range;
     }
 

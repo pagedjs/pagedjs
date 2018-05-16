@@ -1,6 +1,7 @@
 import { getBoundingClientRect } from "../utils/utils";
 import { walk, after, stackChildren, rebuildAncestors } from "../utils/dom";
 import EventEmitter from "event-emitter";
+import Hook from "../utils/hook";
 
 /**
  * Layout
@@ -8,13 +9,20 @@ import EventEmitter from "event-emitter";
  */
 class Layout {
 
-  constructor(element, wrapper, parser) {
+  constructor(element, wrapper, hooks) {
     this.element = element;
     this.wrapper = wrapper;
 
     let space = this.element.getBoundingClientRect();
     this.width = Math.round(space.width);
 
+    if (hooks) {
+      this.hooks = hooks;
+    } else {
+      this.hooks = {};
+      this.hooks.render = new Hook();
+      this.hooks.overflow = new Hook();
+    }
   }
 
   getStart(content, breakToken) {
@@ -23,11 +31,11 @@ class Layout {
     let index, ref, parent;
 
     if (node.nodeType === 1) {
-      start = content.querySelector("[ref='"+ node.getAttribute("ref") +"']");
+      start = content.querySelector("[data-ref='"+ node.getAttribute("data-ref") +"']");
     } else {
       index = Array.prototype.indexOf.call(node.parentNode.childNodes, node);
-      ref = node.parentNode.getAttribute("ref");
-      parent = content.querySelector("[ref='" + ref + "']");
+      ref = node.parentNode.getAttribute("data-ref");
+      parent = content.querySelector("[data-ref='" + ref + "']");
       start = parent.childNodes[index];
     }
 
@@ -125,15 +133,17 @@ class Layout {
 
     let clone = this.createDOMNode(node, !shallow);
 
+    this.hooks.render.trigger(clone);
+
     if (node.parentNode && node.parentNode.nodeType === 1) {
-      let parent = dest.querySelector("[ref='" + node.parentNode.getAttribute("ref") + "']");
+      let parent = dest.querySelector("[data-ref='" + node.parentNode.getAttribute("data-ref") + "']");
 
       // Rebuild chain
       if (parent) {
         parent.appendChild(clone);
       } else if (rebuild) {
         let fragment = rebuildAncestors(node);
-        parent = fragment.querySelector("[ref='" + node.parentNode.getAttribute("ref") + "']");
+        parent = fragment.querySelector("[data-ref='" + node.parentNode.getAttribute("data-ref") + "']");
         if (breakToken && breakToken.node.nodeType === 3 && breakToken.offset > 0) {
           clone.textContent = clone.textContent.substring(breakToken.offset);
           parent.appendChild(clone);
@@ -166,71 +176,31 @@ class Layout {
     return node;
   }
 
-  // rebuildAncestors(node) {
-  //   let parent;
-  //   let ancestors = [];
-  //   let added = [];
-  //
-  //   let fragment = document.createDocumentFragment();
-  //
-  //   // Gather all ancestors
-  //   let element = node;
-  //   while(element.parentNode && element.parentNode.nodeType === 1) {
-  //     ancestors.unshift(element.parentNode);
-  //     element = element.parentNode;
-  //   }
-  //
-  //   for (var i = 0; i < ancestors.length; i++) {
-  //     // parent = this.createDOMNode(ancestors[i]);
-  //     parent = ancestors[i].cloneNode(false);
-  //
-  //     parent.setAttribute("data-split-from", parent.getAttribute("ref"));
-  //
-  //     if (parent.hasAttribute("id")) {
-  //       let dataID = parent.getAttribute("id");
-  //       parent.setAttribute("data-id", dataID);
-  //       parent.removeAttribute("id");
-  //     }
-  //
-  //     if (added.length) {
-  //       // let container = this.wrapper.querySelector("[ref='" + ancestors[i].parent.attribs.ref + "']");
-  //       let container = added[added.length-1];
-  //       container.appendChild(parent);
-  //     } else {
-  //       fragment.appendChild(parent);
-  //     }
-  //     added.push(parent);
-  //   }
-  //
-  //   added = undefined;
-  //   return fragment;
-  // }
-
   findBreakToken(overflow) {
     let offset = overflow.startOffset;
     let node, ref, parent, index, temp;
 
     if (overflow.startContainer.nodeType === 1) {
-      // node = children.querySelector("[ref='" + overflow.startContainer.childNodes[offset].getAttribute("ref") + "']");
+      // node = children.querySelector("[data-ref='" + overflow.startContainer.childNodes[offset].getAttribute("data-ref") + "']");
       temp = overflow.startContainer.childNodes[offset];
 
       if (temp.nodeType === 1) {
-        ref = temp.getAttribute("ref");
+        ref = temp.getAttribute("data-ref");
         // node = this.parser.find(ref);
-        node = this.wrapper.querySelector("[ref='" + ref + "']");
+        node = this.wrapper.querySelector("[data-ref='" + ref + "']");
         offset = 0;
       } else {
         index = Array.prototype.indexOf.call(overflow.startContainer.childNodes, temp);
-        ref = overflow.startContainer.getAttribute("ref");
-        parent = this.wrapper.querySelector("[ref='" + ref + "']");
+        ref = overflow.startContainer.getAttribute("data-ref");
+        parent = this.wrapper.querySelector("[data-ref='" + ref + "']");
         node = parent.childNodes[index];
         offset = 0;
       }
     } else {
       index = Array.prototype.indexOf.call(overflow.startContainer.parentNode.childNodes, overflow.startContainer);
-      // let parent = children.querySelector("[ref='" + overflow.startContainer.parentNode.getAttribute("ref") + "']");
-      ref = overflow.startContainer.parentNode.getAttribute("ref");
-      parent = this.wrapper.querySelector("[ref='" + ref + "']");
+      // let parent = children.querySelector("[data-ref='" + overflow.startContainer.parentNode.getAttribute("data-ref") + "']");
+      ref = overflow.startContainer.parentNode.getAttribute("data-ref");
+      parent = this.wrapper.querySelector("[data-ref='" + ref + "']");
       node = parent.childNodes[index];
     }
 
@@ -393,6 +363,9 @@ class Layout {
     }
     if (range) {
       range.setEndAfter(this.wrapper.lastChild);
+
+      this.hooks.overflow.trigger(range);
+
       return range;
     }
 
@@ -466,7 +439,7 @@ class Layout {
       let exists = false;
 
       if (node.nodeType === 1) {
-        exists = this.wrapper.querySelector("[ref='" + node.getAttribute("ref") + "']");
+        exists = this.wrapper.querySelector("[data-ref='" + node.getAttribute("data-ref") + "']");
       }
 
       if (exists) {

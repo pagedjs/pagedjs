@@ -1,5 +1,4 @@
 import Layout from "./layout";
-import Renderer from "./renderer";
 import EventEmitter from "event-emitter";
 
 /**
@@ -73,7 +72,7 @@ class Page {
 
     let page = this.element;
 
-    let id = `page-${pgnum}`;
+    let id = `page-${pgnum+1}`;
 
     this.id = id;
 
@@ -114,10 +113,10 @@ class Page {
   }
   */
 
-  layout(contents, breakToken, parser) {
+  layout(contents, breakToken, hooks) {
     // console.log("layout page", this.id);
     let size = this.area.getBoundingClientRect();
-    this.l = new Layout(this.area, this.wrapper, parser);
+    this.l = new Layout(this.area, this.wrapper, hooks);
 
     this.l.onOverflow((overflow) => {
       this._onOverflow && this._onOverflow(overflow);
@@ -129,46 +128,14 @@ class Page {
 
     breakToken = this.l.layout(size, contents, {}, {}, breakToken);
 
-    // Lift data attributes
-    this.getAttributes();
-
     return breakToken;
-  }
-
-
-  getAttributes() {
-    let first = this.wrapper.children && this.wrapper.children[0];
-    let name = first.dataset.page;
-
-    // for (let d in first.dataset) {
-    //   this.element.setAttribute("data-"+d, first.dataset[d]);
-    // }
-    if (first.dataset.breakBefore) {
-      this.breakBefore = first.dataset.breakBefore;
-      this.element.setAttribute("data-break-before", first.dataset.breakBefore);
-    }
-
-    if (first.dataset.breakAfter) {
-      this.breakAfter = first.dataset.breakAfter;
-      this.element.setAttribute("data-break-after", first.dataset.breakAfter);
-    }
-
-    if (first.dataset.splitFrom) {
-      this.splitFrom = first.dataset.splitFrom;
-      this.element.setAttribute("data-split-from", first.dataset.splitFrom);
-    }
-
-    if (name) {
-      this.name = name;
-      this.element.classList.add(name + "_page");
-    }
   }
 
   getByParent(ref, entries) {
     let e;
     for (var i = 0; i < entries.length; i++) {
       e = entries[i];
-      if(e.ref === ref) {
+      if(e.dataset.ref === ref) {
         return e;
         break;
       }

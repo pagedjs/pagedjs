@@ -159,11 +159,25 @@ export default `
   margin: unset;
 }
 
-[data-page], [data-break-before]:not([data-split-from]) {
+[data-page]:not([data-split-from]),
+[data-break-before="page"]:not([data-split-from]),
+[data-break-before="always"]:not([data-split-from]),
+[data-break-before="left"]:not([data-split-from]),
+[data-break-before="right"]:not([data-split-from]),
+[data-break-before="recto"]:not([data-split-from]),
+[data-break-before="verso"]:not([data-split-from])
+{
   break-before: column;
 }
 
-[data-page], [data-break-after] {
+[data-page]:not([data-split-to]),
+[data-break-after="page"]:not([data-split-to]),
+[data-break-after="always"]:not([data-split-to]),
+[data-break-after="left"]:not([data-split-to]),
+[data-break-after="right"]:not([data-split-to]),
+[data-break-after="recto"]:not([data-split-to]),
+[data-break-after="verso"]:not([data-split-to])
+{
   break-after: column;
 }
 

@@ -1,10 +1,8 @@
-import Section from "./section";
 import Page from "./page";
 import ContentParser from "./parser";
 import EventEmitter from "event-emitter";
 import Hook from "../utils/hook";
 
-// const MAX_SECTIONS = false;
 const MAX_PAGES = 10000000000;
 
 const TEMPLATE = `<div class="page">
@@ -46,6 +44,9 @@ class Chunker {
 		this.hooks = {};
 		this.hooks.afterParsed = new Hook(this);
 		this.hooks.beforePageLayout = new Hook(this);
+		this.hooks.layout = new Hook(this);
+		this.hooks.render = new Hook(this);
+		this.hooks.overflow = new Hook(this);
 		this.hooks.afterPageLayout = new Hook(this);
 		this.hooks.afterRendered = new Hook(this);
 
@@ -127,6 +128,8 @@ class Chunker {
 			// Layout content in the page, starting from the breakToken
 			breakToken = page.layout(content, breakToken);
 
+			await this.hooks.layout.trigger(page.element, page, breakToken, this);
+
 			if (page.breakBefore === "right" && this.total > 1 && this.total % 2 === 0) {
 				this.insertPage(this.total - 2, true);
 			}
@@ -149,7 +152,7 @@ class Chunker {
 	addPage(blank) {
 		let lastPage = this.pages[this.pages.length - 1];
 		// Create a new page from the template
-		let page = new Page(this.pagesArea, this.pageTemplate, blank);
+		let page = new Page(this.pagesArea, this.pageTemplate, blank, this.hooks);
 		let total = this.pages.push(page);
 
 		// Create the pages
@@ -180,7 +183,7 @@ class Chunker {
 	insertPage(index, blank) {
 		let lastPage = this.pages[index];
 		// Create a new page from the template
-		let page = new Page(this.pagesArea, this.pageTemplate, blank);
+		let page = new Page(this.pagesArea, this.pageTemplate, blank, this.hooks);
 
 		let total = this.pages.splice(index, 0, page);
 

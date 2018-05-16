@@ -27,13 +27,13 @@ class Parser {
 			let uuid = this.uuid();
 
 			this.refs[uuid] = node;
-			node.ref = uuid; // Refs for all nodes
+			node.dataset.ref = uuid; // Refs for all nodes
 
-			node.attribs.ref = uuid;
-			node.attribs.children = node.children.length;
+			node.dataset.ref = uuid;
+			node.dataset.children = node.children.length;
 
 			if (node.data) {
-				node.attribs.text = node.data.length;
+				node.dataset.text = node.data.length;
 			}
 
       if (node.name === "section") {
@@ -55,8 +55,8 @@ class Parser {
       node = next.value;
       done = next.done;
 
-      if (node && node.attribs && node.attribs.ref) {
-        this.refs[node.attribs.ref] = node;
+      if (node && node.dataset && node.dataset.ref) {
+        this.refs[node.dataset.ref] = node;
       }
     }
   }

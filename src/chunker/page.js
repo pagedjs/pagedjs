@@ -72,7 +72,7 @@ class Page {
 
     let page = this.element;
 
-    let id = `page-${pgnum}`;
+    let id = `page-${pgnum+1}`;
 
     this.id = id;
 

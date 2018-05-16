@@ -20,14 +20,16 @@ describe('default', async () => {
 		})
 
 		it('should render 1 page', async () => {
-			let pages = await page.$$eval(".pages", (r) => r.length);
+			let pages = await page.$$eval(".page", (r) => r.length);
 			expect(pages).toBe(1);
 		})
 
-		it('should create a pdf', async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+		if (!DEBUG) {
+			it('should create a pdf', async () => {
+				let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(1);
-		})
+				expect(pdf).toMatchPDFSnapshot(1);
+			})
+		}
 	}
 )

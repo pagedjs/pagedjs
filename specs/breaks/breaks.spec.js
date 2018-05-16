@@ -19,7 +19,7 @@ describe('default', async () => {
 				return r.length;
 			});
 
-			expect(pages).toEqual(5);
+			expect(pages).toEqual(6);
 		})
 
 		it('should avoid breaking after h2', async () => {
@@ -67,6 +67,19 @@ describe('default', async () => {
 			});
 
 			expect(isRight).toEqual(true);
+		})
+
+		it('should breaking after #breakAfter', async () => {
+			let h4ParentPage = await page.$eval("#breakAfter", (r) => {
+				let pageId = r.closest(".page").id;
+				return pageId;
+			});
+			let pParentPage = await page.$eval("#afterh4", (r) => {
+				let pageId = r.closest(".page").id;
+				return pageId;
+			});
+
+			expect(h4ParentPage).not.toEqual(pParentPage);
 		})
 
 		if (!DEBUG) {

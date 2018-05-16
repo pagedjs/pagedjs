@@ -1,4 +1,3 @@
-import Section from "./section";
 import Page from "./page";
 import ContentParser from "./parser";
 import EventEmitter from "event-emitter";

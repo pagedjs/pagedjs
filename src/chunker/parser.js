@@ -54,7 +54,7 @@ class ContentParser {
 		while(node = treeWalker.nextNode()) {
 			let uuid = UUID();
 
-			node.setAttribute("ref", uuid);
+			node.setAttribute("data-ref", uuid);
 			if (node.id) {
 				node.setAttribute("data-id", node.id);
 			}

@@ -111,8 +111,8 @@ export function rebuildAncestors(node) {
 		ancestor = ancestors[i];
 		parent = ancestor.cloneNode(false);
 
-		parent.setAttribute("data-split-from", parent.getAttribute("ref"));
-		ancestor.setAttribute("data-split-to", parent.getAttribute("ref"));
+		parent.setAttribute("data-split-from", parent.getAttribute("data-ref"));
+		ancestor.setAttribute("data-split-to", parent.getAttribute("data-ref"));
 
 		if (parent.hasAttribute("id")) {
 			let dataID = parent.getAttribute("id");
@@ -160,8 +160,8 @@ export function split(bound, cutElement, breakAfter) {
 		// Clone cut
 		if (!breakAfter) {
 			let clone = cutElement.cloneNode(true);
-			let ref = cutElement.parentNode.getAttribute('ref');
-			let parent = fragment.querySelector("[ref='" + ref + "']");
+			let ref = cutElement.parentNode.getAttribute('data-ref');
+			let parent = fragment.querySelector("[data-ref='" + ref + "']");
 			parent.appendChild(clone);
 			needsRemoval.push(cutElement);
 		}
@@ -170,8 +170,8 @@ export function split(bound, cutElement, breakAfter) {
 		let next = after(cutElement, bound);
 		while (next) {
 			let clone = next.cloneNode(true);
-			let ref = next.parentNode.getAttribute('ref');
-			let parent = fragment.querySelector("[ref='" + ref + "']");
+			let ref = next.parentNode.getAttribute('data-ref');
+			let parent = fragment.querySelector("[data-ref='" + ref + "']");
 			parent.appendChild(clone);
 			needsRemoval.push(next);
 			next = after(next, bound);

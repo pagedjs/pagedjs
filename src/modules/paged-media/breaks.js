@@ -99,7 +99,7 @@ class Breaks extends Handler {
 			child = parsed.children[i];
 			if ((child.noteType === 1 || child.nodeType === "3" || typeof child.noteType === "undefined")
 					&& child.nodeName !== "SCRIPT") {
-				selectors.push("[ref='"+child.getAttribute("ref")+"']");
+				selectors.push("[data-ref='"+child.getAttribute("data-ref")+"']");
 			}
 		}
 

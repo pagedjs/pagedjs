@@ -1,5 +1,4 @@
 import Layout from "./layout";
-import Renderer from "./renderer";
 import EventEmitter from "event-emitter";
 
 /**
@@ -136,7 +135,7 @@ class Page {
     let e;
     for (var i = 0; i < entries.length; i++) {
       e = entries[i];
-      if(e.ref === ref) {
+      if(e.dataset.ref === ref) {
         return e;
         break;
       }

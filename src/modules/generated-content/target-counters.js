@@ -52,7 +52,7 @@ class TargetCounters extends Handler {
 			let target = this.counterTargets[name];
 			let split = target.selector.split("::");
 			let query = split[0];
-			let queried = fragment.querySelectorAll(query + ":not([data-target-counter])");
+			let queried = chunker.pagesArea.querySelectorAll(query + ":not([data-target-counter])");
 
 			queried.forEach((selected, index) => {
 				// TODO: handle func other than attr

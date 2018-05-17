@@ -14,7 +14,7 @@ html{
 }
 
 @media screen {
-  .page {
+  .baseline .page {
     background-image:  repeating-linear-gradient(180deg, transparent  0, transparent 14px , rgba(0,255,0,0.7) var(--baseline)) ;
     background-size: cover;
     background-position:  0 -3px , 0 0

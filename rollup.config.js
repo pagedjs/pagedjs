@@ -22,15 +22,15 @@ export default [
 		plugins: plugins
 	},
 
-	{
-		input: pkg.module,
-		output: [
-			{
-				file: pkg.main,
-				format: 'cjs'
-			},
-		]
-	},
+	// {
+	// 	input: pkg.module,
+	// 	output: [
+	// 		{
+	// 			file: pkg.main,
+	// 			format: 'cjs'
+	// 		},
+	// 	]
+	// },
 
 	{
 		input: "./src/polyfill/polyfill.js",

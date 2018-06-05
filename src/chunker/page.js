@@ -34,7 +34,7 @@ class Page {
       page = this.pagesArea.lastChild;
     }
 
-    let area = page.querySelector(".area");
+    let area = page.querySelector(".pagedjs_area");
 
 
     let size = area.getBoundingClientRect();
@@ -79,23 +79,23 @@ class Page {
     page.id = id;
 
     if (this.name) {
-      page.classList.add(this.name + "_page");
+      page.classList.add("pagedjs_" + this.name + "_page");
     }
 
     if (this.blank) {
-      page.classList.add("blank_page");
+      page.classList.add("pagedjs_blank_page");
     }
 
     if (pgnum === 0) {
-      page.classList.add("first_page");
+      page.classList.add("pagedjs_first_page");
     }
 
     if (pgnum % 2 !== 1) {
-      page.classList.remove("left_page");
-      page.classList.add("right_page");
+      page.classList.remove("pagedjs_left_page");
+      page.classList.add("pagedjs_right_page");
     } else {
-      page.classList.remove("right_page");
-      page.classList.add("left_page");
+      page.classList.remove("pagedjs_right_page");
+      page.classList.add("pagedjs_left_page");
     }
   }
 

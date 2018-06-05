@@ -12,7 +12,7 @@ export default `
   size: var(--width) var(--height);
 }
 
-.page {
+.pagedjs_page {
   box-sizing: border-box;
   width: var(--width);
   height: var(--height);
@@ -23,11 +23,11 @@ export default `
   grid-template-rows: [header] var(--margin-top) [page] calc(var(--height) - var(--margin-top) - var(--margin-bottom)) [footer] var(--margin-bottom);
 }
 
-.page * {
+.pagedjs_page * {
   box-sizing: border-box;
 }
 
-.top {
+.pagedjs_margin-top {
   width: var(--width);
   height: var(--margin-top);
   display: flex;
@@ -35,24 +35,24 @@ export default `
   grid-row: header;
 }
 
-.top .top-left-corner {
+.pagedjs_margin-top .pagedjs_margin-top-left-corner {
   width: var(--margin-left);
   height: var(--margin-top);
   flex: none;
 }
 
-.top .top-right-corner {
+.pagedjs_margin-top .pagedjs_margin-top-right-corner {
   width: var(--margin-right);
   height: var(--margin-top);
   flex: none;
 }
 
-.top > div {
+.pagedjs_margin-top > div {
   flex-grow: 1;
   position: relative;
 }
 
-.right {
+.pagedjs_margin-right {
   height: calc(var(--height) - var(--margin-top) - var(--margin-bottom));
   width: var(--margin-right);
   display: flex;
@@ -62,12 +62,12 @@ export default `
   grid-row: page;
 }
 
-.right > div {
+.pagedjs_margin-right > div {
   flex-grow: 1;
   position: relative;
 }
 
-.bottom {
+.pagedjs_margin-bottom {
   width: var(--width);
   height: var(--margin-bottom);
   display: flex;
@@ -75,24 +75,24 @@ export default `
   grid-row: footer;
 }
 
-.bottom .bottom-left-corner {
+.pagedjs_margin-bottom .pagedjs_margin-bottom-left-corner {
   width: var(--margin-left);
   height: var(--margin-bottom);
   flex: none;
 }
 
-.bottom .bottom-right-corner {
+.pagedjs_margin-bottom .pagedjs_margin-bottom-right-corner {
   width: var(--margin-right);
   height: var(--margin-bottom);
   flex: none;
 }
 
-.bottom > div {
+.pagedjs_margin-bottom > div {
   flex-grow: 1;
   position: relative;
 }
 
-.left {
+.pagedjs_margin-left {
   height: calc(var(--height) - var(--margin-top) - var(--margin-bottom));
   width: var(--margin-left);
   display: flex;
@@ -101,53 +101,53 @@ export default `
   grid-row: page;
 }
 
-.left > div {
+.pagedjs_margin-left > div {
   flex-grow: 1;
   position: relative;
 }
 
-.page > .area {
+.pagedjs_page > .pagedjs_area {
   grid-column: center;
   grid-row: page;
   width: 100%;
   height: 100%;
 }
 
-.page {
+.pagedjs_page {
   counter-increment: page;
 }
 
 
-.page .top > div,
-.page .bottom > div {
+.pagedjs_page .pagedjs_margin-top > div,
+.pagedjs_page .pagedjs_margin-bottom > div {
   height: 100%;
   display: flex;
   align-items: center;
 }
 
-.page .left > div,
-.page .right > div {
+.pagedjs_page .pagedjs_margin-left > div,
+.pagedjs_page .pagedjs_margin-right > div {
   width: 100%;
   display: flex;
   align-items: center;
 }
 
-.pages .left .content::after,
-.pages .top .content::after,
-.pages .right .content::after,
-.pages .bottom .content::after {
+.pagedjs_pages .pagedjs_margin-left .pagedjs_margin-content::after,
+.pagedjs_pages .pagedjs_margin-top .pagedjs_margin-content::after,
+.pagedjs_pages .pagedjs_margin-right .pagedjs_margin-content::after,
+.pagedjs_pages .pagedjs_margin-bottom .pagedjs_margin-content::after {
   display: block;
 }
 
-.pages > .page > .area > div [data-split-from] {
+.pagedjs_pages > .pagedjs_page > .pagedjs_area > div [data-split-from] {
   text-indent: unset;
   margin-top: unset;
   padding-top: unset;
   initial-letter: unset;
 }
 
-.pages > .page > .area > div [data-split-from] > *::first-letter,
-.pages > .page > .area > div [data-split-from]::first-letter {
+.pagedjs_pages > .pagedjs_page > .pagedjs_area > div [data-split-from] > *::first-letter,
+.pagedjs_pages > .pagedjs_page > .pagedjs_area > div [data-split-from]::first-letter {
   color: unset;
   font-size: unset;
   font-wieght: unset;
@@ -188,12 +188,12 @@ export default `
     margin: 0;
     padding: 0;
   }
-  .pages {
+  .pagedjs_pages {
     width: var(--width);
     flex-direction: column;
     transform: none !important;
   }
-  .page {
+  .pagedjs_page {
     margin: 0;
     padding: 0;
     break-before: always;

@@ -24,14 +24,14 @@
 
         console.log("Rendering " + flow.total + " pages took " + (t1 - t0) + " milliseconds.");
 
-        let editable = document.querySelectorAll(".page .area > div");
+        let editable = document.querySelectorAll(".pagedjs_page .pagedjs_area > div");
         for (var i = 0; i < editable.length; i++) {
           editable[i].setAttribute("contenteditable", true);
         }
       });
 
       let resizer = () => {
-        let pages = document.querySelector(".pages");
+        let pages = document.querySelector(".pagedjs_pages");
 
         if (pages) {
           let scale = ((window.innerWidth * .9 ) / pages.offsetWidth);

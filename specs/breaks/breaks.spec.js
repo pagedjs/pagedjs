@@ -15,7 +15,7 @@ describe('default', async () => {
 		})
 
 		it('should render 5 pages', async () => {
-			let pages = await page.$$eval(".page", (r) => {
+			let pages = await page.$$eval(".pagedjs_page", (r) => {
 				return r.length;
 			});
 
@@ -24,11 +24,11 @@ describe('default', async () => {
 
 		it('should avoid breaking after h2', async () => {
 			let h2ParentPage = await page.$eval("h2", (r) => {
-				let pageId = r.closest(".page").id;
+				let pageId = r.closest(".pagedjs_page").id;
 				return pageId;
 			});
 			let pParentPage = await page.$eval("#afterh2", (r) => {
-				let pageId = r.closest(".page").id;
+				let pageId = r.closest(".pagedjs_page").id;
 				return pageId;
 			});
 
@@ -41,7 +41,7 @@ describe('default', async () => {
 				let section;
 				for (let i = 0; i < r.length; i++) {
 					section = r[i];
-					curr = section.closest(".page").id;
+					curr = section.closest(".pagedjs_page").id;
 					if(curr === prev) {
 						return false;
 					}
@@ -54,7 +54,7 @@ describe('default', async () => {
 		})
 
 		it('should render a blank page before break-before=right', async () => {
-			let blank = await page.$eval(".blank_page", (r) => {
+			let blank = await page.$eval(".pagedjs_blank_page", (r) => {
 				return r.id;
 			});
 
@@ -63,7 +63,7 @@ describe('default', async () => {
 
 		it('should render break-before=right sections as right page', async () => {
 			let isRight = await page.$eval("#page-5", (r) => {
-				return r.classList.contains("right_page");
+				return r.classList.contains("pagedjs_right_page");
 			});
 
 			expect(isRight).toEqual(true);
@@ -71,11 +71,11 @@ describe('default', async () => {
 
 		it('should breaking after #breakAfter', async () => {
 			let h4ParentPage = await page.$eval("#breakAfter", (r) => {
-				let pageId = r.closest(".page").id;
+				let pageId = r.closest(".pagedjs_page").id;
 				return pageId;
 			});
 			let pParentPage = await page.$eval("#afterh4", (r) => {
-				let pageId = r.closest(".page").id;
+				let pageId = r.closest(".pagedjs_page").id;
 				return pageId;
 			});
 

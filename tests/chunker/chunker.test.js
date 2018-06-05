@@ -4,7 +4,8 @@ describe('Chunker', async () => {
 
 		it('should create a page area', async () => {
 			let chunker = new Chunker();
-			expect(chunker.pagesArea.classList).toContain('pages');
+			chunker.setup();
+			expect(chunker.pagesArea.classList).toContain('pagedjs_pages');
 		})
 
 })

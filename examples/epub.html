@@ -232,7 +232,7 @@
           });
 
           let resizer = () => {
-            let pages = document.querySelector(".pages");
+            let pages = document.querySelector(".pagedjs_pages");
             scale = ((window.innerWidth ) / pages.offsetWidth) * .75;
 
             if (scale < 1) {
@@ -250,7 +250,7 @@
 
 
           setTimeout(() => {
-            let page = document.querySelector(".page");
+            let page = document.querySelector(".pagedjs_page");
             let height = (page.offsetHeight + 51) * scale;
             var next = document.getElementById("next");
 
@@ -324,13 +324,13 @@
         transform-origin: 0 0;
       } */
 
-      .page {
+      .pagedjs_page {
         background-color: #fdfdfd;
         margin-bottom: calc(var(--margin) / 2);
         flex: none;
       }
 
-      .pages {
+      .pagedjs_pages {
         width: calc(var(--width) * 2);
         display: flex;
         flex-direction: row;
@@ -340,7 +340,7 @@
         margin: 0 auto;
       }
 
-      .pages > .section {
+      .pagedjs_pages > .section {
         width: calc(var(--width) * 2);
         display: flex;
         flex-direction: row;
@@ -348,7 +348,7 @@
         justify-content: flex-start;
       }
 
-      .first_page {
+      .pagedjs_first_page {
         margin-left: 50%;
       }
 

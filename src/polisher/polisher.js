@@ -11,6 +11,7 @@ class Polisher {
 		this.hooks = {};
 		this.hooks.onUrl = new Hook(this);
 		this.hooks.onAtPage = new Hook(this);
+		this.hooks.onAtMedia = new Hook(this);
 		this.hooks.onRule = new Hook(this);
 		this.hooks.onDeclaration = new Hook(this);
 		this.hooks.onContent = new Hook(this);

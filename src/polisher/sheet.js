@@ -11,6 +11,7 @@ class Sheet {
 			this.hooks = {};
 			this.hooks.onUrl = new Hook(this);
 			this.hooks.onAtPage = new Hook(this);
+			this.hooks.onAtMedia = new Hook(this);
 			this.hooks.onRule = new Hook(this);
 			this.hooks.onDeclaration = new Hook(this);
 			this.hooks.onContent = new Hook(this);
@@ -45,7 +46,7 @@ class Sheet {
 		// Trigger Hooks
 		this.urls(this.ast);
 		this.rules(this.ast);
-		this.pages(this.ast);
+		this.atrules(this.ast);
 
 		this.hooks.afterTreeWalk.trigger(this.ast, this);
 	}
@@ -74,7 +75,7 @@ class Sheet {
 		});
 	}
 
-	pages(ast) {
+	atrules(ast) {
 		csstree.walk(ast, {
 			visit: 'Atrule',
 			enter: (node, item, list) => {
@@ -84,9 +85,15 @@ class Sheet {
 					this.hooks.onAtPage.trigger(node, item, list);
 					this.declarations(node, item, list);
 				}
+
+				if (basename === "media") {
+					this.hooks.onAtMedia.trigger(node, item, list);
+					this.declarations(node, item, list);
+				}
 			}
 		});
 	}
+
 
 	rules(ast) {
 		let parsed = {};

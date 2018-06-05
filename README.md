@@ -120,7 +120,7 @@ To test the pdf output of specs, you'll need to install ghostscript locally.
 
 ```bash
 brew install ghostscript
-npm install ghostscript4js
+npm install ghostscript4js --no-save
 ```
 
 Then run the jest tests in puppeteer.

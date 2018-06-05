@@ -191,9 +191,13 @@ export default `
   .pages {
     width: var(--width);
     flex-direction: column;
+    transform: none !important;
   }
   .page {
+    margin: 0;
+    padding: 0;
     break-before: always;
+    break-after: always;
   }
 }
 `;

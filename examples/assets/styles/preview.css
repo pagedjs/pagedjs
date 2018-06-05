@@ -7,6 +7,10 @@
     outline: 0px solid transparent;
 }
 
+#controls {
+  display: none;
+}
+
 @media screen {
 
   body {
@@ -33,38 +37,12 @@
   #controls {
     margin: 20px 0;
     text-align: center;
+    display: block;
   }
 
   .page.first_page {
     margin-left: calc(50% + var(--margin));
   }
-}
-
-@media print {
-  body {
-    width: var(--width);
-    height: var(--height);
-    margin: 0;
-    padding: 0;
-  }
-
-  .pages {
-    width: var(--width);
-    flex-direction: column;
-    transform: none !important;
-  }
-
-  .page {
-    margin-bottom: 0;
-    flex: none;
-    break-before: always;
-    break-after: always;
-  }
-
-  #controls {
-    display: none;
-  }
-
 }
 
 @media screen {

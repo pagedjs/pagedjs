@@ -67,7 +67,7 @@ class TargetCounters extends Handler {
 					selected.setAttribute("data-target-counter", selector);
 					// TODO: handle other counter types (by query)
 					if (target.counter === "page") {
-						let pages = chunker.pagesArea.querySelectorAll(".page");
+						let pages = chunker.pagesArea.querySelectorAll(".pagedjs_page");
 						let pg = 0;
 						for (var i = 0; i < pages.length; i++) {
 							pg += 1;

@@ -5,32 +5,32 @@ import Hook from "../utils/hook";
 
 const MAX_PAGES = 10000000000;
 
-const TEMPLATE = `<div class="page">
-	<div class="top">
-		<div class="top-left-corner"><div class="content"></div></div>
-		<div class="top-left"><div class="content"></div></div>
-		<div class="top-center"><div class="content"></div></div>
-		<div class="top-right"><div class="content"></div></div>
-		<div class="top-right-corner"><div class="content"></div></div>
+const TEMPLATE = `<div class="pagedjs_page">
+	<div class="pagedjs_margin-top">
+		<div class="pagedjs_margin-top-left-corner"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin-top-left"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin-top-center"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin-top-right"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin-top-right-corner"><div class="pagedjs_margin-content"></div></div>
 	</div>
-	<div class="right">
-		<div class="right-top"><div class="content"></div></div>
-		<div class="right-middle"><div class="content"></div></div>
-		<div class="right-bottom"><div class="content"></div></div>
+	<div class="pagedjs_margin-right">
+		<div class="pagedjs_margin-right-top"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin-right-middle"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin-right-bottom"><div class="pagedjs_margin-content"></div></div>
 	</div>
-	<div class="left">
-		<div class="left-top"><div class="content"></div></div>
-		<div class="left-middle"><div class="content"></div></div>
-		<div class="left-bottom"><div class="content"></div></div>
+	<div class="pagedjs_margin-left">
+		<div class="pagedjs_margin-left-top"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin-left-middle"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin-left-bottom"><div class="pagedjs_margin-content"></div></div>
 	</div>
-	<div class="bottom">
-		<div class="bottom-left-corner"><div class="content"></div></div>
-		<div class="bottom-left"><div class="content"></div></div>
-		<div class="bottom-center"><div class="content"></div></div>
-		<div class="bottom-right"><div class="content"></div></div>
-		<div class="bottom-right-corner"><div class="content"></div></div>
+	<div class="pagedjs_margin-bottom">
+		<div class="pagedjs_margin-bottom-left-corner"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin-bottom-left"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin-bottom-center"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin-bottom-right"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin-bottom-right-corner"><div class="pagedjs_margin-content"></div></div>
 	</div>
-	<div class="area"></div>
+	<div class="pagedjs_area"></div>
 </div>`;
 
 /**
@@ -62,7 +62,7 @@ class Chunker {
 
 	setup(renderTo) {
 		this.pagesArea = document.createElement("div");
-		this.pagesArea.classList.add("pages");
+		this.pagesArea.classList.add("pagedjs_pages");
 
 		if (renderTo) {
 			renderTo.appendChild(this.pagesArea);

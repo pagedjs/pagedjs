@@ -27,7 +27,7 @@
     <script src="../dist/paged.js"></script>
 
     <style>
-      #main .first_page {
+      #main .pagedjs_first_page {
         margin-left: unset;
       }
     </style>
@@ -39,7 +39,7 @@
 			// Codemirror
 			let cssTextArea = document.getElementById('codemirror');
 
-			await fetch("aurorae/book.css")
+			await fetch("assets/aurorae/book.css")
 			.then((response) => {
 				return response.text();
 			}).then((text) => {
@@ -90,7 +90,7 @@
 
 
       let resizer = () => {
-        let pages = document.querySelector(".pages");
+        let pages = document.querySelector(".pagedjs_pages");
         let scale = ((window.innerWidth * .9 ) / pages.offsetWidth);
 				if (scale < 1) {
 					pages.style.transform = `scale(${scale}) translate(${(window.innerWidth / 2) - ((pages.offsetWidth * scale / 2) ) }px, 0)`;

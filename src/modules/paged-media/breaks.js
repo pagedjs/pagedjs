@@ -189,7 +189,7 @@ class Breaks extends Handler {
 
 		if (named) {
 			page.name = named.dataset.page;
-			page.element.classList.add(named.dataset.page + "_page");
+			page.element.classList.add("pagedjs_" + named.dataset.page + "_page");
 		}
 	}
 

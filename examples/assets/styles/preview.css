@@ -17,14 +17,14 @@
     background-color: whitesmoke;
   }
 
-  .page {
+  .pagedjs_page {
     background-color: #fdfdfd;
     margin: calc(var(--margin) * 4) var(--margin);
     flex: none;
     box-shadow: 0 0 0 1px var(--color-mbox);
   }
 
-  .pages {
+  .pagedjs_pages {
     width: calc((var(--width) * 2) + (var(--margin) * 4));
     display: flex;
     flex-direction: row;
@@ -40,35 +40,35 @@
     display: block;
   }
 
-  .page.first_page {
+  .pagedjs_first_page {
     margin-left: calc(50% + var(--margin));
   }
 }
 
 @media screen {
-  .debug .top .top-left-corner,
-  .debug .top .top-right-corner {
+  .debug .pagedjs_margin-top .pagedjs_margin-top-left-corner,
+  .debug .pagedjs_margin-top .pagedjs_margin-top-right-corner {
     box-shadow: 0 0 0 1px inset var(--color-mbox);
   }
 
-  .debug .top > div {
+  .debug .pagedjs_margin-top > div {
     box-shadow: 0 0 0 1px inset var(--color-mbox);
   }
 
-  .debug .right > div {
+  .debug .pagedjs_margin-right > div {
     box-shadow: 0 0 0 1px inset var(--color-mbox);
   }
 
-  .debug .bottom .bottom-left-corner,
-  .debug .bottom .bottom-right-corner {
+  .debug .pagedjs_margin-bottom .pagedjs_margin-bottom-left-corner,
+  .debug .pagedjs_margin-bottom .pagedjs_margin-bottom-right-corner {
     box-shadow: 0 0 0 1px inset var(--color-mbox);
   }
 
-  .debug .bottom > div {
+  .debug .pagedjs_margin-bottom > div {
     box-shadow: 0 0 0 1px inset var(--color-mbox);
   }
 
-  .debug .left > div {
+  .debug .pagedjs_margin-left > div {
     box-shadow: 0 0 0 1px inset var(--color-mbox);
   }
 }

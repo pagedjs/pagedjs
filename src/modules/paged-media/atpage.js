@@ -361,14 +361,14 @@ class AtPage extends Handler {
 
 		selectors.insert(selectors.createItem({
 			type: 'ClassSelector',
-			name: 'page'
+			name: 'pagedjs_page'
 		}));
 
 		// Named page
 		if (page.name) {
 			selectors.insert(selectors.createItem({
 				type: 'ClassSelector',
-				name: page.name + "_page"
+				name: "pagedjs_" + page.name + "_page"
 			}));
 		}
 
@@ -383,7 +383,7 @@ class AtPage extends Handler {
 		if (page.psuedo) {
 			selectors.insert(selectors.createItem({
 				type: 'ClassSelector',
-				name: page.psuedo + "_page"
+				name: "pagedjs_" + page.psuedo + "_page"
 			}));
 		}
 
@@ -549,7 +549,7 @@ class AtPage extends Handler {
 
 			selectors.insert(selectors.createItem({
 				type: 'ClassSelector',
-				name: 'page'
+				name: 'pagedjs_page'
 			}));
 
 			// Named page
@@ -557,7 +557,7 @@ class AtPage extends Handler {
 				name = page.name + "_page";
 				selectors.insert(selectors.createItem({
 					type: 'ClassSelector',
-					name: page.name + "_page"
+					name: "pagedjs_" + page.name + "_page"
 				}));
 			}
 
@@ -565,7 +565,7 @@ class AtPage extends Handler {
 			if (page.psuedo) {
 				selectors.insert(selectors.createItem({
 					type: 'ClassSelector',
-					name: page.psuedo + "_page"
+					name: "pagedjs_" + page.psuedo + "_page"
 				}));
 			}
 
@@ -576,7 +576,7 @@ class AtPage extends Handler {
 
 			selectors.insert(selectors.createItem({
 				type: 'ClassSelector',
-				name: loc
+				name: "pagedjs_margin-" + loc
 			}));
 
 			selectors.insert(selectors.createItem({
@@ -586,7 +586,7 @@ class AtPage extends Handler {
 
 			selectors.insert(selectors.createItem({
 				type: 'ClassSelector',
-				name: "content"
+				name: "pagedjs_margin-content"
 			}));
 
 			// selectors.insert(selectors.createItem({
@@ -632,7 +632,7 @@ class AtPage extends Handler {
 
 			selectors.insert(selectors.createItem({
 				type: 'ClassSelector',
-				name: 'page'
+				name: 'pagedjs_page'
 			}));
 
 			// Named page
@@ -640,7 +640,7 @@ class AtPage extends Handler {
 				name = page.name + "_page";
 				selectors.insert(selectors.createItem({
 					type: 'ClassSelector',
-					name: page.name + "_page"
+					name: "pagedjs_" + page.name + "_page"
 				}));
 			}
 
@@ -648,7 +648,7 @@ class AtPage extends Handler {
 			if (page.psuedo) {
 				selectors.insert(selectors.createItem({
 					type: 'ClassSelector',
-					name: page.psuedo + "_page"
+					name: "pagedjs_" + page.psuedo + "_page"
 				}));
 			}
 
@@ -659,7 +659,7 @@ class AtPage extends Handler {
 
 			selectors.insert(selectors.createItem({
 				type: 'ClassSelector',
-				name: loc
+				name: "pagedjs_margin-" + loc
 			}));
 
 			selectors.insert(selectors.createItem({
@@ -669,7 +669,7 @@ class AtPage extends Handler {
 
 			selectors.insert(selectors.createItem({
 				type: 'ClassSelector',
-				name: "content"
+				name: "pagedjs_margin-content"
 			}));
 
 			selectors.insert(selectors.createItem({

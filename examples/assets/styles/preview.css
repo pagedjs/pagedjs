@@ -1,5 +1,6 @@
 :root {
-    --margin: 1.2in;
+  --color-mbox : rgba(0,0,0,0.2);
+  --margin: 4px;
 }
 
 [contenteditable]:focus {
@@ -14,12 +15,13 @@
 
   .page {
     background-color: #fdfdfd;
-    margin-bottom: calc(var(--margin) / 2);
+    margin: calc(var(--margin) * 4) var(--margin);
     flex: none;
+    box-shadow: 0 0 0 1px var(--color-mbox);
   }
 
   .pages {
-    width: calc(var(--width) * 2);
+    width: calc((var(--width) * 2) + (var(--margin) * 4));
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -28,21 +30,13 @@
     margin: 0 auto;
   }
 
-  .pages > .section {
-    width: calc(var(--width) * 2);
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-  }
-
   #controls {
     margin: 20px 0;
     text-align: center;
   }
 
-  .first_page {
-    margin-left: 50%;
+  .page.first_page {
+    margin-left: calc(50% + var(--margin));
   }
 }
 
@@ -63,7 +57,8 @@
   .page {
     margin-bottom: 0;
     flex: none;
-    page-break-before: always;
+    break-before: always;
+    break-after: always;
   }
 
   #controls {
@@ -73,29 +68,29 @@
 }
 
 @media screen {
-  .top .top-left-corner,
-  .top .top-right-corner {
-    border: 1px dotted tomato;
+  .debug .top .top-left-corner,
+  .debug .top .top-right-corner {
+    box-shadow: 0 0 0 1px inset var(--color-mbox);
   }
 
-  .top > div {
-    border: 1px dotted teal;
+  .debug .top > div {
+    box-shadow: 0 0 0 1px inset var(--color-mbox);
   }
 
-  .right > div {
-    border: 1px dotted mediumseagreen;
+  .debug .right > div {
+    box-shadow: 0 0 0 1px inset var(--color-mbox);
   }
 
-  .bottom .bottom-left-corner,
-  .bottom .bottom-right-corner {
-    border: 1px solid orange;
+  .debug .bottom .bottom-left-corner,
+  .debug .bottom .bottom-right-corner {
+    box-shadow: 0 0 0 1px inset var(--color-mbox);
   }
 
-  .bottom > div {
-    border: 1px dotted darkblue;
+  .debug .bottom > div {
+    box-shadow: 0 0 0 1px inset var(--color-mbox);
   }
 
-  .left > div {
-    border: 1px dotted sienna;
+  .debug .left > div {
+    box-shadow: 0 0 0 1px inset var(--color-mbox);
   }
 }

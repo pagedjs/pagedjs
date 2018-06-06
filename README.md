@@ -28,14 +28,17 @@ Try the [polyfill with Aurorae](https://s3.amazonaws.com/pagedmedia/pagedjs/exam
 ## Chunker
 Chunks up a document into paged media flows and applies print classes.
 
-Process the [first 50 pages of Moby Dick](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/index.html).
+Examples:
 
-Upload and [chunk an Epub](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/epub.html), using Epub.js.
+* Process the [first 50 pages of Moby Dick](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/index.html).
+* Upload and [chunk an Epub using Epub.js](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/epub.html).
 
 ## Polisher
 Converts `@page` css to classes, and applies counters and content.
 
-Test [styles for print](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/polisher.html).
+Examples:
+
+* Test [styles for print](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/polisher.html).
 
 ### CLI
 

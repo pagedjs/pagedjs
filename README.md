@@ -23,19 +23,19 @@ Add the the `paged.polyfill.js` script to replace all `@page` css and render the
 <script src="https://s3.amazonaws.com/pagedmedia/pagedjs/dist/paged.polyfill.js"></script>
 ```
 
-Test with Aurorae: [https://s3.amazonaws.com/pagedmedia/pagedjs/examples/polyfill.html](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/polyfill.html).
+Try the [polyfill with Aurorae](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/polyfill.html).
 
 ## Chunker
 Chunks up a document into paged media flows and applies print classes.
 
-Process the first 50 pages of Moby Dick: [https://s3.amazonaws.com/pagedmedia/pagedjs/examples/index.html](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/index.html).
+Process the [first 50 pages of Moby Dick](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/index.html).
 
-Upload and chunk an Epub (using Epub.js): [https://s3.amazonaws.com/pagedmedia/pagedjs/examples/epub.html](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/epub.html).
+Upload and [chunk an Epub](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/epub.html), using Epub.js.
 
 ## Polisher
 Converts `@page` css to classes, and applies counters and content.
 
-Test styles for Aurorae: [https://s3.amazonaws.com/pagedmedia/pagedjs/examples/polisher.html](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/polisher.html).
+Test [styles for print](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/polisher.html).
 
 ### CLI
 

@@ -8,8 +8,10 @@ const { DEBUG } = require('./constants');
 function toMatchPDFSnapshot(received, page=1) {
 	let pdfImage;
 	let dirname = path.dirname(this.testPath);
+	let basename = path.basename(this.testPath, '.spec.js');
 	let uuid = UUID();
-	let pdfPath = path.join(dirname, `./${uuid}.pdf`);
+
+	let pdfPath = path.join(dirname, `./${basename}.pdf`);
 	let imagePath = path.join(dirname, `./${uuid}-${page}.png`);
 
 	fs.writeFileSync(pdfPath, received);
@@ -22,7 +24,7 @@ function toMatchPDFSnapshot(received, page=1) {
 		// remove output
 		if (!DEBUG) {
 			rimraf.sync(imagePath);
-			rimraf.sync(pdfPath);
+			// rimraf.sync(pdfPath);
 		}
 	} catch (err) {
 		throw err

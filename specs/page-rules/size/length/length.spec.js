@@ -1,10 +1,10 @@
 const TIMEOUT = 10000;
 
-describe('size-2-length', async () => {
+describe('length', async () => {
 		let page;
 		let rendered;
 		beforeAll(async () => {
-			page = await loadPage('page-rules/size/size-2-length/size-2-length.html')
+			page = await loadPage('page-rules/size/length/length.html')
 			return page.rendered;
 		}, TIMEOUT)
 

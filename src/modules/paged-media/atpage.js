@@ -227,7 +227,6 @@ class AtPage extends Handler {
 		csstree.walk(declaration, {
 			visit: 'Dimension',
 			enter: (node, item, list) => {
-				// console.log("Dimension", node);
 				let {value, unit} = node;
 				if (typeof width === "undefined") {
 					width = { value, unit };
@@ -237,7 +236,7 @@ class AtPage extends Handler {
 			}
 		});
 
-		// Get size: a4
+		// Get size: 'A4'
 		csstree.walk(declaration, {
 			visit: 'String',
 			enter: (node, item, list) => {
@@ -250,11 +249,20 @@ class AtPage extends Handler {
 			}
 		});
 
-		// Get Landscape or Portrait
+		// Get Format or Landscape or Portrait
 		csstree.walk(declaration, {
 			visit: "Identifier",
 			enter: (node, item, list) => {
-				orientation = node.name;
+				let name = node.name;
+				if (name === "landscape" || name === "portrait") {
+					orientation = node.name;
+				} else if (name !== "auto") {
+					let s = pageSizes[name];
+					if (s) {
+						width = s.width;
+						height = s.height;
+					}
+				}
 			}
 		});
 
@@ -442,12 +450,9 @@ class AtPage extends Handler {
 		let children = rule.data.block.children;
 		this.addMarginVars(page.margin, children, children.first());
 
-		// Disabled due to causing issues with Chrome on print
-		/*
 		if (page.width) {
 			this.addDimensions(page.width, page.height, children, children.first());
 		}
-		*/
 
 		if (page.marginalia) {
 			this.addMarginalia(page, ruleList, rule, sheet);
@@ -473,6 +478,30 @@ class AtPage extends Handler {
 	}
 
 	addDimensions(width, height, list, item) {
+		// width variable
+		let wVar = list.createItem({
+			type: 'Declaration',
+			property: "--width",
+			value: {
+				type: "Raw",
+				value: width.value + (width.unit || '')
+			}
+		});
+		list.append(wVar);
+
+		// height variable
+		let hVar = list.createItem({
+			type: 'Declaration',
+			property: "--height",
+			value: {
+				type: "Raw",
+				value: height.value + (height.unit || '')
+			}
+		});
+		list.append(hVar);
+
+		// Disabled due to causing issues with Chrome on print
+		/*
 		// width dimension
 		let widthList = new csstree.List();
 		widthList.insert(widthList.createItem({
@@ -489,16 +518,6 @@ class AtPage extends Handler {
 			}
 		});
 		list.append(w);
-		// width variable
-		let wVar = list.createItem({
-			type: 'Declaration',
-			property: "--width",
-			value: {
-				type: "Raw",
-				value: width.value + (width.unit || '')
-			}
-		});
-		list.append(wVar);
 
 		// height dimension
 		let heightList = new csstree.List();
@@ -516,16 +535,7 @@ class AtPage extends Handler {
 			}
 		});
 		list.append(h);
-		// height variable
-		let hVar = list.createItem({
-			type: 'Declaration',
-			property: "--height",
-			value: {
-				type: "Raw",
-				value: height.value + (height.unit || '')
-			}
-		});
-		list.append(hVar);
+		*/
 	}
 
 	addMarginalia(page, list, item, sheet) {

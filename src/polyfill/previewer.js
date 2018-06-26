@@ -15,6 +15,18 @@ class Previewer {
 		// Chunk contents
 		this.chunker = new Chunker();
 
+		// default size
+		this.size = {
+			width: {
+				value: 8.5,
+				unit: "in"
+			},
+			height: {
+				value: 11,
+				unit: "in"
+			}
+		}
+
 		let counter = 0;
 		this.chunker.on("page", (page) => {
 			counter += 1;

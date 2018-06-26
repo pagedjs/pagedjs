@@ -114,9 +114,9 @@ class Previewer {
 		let endTime = performance.now();
 		let msg = "Rendering " + flow.total + " pages took " + (endTime - startTime) + " milliseconds.";
 
-		this.emit("rendered", msg, this.width && this.width.value + this.width.unit, this.height && this.height.value + this.height.unit, this.orientation);
+		this.emit("rendered", msg, this.size.width && this.size.width.value + this.size.width.unit, this.size.height && this.size.height.value + this.size.height.unit, this.size.orientation);
 		if (typeof window.onPagesRendered !== "undefined") {
-			window.onPagesRendered(msg, this.width && this.width.value + this.width.unit, this.height && this.height.value + this.height.unit, this.orientation);
+			window.onPagesRendered(msg, this.size.width && this.size.width.value + this.size.width.unit, this.size.height && this.size.height.value + this.size.height.unit, this.size.orientation);
 		}
 
 		return flow;

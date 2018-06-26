@@ -9,7 +9,7 @@ export default `
 }
 
 @page {
-  size: var(--width) var(--height);
+  size: letter;
 }
 
 .pagedjs_page {
@@ -183,21 +183,23 @@ export default `
 
 @media print {
   body {
-    width: var(--width);
-    height: var(--height);
+    width: unset;
+    height: unset;
     margin: 0;
     padding: 0;
   }
   .pagedjs_pages {
     width: var(--width);
-    flex-direction: column;
+    display: block;
     transform: none !important;
   }
   .pagedjs_page {
     margin: 0;
     padding: 0;
-    break-before: always;
-    break-after: always;
+    width: 100%;
+    height: 100%;
+    break-before: page;
+    break-after: page;
   }
 }
 `;

@@ -442,9 +442,12 @@ class AtPage extends Handler {
 		let children = rule.data.block.children;
 		this.addMarginVars(page.margin, children, children.first());
 
+		// Disabled due to causing issues with Chrome on print
+		/*
 		if (page.width) {
 			this.addDimensions(page.width, page.height, children, children.first());
 		}
+		*/
 
 		if (page.marginalia) {
 			this.addMarginalia(page, ruleList, rule, sheet);

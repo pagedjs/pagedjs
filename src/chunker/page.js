@@ -6,7 +6,7 @@ import EventEmitter from "event-emitter";
  * @class
  */
 class Page {
-  constructor(pagesArea, pageTemplate, blank) {
+  constructor(pagesArea, pageTemplate, blank, hooks) {
     this.pagesArea = pagesArea;
     this.pageTemplate = pageTemplate;
     this.blank = blank;
@@ -15,6 +15,8 @@ class Page {
 
     this.width = undefined;
     this.height = undefined;
+
+    this.hooks = hooks;
 
     // this.element = this.create(this.pageTemplate);
   }
@@ -41,7 +43,7 @@ class Page {
 
 
     area.style.columnWidth = Math.round(size.width) + "px";
-    area.style.columnGap = "10px";
+    area.style.columnGap = "calc(var(--margin-right) + var(--margin-left))";
     area.style.columnFill = "auto";
     // area.style.overflow = "hidden";
     // area.style.overflow = "scroll";
@@ -113,10 +115,10 @@ class Page {
   }
   */
 
-  layout(contents, breakToken, hooks) {
+  layout(contents, breakToken) {
     // console.log("layout page", this.id);
     let size = this.area.getBoundingClientRect();
-    this.l = new Layout(this.area, this.wrapper, hooks);
+    this.l = new Layout(this.area, this.wrapper, this.hooks);
 
     this.l.onOverflow((overflow) => {
       this._onOverflow && this._onOverflow(overflow);
@@ -152,7 +154,7 @@ class Page {
 
   prepend(fragment) {
     if (!this.l) {
-      this.l = new Layout(this.area, this.wrapper);
+      this.l = new Layout(this.area, this.wrapper, this.hooks);
 
       this.l.onOverflow((overflow) => {
         this._onOverflow && this._onOverflow(overflow);

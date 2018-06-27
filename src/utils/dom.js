@@ -1,3 +1,5 @@
+import { UUID } from "../utils/utils";
+
 export function *walk(start, limiter) {
 	let node = start;
 
@@ -112,7 +114,7 @@ export function rebuildAncestors(node) {
 		parent = ancestor.cloneNode(false);
 
 		parent.setAttribute("data-split-from", parent.getAttribute("data-ref"));
-		ancestor.setAttribute("data-split-to", parent.getAttribute("data-ref"));
+		// ancestor.setAttribute("data-split-to", parent.getAttribute("data-ref"));
 
 		if (parent.hasAttribute("id")) {
 			let dataID = parent.getAttribute("id");
@@ -125,9 +127,9 @@ export function rebuildAncestors(node) {
 			parent.removeAttribute("data-break-before");
 		}
 
-		if (ancestor.hasAttribute("data-break-after")) {
-			ancestor.removeAttribute("data-break-after");
-		}
+		// if (ancestor.hasAttribute("data-break-after")) {
+		// 	ancestor.removeAttribute("data-break-after");
+		// }
 
 		if (added.length) {
 			let container = added[added.length-1];

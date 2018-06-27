@@ -45,7 +45,7 @@ class Chunker {
 		this.hooks.afterParsed = new Hook(this);
 		this.hooks.beforePageLayout = new Hook(this);
 		this.hooks.layout = new Hook(this);
-		this.hooks.render = new Hook(this);
+		this.hooks.rendered = new Hook(this);
 		this.hooks.overflow = new Hook(this);
 		this.hooks.afterPageLayout = new Hook(this);
 		this.hooks.afterRendered = new Hook(this);
@@ -122,7 +122,7 @@ class Chunker {
 		while (breakToken !== undefined && this.total < MAX_PAGES) {
 			let page = this.addPage();
 
-			await this.hooks.beforePageLayout.trigger(page, this);
+			await this.hooks.beforePageLayout.trigger(page, content, breakToken, this);
 			this.emit("page", page);
 
 			// Layout content in the page, starting from the breakToken

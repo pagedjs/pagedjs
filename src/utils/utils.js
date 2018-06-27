@@ -3,7 +3,7 @@ export function getBoundingClientRect(element) {
 		return;
 	}
 	let rect;
-	if (element.getBoundingClientRect) {
+	if (typeof element.getBoundingClientRect !== "undefined") {
 		rect = element.getBoundingClientRect();
 	} else {
 		let range = document.createRange();

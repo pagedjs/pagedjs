@@ -1,6 +1,6 @@
 import Handler from "../handler";
 import csstree from 'css-tree';
-import { split } from "../../utils/dom";
+import { split, rebuildAncestors } from "../../utils/dom";
 
 class Breaks extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -164,7 +164,6 @@ class Breaks extends Handler {
 	addBreakAttributes(page) {
 		let before = page.wrapper.querySelector("[data-break-before]");
 		let after = page.wrapper.querySelector("[data-break-after]");
-		let named = page.wrapper.querySelector("[data-page]");
 
 		if (before) {
 			if (before.dataset.splitFrom) {
@@ -185,11 +184,44 @@ class Breaks extends Handler {
 				page.element.setAttribute("data-break-after", after.dataset.breakAfter);
 			}
 		}
+	}
 
 
+	addPageAttributes(page, start) {
+		let named = start.dataset.page;
 		if (named) {
-			page.name = named.dataset.page;
-			page.element.classList.add("pagedjs_" + named.dataset.page + "_page");
+			page.name = named;
+			page.element.classList.add("pagedjs_" + named + "_page");
+		}
+	}
+
+	getStartElement(content, breakToken) {
+		let start = content;
+		let node = breakToken.node;
+		let index, ref, parent;
+
+		if (!breakToken.node) {
+			return content.children[0];
+		}
+
+		if (node.nodeType === 1) {
+			start = content.querySelector("[data-ref='"+ node.getAttribute("data-ref") +"']");
+		} else {
+			index = Array.prototype.indexOf.call(node.parentNode.childNodes, node);
+			ref = node.parentNode.getAttribute("data-ref");
+			parent = content.querySelector("[data-ref='" + ref + "']");
+			start = parent.childNodes[index];
+		}
+
+		let fragment = rebuildAncestors(start);
+
+		return fragment.children[0];
+	}
+
+	beforePageLayout(page, contents, breakToken) {
+		let start = this.getStartElement(contents, breakToken);
+		if (start) {
+			this.addPageAttributes(page, start);
 		}
 	}
 

@@ -20,7 +20,7 @@ class Layout {
       this.hooks = hooks;
     } else {
       this.hooks = {};
-      this.hooks.render = new Hook();
+      this.hooks.rendered = new Hook();
       this.hooks.overflow = new Hook();
     }
   }
@@ -118,7 +118,9 @@ class Layout {
       check += 1;
     }
 
-    this.listened = this.listeners();
+    requestIdleCallback(() => {
+      this.listened = this.listeners();
+    })
 
     return newBreakToken;
 
@@ -133,7 +135,7 @@ class Layout {
 
     let clone = this.createDOMNode(node, !shallow);
 
-    this.hooks.render.trigger(clone);
+    this.hooks.rendered.trigger(clone);
 
     if (node.parentNode && node.parentNode.nodeType === 1) {
       let parent = dest.querySelector("[data-ref='" + node.parentNode.getAttribute("data-ref") + "']");
@@ -217,7 +219,7 @@ class Layout {
 
   removeOverflow(overflow) {
 
-    overflow.extractContents();
+    return overflow.extractContents();
 
     // requestIdleCallback(() => this.removeEmpty());
   }
@@ -277,7 +279,8 @@ class Layout {
         if (left >= end) {
           range = document.createRange();
           range.selectNode(node);
-          let extracted = range.extractContents();
+          // let extracted = range.extractContents();
+          let extracted = this.removeOverflow(range);
           this._onOverflow && this._onOverflow(extracted);
         }
 
@@ -299,7 +302,6 @@ class Layout {
 
     let start = Math.round(bounds.left);
     let end =  Math.round(bounds.right);
-
     let range;
 
     let walker = walk(this.wrapper.firstChild, this.wrapper);
@@ -461,7 +463,8 @@ class Layout {
       let overflow = this.overflow(this.element);
 
       if (overflow) {
-        let extracted = overflow.extractContents();
+        // let extracted = overflow.extractContents();
+        let extracted = this.removeOverflow(overflow);
         this._onOverflow && this._onOverflow(extracted);
       }
     }
@@ -475,7 +478,8 @@ class Layout {
     let overflow = this.overflow(this.element);
 
     if (overflow) {
-      let extracted = overflow.extractContents();
+      // let extracted = overflow.extractContents();
+      let extracted = this.removeOverflow(overflow);
       this._onOverflow && this._onOverflow(extracted);
     }
   }
@@ -517,7 +521,8 @@ class Layout {
             let overflow = this.overflow(this.element);
 
             if (overflow) {
-              let extracted = overflow.extractContents();
+              // let extracted = overflow.extractContents();
+              let extracted = this.removeOverflow(overflow);
               this._onOverflow && this._onOverflow(extracted);
               prevHeight = wrapper.getBoundingClientRect().height;
             }

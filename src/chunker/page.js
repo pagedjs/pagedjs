@@ -36,7 +36,7 @@ class Page {
       page = this.pagesArea.lastChild;
     }
 
-    let area = page.querySelector(".pagedjs_area");
+    let area = page.querySelector(".pagedjs_page_content");
 
 
     let size = area.getBoundingClientRect();
@@ -44,10 +44,7 @@ class Page {
 
     area.style.columnWidth = Math.round(size.width) + "px";
     area.style.columnGap = "calc(var(--margin-right) + var(--margin-left))";
-    area.style.columnFill = "auto";
-    // area.style.overflow = "hidden";
     // area.style.overflow = "scroll";
-    area.style.position = "relative";
 
     this.width = Math.round(size.width);
     this.height = Math.round(size.height);
@@ -56,15 +53,12 @@ class Page {
     this.area = area;
 
     let wrapper = document.createElement("div");
-
-    // wrapper.style.outline = "none";
     // wrapper.setAttribute("contenteditable", true);
+    // wrapper.style.outline = "none";
 
     this.area.appendChild(wrapper);
 
     this.wrapper = wrapper;
-
-    // this.render = new Renderer(area);
 
     return page;
   }

@@ -3,7 +3,7 @@ import ContentParser from "./parser";
 import EventEmitter from "event-emitter";
 import Hook from "../utils/hook";
 
-const MAX_PAGES = 10000000000;
+const MAX_PAGES = false;
 
 const TEMPLATE = `<div class="pagedjs_page">
 	<div class="pagedjs_margin-top">
@@ -30,7 +30,11 @@ const TEMPLATE = `<div class="pagedjs_page">
 		<div class="pagedjs_margin-bottom-right"><div class="pagedjs_margin-content"></div></div>
 		<div class="pagedjs_margin-bottom-right-corner"><div class="pagedjs_margin-content"></div></div>
 	</div>
-	<div class="pagedjs_area"></div>
+	<div class="pagedjs_area">
+		<div class="pagedjs_page_content">
+
+		</div>
+	</div>
 </div>`;
 
 /**
@@ -45,7 +49,8 @@ class Chunker {
 		this.hooks.afterParsed = new Hook(this);
 		this.hooks.beforePageLayout = new Hook(this);
 		this.hooks.layout = new Hook(this);
-		this.hooks.rendered = new Hook(this);
+		this.hooks.renderNode = new Hook(this);
+		this.hooks.layoutNode = new Hook(this);
 		this.hooks.overflow = new Hook(this);
 		this.hooks.afterPageLayout = new Hook(this);
 		this.hooks.afterRendered = new Hook(this);
@@ -119,7 +124,7 @@ class Chunker {
 	async *layout(content) {
 		let breakToken = false;
 
-		while (breakToken !== undefined && this.total < MAX_PAGES) {
+		while (breakToken !== undefined && (MAX_PAGES ? this.total < MAX_PAGES : true)) {
 			let page = this.addPage();
 
 			await this.hooks.beforePageLayout.trigger(page, content, breakToken, this);

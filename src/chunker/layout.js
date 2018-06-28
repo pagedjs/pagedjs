@@ -1,5 +1,12 @@
 import { getBoundingClientRect } from "../utils/utils";
-import { walk, after, stackChildren, rebuildAncestors } from "../utils/dom";
+import {
+  walk,
+  after,
+  stackChildren,
+  rebuildAncestors,
+  needsBreakBefore,
+  needsBreakAfter
+} from "../utils/dom";
 import EventEmitter from "event-emitter";
 import Hook from "../utils/hook";
 
@@ -20,7 +27,8 @@ class Layout {
       this.hooks = hooks;
     } else {
       this.hooks = {};
-      this.hooks.rendered = new Hook();
+      this.hooks.renderNode = new Hook();
+      this.hooks.layoutNode = new Hook();
       this.hooks.overflow = new Hook();
     }
   }
@@ -28,18 +36,79 @@ class Layout {
   getStart(content, breakToken) {
     let start = content;
     let node = breakToken.node;
-    let index, ref, parent;
 
-    if (node.nodeType === 1) {
-      start = content.querySelector("[data-ref='"+ node.getAttribute("data-ref") +"']");
-    } else {
-      index = Array.prototype.indexOf.call(node.parentNode.childNodes, node);
-      ref = node.parentNode.getAttribute("data-ref");
-      parent = content.querySelector("[data-ref='" + ref + "']");
-      start = parent.childNodes[index];
+    if (node) {
+      start = node;
     }
 
     return start;
+  }
+
+  isContainer(node) {
+    let container;
+
+    if (typeof node.tagName === "undefined") {
+      return true;
+    }
+
+    switch (node.tagName) {
+      // Inline
+      case "A":
+      case "ABBR":
+      case "ACRONYM":
+      case "B":
+      case "BDO":
+      case "BIG":
+      case "BR":
+      case "BUTTON":
+      case "CITE":
+      case "CODE":
+      case "DFN":
+      case "EM":
+      case "I":
+      case "IMG":
+      case "INPUT":
+      case "KBD":
+      case "LABEL":
+      case "MAP":
+      case "OBJECT":
+      case "Q":
+      case "SAMP":
+      case "SCRIPT":
+      case "SELECT":
+      case "SMALL":
+      case "SPAN":
+      case "STRONG":
+      case "SUB":
+      case "SUP":
+      case "TEXTAREA":
+      case "TIME":
+      case "TT":
+      case "VAR":
+      // Content
+      case "P":
+      case "H1":
+      case "H2":
+      case "H3":
+      case "H4":
+      case "H5":
+      case "H6":
+      case "FIGCAPTION":
+      case "BLOCKQUOTE":
+      case "PRE":
+      case "LI":
+      case "TR":
+      case "DT":
+      case "DD":
+      case "VIDEO":
+      case "CANVAS":
+        container = false;
+        break;
+      default:
+        container = true;
+    }
+
+    return container;
   }
 
   layout(space, content, styleMap, edges, breakToken) {
@@ -53,7 +122,10 @@ class Layout {
     let node;
     let done;
     let next;
+    let offset = 0;
     let hasOverflow = false;
+    let breakAfter = false;
+    let hasContent = false;
     let newBreakToken;
 
     let check = 0;
@@ -70,13 +142,42 @@ class Layout {
 
       if (node) {
 
-        if (node.tagName === "P" || node.tagName === "HEADER") {
-          shallow = false;
-        } else {
-          shallow = true;
+        this.hooks.layoutNode.trigger(node);
+
+        // Check if were are outside of a previous element that has a breakAfter
+        if (breakAfter && !breakAfter.contains(node)) {
+          // Break layout with current node
+          newBreakToken = {
+            node: node,
+            offset: 0
+          };
+          break;
         }
 
+        // Check if the rendered element has a breakBefore set
+        if (hasContent && needsBreakBefore(node)) {
+          // Break layout with current node
+          newBreakToken = {
+            node: node,
+            offset: 0
+          };
+          break;
+        }
+
+        shallow = this.isContainer(node);
+
         rendered = this.render(node, this.wrapper, breakToken, shallow);
+
+        // Only register element content
+        if (node.nodeType === 1 && !hasContent) {
+          hasContent = true;
+        }
+
+        // Check if the rendered element has a breakAfter set
+        if (needsBreakAfter(rendered)) {
+          // save node to check if we have finished rendering it's contents
+          breakAfter = node;
+        }
 
         if (!shallow) {
           next = after(node, content);
@@ -101,7 +202,7 @@ class Layout {
 
         if (overflow) {
 
-          newBreakToken = this.findBreakToken(overflow);
+          newBreakToken = this.findBreakToken(overflow, content);
 
           if (newBreakToken && newBreakToken.node) {
             this.removeOverflow(overflow);
@@ -135,7 +236,7 @@ class Layout {
 
     let clone = this.createDOMNode(node, !shallow);
 
-    this.hooks.rendered.trigger(clone);
+    this.hooks.renderNode.trigger(clone);
 
     if (node.parentNode && node.parentNode.nodeType === 1) {
       let parent = dest.querySelector("[data-ref='" + node.parentNode.getAttribute("data-ref") + "']");
@@ -178,9 +279,9 @@ class Layout {
     return node;
   }
 
-  findBreakToken(overflow) {
+  findBreakToken(overflow, content) {
     let offset = overflow.startOffset;
-    let node, ref, parent, index, temp;
+    let node, renderedNode, ref, parent, index, temp;
 
     if (overflow.startContainer.nodeType === 1) {
       // node = children.querySelector("[data-ref='" + overflow.startContainer.childNodes[offset].getAttribute("data-ref") + "']");
@@ -189,12 +290,14 @@ class Layout {
       if (temp.nodeType === 1) {
         ref = temp.getAttribute("data-ref");
         // node = this.parser.find(ref);
-        node = this.wrapper.querySelector("[data-ref='" + ref + "']");
+        renderedNode = this.wrapper.querySelector("[data-ref='" + ref + "']");
+        node = content.querySelector("[data-ref='"+ renderedNode.getAttribute("data-ref") +"']");
         offset = 0;
       } else {
         index = Array.prototype.indexOf.call(overflow.startContainer.childNodes, temp);
         ref = overflow.startContainer.getAttribute("data-ref");
-        parent = this.wrapper.querySelector("[data-ref='" + ref + "']");
+        renderedNode = this.wrapper.querySelector("[data-ref='" + ref + "']");
+        parent = content.querySelector("[data-ref='"+ renderedNode.getAttribute("data-ref") +"']");
         node = parent.childNodes[index];
         offset = 0;
       }
@@ -202,7 +305,8 @@ class Layout {
       index = Array.prototype.indexOf.call(overflow.startContainer.parentNode.childNodes, overflow.startContainer);
       // let parent = children.querySelector("[data-ref='" + overflow.startContainer.parentNode.getAttribute("data-ref") + "']");
       ref = overflow.startContainer.parentNode.getAttribute("data-ref");
-      parent = this.wrapper.querySelector("[data-ref='" + ref + "']");
+      renderedNode = this.wrapper.querySelector("[data-ref='" + ref + "']");
+      parent = content.querySelector("[data-ref='"+ renderedNode.getAttribute("data-ref") +"']");
       node = parent.childNodes[index];
     }
 

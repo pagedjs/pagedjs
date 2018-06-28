@@ -200,12 +200,18 @@ class Breaks extends Handler {
 		let node = breakToken.node;
 		let index, ref, parent;
 
-		if (!breakToken.node) {
+		// No break
+		if (!node) {
 			return content.children[0];
 		}
 
-		let fragment = rebuildAncestors(start);
+		// Top level element
+		if (node.nodeType === 1 && node.parentNode.nodeType === 11) {
+			return node;
+		}
 
+		// Get top level parent
+		let fragment = rebuildAncestors(node);
 		return fragment.children[0];
 	}
 

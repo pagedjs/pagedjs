@@ -113,6 +113,13 @@ export default `
   height: 100%;
 }
 
+.pagedjs_page > .pagedjs_area > .pagedjs_page_content {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  column-fill: auto;
+}
+
 .pagedjs_page {
   counter-increment: page;
 }

@@ -190,3 +190,27 @@ export function split(bound, cutElement, breakAfter) {
 		bound.parentNode.insertBefore(fragment, bound.nextSibling);
 		return [bound, bound.nextSibling];
 }
+
+export function needsBreakBefore(node) {
+	if( typeof node.dataset !== "undefined" &&
+			typeof node.dataset.breakBefore !== "undefined" &&
+			(node.dataset.breakBefore === "always" ||
+			 node.dataset.breakBefore === "left" ||
+			 node.dataset.breakBefore === "right")) {
+		return true;
+	}
+
+	return false;
+}
+
+export function needsBreakAfter(node) {
+	if( typeof node.dataset !== "undefined" &&
+			typeof node.dataset.breakAfter !== "undefined" &&
+			(node.dataset.breakAfter === "always" ||
+			 node.dataset.breakAfter === "left" ||
+			 node.dataset.breakAfter === "right")) {
+		return true;
+	}
+
+	return false;
+}

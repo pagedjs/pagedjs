@@ -204,15 +204,6 @@ class Breaks extends Handler {
 			return content.children[0];
 		}
 
-		if (node.nodeType === 1) {
-			start = content.querySelector("[data-ref='"+ node.getAttribute("data-ref") +"']");
-		} else {
-			index = Array.prototype.indexOf.call(node.parentNode.childNodes, node);
-			ref = node.parentNode.getAttribute("data-ref");
-			parent = content.querySelector("[data-ref='" + ref + "']");
-			start = parent.childNodes[index];
-		}
-
 		let fragment = rebuildAncestors(start);
 
 		return fragment.children[0];

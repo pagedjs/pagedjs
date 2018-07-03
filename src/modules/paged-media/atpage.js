@@ -24,10 +24,10 @@ class AtPage extends Handler {
 			height: undefined,
 			orientation: undefined,
 			margin : {
-				top: {value: 0, unit: "px"},
-				right: {value: 0, unit: "px"},
-				left: {value: 0, unit: "px"},
-				bottom: {value: 0, unit: "px"}
+				top: {},
+				right: {},
+				left: {},
+				bottom: {}
 			},
 			block: {},
 			marks: undefined
@@ -190,7 +190,6 @@ class AtPage extends Handler {
 			enter: (declaration, dItem, dList) => {
 				let prop = csstree.property(declaration.property).name;
 				let value = declaration.value;
-
 				if (prop === "marks") {
 					parsed.marks = value.children.first().name;
 					dList.remove(dItem);
@@ -201,10 +200,10 @@ class AtPage extends Handler {
 					let m = prop.substring("margin-".length);
 					if (!parsed.margin) {
 						parsed.margin = {
-							top: {value: 0, unit: "px"},
-							right: {value: 0, unit: "px"},
-							left: {value: 0, unit: "px"},
-							bottom: {value: 0, unit: "px"}
+							top: {},
+							right: {},
+							left: {},
+							bottom: {}
 						};
 					}
 					parsed.margin[m] = declaration.value.children.first();
@@ -276,10 +275,10 @@ class AtPage extends Handler {
 	getMargins(declaration) {
 		let margins = [];
 		let margin = {
-			top: {value: 0, unit: "px"},
-			right: {value: 0, unit: "px"},
-			left: {value: 0, unit: "px"},
-			bottom: {value: 0, unit: "px"}
+			top: {},
+			right: {},
+			left: {},
+			bottom: {}
 		};
 
 		csstree.walk(declaration, {
@@ -332,7 +331,7 @@ class AtPage extends Handler {
 			pages[":right"].added = true;
 		}
 		// Add :first & :blank
-		if (":first" in pages && !pages[":right"].first) {
+		if (":first" in pages && !pages[":first"].first) {
 			let first = this.createPage(pages[":first"], ast.children, sheet);
 			sheet.insertRule(first);
 			pages[":first"].added = true;
@@ -398,33 +397,9 @@ class AtPage extends Handler {
 		// Nth
 		if (page.nth) {
 			let nthlist = new csstree.List();
-			let nth = page.nth;
-			let n = nth.indexOf("n");
-			let plus = nth.indexOf("+");
-			let splitN = page.nth.split("n");
-			let splitP = page.nth.split("+");
-			let a = null;
-			let b = null;
-			if (n > -1) {
-				a = splitN[0];
-				if (plus > -1) {
-					b = splitP[1];
-				}
-			} else {
-				b = nth;
-			}
+			let nth = this.getNth(page.nth);
 
-			nthlist.insert(nthlist.createItem({
-				type: 'Nth',
-				loc: null,
-				selector: null,
-				nth: {
-					type: "AnPlusB",
-					loc: null,
-					a: a,
-					b: b
-				}
-			}));
+			nthlist.insert(nthlist.createItem(nth));
 
 			selectors.insert(selectors.createItem({
 				type: 'PseudoClassSelector',
@@ -464,16 +439,18 @@ class AtPage extends Handler {
 	addMarginVars(margin, list, item) {
 		// variables for margins
 		for (let m in margin) {
-			let value = margin[m].value + (margin[m].unit || '');
-			let mVar = list.createItem({
-				type: 'Declaration',
-				property: "--margin-" + m,
-				value: {
-					type: "Raw",
-					value: value
-				}
-			});
-			list.append(mVar, item);
+			if (typeof margin[m].value !== "undefined") {
+				let value = margin[m].value + (margin[m].unit || '');
+				let mVar = list.createItem({
+					type: 'Declaration',
+					property: "--margin-" + m,
+					value: {
+						type: "Raw",
+						value: value
+					}
+				});
+				list.append(mVar, item);
+			}
 		}
 	}
 
@@ -582,6 +559,20 @@ class AtPage extends Handler {
 				}));
 			}
 
+			// Nth
+			if (page.nth) {
+				let nthlist = new csstree.List();
+				let nth = this.getNth(page.nth);
+
+				nthlist.insert(nthlist.createItem(nth));
+
+				selectors.insert(selectors.createItem({
+					type: 'PseudoClassSelector',
+					name: 'nth-of-type',
+					children: nthlist
+				}));
+			}
+
 			selectors.insert(selectors.createItem({
 				type: 'Combinator',
 				name: " "
@@ -662,6 +653,20 @@ class AtPage extends Handler {
 				selectors.insert(selectors.createItem({
 					type: 'ClassSelector',
 					name: "pagedjs_" + page.psuedo + "_page"
+				}));
+			}
+
+			// Nth
+			if (page.nth) {
+				let nthlist = new csstree.List();
+				let nth = this.getNth(page.nth);
+
+				nthlist.insert(nthlist.createItem(nth));
+
+				selectors.insert(selectors.createItem({
+					type: 'PseudoClassSelector',
+					name: 'nth-of-type',
+					children: nthlist
 				}));
 			}
 
@@ -842,6 +847,36 @@ class AtPage extends Handler {
 
 		ast.children.append(rule);
 	}
+
+	getNth(nth) {
+		let n = nth.indexOf("n");
+		let plus = nth.indexOf("+");
+		let splitN = nth.split("n");
+		let splitP = nth.split("+");
+		let a = null;
+		let b = null;
+		if (n > -1) {
+			a = splitN[0];
+			if (plus > -1) {
+				b = splitP[1];
+			}
+		} else {
+			b = nth;
+		}
+
+		return {
+			type: 'Nth',
+			loc: null,
+			selector: null,
+			nth: {
+				type: "AnPlusB",
+				loc: null,
+				a: a,
+				b: b
+			}
+		}
+	}
+
 }
 
 export default AtPage;

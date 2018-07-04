@@ -143,3 +143,25 @@ To update the stored pdf images you can run
 ```bash
 npm run specs -- --updateSnapshot
 ```
+
+### Docker
+
+A `pagedmedia/pagedjs` docker image contains all the dependencies needed to run the `pagedjs` development server, as well as the pdf comparison tests.
+
+To build the image run
+
+```bash
+docker build -t pagedmedia/pagedjs .  
+```
+
+By default the container will run the development server with `npm start`
+
+```bash
+docker run -it -p 9090:9090 pagedmedia/pagedjs
+```
+
+The tests and specs can be run within the container by passing a `seccomp` file for Chrome and running `npm test`
+ 
+```bash
+docker run -it --security-opt 'seccomp=seccomp.json' pagedmedia/pagedjs npm test
+```

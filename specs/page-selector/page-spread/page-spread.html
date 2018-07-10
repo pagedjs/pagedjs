@@ -41,12 +41,6 @@
 
       }
 
-      @media screen {
-        .pagedjs_page {
-          box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
-        }
-      }
-
       section {
         break-before: page;
         page-break-before: always;
@@ -66,42 +60,25 @@
 
     @media screen {
 
-body {
-  background-color: whitesmoke;
-}
+      .pagedjs_page {
+        margin-bottom: 10px;
+        flex: none;
+        box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
+      }
 
+      .pagedjs_pages {
+        width: calc(var(--width) * 2);
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        margin: 0 auto;
+      }
 
-.pagedjs_page {
-  margin-bottom: calc(var(--margin) / 2);
-  flex: none;
-  border: 1px solid black;
-}
-
-.pagedjs_pages {
-  width: calc(var(--width) * 2);
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  transform-origin: 0 0;
-  margin: 0 auto;
-}
-
-.pagedjs_pages>.section {
-  width: calc(var(--width) * 2);
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-}
-
-.pagedjs_first_page {
-  margin-left: 50%;
-}
-}
-
-
-
+      .pagedjs_first_page {
+        margin-left: 50%;
+      }
+    }
 
     </style>
 

@@ -139,6 +139,13 @@ export default `
   align-items: center;
 }
 
+.pagedjs_pages .pagedjs_margin-left .pagedjs_margin-content,
+.pagedjs_pages .pagedjs_margin-top .pagedjs_margin-content,
+.pagedjs_pages .pagedjs_margin-right .pagedjs_margin-content,
+.pagedjs_pages .pagedjs_margin-bottom .pagedjs_margin-content { 
+  width: 100%; 
+}
+
 .pagedjs_pages .pagedjs_margin-left .pagedjs_margin-content::after,
 .pagedjs_pages .pagedjs_margin-top .pagedjs_margin-content::after,
 .pagedjs_pages .pagedjs_margin-right .pagedjs_margin-content::after,

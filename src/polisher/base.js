@@ -124,6 +124,7 @@ export default `
   counter-increment: page;
 }
 
+/* Default text alignment in margin boxes */
 
 .pagedjs_page .pagedjs_margin-top > div,
 .pagedjs_page .pagedjs_margin-bottom > div {
@@ -132,12 +133,44 @@ export default `
   align-items: center;
 }
 
-.pagedjs_page .pagedjs_margin-left > div,
-.pagedjs_page .pagedjs_margin-right > div {
-  width: 100%;
+.pagedjs_page .pagedjs_margin-left-top,
+.pagedjs_page .pagedjs_margin-right-top { 
+  display: flex;
+  align-items: flex-start;
+}
+
+.pagedjs_page .pagedjs_margin-right-middle, 
+.pagedjs_page .pagedjs_margin-left-middle { 
   display: flex;
   align-items: center;
 }
+
+.pagedjs_page .pagedjs_margin-left-bottom,
+.pagedjs_page .pagedjs_margin-right-bottom { 
+  display: flex;
+  align-items: flex-end; 
+}
+
+.pagedjs_page .pagedjs_margin-top-left > .pagedjs_margin-content,
+.pagedjs_page .pagedjs_margin-top-right-corner > .pagedjs_margin-content,
+.pagedjs_page .pagedjs_margin-bottom-left > .pagedjs_margin-content,
+.pagedjs_page .pagedjs_margin-bottom-right-corner > .pagedjs_margin-content { text-align: left; }
+
+.pagedjs_page .pagedjs_margin-top-left-corner > .pagedjs_margin-content,
+.pagedjs_page .pagedjs_margin-top-right > .pagedjs_margin-content,
+.pagedjs_page .pagedjs_margin-bottom-left-corner > .pagedjs_margin-content,
+.pagedjs_page .pagedjs_margin-bottom-right > .pagedjs_margin-content { text-align: right; }
+
+.pagedjs_page .pagedjs_margin-top-center > .pagedjs_margin-content,
+.pagedjs_page .pagedjs_margin-bottom-center > .pagedjs_margin-content,
+.pagedjs_page .pagedjs_margin-left-top > .pagedjs_margin-content,
+.pagedjs_page .pagedjs_margin-left-middle > .pagedjs_margin-content,
+.pagedjs_page .pagedjs_margin-left-bottom > .pagedjs_margin-content,
+.pagedjs_page .pagedjs_margin-right-top > .pagedjs_margin-content,
+.pagedjs_page .pagedjs_margin-right-middle > .pagedjs_margin-content,
+.pagedjs_page .pagedjs_margin-right-bottom > .pagedjs_margin-content { text-align: center; }
+
+
 
 .pagedjs_pages .pagedjs_margin-left .pagedjs_margin-content,
 .pagedjs_pages .pagedjs_margin-top .pagedjs_margin-content,

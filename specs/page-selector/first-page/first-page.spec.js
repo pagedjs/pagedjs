@@ -15,7 +15,7 @@ describe('first-page', async () => {
 		})
 
 		it('should have a first page class on page 1', async () => {
-			let chapter = await page.$eval("#page-1", (r) => {
+			let chapter = await page.$eval("[data-page='1']", (r) => {
 				return r.classList.contains("pagedjs_first_page");
 			});
 
@@ -23,7 +23,7 @@ describe('first-page', async () => {
 		})
 
 		it('should not give page 2 a first page class', async () => {
-			let chapter = await page.$eval("#page-2", (r) => {
+			let chapter = await page.$eval("[data-page='2']", (r) => {
 				return r.classList.contains("pagedjs_first_page");
 			});
 

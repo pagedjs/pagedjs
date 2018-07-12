@@ -1,6 +1,6 @@
 import Handler from "../handler";
 import csstree from 'css-tree';
-import { split, rebuildAncestors } from "../../utils/dom";
+import { split, rebuildAncestors, elementAfter } from "../../utils/dom";
 
 class Breaks extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -78,76 +78,25 @@ class Breaks extends Handler {
 	}
 
 	processBreaks(parsed, breaks) {
-		let selectors = [];
 		for (let b in breaks) {
 			// Find elements
 			let elements = parsed.querySelectorAll(b);
 			// Add break data
 			for (var i = 0; i < elements.length; i++) {
 				for (let prop of breaks[b]) {
+
+					if (prop.property === "break-after") {
+						let nodeAfter = elementAfter(elements[i], parsed);
+
+						if (nodeAfter) {
+							nodeAfter.setAttribute("data-previous-break-after", prop.value);
+						}
+					}
+
 					elements[i].setAttribute("data-" + prop.property, prop.value);
 				}
 			}
-			// Add to global selector
-			//selectors.push(b);
 		}
-
-		/*
-		// Add any other direct children
-		let child;
-		for (var i = 0; i < parsed.children.length; i++) {
-			child = parsed.children[i];
-			if ((child.noteType === 1 || child.nodeType === "3" || typeof child.noteType === "undefined")
-					&& child.nodeName !== "SCRIPT") {
-				selectors.push("[data-ref='"+child.getAttribute("data-ref")+"']");
-			}
-		}
-
-		let s = selectors.join(",");
-		let parts = Array.from(parsed.querySelectorAll(s));
-
-		let part;
-		let sections = [];
-
-		for (var i = 0; i < parts.length; i++) {
-			part = parts[i];
-
-			if (part.parentNode && part.parentNode.nodeType === 1) {
-				let parent = part.parentNode;
-				let before = part.dataset.breakBefore;
-				let after = part.dataset.breakAfter;
-				let index = Array.prototype.indexOf.call(parent.childNodes, part);
-
-				// Get the top parent
-				let topParent = part.parentNode;
-				while (topParent) {
-					if(topParent.parentNode.nodeType === 1) {
-						topParent = topParent.parentNode;
-					} else {
-						break;
-					}
-				}
-
-				// Split
-				let dup = split(topParent, part, before);
-
-				if (dup) {
-					// console.log("dup", part, dup);
-
-					sections.concat(sections, dup);
-				} else {
-					// console.log("topParent", topParent);
-					sections.push(topParent);
-				}
-			} else {
-				// console.log("parT", part);
-
-				sections.push(part);
-			}
-		}
-
-		return sections;
-		*/
 	}
 
 	mergeBreaks(pageBreaks, newBreaks) {

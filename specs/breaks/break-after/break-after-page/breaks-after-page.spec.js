@@ -23,7 +23,7 @@ describe('break-after-page', async () => {
 		})
 
 		it('should render page 2 as left', async () => {
-			let isLeft = await page.$eval("[data-page='2']", (r) => {
+			let isLeft = await page.$eval("[data-page-number='2']", (r) => {
 				return r.classList.contains("pagedjs_left_page");
 			});
 
@@ -31,13 +31,13 @@ describe('break-after-page', async () => {
 		})
 
 		it('page 3 should be Section 1', async () => {
-			let text = await page.$eval("[data-page='2']", (r) => r.textContent);
+			let text = await page.$eval("[data-page-number='2']", (r) => r.textContent);
 
 			expect(text).toContain('Section 1');
 		})
 
 		it('should render page 4 as left', async () => {
-			let isLeft = await page.$eval("[data-page='4']", (r) => {
+			let isLeft = await page.$eval("[data-page-number='4']", (r) => {
 				return r.classList.contains("pagedjs_left_page");
 			});
 
@@ -45,13 +45,13 @@ describe('break-after-page', async () => {
 		})
 
 		it('page 4 should be Section 2', async () => {
-			let text = await page.$eval("[data-page='4']", (r) => r.textContent);
+			let text = await page.$eval("[data-page-number='4']", (r) => r.textContent);
 
 			expect(text).toContain('Section 2');
 		})
 
 		it('should render page 7 as right', async () => {
-			let isRight = await page.$eval("[data-page='7']", (r) => {
+			let isRight = await page.$eval("[data-page-number='7']", (r) => {
 				return r.classList.contains("pagedjs_right_page");
 			});
 
@@ -59,19 +59,19 @@ describe('break-after-page', async () => {
 		})
 
 		it('page 7 should be Section 3', async () => {
-			let text = await page.$eval("[data-page='7']", (r) => r.textContent);
+			let text = await page.$eval("[data-page-number='7']", (r) => r.textContent);
 
 			expect(text).toContain('Section 3');
 		})
 
 		it('page 8 should break after h2', async () => {
-			let text = await page.$eval("[data-page='8']", (r) => r.textContent);
+			let text = await page.$eval("[data-page-number='8']", (r) => r.textContent);
 
 			expect(text.trim()).toEqual('A - h2 (inline element)');
 		})
 
 		it('should render page 9 as right', async () => {
-			let isRight = await page.$eval("[data-page='9']", (r) => {
+			let isRight = await page.$eval("[data-page-number='9']", (r) => {
 				return r.classList.contains("pagedjs_right_page");
 			});
 

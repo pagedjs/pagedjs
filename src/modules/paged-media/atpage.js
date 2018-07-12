@@ -88,6 +88,8 @@ class AtPage extends Handler {
 		list.remove(item);
 	}
 
+	/* Handled in breaks */
+	/*
 	afterParsed(parsed) {
 		for (let b in this.named) {
 			// Find elements
@@ -98,6 +100,7 @@ class AtPage extends Handler {
 			}
 		}
 	}
+	*/
 
 	afterTreeWalk(ast, sheet) {
 		this.addPageClasses(this.pages, ast, sheet);

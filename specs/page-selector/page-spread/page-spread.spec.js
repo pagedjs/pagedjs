@@ -15,7 +15,7 @@ describe('page-spread', async () => {
 		})
 
     it('should render page 2 as left', async () => {
-			let isLeft = await page.$eval("[data-page='2']", (r) => {
+			let isLeft = await page.$eval("[data-page-number='2']", (r) => {
 				return r.classList.contains("pagedjs_left_page");
 			});
 
@@ -23,7 +23,7 @@ describe('page-spread', async () => {
 		})
 
     it('should render page 3 as right', async () => {
-      let isRight = await page.$eval("[data-page='3']", (r) => {
+      let isRight = await page.$eval("[data-page-number='3']", (r) => {
         return r.classList.contains("pagedjs_right_page");
       });
 
@@ -31,12 +31,12 @@ describe('page-spread', async () => {
     })
 
 		it('should have bottom center text of right on the first page', async () => {
-			let text = await page.$eval("[data-page='1'] .pagedjs_margin-bottom-center > .pagedjs_margin-content", (r) => window.getComputedStyle(r, '::after').content);
+			let text = await page.$eval("[data-page-number='1'] .pagedjs_margin-bottom-center > .pagedjs_margin-content", (r) => window.getComputedStyle(r, '::after').content);
 			expect(text).toContain("right");
 		})
 
     it('should have a yellow background on page 6', async () => {
-			let textColor = await page.$eval("[data-page='6']", (r) => window.getComputedStyle(r).backgroundColor);
+			let textColor = await page.$eval("[data-page-number='6']", (r) => window.getComputedStyle(r).backgroundColor);
 			expect(textColor).toContain('rgb(255, 255, 0)'); // yellow
 		})
 

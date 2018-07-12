@@ -24,11 +24,11 @@ describe('breaks', async () => {
 
 		it('should avoid breaking after h2', async () => {
 			let h2ParentPage = await page.$eval("h2", (r) => {
-				let pageId = r.closest(".pagedjs_page").dataset.page;
+				let pageId = r.closest(".pagedjs_page").dataset.pageNumber;
 				return pageId;
 			});
 			let pParentPage = await page.$eval("#afterh2", (r) => {
-				let pageId = r.closest(".pagedjs_page").dataset.page;
+				let pageId = r.closest(".pagedjs_page").dataset.pageNumber;
 				return pageId;
 			});
 
@@ -41,7 +41,7 @@ describe('breaks', async () => {
 				let section;
 				for (let i = 0; i < r.length; i++) {
 					section = r[i];
-					curr = section.closest(".pagedjs_page").dataset.page;
+					curr = section.closest(".pagedjs_page").dataset.pageNumber;
 					if(curr === prev) {
 						return false;
 					}
@@ -55,14 +55,14 @@ describe('breaks', async () => {
 
 		it('should render a blank page before break-before=right', async () => {
 			let blank = await page.$eval(".pagedjs_blank_page", (r) => {
-				return r.dataset.page;
+				return r.dataset.pageNumber;
 			});
 
 			expect(blank).toEqual("4");
 		})
 
 		it('should render break-before=right sections as right page', async () => {
-			let isRight = await page.$eval("[data-page='5']", (r) => {
+			let isRight = await page.$eval("[data-page-number='5']", (r) => {
 				return r.classList.contains("pagedjs_right_page");
 			});
 
@@ -71,11 +71,11 @@ describe('breaks', async () => {
 
 		it('should breaking after #breakAfter', async () => {
 			let h4ParentPage = await page.$eval("#breakAfter", (r) => {
-				let pageId = r.closest(".pagedjs_page").dataset.page;
+				let pageId = r.closest(".pagedjs_page").dataset.pageNumber;
 				return pageId;
 			});
 			let pParentPage = await page.$eval("#afterh4", (r) => {
-				let pageId = r.closest(".pagedjs_page").dataset.page;
+				let pageId = r.closest(".pagedjs_page").dataset.pageNumber;
 				return pageId;
 			});
 

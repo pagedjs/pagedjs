@@ -138,6 +138,7 @@ class Breaks extends Handler {
 
 	addPageAttributes(page, start) {
 		let named = start.dataset.page;
+
 		if (named) {
 			page.name = named;
 			page.element.classList.add("pagedjs_" + named + "_page");
@@ -159,9 +160,20 @@ class Breaks extends Handler {
 			return node;
 		}
 
-		// Get top level parent
+		// Named page
+		if (node.nodeType === 1 && node.dataset.page) {
+			return node;
+		}
+
+		// Get top level Named parent
 		let fragment = rebuildAncestors(node);
-		return fragment.children[0];
+		let pages = fragment.querySelectorAll("[data-page]");
+
+		if (pages.length) {
+			return pages[pages.length - 1];
+		} else {
+			return fragment.children[0];
+		}
 	}
 
 	beforePageLayout(page, contents, breakToken) {

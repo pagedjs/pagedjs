@@ -23,7 +23,7 @@ describe('break-before-left', async () => {
 		})
 
 		it('should render page 1 as blank', async () => {
-			let isBlank = await page.$eval("[data-page='1']", (r) => {
+			let isBlank = await page.$eval("[data-page-number='1']", (r) => {
 				return r.classList.contains("pagedjs_blank_page");
 			});
 
@@ -31,7 +31,7 @@ describe('break-before-left', async () => {
 		})
 
 		it('should render page 2 as left', async () => {
-			let isLeft = await page.$eval("[data-page='2']", (r) => {
+			let isLeft = await page.$eval("[data-page-number='2']", (r) => {
 				return r.classList.contains("pagedjs_left_page");
 			});
 
@@ -39,13 +39,13 @@ describe('break-before-left', async () => {
 		})
 
 		it('page 2 should be Section', async () => {
-			let text = await page.$eval("[data-page='2']", (r) => r.textContent);
+			let text = await page.$eval("[data-page-number='2']", (r) => r.textContent);
 
 			expect(text).toContain('Section');
 		})
 
 		it('should render page 3 as blank', async () => {
-			let isBlank = await page.$eval("[data-page='3']", (r) => {
+			let isBlank = await page.$eval("[data-page-number='3']", (r) => {
 				return r.classList.contains("pagedjs_blank_page");
 			});
 
@@ -53,7 +53,7 @@ describe('break-before-left', async () => {
 		})
 
 		it('should render page 4 as left', async () => {
-			let isLeft = await page.$eval("[data-page='4']", (r) => {
+			let isLeft = await page.$eval("[data-page-number='4']", (r) => {
 				return r.classList.contains("pagedjs_left_page");
 			});
 
@@ -61,13 +61,13 @@ describe('break-before-left', async () => {
 		})
 
 		it('page 4 should be Section 1', async () => {
-			let text = await page.$eval("[data-page='4']", (r) => r.textContent);
+			let text = await page.$eval("[data-page-number='4']", (r) => r.textContent);
 
 			expect(text).toContain('Section 1');
 		})
 
 		it('should render page 11 as blank', async () => {
-			let isBlank = await page.$eval("[data-page='11']", (r) => {
+			let isBlank = await page.$eval("[data-page-number='11']", (r) => {
 				return r.classList.contains("pagedjs_blank_page");
 			});
 
@@ -75,13 +75,13 @@ describe('break-before-left', async () => {
 		})
 
 		it('page 12 include h2', async () => {
-			let text = await page.$eval("[data-page='12']", (r) => r.textContent);
+			let text = await page.$eval("[data-page-number='12']", (r) => r.textContent);
 
 			expect(text).toContain('A - h2 (inline element)');
 		})
 
 		it('should render page 12 as left', async () => {
-			let isLeft = await page.$eval("[data-page='12']", (r) => {
+			let isLeft = await page.$eval("[data-page-number='12']", (r) => {
 				return r.classList.contains("pagedjs_left_page");
 			});
 

@@ -15,12 +15,12 @@ describe('page-nth', async () => {
 		})
 
 		it('should have a yellow background on page 6', async () => {
-			let textColor = await page.$eval("#page-3", (r) => window.getComputedStyle(r).backgroundColor);
+			let textColor = await page.$eval("[data-page='3']", (r) => window.getComputedStyle(r).backgroundColor);
 			expect(textColor).toContain('rgb(255, 255, 0)'); // yellow
 		})
 
 		it('should have bottom center text', async () => {
-			let text = await page.$eval("#page-3 .pagedjs_margin-bottom-center > .pagedjs_margin-content", (r) => window.getComputedStyle(r, '::after').content);
+			let text = await page.$eval("[data-page='3'] .pagedjs_margin-bottom-center > .pagedjs_margin-content", (r) => window.getComputedStyle(r, '::after').content);
 			expect(text).toContain("3rd page of the document");
 		})
 

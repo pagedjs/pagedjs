@@ -23,7 +23,7 @@ describe('named-page', async () => {
 		})
 
 		it('should not give page 1 a named class', async () => {
-			let chapter = await page.$eval("#page-1", (r) => {
+			let chapter = await page.$eval("[data-page='1']", (r) => {
 				return r.classList.contains("pagedjs_chapter_page");
 			});
 
@@ -31,7 +31,7 @@ describe('named-page', async () => {
 		})
 
 		it('should give the page 3 a named class', async () => {
-			let chapter = await page.$eval("#page-3", (r) => {
+			let chapter = await page.$eval("[data-page='3']", (r) => {
 				return r.classList.contains("pagedjs_chapter_page");
 			});
 
@@ -39,7 +39,7 @@ describe('named-page', async () => {
 		})
 
 		it('should give the page 4 a named class', async () => {
-			let chapter = await page.$eval("#page-4", (r) => {
+			let chapter = await page.$eval("[data-page='4']", (r) => {
 				return r.classList.contains("pagedjs_chapter_page");
 			});
 

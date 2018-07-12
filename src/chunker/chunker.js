@@ -2,7 +2,10 @@ import Page from "./page";
 import ContentParser from "./parser";
 import EventEmitter from "event-emitter";
 import Hook from "../utils/hook";
-
+import {
+  needsBreakBefore,
+  needsBreakAfter
+} from "../utils/dom";
 const MAX_PAGES = false;
 
 const TEMPLATE = `<div class="pagedjs_page">
@@ -120,11 +123,48 @@ class Chunker {
 		});
 	}
 
+	handleBreaks(node) {
+		let currentPage = this.total + 1;
+		let currentPosition = currentPage % 2 === 0 ? "left" : "right";
+		let previousBreakAfter;
+		let breakBefore;
+
+		if (node &&
+				typeof node.dataset !== "undefined" &&
+				typeof node.dataset.previousBreakAfter !== "undefined") {
+			previousBreakAfter = node.dataset.previousBreakAfter;
+		}
+
+		if (node &&
+				typeof node.dataset !== "undefined" &&
+				typeof node.dataset.breakBefore !== "undefined") {
+			breakBefore = node.dataset.breakBefore;
+		}
+
+		if( previousBreakAfter &&
+				(previousBreakAfter === "left" || previousBreakAfter === "right") &&
+				previousBreakAfter !== currentPosition) {
+			this.addPage(true);
+		}
+
+		if( breakBefore &&
+				(breakBefore === "left" || breakBefore === "right") &&
+				breakBefore !== currentPosition) {
+			this.addPage(true);
+		}
+	}
 
 	async *layout(content) {
 		let breakToken = false;
 
 		while (breakToken !== undefined && (MAX_PAGES ? this.total < MAX_PAGES : true)) {
+
+			if (breakToken && breakToken.node) {
+				this.handleBreaks(breakToken.node);
+			} else {
+				this.handleBreaks(content.firstChild);
+			}
+
 			let page = this.addPage();
 
 			await this.hooks.beforePageLayout.trigger(page, content, breakToken, this);
@@ -134,14 +174,6 @@ class Chunker {
 			breakToken = page.layout(content, breakToken);
 
 			await this.hooks.layout.trigger(page.element, page, breakToken, this);
-
-			if (page.breakBefore === "right" && this.total > 1 && this.total % 2 === 0) {
-				this.insertPage(this.total - 2, true);
-			}
-
-			if (page.breakBefore === "left" && this.total % 2 > 0) {
-				this.insertPage(this.total - 2, true);
-			}
 
 			await this.hooks.afterPageLayout.trigger(page.element, page, breakToken, this);
 			this.emit("renderedPage", page);
@@ -164,21 +196,24 @@ class Chunker {
 		page.create(undefined, lastPage && lastPage.element);
 
 		page.index(this.total);
-		// Listen for page overflow
-		page.onOverflow((overflow) => {
-			requestIdleCallback(() => {
-				if (total < this.pages.length) {
-					this.pages[total].prepend(overflow);
-				} else {
-					let newPage = this.addPage();
-					newPage.prepend(overflow);
-				}
-			})
-		});
 
-		page.onUnderflow(() => {
-			// console.log("underflow on", page.id);
-		});
+		if (!blank) {
+			// Listen for page overflow
+			page.onOverflow((overflow) => {
+				requestIdleCallback(() => {
+					if (total < this.pages.length) {
+						this.pages[total].prepend(overflow);
+					} else {
+						let newPage = this.addPage();
+						newPage.prepend(overflow);
+					}
+				})
+			});
+
+			page.onUnderflow(() => {
+				// console.log("underflow on", page.id);
+			});
+		}
 
 		this.total += 1;
 

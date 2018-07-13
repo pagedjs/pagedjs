@@ -36,8 +36,8 @@ describe('page-spread', async () => {
 		})
 
     it('should have a yellow background on page 6', async () => {
-			let textColor = await page.$eval("[data-page-number='6']", (r) => window.getComputedStyle(r).backgroundColor);
-			expect(textColor).toContain('rgb(255, 255, 0)'); // yellow
+			let color = await page.$eval("[data-page-number='6']", (r) => window.getComputedStyle(r).backgroundColor);
+			expect(color).toContain('rgb(255, 255, 0)'); // yellow
 		})
 
 		if (!DEBUG) {

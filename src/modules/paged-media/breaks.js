@@ -135,54 +135,6 @@ class Breaks extends Handler {
 		}
 	}
 
-
-	addPageAttributes(page, start) {
-		let named = start.dataset.page;
-
-		if (named) {
-			page.name = named;
-			page.element.classList.add("pagedjs_" + named + "_page");
-		}
-	}
-
-	getStartElement(content, breakToken) {
-		let start = content;
-		let node = breakToken.node;
-		let index, ref, parent;
-
-		// No break
-		if (!node) {
-			return content.children[0];
-		}
-
-		// Top level element
-		if (node.nodeType === 1 && node.parentNode.nodeType === 11) {
-			return node;
-		}
-
-		// Named page
-		if (node.nodeType === 1 && node.dataset.page) {
-			return node;
-		}
-
-		// Get top level Named parent
-		let fragment = rebuildAncestors(node);
-		let pages = fragment.querySelectorAll("[data-page]");
-
-		if (pages.length) {
-			return pages[pages.length - 1];
-		} else {
-			return fragment.children[0];
-		}
-	}
-
-	beforePageLayout(page, contents, breakToken) {
-		let start = this.getStartElement(contents, breakToken);
-		if (start) {
-			this.addPageAttributes(page, start);
-		}
-	}
-
 	layout(pageElement, page) {
 		this.addBreakAttributes(page);
 	}

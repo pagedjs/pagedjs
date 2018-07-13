@@ -64,7 +64,7 @@ class Page {
   }
 
   index(pgnum) {
-    this._index = pgnum;
+    this.position = pgnum;
 
     let page = this.element;
 

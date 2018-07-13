@@ -59,7 +59,7 @@ class Chunker {
 		this.hooks.afterRendered = new Hook(this);
 
 		this.pages = [];
-		this.total = 0;
+		this._total = 0;
 
 		this.content = content;
 
@@ -258,6 +258,15 @@ class Chunker {
 
 		return page;
 	}
+
+  get total() {
+    return this._total;
+  }
+
+  set total(num) {
+    this.pagesArea.style.setProperty('--page-count', num);
+    this._total = num;
+  }
 
 	destroy() {
 		this.pagesArea.remove()

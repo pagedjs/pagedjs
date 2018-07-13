@@ -6,6 +6,7 @@ export default `
   --margin-right: 1in;
   --margin-bottom: 1in;
   --margin-left: 1in;
+  --page-count: 0;
 }
 
 @page {
@@ -122,6 +123,10 @@ export default `
 
 .pagedjs_page {
   counter-increment: page;
+}
+
+.pagedjs_pages {
+  counter-reset: pages var(--page-count);
 }
 
 

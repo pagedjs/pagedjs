@@ -7,7 +7,7 @@
       First page of page group
     </title>
 
-    <script src="../../../../../dist/paged.polyfill.js"></script>
+    <script src="../../../../dist/paged.polyfill.js"></script>
 
 
     <style>
@@ -15,6 +15,11 @@
         font-size: 18px;
       }
 
+      @media screen {
+        .pagedjs_page {
+          box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
+        }
+      }
 
       @page {
         size: 6in 8in;

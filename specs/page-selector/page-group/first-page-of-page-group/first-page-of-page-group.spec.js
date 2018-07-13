@@ -38,6 +38,14 @@ describe('first-page-of-page-group', async () => {
 			expect(chapter).toBe(false);
 		})
 
+		it('should have a named first page class on page 5', async () => {
+			let chapter = await page.$eval("[data-page-number='5']", (r) => {
+				return r.classList.contains("pagedjs_chapter_first_page");
+			});
+
+			expect(chapter).toBe(true);
+		})
+
 		if (!DEBUG) {
 			it('should create a pdf', async () => {
 				let pdf = await page.pdf(PDF_SETTINGS);

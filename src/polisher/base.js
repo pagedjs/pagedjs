@@ -126,8 +126,18 @@ export default `
 
 /* Default text alignment in margin boxes */
 
-.pagedjs_page .pagedjs_margin-top > div,
-.pagedjs_page .pagedjs_margin-bottom > div {
+
+
+.pagedjs_page .pagedjs_margin-top-left-corner,
+.pagedjs_page .pagedjs_margin-top-left,
+.pagedjs_page .pagedjs_margin-top-center,
+.pagedjs_page .pagedjs_margin-top-right,
+.pagedjs_page .pagedjs_margin-top-right-corner,
+.pagedjs_page .pagedjs_margin-bottom-left-corner,
+.pagedjs_page .pagedjs_margin-bottom-left,
+.pagedjs_page .pagedjs_margin-bottom-center,
+.pagedjs_page .pagedjs_margin-bottom-right,
+.pagedjs_page .pagedjs_margin-bottom-right-corner {
   height: 100%;
   display: flex;
   align-items: center;

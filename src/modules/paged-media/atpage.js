@@ -586,10 +586,17 @@ class AtPage extends Handler {
 			}
 
 			// PsuedoSelector
-			if (page.psuedo) {
+			if (page.psuedo && !(page.name && page.psuedo === "first")) {
 				selectors.insert(selectors.createItem({
 					type: 'ClassSelector',
 					name: "pagedjs_" + page.psuedo + "_page"
+				}));
+			}
+
+			if (page.name && page.psuedo === "first") {
+				selectors.insert(selectors.createItem({
+					type: 'ClassSelector',
+					name: "pagedjs_" + page.name + "_" + page.psuedo + "_page"
 				}));
 			}
 
@@ -688,10 +695,17 @@ class AtPage extends Handler {
 			}
 
 			// PsuedoSelector
-			if (page.psuedo) {
+			if (page.psuedo && !(page.name && page.psuedo === "first")) {
 				selectors.insert(selectors.createItem({
 					type: 'ClassSelector',
 					name: "pagedjs_" + page.psuedo + "_page"
+				}));
+			}
+
+			if (page.name && page.psuedo === "first") {
+				selectors.insert(selectors.createItem({
+					type: 'ClassSelector',
+					name: "pagedjs_" + page.name + "_" + page.psuedo + "_page"
 				}));
 			}
 

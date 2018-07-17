@@ -193,6 +193,10 @@ export default `
   break-after: column;
 }
 
+.pagedjs_clear-after::after {
+  content: none !important;
+}
+
 @media print {
   body {
     width: unset;

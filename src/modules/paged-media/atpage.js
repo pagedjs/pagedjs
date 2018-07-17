@@ -37,9 +37,11 @@ class AtPage extends Handler {
 
 	// Find and Remove @page rules
 	onAtPage(node, item, list) {
+		let page, marginalia;
 		let selector = "";
 		let name = "";
 		let named, psuedo, nth;
+		let needsMerge = false;
 
 		if (node.prelude) {
 			named = this.getTypeSelector(node);
@@ -50,21 +52,29 @@ class AtPage extends Handler {
 			selector = "*";
 		}
 
+		if (selector in this.pages) {
+			// this.pages[selector] = Object.assign(this.pages[selector], page);
+			// console.log("after", selector, this.pages[selector]);
 
-		let page = this.pageModel(selector);
+			// this.pages[selector].added = false;
+			page = this.pages[selector];
+			marginalia = this.replaceMarginalia(node);
+			needsMerge = true;
+		} else {
+			page = this.pageModel(selector);
+			marginalia = this.replaceMarginalia(node);
+			this.pages[selector] = page;
+		}
 
 		page.name = named;
 		page.psuedo = psuedo;
 		page.nth = nth;
 
-		if (name in this.pages) {
-			this.pages[selector] = Object.assign(this.pages[selector], page);
-			this.pages[selector].added = false;
+		if (needsMerge) {
+			page.marginalia = Object.assign(page.marginalia, marginalia);
 		} else {
-			this.pages[selector] = page;
+			page.marginalia = marginalia;
 		}
-
-		page.marginalia = this.replaceMarginalia(node);
 
 		let declarations = this.replaceDeclartations(node);
 
@@ -82,7 +92,11 @@ class AtPage extends Handler {
 			page.marks = declarations.marks;
 		}
 
-		page.block = node.block;
+		if (needsMerge) {
+			page.block.children.appendList(node.block.children);
+		} else {
+			page.block = node.block;
+		}
 
 		// Remove the rule
 		list.remove(item);
@@ -378,6 +392,11 @@ class AtPage extends Handler {
 		if (page.name) {
 			selectors.insert(selectors.createItem({
 				type: 'ClassSelector',
+				name: "pagedjs_named_page"
+			}));
+
+			selectors.insert(selectors.createItem({
+				type: 'ClassSelector',
 				name: "pagedjs_" + page.name + "_page"
 			}));
 		}
@@ -554,6 +573,11 @@ class AtPage extends Handler {
 
 			// Named page
 			if (page.name) {
+				selectors.insert(selectors.createItem({
+					type: 'ClassSelector',
+					name: "pagedjs_named_page"
+				}));
+
 				name = page.name + "_page";
 				selectors.insert(selectors.createItem({
 					type: 'ClassSelector',
@@ -651,6 +675,11 @@ class AtPage extends Handler {
 
 			// Named page
 			if (page.name) {
+				selectors.insert(selectors.createItem({
+					type: 'ClassSelector',
+					name: "pagedjs_named_page"
+				}));
+
 				name = page.name + "_page";
 				selectors.insert(selectors.createItem({
 					type: 'ClassSelector',
@@ -892,6 +921,7 @@ class AtPage extends Handler {
 
 		if (named) {
 			page.name = named;
+			page.element.classList.add("pagedjs_named_page");
 			page.element.classList.add("pagedjs_" + named + "_page");
 
 			if (!start.dataset.splitFrom) {

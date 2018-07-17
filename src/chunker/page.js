@@ -64,7 +64,7 @@ class Page {
   }
 
   index(pgnum) {
-    this._index = pgnum;
+    this.position = pgnum;
 
     let page = this.element;
 
@@ -72,7 +72,7 @@ class Page {
 
     this.id = id;
 
-    page.id = id;
+    page.dataset.pageNumber = pgnum+1;
 
     if (this.name) {
       page.classList.add("pagedjs_" + this.name + "_page");

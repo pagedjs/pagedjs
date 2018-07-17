@@ -32,7 +32,7 @@ export function *walk(start, limiter) {
 	}
 }
 
-export function after(node, limiter) {
+export function nodeAfter(node, limiter) {
 	let after = node;
 
 	if (after.nextSibling) {
@@ -57,7 +57,7 @@ export function after(node, limiter) {
 	return after;
 }
 
-export function before(node, limiter) {
+export function nodeBefore(node, limiter) {
 	let before = node;
 
 	if (after.prevSibling) {
@@ -77,6 +77,26 @@ export function before(node, limiter) {
 				break;
 			}
 		}
+	}
+
+	return before;
+}
+
+export function elementAfter(node, limiter) {
+	let after = nodeAfter(node);
+
+	while (after && after.nodeType !== 1) {
+		after = nodeAfter(after);
+	}
+
+	return after;
+}
+
+export function elementBefore(node, limiter) {
+	let before = nodeAfter(node);
+
+	while (before && before.nodeType !== 1) {
+		before = nodeAfter(before);
 	}
 
 	return before;
@@ -169,14 +189,14 @@ export function split(bound, cutElement, breakAfter) {
 		}
 
 		// Remove all after cut
-		let next = after(cutElement, bound);
+		let next = nodeAfter(cutElement, bound);
 		while (next) {
 			let clone = next.cloneNode(true);
 			let ref = next.parentNode.getAttribute('data-ref');
 			let parent = fragment.querySelector("[data-ref='" + ref + "']");
 			parent.appendChild(clone);
 			needsRemoval.push(next);
-			next = after(next, bound);
+			next = nodeAfter(next, bound);
 		}
 
 		// Remove originals
@@ -192,7 +212,8 @@ export function split(bound, cutElement, breakAfter) {
 }
 
 export function needsBreakBefore(node) {
-	if( typeof node.dataset !== "undefined" &&
+	if( typeof node !== "undefined" &&
+			typeof node.dataset !== "undefined" &&
 			typeof node.dataset.breakBefore !== "undefined" &&
 			(node.dataset.breakBefore === "always" ||
 			 node.dataset.breakBefore === "left" ||
@@ -204,7 +225,8 @@ export function needsBreakBefore(node) {
 }
 
 export function needsBreakAfter(node) {
-	if( typeof node.dataset !== "undefined" &&
+	if( typeof node !== "undefined" &&
+			typeof node.dataset !== "undefined" &&
 			typeof node.dataset.breakAfter !== "undefined" &&
 			(node.dataset.breakAfter === "always" ||
 			 node.dataset.breakAfter === "left" ||

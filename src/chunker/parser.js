@@ -24,6 +24,7 @@ class ContentParser {
 		let fragment = range.createContextualFragment(markup);
 
 		this.addRefs(fragment);
+		this.removeEmpty(fragment);
 
 		return fragment;
 	}
@@ -38,6 +39,7 @@ class ContentParser {
 		// }
 
 		this.addRefs(contents);
+		this.removeEmpty(contents);
 
 		return contents;
 	}
@@ -61,6 +63,33 @@ class ContentParser {
 			node.setAttribute("data-children", node.childNodes.length);
 
 			node.setAttribute("data-text", node.textContent.trim().length);
+		}
+	}
+
+	removeEmpty(content) {
+		var treeWalker = document.createTreeWalker(
+			content,
+			NodeFilter.SHOW_TEXT,
+			{ acceptNode: function(node) {
+				// Only remove more than a single space
+				if (node.textContent.length > 1 && !node.textContent.trim()) {
+					return NodeFilter.FILTER_ACCEPT;
+				} else {
+					return NodeFilter.FILTER_REJECT;
+				}
+			} },
+			false
+		);
+
+		let node;
+		let current;
+		node = treeWalker.nextNode();
+		while(node) {
+			current = node;
+			node = treeWalker.nextNode();
+			// if (!current.nextSibling || (current.nextSibling && current.nextSibling.nodeType === 1)) {
+			current.parentNode.removeChild(current);
+			// }
 		}
 	}
 

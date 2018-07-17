@@ -6,6 +6,7 @@ export default `
   --margin-right: 1in;
   --margin-bottom: 1in;
   --margin-left: 1in;
+  --page-count: 0;
 }
 
 @page {
@@ -124,9 +125,9 @@ export default `
   counter-increment: page;
 }
 
-/* Default text alignment in margin boxes */
-
-
+.pagedjs_pages {
+  counter-reset: pages var(--page-count);
+}
 
 .pagedjs_page .pagedjs_margin-top-left-corner,
 .pagedjs_page .pagedjs_margin-top-left,
@@ -144,21 +145,21 @@ export default `
 }
 
 .pagedjs_page .pagedjs_margin-left-top,
-.pagedjs_page .pagedjs_margin-right-top { 
+.pagedjs_page .pagedjs_margin-right-top {
   display: flex;
   align-items: flex-start;
 }
 
-.pagedjs_page .pagedjs_margin-right-middle, 
-.pagedjs_page .pagedjs_margin-left-middle { 
+.pagedjs_page .pagedjs_margin-right-middle,
+.pagedjs_page .pagedjs_margin-left-middle {
   display: flex;
   align-items: center;
 }
 
 .pagedjs_page .pagedjs_margin-left-bottom,
-.pagedjs_page .pagedjs_margin-right-bottom { 
+.pagedjs_page .pagedjs_margin-right-bottom {
   display: flex;
-  align-items: flex-end; 
+  align-items: flex-end;
 }
 
 .pagedjs_page .pagedjs_margin-top-left > .pagedjs_margin-content,
@@ -185,8 +186,8 @@ export default `
 .pagedjs_pages .pagedjs_margin-left .pagedjs_margin-content,
 .pagedjs_pages .pagedjs_margin-top .pagedjs_margin-content,
 .pagedjs_pages .pagedjs_margin-right .pagedjs_margin-content,
-.pagedjs_pages .pagedjs_margin-bottom .pagedjs_margin-content { 
-  width: 100%; 
+.pagedjs_pages .pagedjs_margin-bottom .pagedjs_margin-content {
+  width: 100%;
 }
 
 .pagedjs_pages .pagedjs_margin-left .pagedjs_margin-content::after,
@@ -236,6 +237,10 @@ export default `
 [data-break-after="verso"]:not([data-split-to])
 {
   break-after: column;
+}
+
+.pagedjs_clear-after::after {
+  content: none !important;
 }
 
 @media print {

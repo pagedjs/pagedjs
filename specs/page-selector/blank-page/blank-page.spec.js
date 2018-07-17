@@ -15,7 +15,7 @@ describe('blank-page', async () => {
 		})
 
 		it('should have an empty class on page 6', async () => {
-			let chapter = await page.$eval("#page-6", (r) => {
+			let chapter = await page.$eval("[data-page-number='4']", (r) => {
 				return r.classList.contains("pagedjs_blank_page");
 			});
 
@@ -23,7 +23,7 @@ describe('blank-page', async () => {
 		})
 
 		it('should not give page 1 an empty class', async () => {
-			let chapter = await page.$eval("#page-1", (r) => {
+			let chapter = await page.$eval("[data-page-number='1']", (r) => {
 				return r.classList.contains("pagedjs_blank_page");
 			});
 

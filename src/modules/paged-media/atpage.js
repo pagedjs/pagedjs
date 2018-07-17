@@ -1,6 +1,7 @@
 import Handler from "../handler";
 import csstree from 'css-tree';
 import pageSizes from '../../polisher/sizes';
+import { rebuildAncestors, elementAfter } from "../../utils/dom";
 
 class AtPage extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -36,9 +37,11 @@ class AtPage extends Handler {
 
 	// Find and Remove @page rules
 	onAtPage(node, item, list) {
+		let page, marginalia;
 		let selector = "";
 		let name = "";
 		let named, psuedo, nth;
+		let needsMerge = false;
 
 		if (node.prelude) {
 			named = this.getTypeSelector(node);
@@ -49,21 +52,29 @@ class AtPage extends Handler {
 			selector = "*";
 		}
 
+		if (selector in this.pages) {
+			// this.pages[selector] = Object.assign(this.pages[selector], page);
+			// console.log("after", selector, this.pages[selector]);
 
-		let page = this.pageModel(selector);
+			// this.pages[selector].added = false;
+			page = this.pages[selector];
+			marginalia = this.replaceMarginalia(node);
+			needsMerge = true;
+		} else {
+			page = this.pageModel(selector);
+			marginalia = this.replaceMarginalia(node);
+			this.pages[selector] = page;
+		}
 
 		page.name = named;
 		page.psuedo = psuedo;
 		page.nth = nth;
 
-		if (name in this.pages) {
-			this.pages[selector] = Object.assign(this.pages[selector], page);
-			this.pages[selector].added = false;
+		if (needsMerge) {
+			page.marginalia = Object.assign(page.marginalia, marginalia);
 		} else {
-			this.pages[selector] = page;
+			page.marginalia = marginalia;
 		}
-
-		page.marginalia = this.replaceMarginalia(node);
 
 		let declarations = this.replaceDeclartations(node);
 
@@ -81,13 +92,18 @@ class AtPage extends Handler {
 			page.marks = declarations.marks;
 		}
 
-		page.block = node.block;
-
+		if (needsMerge) {
+			page.block.children.appendList(node.block.children);
+		} else {
+			page.block = node.block;
+		}
 
 		// Remove the rule
 		list.remove(item);
 	}
 
+	/* Handled in breaks */
+	/*
 	afterParsed(parsed) {
 		for (let b in this.named) {
 			// Find elements
@@ -98,6 +114,7 @@ class AtPage extends Handler {
 			}
 		}
 	}
+	*/
 
 	afterTreeWalk(ast, sheet) {
 		this.addPageClasses(this.pages, ast, sheet);
@@ -375,6 +392,11 @@ class AtPage extends Handler {
 		if (page.name) {
 			selectors.insert(selectors.createItem({
 				type: 'ClassSelector',
+				name: "pagedjs_named_page"
+			}));
+
+			selectors.insert(selectors.createItem({
+				type: 'ClassSelector',
 				name: "pagedjs_" + page.name + "_page"
 			}));
 		}
@@ -387,10 +409,17 @@ class AtPage extends Handler {
 		// }
 
 		// PsuedoSelector
-		if (page.psuedo) {
+		if (page.psuedo && !(page.name && page.psuedo === "first")) {
 			selectors.insert(selectors.createItem({
 				type: 'ClassSelector',
 				name: "pagedjs_" + page.psuedo + "_page"
+			}));
+		}
+
+		if (page.name && page.psuedo === "first") {
+			selectors.insert(selectors.createItem({
+				type: 'ClassSelector',
+				name: "pagedjs_" + page.name + "_" + page.psuedo + "_page"
 			}));
 		}
 
@@ -544,6 +573,11 @@ class AtPage extends Handler {
 
 			// Named page
 			if (page.name) {
+				selectors.insert(selectors.createItem({
+					type: 'ClassSelector',
+					name: "pagedjs_named_page"
+				}));
+
 				name = page.name + "_page";
 				selectors.insert(selectors.createItem({
 					type: 'ClassSelector',
@@ -552,10 +586,17 @@ class AtPage extends Handler {
 			}
 
 			// PsuedoSelector
-			if (page.psuedo) {
+			if (page.psuedo && !(page.name && page.psuedo === "first")) {
 				selectors.insert(selectors.createItem({
 					type: 'ClassSelector',
 					name: "pagedjs_" + page.psuedo + "_page"
+				}));
+			}
+
+			if (page.name && page.psuedo === "first") {
+				selectors.insert(selectors.createItem({
+					type: 'ClassSelector',
+					name: "pagedjs_" + page.name + "_" + page.psuedo + "_page"
 				}));
 			}
 
@@ -641,6 +682,11 @@ class AtPage extends Handler {
 
 			// Named page
 			if (page.name) {
+				selectors.insert(selectors.createItem({
+					type: 'ClassSelector',
+					name: "pagedjs_named_page"
+				}));
+
 				name = page.name + "_page";
 				selectors.insert(selectors.createItem({
 					type: 'ClassSelector',
@@ -649,10 +695,17 @@ class AtPage extends Handler {
 			}
 
 			// PsuedoSelector
-			if (page.psuedo) {
+			if (page.psuedo && !(page.name && page.psuedo === "first")) {
 				selectors.insert(selectors.createItem({
 					type: 'ClassSelector',
 					name: "pagedjs_" + page.psuedo + "_page"
+				}));
+			}
+
+			if (page.name && page.psuedo === "first") {
+				selectors.insert(selectors.createItem({
+					type: 'ClassSelector',
+					name: "pagedjs_" + page.name + "_" + page.psuedo + "_page"
 				}));
 			}
 
@@ -874,6 +927,58 @@ class AtPage extends Handler {
 				a: a,
 				b: b
 			}
+		}
+	}
+
+	addPageAttributes(page, start, pages) {
+		let named = start.dataset.page;
+
+		if (named) {
+			page.name = named;
+			page.element.classList.add("pagedjs_named_page");
+			page.element.classList.add("pagedjs_" + named + "_page");
+
+			if (!start.dataset.splitFrom) {
+				page.element.classList.add("pagedjs_" + named + "_first_page");
+			}
+		}
+	}
+
+	getStartElement(content, breakToken) {
+		let start = content;
+		let node = breakToken.node;
+		let index, ref, parent;
+
+		// No break
+		if (!node) {
+			return content.children[0];
+		}
+
+		// Top level element
+		if (node.nodeType === 1 && node.parentNode.nodeType === 11) {
+			return node;
+		}
+
+		// Named page
+		if (node.nodeType === 1 && node.dataset.page) {
+			return node;
+		}
+
+		// Get top level Named parent
+		let fragment = rebuildAncestors(node);
+		let pages = fragment.querySelectorAll("[data-page]");
+
+		if (pages.length) {
+			return pages[pages.length - 1];
+		} else {
+			return fragment.children[0];
+		}
+	}
+
+	beforePageLayout(page, contents, breakToken, chunker) {
+		let start = this.getStartElement(contents, breakToken);
+		if (start) {
+			this.addPageAttributes(page, start, chunker.pages);
 		}
 	}
 

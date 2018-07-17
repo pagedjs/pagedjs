@@ -1,7 +1,7 @@
 import { getBoundingClientRect } from "../utils/utils";
 import {
   walk,
-  after,
+  nodeAfter,
   stackChildren,
   rebuildAncestors,
   needsBreakBefore,
@@ -9,6 +9,8 @@ import {
 } from "../utils/dom";
 import EventEmitter from "event-emitter";
 import Hook from "../utils/hook";
+
+const PER_PAGE_CHECK = 4;
 
 /**
  * Layout
@@ -124,9 +126,8 @@ class Layout {
     let next;
     let offset = 0;
     let hasOverflow = false;
-    let breakAfter = false;
-    let hasContent = false;
     let newBreakToken;
+    let after;
 
     let check = 0;
 
@@ -141,57 +142,38 @@ class Layout {
       done = next.done;
 
       if (node) {
-
         this.hooks.layoutNode.trigger(node);
 
-        // Check if were are outside of a previous element that has a breakAfter
-        if (breakAfter && !breakAfter.contains(node)) {
-          // Break layout with current node
-          newBreakToken = {
-            node: node,
-            offset: 0
-          };
-          break;
-        }
-
         // Check if the rendered element has a breakBefore set
-        if (hasContent && needsBreakBefore(node)) {
-          // Break layout with current node
-          newBreakToken = {
-            node: node,
-            offset: 0
-          };
-          break;
-        }
+        // if (needsBreakBefore(node)) {
+        //   // Break layout with current node
+        //   newBreakToken = {
+        //     node: node,
+        //     offset: 0
+        //   };
+        //   break;
+        // }
+
 
         shallow = this.isContainer(node);
 
         rendered = this.render(node, this.wrapper, breakToken, shallow);
 
-        // Only register element content
-        if (node.nodeType === 1 && !hasContent) {
-          hasContent = true;
-        }
-
-        // Check if the rendered element has a breakAfter set
-        if (needsBreakAfter(rendered)) {
-          // save node to check if we have finished rendering it's contents
-          breakAfter = node;
-        }
 
         if (!shallow) {
-          next = after(node, content);
+          after = nodeAfter(node, content);
           if (next) {
-            walker = walk(next, content);
+            walker = walk(after, content);
           }
         }
+
 
       } else {
         check = 1000; // Force check
       }
 
       // Only check every 4 elements
-      if (check >= 4) {
+      if (check >= PER_PAGE_CHECK) {
         check = 0;
         hasOverflow = this.hasOverflow();
       }
@@ -216,12 +198,14 @@ class Layout {
         }
 
       }
+
       check += 1;
     }
 
     requestIdleCallback(() => {
       this.listened = this.listeners();
     })
+
 
     return newBreakToken;
 
@@ -393,6 +377,14 @@ class Layout {
 
   }
 
+  onEnter(node) {
+
+  }
+
+  onExit(node) {
+
+  }
+
   onOverflow(func) {
     this._onOverflow = func;
   }
@@ -458,7 +450,7 @@ class Layout {
         // Skip children
         if (right < end) {
 
-          next = after(node, this.wrapper);
+          next = nodeAfter(node, this.wrapper);
           if (next) {
             walker = walk(next, this.wrapper);
           }

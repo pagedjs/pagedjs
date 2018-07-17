@@ -1,6 +1,5 @@
 import Handler from "../handler";
 import csstree from 'css-tree';
-import { getTypeSelector, getPsuedoSelector, getNthSelector } from "../../utils/csstree";
 
 class RunningHeaders extends Handler {
 	constructor(chunker, polisher, caller) {

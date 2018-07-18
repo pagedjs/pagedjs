@@ -546,12 +546,28 @@ class AtPage extends Handler {
 
 	addMarginalia(page, list, item, sheet) {
 		for (let loc in page.marginalia) {
-			let item = csstree.clone(page.marginalia[loc]);
-			csstree.walk(item, {
+			let block = csstree.clone(page.marginalia[loc]);
+			csstree.walk(block, {
 				visit: "Declaration",
 				enter: (node, item, list) => {
 					if (node.property === "content") {
 						list.remove(item);
+					}
+					if (node.property === "vertical-align") {
+						csstree.walk(node, {
+							visit: "Identifier",
+							enter: (identNode, identItem, identlist) => {
+								let name = identNode.name;
+								if (name === "top") {
+									identNode.name = "flex-start";
+								} else if (name === "middle") {
+									identNode.name = "center";
+								} else if (name === "bottom") {
+									identNode.name = "flex-end";
+								}
+							}
+						});
+						node.property = "align-items";
 					}
 				}
 			});
@@ -624,15 +640,15 @@ class AtPage extends Handler {
 				name: "pagedjs_margin-" + loc
 			}));
 
-			selectors.insert(selectors.createItem({
-				type: 'Combinator',
-				name: ">"
-			}));
-
-			selectors.insert(selectors.createItem({
-				type: 'ClassSelector',
-				name: "pagedjs_margin-content"
-			}));
+			// selectors.insert(selectors.createItem({
+			// 	type: 'Combinator',
+			// 	name: ">"
+			// }));
+			//
+			// selectors.insert(selectors.createItem({
+			// 	type: 'ClassSelector',
+			// 	name: "pagedjs_margin-content"
+			// }));
 
 			// selectors.insert(selectors.createItem({
 			// 	type: 'PseudoElementSelector',
@@ -646,7 +662,7 @@ class AtPage extends Handler {
 					type: 'SelectorList',
 					children: selectorList
 				},
-				block: item
+				block: block
 			});
 
 			list.append(rule);

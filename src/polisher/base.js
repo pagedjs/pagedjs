@@ -162,24 +162,24 @@ export default `
   align-items: flex-end;
 }
 
-.pagedjs_page .pagedjs_margin-top-left > .pagedjs_margin-content,
-.pagedjs_page .pagedjs_margin-top-right-corner > .pagedjs_margin-content,
-.pagedjs_page .pagedjs_margin-bottom-left > .pagedjs_margin-content,
-.pagedjs_page .pagedjs_margin-bottom-right-corner > .pagedjs_margin-content { text-align: left; }
+.pagedjs_page .pagedjs_margin-top-left,
+.pagedjs_page .pagedjs_margin-top-right-corner,
+.pagedjs_page .pagedjs_margin-bottom-left,
+.pagedjs_page .pagedjs_margin-bottom-right-corner { text-align: left; }
 
-.pagedjs_page .pagedjs_margin-top-left-corner > .pagedjs_margin-content,
-.pagedjs_page .pagedjs_margin-top-right > .pagedjs_margin-content,
-.pagedjs_page .pagedjs_margin-bottom-left-corner > .pagedjs_margin-content,
-.pagedjs_page .pagedjs_margin-bottom-right > .pagedjs_margin-content { text-align: right; }
+.pagedjs_page .pagedjs_margin-top-left-corner,
+.pagedjs_page .pagedjs_margin-top-right,
+.pagedjs_page .pagedjs_margin-bottom-left-corner,
+.pagedjs_page .pagedjs_margin-bottom-right { text-align: right; }
 
-.pagedjs_page .pagedjs_margin-top-center > .pagedjs_margin-content,
-.pagedjs_page .pagedjs_margin-bottom-center > .pagedjs_margin-content,
-.pagedjs_page .pagedjs_margin-left-top > .pagedjs_margin-content,
-.pagedjs_page .pagedjs_margin-left-middle > .pagedjs_margin-content,
-.pagedjs_page .pagedjs_margin-left-bottom > .pagedjs_margin-content,
-.pagedjs_page .pagedjs_margin-right-top > .pagedjs_margin-content,
-.pagedjs_page .pagedjs_margin-right-middle > .pagedjs_margin-content,
-.pagedjs_page .pagedjs_margin-right-bottom > .pagedjs_margin-content { text-align: center; }
+.pagedjs_page .pagedjs_margin-top-center,
+.pagedjs_page .pagedjs_margin-bottom-center,
+.pagedjs_page .pagedjs_margin-left-top,
+.pagedjs_page .pagedjs_margin-left-middle,
+.pagedjs_page .pagedjs_margin-left-bottom,
+.pagedjs_page .pagedjs_margin-right-top,
+.pagedjs_page .pagedjs_margin-right-middle,
+.pagedjs_page .pagedjs_margin-right-bottom { text-align: center; }
 
 
 

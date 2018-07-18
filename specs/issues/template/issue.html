@@ -7,14 +7,9 @@
       Issue #XX
     </title>
 
-    <script src="../../../../dist/paged.polyfill.js"></script>
-
+    <script src="../../../dist/paged.polyfill.js"></script>
 
     <style>
-      :root{
-        font-size: 18px;
-      }
-
       /* interface */
 
       @media screen {
@@ -41,6 +36,12 @@
         .pagedjs_first_page {
           margin-left: 50%;
         }
+      }
+    </style>
+
+    <style>
+      :root{
+        font-size: 18px;
       }
 
       @page {
@@ -69,65 +70,6 @@
         margin-top: 0;
       }
 
-      /* @page {
-        background-color: purple;
-        @top-left: {
-          content: "test";
-        }
-      } */
-
-      @page :nth(2) {
-        @top-left: {
-          content: "dup";
-        }
-      }
-
-      @page chapter {
-        @top-left: {
-          content: element(chapter-title);
-        }
-      }
-
-      @page chapter :left {
-        @top-left: {
-          content: element(chapter-left);
-        }
-      }
-
-      @page chapter :first {
-        @top-left: {
-          content: element(chapter-left);
-        }
-      }
-
-      @page chapter :nth(3) {
-        @top-left: {
-          content: element(nth);
-        }
-      }
-
-      @page :nth(3) {
-        @top-left: {
-          content: element(nth);
-        }
-      }
-
-      .chapter {
-        page: chapter;
-      }
-
-      .first {
-        position: running(chapter-title);
-      }
-
-      .second {
-        position: running(chapter-left);
-      }
-
-      .nth {
-        position: running(nth);
-      }
-
     </style>
 
 
@@ -140,7 +82,6 @@
 
   <section class="chapter">
     <h1>Chapter 1: Lorem ipsum dolor sit amet</h1>
-    <h2 class="first">chapter</h2>
     <p>
       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi non suscipit odio. Aenean ut ligula id mauris efficitur tincidunt vitae non leo. In convallis convallis leo, eget molestie metus imperdiet eu. Praesent pharetra, leo a laoreet mattis, ligula nisl commodo ante, non vestibulum nisi lacus eget magna. Maecenas scelerisque nibh ac felis egestas, egestas elementum risus pellentesque. Nulla iaculis ut leo a iaculis. Donec vel sodales dolor, vel fringilla elit. Vivamus aliquam diam eu maximus elementum. Integer eu urna at felis fermentum hendrerit.
     </p>
@@ -159,8 +100,6 @@
   </section>
   <section class="chapter">
     <h1>Chapter 2: Praesent placerat lectus</h1>
-    <h2 class="second">chapter left</h2>
-    <h2 class="nth" style="display:none;">chapter nth</h2>
     <p>
       Praesent placerat lectus ac mauris rhoncus, eget iaculis nisl molestie. Etiam posuere luctus ligula quis ornare. Duis semper lectus vel bibendum dapibus. Morbi a lacus eget augue sagittis euismod. Aliquam non leo quis dui bibendum viverra eu vel erat. Fusce iaculis vulputate leo, sit amet laoreet eros aliquam a. Sed id tellus at ligula porttitor pharetra. Morbi non fringilla augue. Cras sodales egestas mi, et porta orci ultricies sed. Sed et nulla a ligula aliquet accumsan non eleifend quam. Aliquam pellentesque, justo vel interdum accumsan, purus ipsum porttitor lectus, ac luctus risus lectus nec lectus. Cras ut augue condimentum, egestas nisi in, dictum erat. Nullam tincidunt tincidunt tempor. Sed in eleifend nibh, sit amet feugiat nisi. Cras at ante ut urna sagittis dictum ut nec elit.
     </p>

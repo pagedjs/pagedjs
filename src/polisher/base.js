@@ -34,6 +34,7 @@ export default `
   display: flex;
   grid-column: left / right;
   grid-row: header;
+  flex-wrap: nowrap;
 }
 
 .pagedjs_margin-top .pagedjs_margin-top-left-corner {
@@ -74,6 +75,7 @@ export default `
   display: flex;
   grid-column: left / right;
   grid-row: footer;
+  flex-wrap: nowrap;
 }
 
 .pagedjs_margin-bottom .pagedjs_margin-bottom-left-corner {
@@ -129,20 +131,34 @@ export default `
   counter-reset: pages var(--page-count);
 }
 
-.pagedjs_page .pagedjs_margin-top-left-corner,
 .pagedjs_page .pagedjs_margin-top-left,
-.pagedjs_page .pagedjs_margin-top-center,
 .pagedjs_page .pagedjs_margin-top-right,
-.pagedjs_page .pagedjs_margin-top-right-corner,
-.pagedjs_page .pagedjs_margin-bottom-left-corner,
 .pagedjs_page .pagedjs_margin-bottom-left,
-.pagedjs_page .pagedjs_margin-bottom-center,
-.pagedjs_page .pagedjs_margin-bottom-right,
-.pagedjs_page .pagedjs_margin-bottom-right-corner {
+.pagedjs_page .pagedjs_margin-bottom-right {
   height: 100%;
   display: flex;
   align-items: center;
+  flex: 1 1 0;
 }
+
+.pagedjs_page .pagedjs_margin-top-center,
+.pagedjs_page .pagedjs_margin-bottom-center {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  margin: 0 auto;
+}
+
+.pagedjs_page .pagedjs_margin-top-left-corner,
+.pagedjs_page .pagedjs_margin-top-right-corner,
+.pagedjs_page .pagedjs_margin-bottom-right-corner,
+.pagedjs_page .pagedjs_margin-bottom-left-corner {
+  height: 100%;
+  display: flex;
+}
+
+
 
 .pagedjs_page .pagedjs_margin-left-top,
 .pagedjs_page .pagedjs_margin-right-top {

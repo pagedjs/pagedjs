@@ -118,17 +118,17 @@ class Breaks extends Handler {
 			if (before.dataset.splitFrom) {
 				page.splitFrom = before.dataset.splitFrom;
 				page.element.setAttribute("data-split-from", before.dataset.splitFrom);
-			} else {
+			} else if (before.dataset.breakBefore && before.dataset.breakBefore !== "avoid") {
 				page.breakBefore = before.dataset.breakBefore;
 				page.element.setAttribute("data-break-before", before.dataset.breakBefore);
 			}
 		}
 
-		if (after) {
+		if (after && after.dataset) {
 			if (after.dataset.splitTo) {
 				page.splitTo = after.dataset.splitTo;
 				page.element.setAttribute("data-split-to", after.dataset.splitTo);
-			} else {
+			} else if (after.dataset.breakAfter && after.dataset.breakAfter !== "avoid") {
 				page.breakAfter = after.dataset.breakAfter;
 				page.element.setAttribute("data-break-after", after.dataset.breakAfter);
 			}

@@ -507,7 +507,7 @@ class AtPage extends Handler {
 		list.append(hVar);
 
 		// Disabled due to causing issues with Chrome on print
-		/*
+
 		// width dimension
 		let widthList = new csstree.List();
 		widthList.insert(widthList.createItem({
@@ -541,7 +541,7 @@ class AtPage extends Handler {
 			}
 		});
 		list.append(h);
-		*/
+
 	}
 
 	addMarginalia(page, list, item, sheet) {

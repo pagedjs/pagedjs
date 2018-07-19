@@ -224,7 +224,7 @@ export default `
 .pagedjs_pages > .pagedjs_page > .pagedjs_area > div [data-split-from]::first-letter {
   color: unset;
   font-size: unset;
-  font-wieght: unset;
+  font-weight: unset;
   font-family: unset;
   color: unset;
   line-height: unset;
@@ -260,23 +260,35 @@ export default `
 }
 
 @media print {
+  html {
+    width: 100%;
+    height: 100%;
+  }
   body {
-    width: unset;
-    height: unset;
     margin: 0;
     padding: 0;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 100%;
+    max-width: 100%;
+    min-height: 100%;
+    max-height: 100%;
   }
   .pagedjs_pages {
     width: var(--width);
-    display: block;
+    display: block !important;
     transform: none !important;
+    height: 100% !important;
+    min-height: 100%;
+    max-height: 100%;
+    overflow: visible;
   }
   .pagedjs_page {
     margin: 0;
     padding: 0;
-    width: 100%;
-    height: 100%;
-    break-before: page;
+    max-height: 100%;
+    min-height: 100%;
+    height: 100% !important;
     break-after: page;
   }
 }

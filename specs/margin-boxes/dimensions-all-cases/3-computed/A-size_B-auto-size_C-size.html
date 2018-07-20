@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>
+      A size, B auto-size, C size
+    </title>
+
+    <script src="http://localhost:9090/dist/paged.polyfill.js"></script>
+
+
+    <style>
+      :root{
+        font-size: 18px;
+      }
+      @page {
+      size: 6in 8in;
+      margin: 30mm 20mm;
+
+      /* TOP MARGINS */ 
+      @top-left { 
+        content: "top-left (size)";
+        background-color: crimson; 
+        width: 80px;   
+      }
+      @top-center { 
+        content: "top-center";
+        background-color: yellow;
+      }
+      @top-right { 
+        content: "top-right (size)";
+        background-color: coral;
+        width: 200px;
+      }
+
+      /* RIGHT MARGINS */
+      @right-top { 
+        content: "right-top (size)"; 
+        background-color: aquamarine; 
+        height: 80px;
+      }
+      @right-middle { 
+        content: "right-middle";        
+        background-color: cornflowerblue;
+      }
+      @right-bottom { 
+        content: "right-bottom (size)"; 
+        background-color: aqua;
+        height: 300px;
+       }
+
+       /* BOTTOM MARGINS */
+      @bottom-left { 
+        content: "bottom-left (size)";
+        background-color: crimson;
+        width: 80px;
+      }
+      @bottom-center { 
+        content: "bottom-center";
+        background-color: yellow;
+      }
+      @bottom-right { 
+        content: "bottom-right (size)";
+        background-color: coral;
+        width: 200px;
+      }
+
+      /* LEFT MARGINS*/
+      @left-top { 
+        content: "left-top (size)";      
+        background-color: aquamarine; 
+        height: 80px;
+      }
+      @left-middle { 
+        content: "left-middle";
+        background-color: cornflowerblue;
+      }
+      @left-bottom { 
+        content: "left-bottom (size)"; 
+        background-color: aqua;
+        height: 300px;
+      }
+
+      /* CORNERS MARGINS */
+      @top-left-corner { background-color: Gainsboro; }
+      @top-right-corner { background-color: Gainsboro; }
+      @bottom-right-corner {  background-color: Gainsboro; }
+      @bottom-left-corner { background-color: Gainsboro; }
+
+      }
+
+    
+
+
+    </style>
+
+
+
+
+
+
+  </head>
+  <body>
+
+
+  <section>
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi non suscipit odio. Aenean ut ligula id mauris efficitur tincidunt vitae non leo. In convallis convallis leo, eget molestie metus imperdiet eu. Praesent pharetra, leo a laoreet mattis, ligula nisl commodo ante, non vestibulum nisi lacus eget magna. Maecenas scelerisque nibh ac felis egestas, egestas elementum risus pellentesque. Nulla iaculis ut leo a iaculis. Donec vel sodales dolor, vel fringilla elit. Vivamus aliquam diam eu maximus elementum. Integer eu urna at felis fermentum hendrerit.
+    </p>
+    
+   
+  </section>
+
+</body>

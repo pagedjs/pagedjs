@@ -69,89 +69,89 @@ C sizeC
 B { 100% - (sizeC*2)}
 A, C  { size: sizeC }
 
-B sizeB
-C auto-size
-<=>
-B { size: sizeB }
+B sizeB  
+C auto-size  
+<=>  
+B { size: sizeB }  
 A, C { size: (100% - sizeB)/2}
 
-B sizeB
-C sizeC
-<=>
-A { size: sizeB - sizeC }
-B { size: sizeB }
+B sizeB  
+C sizeC  
+<=>  
+A { size: sizeB - sizeC }  
+B { size: sizeB }  
 C  { size: sizeC }
 
 
 ## 3 generated
 
-A auto-size
-B auto-size
-C auto-size
-<=>
+A auto-size  
+B auto-size  
+C auto-size  
+<=>  
 A, B, C { size: width: 33% }
 
 
-A auto-size
-B auto-size
-C sizeC
-<=>
-B { size: 100% - (sizeC*2) }
+A auto-size  
+B auto-size  
+C sizeC  
+<=>  
+B { size: 100% - (sizeC*2) }  
 A, C { size: sizeC }
 
 
-A auto-size
-B sizeB
-C auto-size
-<=>
-A, C { size: (100% - sizeB)/2 }
+A auto-size  
+B sizeB  
+C auto-size  
+<=>  
+A, C { size: (100% - sizeB)/2 }  
 B { size: sizeB }
 
 
-A auto-size
-B sizeB
-C sizeC
-<=>
-A { size: 100% - sizeA - sizeB }
-B { size: sizeB }
+A auto-size  
+B sizeB  
+C sizeC  
+<=>  
+A { size: 100% - sizeA - sizeB }  
+B { size: sizeB }  
 C { size: sizeC }
 
 
-A sizeA
-B auto-size
-C auto-size
-<=>
-A, C { size: sizeA }
+A sizeA  
+B auto-size  
+C auto-size  
+<=>  
+A, C { size: sizeA }  
 B { size: 100% - (sizeA*2) }
 
-A auto-size
-B auto-size
-C auto-size
-<=>
-A { size: sizeA }
-B { size: sizeB }
+A auto-size  
+B auto-size  
+C auto-size  
+<=>  
+A { size: sizeA }  
+B { size: sizeB }  
 C { size: sizeC }
 
-A sizeA
-B auto-size
-C sizeC
-<=>
-A { size: sizeA }
-B { size: 100% - sizeA - sizeC }
+A sizeA  
+B auto-size  
+C sizeC  
+<=>  
+A { size: sizeA }  
+B { size: 100% - sizeA - sizeC }  
 C { size: sizeC }
 
 
-A sizeA
-B sizeB
-C auto-size
-<=>
-A { size: sizeA }
-B { size: sizeB }
+A sizeA  
+B sizeB  
+C auto-size  
+<=>  
+A { size: sizeA }  
+B { size: sizeB }  
 C { size: 100% - sizeA - sizeB }
 
 
-A sizeA
-B sizeB
-C sizeC
-<=>
+A sizeA  
+B sizeB  
+C sizeC  
+<=>  
 ??

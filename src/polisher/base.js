@@ -11,6 +11,7 @@ export default `
 
 @page {
   size: letter;
+  margin: 0;
 }
 
 .pagedjs_page {

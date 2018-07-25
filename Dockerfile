@@ -39,6 +39,10 @@ RUN apt-get update && apt-get install -y wget --no-install-recommends \
 ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 /usr/local/bin/dumb-init
 RUN chmod +x /usr/local/bin/dumb-init
 
+RUN apt-get update && \
+		apt-get install -y vim && \
+		rm -rf /var/lib/apt/lists/*
+
 RUN npm install npm@latest -g
 RUN npm install -g node-gyp
 
@@ -58,9 +62,11 @@ USER node
 
 WORKDIR $DIRECTORY
 
-COPY --chown=node:node . $DIRECTORY
+COPY --chown=node:node package.json $DIRECTORY
 RUN npm install
 RUN npm install ghostscript4js
+
+COPY --chown=node:node . $DIRECTORY
 
 EXPOSE $PORT
 

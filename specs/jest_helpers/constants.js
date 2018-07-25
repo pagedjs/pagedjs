@@ -11,7 +11,7 @@ const CI = process.env.CI === 'true';
 const PDF_SETTINGS = {
 		printBackground: true,
 		displayHeaderFooter: false,
-		margin: { top: 0, right: 0, bottom: 0, left: 0 }
+		preferCSSPageSize: true
 	};
 
 module.exports = {

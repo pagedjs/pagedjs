@@ -3,8 +3,8 @@ import ContentParser from "./parser";
 import EventEmitter from "event-emitter";
 import Hook from "../utils/hook";
 import {
-  needsBreakBefore,
-  needsBreakAfter
+	needsBreakBefore,
+	needsBreakAfter
 } from "../utils/dom";
 const MAX_PAGES = false;
 
@@ -126,6 +126,8 @@ class Chunker {
 	handleBreaks(node) {
 		let currentPage = this.total + 1;
 		let currentPosition = currentPage % 2 === 0 ? "left" : "right";
+		// TODO: Recto and Verso should reverse for rtl languages
+		let currentSide = currentPage % 2 === 0 ? "verso" : "recto";
 		let previousBreakAfter;
 		let breakBefore;
 
@@ -145,11 +147,17 @@ class Chunker {
 				(previousBreakAfter === "left" || previousBreakAfter === "right") &&
 				previousBreakAfter !== currentPosition) {
 			this.addPage(true);
-		}
-
-		if( breakBefore &&
+		} else if( previousBreakAfter &&
+				(previousBreakAfter === "verso" || previousBreakAfter === "recto") &&
+				previousBreakAfter !== currentSide) {
+			this.addPage(true);
+		} else if( breakBefore &&
 				(breakBefore === "left" || breakBefore === "right") &&
 				breakBefore !== currentPosition) {
+			this.addPage(true);
+		} else if( breakBefore &&
+				(breakBefore === "verso" || breakBefore === "recto") &&
+				breakBefore !== currentSide) {
 			this.addPage(true);
 		}
 	}
@@ -259,14 +267,14 @@ class Chunker {
 		return page;
 	}
 
-  get total() {
-    return this._total;
-  }
+	get total() {
+		return this._total;
+	}
 
-  set total(num) {
-    this.pagesArea.style.setProperty('--page-count', num);
-    this._total = num;
-  }
+	set total(num) {
+		this.pagesArea.style.setProperty('--page-count', num);
+		this._total = num;
+	}
 
 	destroy() {
 		this.pagesArea.remove()

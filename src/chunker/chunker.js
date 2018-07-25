@@ -40,6 +40,8 @@ const TEMPLATE = `<div class="pagedjs_page">
 	</div>
 </div>`;
 
+const _requestIdleCallback = 'requestIdleCallback' in window ? requestIdleCallback : requestAnimationFrame;
+
 /**
  * Chop up text into flows
  * @class
@@ -116,7 +118,7 @@ class Chunker {
 
 	renderOnIdle(renderer) {
 		return new Promise(resolve => {
-			requestIdleCallback(() => {
+			_requestIdleCallback(() => {
 				let result = renderer.next();
 				resolve(result);
 			});
@@ -208,9 +210,13 @@ class Chunker {
 		if (!blank) {
 			// Listen for page overflow
 			page.onOverflow((overflow) => {
-				requestIdleCallback(() => {
-					if (total < this.pages.length) {
-						this.pages[total].prepend(overflow);
+				_requestIdleCallback(() => {
+					let index = this.pages.indexOf(page) + 1;
+					if (this.pages[index].breakBefore || this.pages[index].previousBreakAfter) {
+						let newPage = this.insertPage(index - 1);
+						newPage.prepend(overflow);
+					} else if (index < this.pages.length) {
+						this.pages[index].prepend(overflow);
 					} else {
 						let newPage = this.addPage();
 						newPage.prepend(overflow);
@@ -247,7 +253,7 @@ class Chunker {
 		if (!blank) {
 			// Listen for page overflow
 			page.onOverflow((overflow) => {
-				requestIdleCallback(() => {
+				_requestIdleCallback(() => {
 					if (total < this.pages.length) {
 						this.pages[total].prepend(overflow);
 					} else {

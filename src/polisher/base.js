@@ -242,6 +242,7 @@ export default `
 [data-break-before="recto"]:not([data-split-from]),
 [data-break-before="verso"]:not([data-split-from])
 {
+  -webkit-column-break-before: always;
   break-before: column;
 }
 
@@ -253,6 +254,7 @@ export default `
 [data-break-after="recto"]:not([data-split-to]),
 [data-break-after="verso"]:not([data-split-to])
 {
+  -webkit-column-break-after: always;
   break-after: column;
 }
 
@@ -290,6 +292,7 @@ export default `
     max-height: 100%;
     min-height: 100%;
     height: 100% !important;
+    page-break-after: always;
     break-after: page;
   }
 }

@@ -60,11 +60,11 @@ export function nodeAfter(node, limiter) {
 export function nodeBefore(node, limiter) {
 	let before = node;
 
-	if (after.prevSibling) {
+	if (before.prevSibling) {
 		if (limiter && node === limiter) {
 			return;
 		}
-		before = after.prevSibling;
+		before = before.prevSibling;
 	} else {
 		while (before) {
 			before = before.parentNode;
@@ -147,9 +147,9 @@ export function rebuildAncestors(node) {
 			parent.removeAttribute("data-break-before");
 		}
 
-		// if (ancestor.hasAttribute("data-break-after")) {
-		// 	ancestor.removeAttribute("data-break-after");
-		// }
+		if (parent.hasAttribute("data-previous-break-after")) {
+			parent.removeAttribute("data-previous-break-after");
+		}
 
 		if (added.length) {
 			let container = added[added.length-1];
@@ -216,8 +216,12 @@ export function needsBreakBefore(node) {
 			typeof node.dataset !== "undefined" &&
 			typeof node.dataset.breakBefore !== "undefined" &&
 			(node.dataset.breakBefore === "always" ||
+			 node.dataset.breakBefore === "page" ||
 			 node.dataset.breakBefore === "left" ||
-			 node.dataset.breakBefore === "right")) {
+			 node.dataset.breakBefore === "right" ||
+			 node.dataset.breakBefore === "recto" ||
+			 node.dataset.breakBefore === "verso")
+		 ) {
 		return true;
 	}
 
@@ -229,8 +233,29 @@ export function needsBreakAfter(node) {
 			typeof node.dataset !== "undefined" &&
 			typeof node.dataset.breakAfter !== "undefined" &&
 			(node.dataset.breakAfter === "always" ||
+			 node.dataset.breakAfter === "page" ||
 			 node.dataset.breakAfter === "left" ||
-			 node.dataset.breakAfter === "right")) {
+			 node.dataset.breakAfter === "right" ||
+			 node.dataset.breakAfter === "recto" ||
+			 node.dataset.breakAfter === "verso")
+		 ) {
+		return true;
+	}
+
+	return false;
+}
+
+export function needsPreviousBreakAfter(node) {
+	if( typeof node !== "undefined" &&
+			typeof node.dataset !== "undefined" &&
+			typeof node.dataset.previousBreakAfter !== "undefined" &&
+			(node.dataset.previousBreakAfter === "always" ||
+			 node.dataset.previousBreakAfter === "page" ||
+			 node.dataset.previousBreakAfter === "left" ||
+			 node.dataset.previousBreakAfter === "right" ||
+			 node.dataset.previousBreakAfter === "recto" ||
+			 node.dataset.previousBreakAfter === "verso")
+		 ) {
 		return true;
 	}
 

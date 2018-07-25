@@ -5,10 +5,12 @@ import {
   stackChildren,
   rebuildAncestors,
   needsBreakBefore,
-  needsBreakAfter
+  needsBreakAfter,
+  needsPreviousBreakAfter
 } from "../utils/dom";
 import EventEmitter from "event-emitter";
 import Hook from "../utils/hook";
+const _requestIdleCallback = 'requestIdleCallback' in window ? requestIdleCallback : requestAnimationFrame;
 
 const PER_PAGE_CHECK = 4;
 
@@ -126,6 +128,7 @@ class Layout {
     let next;
     let offset = 0;
     let hasOverflow = false;
+    let hasContent = false;
     let newBreakToken;
     let after;
 
@@ -145,19 +148,42 @@ class Layout {
         this.hooks.layoutNode.trigger(node);
 
         // Check if the rendered element has a breakBefore set
-        // if (needsBreakBefore(node)) {
-        //   // Break layout with current node
-        //   newBreakToken = {
-        //     node: node,
-        //     offset: 0
-        //   };
-        //   break;
-        // }
+        if (hasContent && (needsBreakBefore(node) || needsPreviousBreakAfter(node))) {
+          // Check for overflow
+          hasOverflow = this.hasOverflow();
 
+          if (hasOverflow) {
+            let overflow = this.overflow(this.element);
+
+            if (overflow) {
+
+              newBreakToken = this.findBreakToken(overflow, content);
+
+              if (newBreakToken && newBreakToken.node) {
+                this.removeOverflow(overflow);
+              }
+
+              break;
+
+            }
+          } else {
+            // Break layout with current node
+            newBreakToken = {
+              node: node,
+              offset: 0
+            };
+            break;
+          }
+        }
 
         shallow = this.isContainer(node);
 
         rendered = this.render(node, this.wrapper, breakToken, shallow);
+
+        // Only register element content
+        if (!hasContent && (node.nodeType === 1 || node.nodeType === 3)) {
+          hasContent = true;
+        }
 
 
         if (!shallow) {
@@ -202,7 +228,7 @@ class Layout {
       check += 1;
     }
 
-    requestIdleCallback(() => {
+    _requestIdleCallback(() => {
       this.listened = this.listeners();
     })
 
@@ -309,7 +335,7 @@ class Layout {
 
     return overflow.extractContents();
 
-    // requestIdleCallback(() => this.removeEmpty());
+    // _requestIdleCallback(() => this.removeEmpty());
   }
 
   removeEmpty() {
@@ -337,7 +363,7 @@ class Layout {
     });
 
     stack = undefined;
-    requestIdleCallback(() => this.floats());
+    _requestIdleCallback(() => this.floats());
 
   }
 

@@ -65,10 +65,7 @@ class Breaks extends Handler {
 				}
 			})
 
-			// Always break -- handle right / left in module
-			// declaration.property = property;
-			// child.name = "column";
-
+			// Remove from CSS -- handle right / left in module
 			dList.remove(dItem);
 		}
 	}
@@ -91,9 +88,9 @@ class Breaks extends Handler {
 						if (nodeAfter) {
 							nodeAfter.setAttribute("data-previous-break-after", prop.value);
 						}
+					} else {
+						elements[i].setAttribute("data-" + prop.property, prop.value);
 					}
-
-					elements[i].setAttribute("data-" + prop.property, prop.value);
 				}
 			}
 		}
@@ -113,6 +110,7 @@ class Breaks extends Handler {
 	addBreakAttributes(page) {
 		let before = page.wrapper.querySelector("[data-break-before]");
 		let after = page.wrapper.querySelector("[data-break-after]");
+		let previousBreakAfter = page.wrapper.querySelector("[data-previous-break-after]");
 
 		if (before) {
 			if (before.dataset.splitFrom) {
@@ -131,6 +129,12 @@ class Breaks extends Handler {
 			} else if (after.dataset.breakAfter && after.dataset.breakAfter !== "avoid") {
 				page.breakAfter = after.dataset.breakAfter;
 				page.element.setAttribute("data-break-after", after.dataset.breakAfter);
+			}
+		}
+
+		if (previousBreakAfter && previousBreakAfter.dataset) {
+			if (previousBreakAfter.dataset.previousBreakAfter && previousBreakAfter.dataset.previousBreakAfter !== "avoid") {
+				page.previousBreakAfter = previousBreakAfter.dataset.previousBreakAfter;
 			}
 		}
 	}

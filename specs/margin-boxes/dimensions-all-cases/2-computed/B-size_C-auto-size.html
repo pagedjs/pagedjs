@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>
+      B (size) + C (auto size) // A not generated
+    </title>
+
+    <script src="http://localhost:9090/dist/paged.polyfill.js"></script>
+
+
+    <style>
+      :root{
+        font-size: 18px;
+      }
+      @page {
+      size: 6in 8in;
+      margin: 30mm 20mm;
+
+      /* TOP MARGINS */ 
+      @top-center { 
+        content: "top-center (width 200px)";
+        background-color: yellow;
+        width: 200px;
+      }
+      @top-right { 
+        content: "top-right (auto)";
+        background-color: coral; 
+      }
+
+      /* RIGHT MARGINS */
+      @right-middle { 
+        content: "right-middle (height 300px)";        
+        background-color: cornflowerblue;
+        height: 300px;
+      }
+      @right-bottom { 
+        content: "right-bottom (auto)"; 
+        background-color: aqua;
+       }
+
+       /* BOTTOM MARGINS */
+      @bottom-center { 
+        content: "bottom-center (width 200px)";
+        background-color: yellow;
+        width: 200px;
+      }
+      @bottom-right { 
+        content: "bottom-right (auto)";
+        background-color: coral;     
+      }
+
+      /* LEFT MARGINS*/
+      @left-middle { 
+        content: "left-middle (height 300px)";
+        background-color: cornflowerblue;
+        height: 300px;
+      }
+      @left-bottom { 
+        content: "left-bottom (auto)"; 
+        background-color: aqua; 
+      }
+
+      /* CORNERS MARGINS */
+      @top-left-corner { background-color: Gainsboro; }
+      @top-right-corner { background-color: Gainsboro; }
+      @bottom-right-corner {  background-color: Gainsboro; }
+      @bottom-left-corner { background-color: Gainsboro; }
+
+      }
+
+
+
+
+    </style>
+
+
+
+  </head>
+  <body>
+
+
+  <section>
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi non suscipit odio. Aenean ut ligula id mauris efficitur tincidunt vitae non leo. In convallis convallis leo, eget molestie metus imperdiet eu. Praesent pharetra, leo a laoreet mattis, ligula nisl commodo ante, non vestibulum nisi lacus eget magna. Maecenas scelerisque nibh ac felis egestas, egestas elementum risus pellentesque. Nulla iaculis ut leo a iaculis. Donec vel sodales dolor, vel fringilla elit. Vivamus aliquam diam eu maximus elementum. Integer eu urna at felis fermentum hendrerit.
+    </p>
+    
+   
+  </section>
+
+</body>

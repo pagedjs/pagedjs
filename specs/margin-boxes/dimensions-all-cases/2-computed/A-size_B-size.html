@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>
+      A (size) + B (size) // C not generated
+    </title>
+
+    <script src="http://localhost:9090/dist/paged.polyfill.js"></script>
+
+
+    <style>
+      :root{
+        font-size: 18px;
+      }
+      @page {
+      size: 6in 8in;
+      margin: 30mm 20mm;
+
+      /* TOP MARGINS */ 
+      @top-left{ 
+        content: "top-left";
+        width: 70px;
+        background-color: crimson;    
+      }
+      @top-center{ 
+        content: "top-center";
+        width: 250px;
+        background-color: yellow;
+      }
+      
+
+      /* RIGHT MARGINS */
+      @right-top{ 
+        content: "right-top"; 
+        height: 70px;
+        background-color: aquamarine; 
+      }
+      @right-middle{ 
+        content: "right-middle";   
+        height: 100px;     
+        background-color: cornflowerblue;
+      }
+
+       /* BOTTOM MARGINS */
+      @bottom-left{ 
+        content: "bottom-left";
+        width: 70px;
+        background-color: crimson;
+      }
+      @bottom-center{ 
+        content: "bottom-center";
+        width: 100px;
+        background-color: yellow;
+      }
+
+
+      /* LEFT MARGINS*/
+      @left-top{ 
+        content: "left-top";  
+        height: 70px;    
+        background-color: aquamarine; 
+      }
+      @left-middle{ 
+        content: "left-middle";
+        height: 250px;  
+        background-color: cornflowerblue;
+      }
+
+
+      /* CORNERS MARGINS */
+      @top-left-corner { background-color: Gainsboro; }
+      @top-right-corner { background-color: Gainsboro; }
+      @bottom-right-corner {  background-color: Gainsboro; }
+      @bottom-left-corner { background-color: Gainsboro; }
+
+      }
+
+
+
+
+    </style>
+
+
+
+  </head>
+  <body>
+
+
+  <section>
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi non suscipit odio. Aenean ut ligula id mauris efficitur tincidunt vitae non leo. In convallis convallis leo, eget molestie metus imperdiet eu. Praesent pharetra, leo a laoreet mattis, ligula nisl commodo ante, non vestibulum nisi lacus eget magna. Maecenas scelerisque nibh ac felis egestas, egestas elementum risus pellentesque. Nulla iaculis ut leo a iaculis. Donec vel sodales dolor, vel fringilla elit. Vivamus aliquam diam eu maximus elementum. Integer eu urna at felis fermentum hendrerit.
+    </p>
+    
+   
+  </section>
+
+</body>

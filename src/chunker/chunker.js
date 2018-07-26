@@ -212,7 +212,8 @@ class Chunker {
 			page.onOverflow((overflow) => {
 				_requestIdleCallback(() => {
 					let index = this.pages.indexOf(page) + 1;
-					if (this.pages[index].breakBefore || this.pages[index].previousBreakAfter) {
+					if (index < this.pages.length &&
+							(this.pages[index].breakBefore || this.pages[index].previousBreakAfter)) {
 						let newPage = this.insertPage(index - 1);
 						newPage.prepend(overflow);
 					} else if (index < this.pages.length) {

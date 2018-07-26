@@ -234,6 +234,7 @@ export default `
   margin: unset;
 }
 
+/*
 [data-page]:not([data-split-from]),
 [data-break-before="page"]:not([data-split-from]),
 [data-break-before="always"]:not([data-split-from]),
@@ -242,7 +243,6 @@ export default `
 [data-break-before="recto"]:not([data-split-from]),
 [data-break-before="verso"]:not([data-split-from])
 {
-  -webkit-column-break-before: always;
   break-before: column;
 }
 
@@ -254,9 +254,9 @@ export default `
 [data-break-after="recto"]:not([data-split-to]),
 [data-break-after="verso"]:not([data-split-to])
 {
-  -webkit-column-break-after: always;
   break-after: column;
 }
+*/
 
 .pagedjs_clear-after::after {
   content: none !important;

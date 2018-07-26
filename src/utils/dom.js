@@ -261,3 +261,14 @@ export function needsPreviousBreakAfter(node) {
 
 	return false;
 }
+
+export function needsPageBreak(node) {
+	if( typeof node !== "undefined" &&
+			typeof node.dataset !== "undefined" &&
+			(node.dataset.page || node.dataset.afterPage)
+		 ) {
+		return true;
+	}
+
+	return false;
+}

@@ -88,6 +88,14 @@ class Breaks extends Handler {
 						if (nodeAfter) {
 							nodeAfter.setAttribute("data-previous-break-after", prop.value);
 						}
+					} else if (prop.property === "page") {
+						elements[i].setAttribute("data-page", prop.value);
+
+						let nodeAfter = elementAfter(elements[i], parsed);
+
+						if (nodeAfter) {
+							nodeAfter.setAttribute("data-after-page", prop.value);
+						}
 					} else {
 						elements[i].setAttribute("data-" + prop.property, prop.value);
 					}

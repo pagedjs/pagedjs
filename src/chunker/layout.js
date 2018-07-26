@@ -6,7 +6,8 @@ import {
   rebuildAncestors,
   needsBreakBefore,
   needsBreakAfter,
-  needsPreviousBreakAfter
+  needsPreviousBreakAfter,
+  needsPageBreak
 } from "../utils/dom";
 import EventEmitter from "event-emitter";
 import Hook from "../utils/hook";
@@ -53,6 +54,10 @@ class Layout {
 
     if (typeof node.tagName === "undefined") {
       return true;
+    }
+
+    if (node.style.display === "none") {
+      return false;
     }
 
     switch (node.tagName) {
@@ -148,7 +153,7 @@ class Layout {
         this.hooks.layoutNode.trigger(node);
 
         // Check if the rendered element has a breakBefore set
-        if (hasContent && (needsBreakBefore(node) || needsPreviousBreakAfter(node))) {
+        if (hasContent && (needsBreakBefore(node) || needsPreviousBreakAfter(node) || needsPageBreak(node))) {
           // Check for overflow
           hasOverflow = this.hasOverflow();
 
@@ -180,17 +185,20 @@ class Layout {
 
         rendered = this.render(node, this.wrapper, breakToken, shallow);
 
-        // Only register element content
-        if (!hasContent && (node.nodeType === 1 || node.nodeType === 3)) {
-          hasContent = true;
+        if (!hasContent) {
+          // Only register visible content
+          if (rendered.nodeType === 1 && window.getComputedStyle(rendered).display !== "none") {
+            hasContent = true;
+          } else if (rendered.nodeType === 3 &&
+              rendered.textContent.trim().length &&
+              window.getComputedStyle(rendered.parentNode).display !== "none") {
+            hasContent = true;
+          }
         }
-
 
         if (!shallow) {
           after = nodeAfter(node, content);
-          if (next) {
-            walker = walk(after, content);
-          }
+          walker = walk(after, content);
         }
 
 
@@ -238,7 +246,7 @@ class Layout {
   }
 
   hasOverflow() {
-    let width = Math.floor(this.wrapper.getBoundingClientRect().width); // or this.element.scrollWidth
+    let width = Math.max(Math.floor(this.wrapper.getBoundingClientRect().width), this.element.scrollWidth);
     return this.width < width;
   }
 

@@ -44,7 +44,6 @@ export default `
   display: flex;
   grid-column: left;
   grid-row: header;
-  box-sizing: border-box;
 }
 
 .pagedjs_margin-top-right-corner-holder {
@@ -57,12 +56,10 @@ export default `
 
 .pagedjs_margin-top-left-corner {
   width: var(--margin-left);
-  height: var(--margin-top);
 }
 
 .pagedjs_margin-top-right-corner {
   width: var(--margin-right);
-  height: var(--margin-top);
 }
 
 .pagedjs_margin-top > div {
@@ -97,6 +94,7 @@ export default `
 .pagedjs_margin-bottom-left-corner-holder {
   width: var(--margin-left);
   height: var(--margin-bottom);
+  display: flex;
   grid-column: left;
   grid-row: footer;
 }
@@ -104,18 +102,17 @@ export default `
 .pagedjs_margin-bottom-right-corner-holder {
   width: var(--margin-right);
   height: var(--margin-bottom);
+  display: flex;
   grid-column: right;
   grid-row: footer;
 }
 
 .pagedjs_margin-bottom-left-corner {
   width: var(--margin-left);
-  height: var(--margin-bottom);
 }
 
 .pagedjs_margin-bottom-right-corner {
   width: var(--margin-right);
-  height: var(--margin-bottom);
 }
 
 .pagedjs_margin-bottom > div {

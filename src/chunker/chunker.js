@@ -9,29 +9,37 @@ import {
 const MAX_PAGES = false;
 
 const TEMPLATE = `<div class="pagedjs_page">
+	<div class="pagedjs_margin-top-left-corner-holder">
+		<div class="pagedjs_margin pagedjs_margin-top-left-corner"><div class="pagedjs_margin-content"></div></div>
+	</div>
 	<div class="pagedjs_margin-top">
-		<div class="pagedjs_margin-top-left-corner"><div class="pagedjs_margin-content"></div></div>
-		<div class="pagedjs_margin-top-left"><div class="pagedjs_margin-content"></div></div>
-		<div class="pagedjs_margin-top-center"><div class="pagedjs_margin-content"></div></div>
-		<div class="pagedjs_margin-top-right"><div class="pagedjs_margin-content"></div></div>
-		<div class="pagedjs_margin-top-right-corner"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin pagedjs_margin-top-left"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin pagedjs_margin-top-center"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin pagedjs_margin-top-right"><div class="pagedjs_margin-content"></div></div>
+	</div>
+	<div class="pagedjs_margin-top-right-corner-holder">
+		<div class="pagedjs_margin pagedjs_margin-top-right-corner"><div class="pagedjs_margin-content"></div></div>
 	</div>
 	<div class="pagedjs_margin-right">
-		<div class="pagedjs_margin-right-top"><div class="pagedjs_margin-content"></div></div>
-		<div class="pagedjs_margin-right-middle"><div class="pagedjs_margin-content"></div></div>
-		<div class="pagedjs_margin-right-bottom"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin pagedjs_margin-right-top"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin pagedjs_margin-right-middle"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin pagedjs_margin-right-bottom"><div class="pagedjs_margin-content"></div></div>
 	</div>
 	<div class="pagedjs_margin-left">
-		<div class="pagedjs_margin-left-top"><div class="pagedjs_margin-content"></div></div>
-		<div class="pagedjs_margin-left-middle"><div class="pagedjs_margin-content"></div></div>
-		<div class="pagedjs_margin-left-bottom"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin pagedjs_margin-left-top"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin pagedjs_margin-left-middle"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin pagedjs_margin-left-bottom"><div class="pagedjs_margin-content"></div></div>
+	</div>
+	<div class="pagedjs_margin-bottom-left-corner-holder">
+		<div class="pagedjs_margin pagedjs_margin-bottom-left-corner"><div class="pagedjs_margin-content"></div></div>
 	</div>
 	<div class="pagedjs_margin-bottom">
-		<div class="pagedjs_margin-bottom-left-corner"><div class="pagedjs_margin-content"></div></div>
-		<div class="pagedjs_margin-bottom-left"><div class="pagedjs_margin-content"></div></div>
-		<div class="pagedjs_margin-bottom-center"><div class="pagedjs_margin-content"></div></div>
-		<div class="pagedjs_margin-bottom-right"><div class="pagedjs_margin-content"></div></div>
-		<div class="pagedjs_margin-bottom-right-corner"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin pagedjs_margin-bottom-left"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin pagedjs_margin-bottom-center"><div class="pagedjs_margin-content"></div></div>
+		<div class="pagedjs_margin pagedjs_margin-bottom-right"><div class="pagedjs_margin-content"></div></div>
+	</div>
+	<div class="pagedjs_margin-bottom-right-corner-holder">
+		<div class="pagedjs_margin pagedjs_margin-bottom-right-corner"><div class="pagedjs_margin-content"></div></div>
 	</div>
 	<div class="pagedjs_area">
 		<div class="pagedjs_page_content">
@@ -125,13 +133,18 @@ class Chunker {
 		});
 	}
 
-	handleBreaks(node) {
+	async handleBreaks(node) {
 		let currentPage = this.total + 1;
 		let currentPosition = currentPage % 2 === 0 ? "left" : "right";
 		// TODO: Recto and Verso should reverse for rtl languages
 		let currentSide = currentPage % 2 === 0 ? "verso" : "recto";
 		let previousBreakAfter;
 		let breakBefore;
+		let page;
+
+		if (currentPage === 1) {
+			return;
+		}
 
 		if (node &&
 				typeof node.dataset !== "undefined" &&
@@ -148,19 +161,27 @@ class Chunker {
 		if( previousBreakAfter &&
 				(previousBreakAfter === "left" || previousBreakAfter === "right") &&
 				previousBreakAfter !== currentPosition) {
-			this.addPage(true);
+			page = this.addPage(true);
 		} else if( previousBreakAfter &&
 				(previousBreakAfter === "verso" || previousBreakAfter === "recto") &&
 				previousBreakAfter !== currentSide) {
-			this.addPage(true);
+			page = this.addPage(true);
 		} else if( breakBefore &&
 				(breakBefore === "left" || breakBefore === "right") &&
 				breakBefore !== currentPosition) {
-			this.addPage(true);
+			page = this.addPage(true);
 		} else if( breakBefore &&
 				(breakBefore === "verso" || breakBefore === "recto") &&
 				breakBefore !== currentSide) {
-			this.addPage(true);
+			page = this.addPage(true);
+		}
+
+		if (page) {
+			await this.hooks.beforePageLayout.trigger(page, undefined, undefined, this);
+			this.emit("page", page);
+			await this.hooks.layout.trigger(page.element, page, undefined, this);
+			await this.hooks.afterPageLayout.trigger(page.element, page, undefined, this);
+			this.emit("renderedPage", page);
 		}
 	}
 
@@ -170,9 +191,9 @@ class Chunker {
 		while (breakToken !== undefined && (MAX_PAGES ? this.total < MAX_PAGES : true)) {
 
 			if (breakToken && breakToken.node) {
-				this.handleBreaks(breakToken.node);
+				await this.handleBreaks(breakToken.node);
 			} else {
-				this.handleBreaks(content.firstChild);
+				await this.handleBreaks(content.firstChild);
 			}
 
 			let page = this.addPage();

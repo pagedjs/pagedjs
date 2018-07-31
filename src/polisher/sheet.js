@@ -60,7 +60,7 @@ class Sheet {
 	}
 
 	insertRule(rule) {
-		let inserted = this.ast.children.insert(rule);
+		let inserted = this.ast.children.appendData(rule);
 		inserted.forEach((item) => {
 			this.declarations(item);
 		})

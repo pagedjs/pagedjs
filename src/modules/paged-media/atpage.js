@@ -12,6 +12,8 @@ class AtPage extends Handler {
 		this.width = undefined;
 		this.height = undefined;
 		this.orientation = undefined;
+
+		this.marginalia = {};
 	}
 
 	pageModel(selector) {
@@ -191,6 +193,18 @@ class AtPage extends Handler {
 			visit: 'Atrule',
 			enter: (node, item, list) => {
 				let name = node.name;
+				if (name === "top") {
+					name = "top-center";
+				}
+				if (name === "right") {
+					name = "right-middle";
+				}
+				if (name === "left") {
+					name = "left-middle";
+				}
+				if (name === "bottom") {
+					name = "bottom-center";
+				}
 				parsed[name] = node.block;
 				list.remove(item);
 			}
@@ -379,79 +393,16 @@ class AtPage extends Handler {
 	}
 
 	createPage(page, ruleList, sheet) {
-		let selectorList = new csstree.List();
-		let selectors = new csstree.List();
-		let name;
 
-		selectors.insert(selectors.createItem({
-			type: 'ClassSelector',
-			name: 'pagedjs_page'
-		}));
-
-		// Named page
-		if (page.name) {
-			selectors.insert(selectors.createItem({
-				type: 'ClassSelector',
-				name: "pagedjs_named_page"
-			}));
-
-			selectors.insert(selectors.createItem({
-				type: 'ClassSelector',
-				name: "pagedjs_" + page.name + "_page"
-			}));
-		}
-
-		// if (page.name && page.psuedo) {
-		// 	selectors.insert(selectors.createItem({
-		// 		type: 'Combinator',
-		// 		name: " "
-		// 	}));
-		// }
-
-		// PsuedoSelector
-		if (page.psuedo && !(page.name && page.psuedo === "first")) {
-			selectors.insert(selectors.createItem({
-				type: 'ClassSelector',
-				name: "pagedjs_" + page.psuedo + "_page"
-			}));
-		}
-
-		if (page.name && page.psuedo === "first") {
-			selectors.insert(selectors.createItem({
-				type: 'ClassSelector',
-				name: "pagedjs_" + page.name + "_" + page.psuedo + "_page"
-			}));
-		}
-
-		// Nth
-		if (page.nth) {
-			let nthlist = new csstree.List();
-			let nth = this.getNth(page.nth);
-
-			nthlist.insert(nthlist.createItem(nth));
-
-			selectors.insert(selectors.createItem({
-				type: 'PseudoClassSelector',
-				name: 'nth-of-type',
-				children: nthlist
-			}));
-		}
-
-		let rule = ruleList.createItem({
-			type: 'Rule',
-			prelude: {
-				type: 'Selector',
+		let selectors = this.selectorsForPage(page);
+		let children = page.block.children.copy();
+		let block = {
+				type: 'Block',
 				loc: 0,
-				children: selectors
-			},
-			block: {
-					type: 'Block',
-					loc: 0,
-					children: page.block.children.copy()
-			}
-		});
+				children: children
+		};
+		let rule = this.createRule(selectors, block);
 
-		let children = rule.data.block.children;
 		this.addMarginVars(page.margin, children, children.first());
 
 		if (page.width) {
@@ -459,7 +410,8 @@ class AtPage extends Handler {
 		}
 
 		if (page.marginalia) {
-			this.addMarginalia(page, ruleList, rule, sheet);
+			this.addMarginaliaStyles(page, ruleList, rule, sheet);
+			this.addMarginaliaContent(page, ruleList, rule, sheet);
 		}
 
 		return rule;
@@ -485,72 +437,40 @@ class AtPage extends Handler {
 
 	addDimensions(width, height, list, item) {
 		// width variable
-		let wVar = list.createItem({
-			type: 'Declaration',
-			property: "--width",
-			value: {
-				type: "Raw",
-				value: width.value + (width.unit || '')
-			}
-		});
-		list.append(wVar);
+		let wVar = this.createVariable("--width", width.value + (width.unit || ''));
+		list.appendData(wVar);
 
 		// height variable
-		let hVar = list.createItem({
-			type: 'Declaration',
-			property: "--height",
-			value: {
-				type: "Raw",
-				value: height.value + (height.unit || '')
-			}
-		});
-		list.append(hVar);
-
-		// Disabled due to causing issues with Chrome on print
+		let hVar = this.createVariable("--height", height.value + (height.unit || ''));
+		list.appendData(hVar);
 
 		// width dimension
-		let widthList = new csstree.List();
-		widthList.insert(widthList.createItem({
-			type: "Dimension",
-			value: width.value,
-			unit: width.unit
-		}));
-		let w = list.createItem({
-			type: 'Declaration',
-			property: "width",
-			value: {
-				type: 'Value',
-				children: widthList
-			}
-		});
-		list.append(w);
+		let w = this.createDimension("width", width.value, width.unit);
+		list.appendData(w);
 
 		// height dimension
-		let heightList = new csstree.List();
-		heightList.insert(heightList.createItem({
-			type: "Dimension",
-			value: height.value,
-			unit: height.unit
-		}));
-		let h = list.createItem({
-			type: 'Declaration',
-			property: "height",
-			value: {
-				type: 'Value',
-				children: heightList
-			}
-		});
-		list.append(h);
-
+		let h = this.createDimension("height", height.value, height.unit);
+		list.appendData(h);
 	}
 
-	addMarginalia(page, list, item, sheet) {
+	addMarginaliaStyles(page, list, item, sheet) {
 		for (let loc in page.marginalia) {
 			let block = csstree.clone(page.marginalia[loc]);
+			let hasContent = false;
+
+			if(block.children.isEmpty()) {
+				continue;
+			}
+
 			csstree.walk(block, {
 				visit: "Declaration",
 				enter: (node, item, list) => {
 					if (node.property === "content") {
+						if (node.value.children && node.value.children.first().name === "none") {
+							hasContent = false;
+						} else {
+							hasContent = true;
+						}
 						list.remove(item);
 					}
 					if (node.property === "vertical-align") {
@@ -569,106 +489,54 @@ class AtPage extends Handler {
 						});
 						node.property = "align-items";
 					}
+
+					if (node.property === "width" &&
+						(loc === "top-left" ||
+						 loc === "top-center" ||
+						 loc === "top-right" ||
+						 loc === "bottom-left" ||
+						 loc === "bottom-center" ||
+						 loc === "bottom-right")) {
+							let c = csstree.clone(node);
+							c.property = "max-width";
+							list.appendData(c);
+					}
+
+					if (node.property === "height" &&
+						(loc === "left-top" ||
+						 loc === "left-middle" ||
+						 loc === "left-bottom" ||
+						 loc === "right-top" ||
+						 loc === "right-middle" ||
+						 loc === "right-bottom")) {
+							let c = csstree.clone(node);
+							c.property = "max-height";
+							list.appendData(c);
+					}
 				}
 			});
 
-			let selectorList = new csstree.List();
-			let selectors = new csstree.List();
+			let marginSelectors = this.selectorsForPageMargin(page, loc);
+			let marginRule = this.createRule(marginSelectors, block);
 
-			let selector = selectorList.createItem({
+			list.appendData(marginRule);
+
+			let sel = csstree.generate({
 				type: 'Selector',
-				children: selectors
+				children: marginSelectors
 			});
 
-			selectorList.insert(selector);
-
-			selectors.insert(selectors.createItem({
-				type: 'ClassSelector',
-				name: 'pagedjs_page'
-			}));
-
-			// Named page
-			if (page.name) {
-				selectors.insert(selectors.createItem({
-					type: 'ClassSelector',
-					name: "pagedjs_named_page"
-				}));
-
-				name = page.name + "_page";
-				selectors.insert(selectors.createItem({
-					type: 'ClassSelector',
-					name: "pagedjs_" + page.name + "_page"
-				}));
+			this.marginalia[sel] = {
+				page: page,
+				selector: sel,
+				block: page.marginalia[loc],
+				hasContent: hasContent
 			}
-
-			// PsuedoSelector
-			if (page.psuedo && !(page.name && page.psuedo === "first")) {
-				selectors.insert(selectors.createItem({
-					type: 'ClassSelector',
-					name: "pagedjs_" + page.psuedo + "_page"
-				}));
-			}
-
-			if (page.name && page.psuedo === "first") {
-				selectors.insert(selectors.createItem({
-					type: 'ClassSelector',
-					name: "pagedjs_" + page.name + "_" + page.psuedo + "_page"
-				}));
-			}
-
-			// Nth
-			if (page.nth) {
-				let nthlist = new csstree.List();
-				let nth = this.getNth(page.nth);
-
-				nthlist.insert(nthlist.createItem(nth));
-
-				selectors.insert(selectors.createItem({
-					type: 'PseudoClassSelector',
-					name: 'nth-of-type',
-					children: nthlist
-				}));
-			}
-
-			selectors.insert(selectors.createItem({
-				type: 'Combinator',
-				name: " "
-			}));
-
-			selectors.insert(selectors.createItem({
-				type: 'ClassSelector',
-				name: "pagedjs_margin-" + loc
-			}));
-
-			// selectors.insert(selectors.createItem({
-			// 	type: 'Combinator',
-			// 	name: ">"
-			// }));
-			//
-			// selectors.insert(selectors.createItem({
-			// 	type: 'ClassSelector',
-			// 	name: "pagedjs_margin-content"
-			// }));
-
-			// selectors.insert(selectors.createItem({
-			// 	type: 'PseudoElementSelector',
-			// 	name: "after",
-			// 	children: null
-			// }));
-
-			let rule = list.createItem({
-				type: 'Rule',
-				prelude: {
-					type: 'SelectorList',
-					children: selectorList
-				},
-				block: block
-			});
-
-			list.append(rule);
 
 		}
+	}
 
+	addMarginaliaContent(page, list, item, sheet) {
 		// Just content
 		for (let loc in page.marginalia) {
 			let content = csstree.clone(page.marginalia[loc]);
@@ -678,162 +546,66 @@ class AtPage extends Handler {
 					if (node.property !== "content") {
 						list.remove(item);
 					}
+					// else if (node.value.children && node.value.children.first().name === "none") {
+					// 	list.remove(item);
+					// }
 				}
 			});
 
-			let selectorList = new csstree.List();
-			let selectors = new csstree.List();
-
-			let selector = selectorList.createItem({
-				type: 'Selector',
-				children: selectors
-			});
-
-			selectorList.insert(selector);
-
-			selectors.insert(selectors.createItem({
-				type: 'ClassSelector',
-				name: 'pagedjs_page'
-			}));
-
-			// Named page
-			if (page.name) {
-				selectors.insert(selectors.createItem({
-					type: 'ClassSelector',
-					name: "pagedjs_named_page"
-				}));
-
-				name = page.name + "_page";
-				selectors.insert(selectors.createItem({
-					type: 'ClassSelector',
-					name: "pagedjs_" + page.name + "_page"
-				}));
+			if(content.children.isEmpty()) {
+				continue;
 			}
 
-			// PsuedoSelector
-			if (page.psuedo && !(page.name && page.psuedo === "first")) {
-				selectors.insert(selectors.createItem({
-					type: 'ClassSelector',
-					name: "pagedjs_" + page.psuedo + "_page"
-				}));
-			}
+			// insert display rule - handled after page layout
+			/*
+			let displaySelectors = this.selectorsForPageMargin(page, loc);
+			let displayDeclaration = this.createDeclaration("display", "flex");
+			let displayRule = this.createRule(displaySelectors, [displayDeclaration]);
 
-			if (page.name && page.psuedo === "first") {
-				selectors.insert(selectors.createItem({
-					type: 'ClassSelector',
-					name: "pagedjs_" + page.name + "_" + page.psuedo + "_page"
-				}));
-			}
+			sheet.insertRule(displayRule);
+			*/
 
-			// Nth
-			if (page.nth) {
-				let nthlist = new csstree.List();
-				let nth = this.getNth(page.nth);
+			// insert content rule
+			let contentSelectors = this.selectorsForPageMargin(page, loc);
 
-				nthlist.insert(nthlist.createItem(nth));
-
-				selectors.insert(selectors.createItem({
-					type: 'PseudoClassSelector',
-					name: 'nth-of-type',
-					children: nthlist
-				}));
-			}
-
-			selectors.insert(selectors.createItem({
-				type: 'Combinator',
-				name: " "
-			}));
-
-			selectors.insert(selectors.createItem({
-				type: 'ClassSelector',
-				name: "pagedjs_margin-" + loc
-			}));
-
-			selectors.insert(selectors.createItem({
+			contentSelectors.insertData({
 				type: 'Combinator',
 				name: ">"
-			}));
+			});
 
-			selectors.insert(selectors.createItem({
+			contentSelectors.insertData({
 				type: 'ClassSelector',
 				name: "pagedjs_margin-content"
-			}));
+			});
 
-			selectors.insert(selectors.createItem({
+			contentSelectors.insertData({
 				type: 'PseudoElementSelector',
 				name: "after",
 				children: null
-			}));
-
-			let rule = list.createItem({
-				type: 'Rule',
-				prelude: {
-					type: 'SelectorList',
-					children: selectorList
-				},
-				block: content
 			});
 
-			// list.append(rule);
-			sheet.insertRule(rule);
+			let contentRule = this.createRule(contentSelectors, content);
+			sheet.insertRule(contentRule);
 		}
 	}
 
 	addRootVars(ast, width, height) {
-		let selectorList = new csstree.List();
 		let selectors = new csstree.List();
-		let children = new csstree.List();
-
-		let wVar = children.createItem({
-			type: 'Declaration',
-			property: "--width",
-			value: {
-				type: "Raw",
-				value: width.value + (width.unit || '')
-			},
-			children: null
-		});
-		children.append(wVar);
-
-		let hVar = children.createItem({
-			type: 'Declaration',
-			property: "--height",
-			value: {
-				type: "Raw",
-				value: height.value + (height.unit || '')
-			},
-			children: null
-		});
-		children.append(hVar);
-
-		selectors.insert(selectors.createItem({
+		selectors.insertData({
 			type: "PseudoClassSelector",
 			name: "root",
 			children: null
-		}));
-
-		let selector = selectorList.createItem({
-			type: 'Selector',
-			children: selectors
 		});
 
-		selectorList.append(selector);
+		// width variable
+		let wVar = this.createVariable("--width", width.value + (width.unit || ''));
 
-		let rule = ast.children.createItem({
-			type: 'Rule',
-			prelude: {
-				type: 'SelectorList',
-				loc: null,
-				children: selectorList
-			},
-			block: {
-					type: 'Block',
-					loc: null,
-					children: children
-			}
-		});
+		// height variable
+		let hVar = this.createVariable("--height", height.value + (height.unit || ''));
 
-		ast.children.append(rule);
+		let rule = this.createRule(selectors, [wVar, hVar])
+
+		ast.children.appendData(rule);
 	}
 
 	addRootPage(ast, width, height) {
@@ -847,24 +619,24 @@ class AtPage extends Handler {
 		let children = new csstree.List();
 		let dimensions = new csstree.List();
 
-		dimensions.append(dimensions.createItem({
+		dimensions.appendData({
 			type: 'Dimension',
 			unit: width.unit,
 			value: width.value
-		}));
+		});
 
-		dimensions.append(dimensions.createItem({
+		dimensions.appendData({
 			type: 'WhiteSpace',
 			value: " "
-		}));
+		});
 
-		dimensions.append(dimensions.createItem({
+		dimensions.appendData({
 			type: 'Dimension',
 			unit: height.unit,
 			value: height.value
-		}));
+		});
 
-		children.append(children.createItem({
+		children.appendData({
 			type: 'Declaration',
 			property: "size",
 			loc: null,
@@ -872,9 +644,9 @@ class AtPage extends Handler {
 				type: "Value",
 				children: dimensions
 			}
-		}));
+		});
 
-		children.append(children.createItem({
+		children.appendData({
 			type: 'Declaration',
 			property: "margin",
 			loc: null,
@@ -886,9 +658,9 @@ class AtPage extends Handler {
 					value: 0
 				}]
 			}
-		}));
+		});
 
-		children.append(children.createItem({
+		children.appendData({
 			type: 'Declaration',
 			property: "padding",
 			loc: null,
@@ -900,7 +672,7 @@ class AtPage extends Handler {
 					value: 0
 				}]
 			}
-		}));
+		});
 
 
 		let rule = ast.children.createItem({
@@ -962,8 +734,12 @@ class AtPage extends Handler {
 
 	getStartElement(content, breakToken) {
 		let start = content;
-		let node = breakToken.node;
+		let node = breakToken && breakToken.node;
 		let index, ref, parent;
+
+		if (!content && !breakToken) {
+			return;
+		}
 
 		// No break
 		if (!node) {
@@ -996,6 +772,317 @@ class AtPage extends Handler {
 		if (start) {
 			this.addPageAttributes(page, start, chunker.pages);
 		}
+	}
+
+	afterPageLayout(fragment, page, breakToken, chunker) {
+		for (let m in this.marginalia) {
+			let margin = this.marginalia[m];
+			let sels = m.split(" ");
+
+			let content;
+			if (page.element.matches(sels[0]) && margin.hasContent) {
+				content = page.element.querySelector(sels[1]);
+				content.classList.add("hasContent");
+			}
+		}
+
+		// check center
+		["top", "bottom"].forEach((loc) => {
+			let center = page.element.querySelector(".pagedjs_margin-" + loc + "-center.hasContent");
+			if (center) {
+				let left = page.element.querySelector(".pagedjs_margin-" + loc + "-left");
+				let right = page.element.querySelector(".pagedjs_margin-" + loc + "-right");
+
+				let leftContent = left.classList.contains("hasContent");
+				let rightContent = right.classList.contains("hasContent");
+				let centerWidth, leftWidth, rightWidth;
+
+				if (leftContent && !rightContent) {
+					right.classList.add("emptyBalance");
+				}
+
+				if (!leftContent && rightContent) {
+					left.classList.add("emptyBalance");
+				}
+
+				// Balance Sizes
+				if (leftContent) {
+					leftWidth = window.getComputedStyle(left)["max-width"];
+				}
+
+				if (rightContent) {
+					rightWidth = window.getComputedStyle(right)["max-width"];
+				}
+
+				centerWidth = window.getComputedStyle(center)["max-width"];
+
+				// Over-contrained
+				if (centerWidth !== "none" && centerWidth !== "auto") {
+					right.style["width"] = "auto";
+					right.style["max-width"] = "none";
+					left.style["width"] = "auto";
+					left.style["max-width"] = "none";
+				} else if ((centerWidth === "none" || centerWidth === "auto") &&
+						leftWidth !== "none" && leftWidth !== "auto" &&
+						rightWidth !== "none" && rightWidth !== "auto") {
+
+					// TODO: convert units before comparing
+					let newWidth = Math.max(parseFloat(leftWidth), parseFloat(rightWidth));
+
+					// Add units back
+					newWidth += leftWidth.replace(parseFloat(leftWidth), "");
+
+					right.style["width"] = newWidth;
+					right.style["max-width"] = newWidth;
+					// right.style["min-width"] = newWidth;
+					left.style["width"] = newWidth;
+					left.style["max-width"] = newWidth;
+					// left.style["min-width"] = newWidth;
+
+					center.style["flex-basis"] = 0;
+				} else {
+					if (leftWidth !== "none" && leftWidth !== "auto") {
+						right.style["max-width"] = leftWidth;
+					}
+
+					if (rightWidth !== "none" && rightWidth !== "auto") {
+						left.style["max-width"] = rightWidth;
+					}
+				}
+			}
+		});
+
+		// check middle
+		["left", "right"].forEach((loc) => {
+			let middle = page.element.querySelector(".pagedjs_margin-" + loc + "-middle.hasContent");
+			if (middle) {
+				let top = page.element.querySelector(".pagedjs_margin-" + loc + "-top");
+				let bottom = page.element.querySelector(".pagedjs_margin-" + loc + "-bottom");
+
+				let topContent = top.classList.contains("hasContent");
+				let bottomContent = bottom.classList.contains("hasContent");
+				let middleHeight, topHeight, bottomHeight;
+
+				if (topContent && !bottomContent) {
+					bottom.classList.add("emptyBalance");
+				}
+
+				if (!topContent && bottomContent) {
+					top.classList.add("emptyBalance");
+				}
+
+				// Balance Sizes
+				if (topContent) {
+					topHeight = window.getComputedStyle(top)["max-height"];
+				}
+
+				if (bottomContent) {
+					bottomHeight = window.getComputedStyle(bottom)["max-height"];
+				}
+
+				middleHeight = window.getComputedStyle(middle)["max-height"];
+
+				// Over-contrained
+				if (middleHeight !== "none" && middleHeight !== "auto") {
+					top.style["height"] = "auto";
+					top.style["max-height"] = "none";
+					bottom.style["height"] = "auto";
+					bottom.style["max-height"] = "none";
+				} else if ((middleHeight === "none" || middleHeight === "auto") &&
+						topHeight !== "none" && topHeight !== "auto" &&
+						bottomHeight !== "none" && bottomHeight !== "auto") {
+
+					// TODO: convert units before comparing
+					let newHeight = Math.max(parseFloat(topHeight), parseFloat(bottomHeight));
+
+					// Add units back
+					newHeight += topHeight.replace(parseFloat(topHeight), "");
+
+					top.style["height"] = newHeight;
+					top.style["max-height"] = newHeight;
+					// top.style["min-height"] = newHeight;
+					bottom.style["height"] = newHeight;
+					bottom.style["max-height"] = newHeight;
+					// left.style["min-height"] = newHeight;
+				} else {
+					if (topHeight !== "none" && topHeight !== "auto") {
+						bottom.style["max-height"] = topHeight;
+					}
+
+					if (bottomHeight !== "none" && bottomHeight !== "auto") {
+						top.style["max-height"] = bottomHeight;
+					}
+				}
+			}
+		});
+
+	}
+
+	// CSS Tree Helpers
+
+	selectorsForPage(page) {
+		let nthlist;
+		let nth;
+
+		let selectors = new csstree.List();
+
+		selectors.insertData({
+			type: 'ClassSelector',
+			name: 'pagedjs_page'
+		});
+
+		// Named page
+		if (page.name) {
+			selectors.insertData({
+				type: 'ClassSelector',
+				name: "pagedjs_named_page"
+			});
+
+			name = page.name + "_page";
+			selectors.insertData({
+				type: 'ClassSelector',
+				name: "pagedjs_" + page.name + "_page"
+			});
+		}
+
+		// PsuedoSelector
+		if (page.psuedo && !(page.name && page.psuedo === "first")) {
+			selectors.insertData({
+				type: 'ClassSelector',
+				name: "pagedjs_" + page.psuedo + "_page"
+			});
+		}
+
+		if (page.name && page.psuedo === "first") {
+			selectors.insertData({
+				type: 'ClassSelector',
+				name: "pagedjs_" + page.name + "_" + page.psuedo + "_page"
+			});
+		}
+
+		// Nth
+		if (page.nth) {
+			nthlist = new csstree.List();
+			nth = this.getNth(page.nth);
+
+			nthlist.insertData(nth);
+
+			selectors.insertData({
+				type: 'PseudoClassSelector',
+				name: 'nth-of-type',
+				children: nthlist
+			});
+		}
+
+		return selectors;
+	}
+
+	selectorsForPageMargin(page, margin) {
+		let selectors = this.selectorsForPage(page);
+
+		selectors.insertData({
+			type: 'Combinator',
+			name: " "
+		});
+
+		selectors.insertData({
+			type: 'ClassSelector',
+			name: "pagedjs_margin-" + margin
+		});
+
+		return selectors;
+	}
+
+	createDeclaration(property, value, important) {
+		let children = new csstree.List();
+
+		children.insertData({
+			type: "Identifier",
+			loc: null,
+			name: value
+		});
+
+		return {
+			type: "Declaration",
+			loc: null,
+			important: important,
+			property: property,
+			value: {
+				type: "Value",
+				loc: null,
+				children: children
+			}
+		}
+	}
+
+	createVariable(property, value) {
+		return {
+			type: "Declaration",
+			loc: null,
+			property: property,
+			value: {
+				type: "Raw",
+				value: value
+			}
+		}
+	}
+
+	createDimension(property, value, unit, important) {
+		let children = new csstree.List();
+
+		children.insertData({
+			type: "Dimension",
+			loc: null,
+			value: value,
+			unit: unit
+		});
+
+		return {
+			type: "Declaration",
+			loc: null,
+			important: important,
+			property: property,
+			value: {
+				type: "Value",
+				loc: null,
+				children: children
+			}
+		}
+	}
+
+	createBlock(declarations) {
+		let block = new csstree.List();
+
+		declarations.forEach((declaration) => {
+			block.insertData(declaration);
+		});
+
+		return {
+			type: 'Block',
+			loc: null,
+			children: block
+		}
+	}
+
+	createRule(selectors, block) {
+		let selectorList = new csstree.List();
+		selectorList.insertData({
+			type: 'Selector',
+			children: selectors
+		});
+
+		if (Array.isArray(block)) {
+			block = this.createBlock(block);
+		}
+
+		return {
+			type: 'Rule',
+			prelude: {
+				type: 'SelectorList',
+				children: selectorList
+			},
+			block: block
+		};
 	}
 
 }

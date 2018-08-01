@@ -35,13 +35,14 @@
   },
   "scripts": {
     "build": "./node_modules/.bin/rollup -c",
+    "legacy": "./node_modules/.bin/rollup -c rollup.legacy.config.js",
     "start": "./node_modules/.bin/rollup -w -c rollup.server.config.js",
     "test": "npm run tests && npm run specs",
     "tests": "jest --config=tests/jest.config.js",
     "specs": "jest --config=specs/jest.config.js",
     "compile": "./node_modules/.bin/babel src/ -d lib/",
     "pretest": "npm run build",
-    "prepublishOnly": "npm run build && npm run compile",
+    "prepublishOnly": "npm run build && npm run compile && npm run legacy",
     "watch": "./node_modules/.bin/rollup -w -c"
   },
   "repository": {

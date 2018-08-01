@@ -20,7 +20,7 @@ let flow = paged.preview(DOMContent, ["path/to/css/file.css"], document.body).th
 Add the the `paged.polyfill.js` script to replace all `@page` css and render the html page with the Paged Media styles applied:
 
 ```html
-<script src="https://s3.amazonaws.com/pagedmedia/pagedjs/dist/paged.polyfill.js"></script>
+<script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
 ```
 
 Try the [polyfill with Aurorae](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/polyfill.html).
@@ -51,7 +51,7 @@ Modules are groups of handlers for that apply the layout and styles of a CSS mod
 New handlers can be registered from `import { registerHandlers } from 'pagedjs'` or by calling `Paged.registerHandlers` on an html page.
 
 ```html
-<script src="https://s3.amazonaws.com/pagedmedia/pagedjs/dist/paged.polyfill.js"></script>
+<script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
 <script>
 	class myHandler() extends Paged.Handler {
 		constructor(chunker, polisher, caller) {

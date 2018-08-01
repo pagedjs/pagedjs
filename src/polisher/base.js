@@ -143,6 +143,10 @@ export default `
   visibility: hidden;
 }
 
+.pagedjs_page .pagedjs_margin.balanceMargins {
+  flex: 1 0;
+}
+
 .pagedjs_page > .pagedjs_area {
   grid-column: center;
   grid-row: page;
@@ -172,7 +176,7 @@ export default `
   height: 100%;
   display: none;
   align-items: center;
-  flex: 2 1 0;
+  flex: 1 1 0;
 }
 
 .pagedjs_page .pagedjs_margin-top-center,
@@ -180,7 +184,7 @@ export default `
   height: 100%;
   display: none;
   align-items: center;
-  flex: 1 0 auto;
+  flex: 1 0 33%;
   margin: 0 auto;
 }
 

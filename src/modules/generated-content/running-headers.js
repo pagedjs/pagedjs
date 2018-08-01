@@ -121,7 +121,7 @@ class RunningHeaders extends Handler {
 					let running = this.runningSelectors[el.args[0]];
 					if (running && running.first) {
 						selected.innerHTML = ""; // Clear node
-						selected.classList.add("pagedjs_clear-after"); // Clear ::after
+						// selected.classList.add("pagedjs_clear-after"); // Clear ::after
 						let clone = running.first.cloneNode(true);
 						clone.style.display = null;
 						selected.appendChild(clone);

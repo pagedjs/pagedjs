@@ -4,7 +4,7 @@ describe('content-none', async () => {
 		let page;
 		let rendered;
 		beforeAll(async () => {
-			page = await loadPage('issues/template/template.html')
+			page = await loadPage('generate-content/content-none/content-none.html')
 			return page.rendered;
 		}, TIMEOUT)
 

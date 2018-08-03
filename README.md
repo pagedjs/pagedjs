@@ -76,6 +76,7 @@ afterPageLayout(pageElement, page, breakToken)
 afterRendered(pages)
 
 // Polisher
+beforeTreeParse(text, sheet)
 onUrl(urlNode)
 onAtPage(atPageNode)
 onRule(ruleNode)
@@ -161,7 +162,7 @@ docker run -it -p 9090:9090 pagedmedia/pagedjs
 ```
 
 The tests and specs can be run within the container by passing a `seccomp` file for Chrome and running `npm test`
- 
+
 ```bash
 docker run -it --security-opt 'seccomp=seccomp.json' pagedmedia/pagedjs npm test
 ```

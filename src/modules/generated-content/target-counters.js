@@ -33,6 +33,8 @@ class TargetCounters extends Handler {
 				counter = last.name;
 			}
 
+			let variable = "--" + UUID();
+
 			selector.split(",").forEach((s) => {
 				this.counterTargets[s] = {
 					func: func,
@@ -40,10 +42,19 @@ class TargetCounters extends Handler {
 					value: value,
 					counter: counter,
 					selector: s,
-					fullSelector: selector
+					fullSelector: selector,
+					variable: variable
 				}
 			});
 
+			// Replace with variable
+			funcNode.name = "var";
+			funcNode.children = new csstree.List()
+			funcNode.children.appendData({
+				type: "Identifier",
+				loc: 0,
+				name: variable
+			});
 		}
 	}
 
@@ -81,7 +92,8 @@ class TargetCounters extends Handler {
 							psuedo += "::" + split[1];
 						}
 
-						this.styleSheet.insertRule(`[data-target-counter="${selector}"]${psuedo} { content: "${pg}"; }`, this.styleSheet.cssRules.length);
+						// this.styleSheet.insertRule(`[data-target-counter="${selector}"]${psuedo} { content: "${pg}"; }`, this.styleSheet.cssRules.length);
+						this.styleSheet.insertRule(`[data-target-counter="${selector}"] { ${target.variable}: "${pg}" }`, this.styleSheet.cssRules.length);
 					}
 				}
 			});

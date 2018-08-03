@@ -32,26 +32,20 @@ class RunningHeaders extends Handler {
 		}
 
 		if (declaration.property === "content") {
-			// Handle Raw
-			// element(x) is not parsed
+
 			csstree.walk(declaration, {
-				visit: 'Raw',
+				visit: 'Function',
 				enter: (funcNode, fItem, fList) => {
 
-					if (funcNode.value.indexOf("element") > -1) {
+					if (funcNode.name.indexOf("element") > -1) {
 
 						let selector = csstree.generate(rule.ruleNode.prelude);
-						let parsed = funcNode.value.match(/([^(]+)\(([^)]+)\)/);
 
-						let func = parsed[1];
+						let func = funcNode.name;
 
-						let value = funcNode.value;
+						let value = funcNode.children.first().name;
 
-						let args = [];
-
-						if (parsed.length >= 3) {
-							args.push(parsed[2]);
-						}
+						let args = [value];
 
 						// we only handle first for now
 						let style = "first";
@@ -215,6 +209,11 @@ class RunningHeaders extends Handler {
 		}
 
 		return orderedSelectors;
+	}
+
+	beforeTreeParse(text, sheet) {
+		// element(x) is parsed as image element selector, so update element to element-ident
+		sheet.text = text.replace(/element[\s]*\(([^\|^#)]*)\)/g, "element-ident($1)");
 	}
 }
 

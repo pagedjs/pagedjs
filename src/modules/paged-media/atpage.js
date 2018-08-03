@@ -832,42 +832,24 @@ class AtPage extends Handler {
 
 
 			if (center) {
-
-				console.log(marginGroup);
-				//marginGroup.style["grid-template-columns"] = "1fr 300px 1fr";
-
-				
-				
 				centerWidth = window.getComputedStyle(center)["max-width"];
 
-				
-
 				if(centerWidth === "none" || centerWidth === "auto") {
-					/* center computed auto */
-					console.log("Center auto");
-
 					if(!leftContent && !rightContent){
-						console.log("center only");
 						marginGroup.style["grid-template-columns"] = "0 1fr 0";
 					}else if(leftContent){{}
 						if(!rightContent){
-							console.log("left + center");
 							if(leftWidth !== "none" && leftWidth !== "auto"){
-								console.log("left size + center auto");
 								marginGroup.style["grid-template-columns"] = leftWidth + " 1fr " + leftWidth;
 							}
 						}else{
-							console.log("left + center auto + right");
 							if(leftWidth !== "none" && leftWidth !== "auto"){
 								if(rightWidth !== "none" && rightWidth !== "auto"){
-									console.log("left size + center auto + right size");
 									marginGroup.style["grid-template-columns"] = leftWidth + " 1fr " + rightWidth;
 								}else{
-									console.log("left size + center auto + right auto");
 									marginGroup.style["grid-template-columns"] = leftWidth + " 1fr " + leftWidth;
 								}
 							}else{
-								console.log("left auto + center auto + right");
 								if(rightWidth !== "none" && rightWidth !== "auto"){ 
 									marginGroup.style["grid-template-columns"] = rightWidth + " 1fr " + rightWidth;
 								}
@@ -875,22 +857,13 @@ class AtPage extends Handler {
 						}
 					}else{
 						if(rightWidth !== "none" && rightWidth !== "auto"){
-							console.log("none + center auto + right size");
 							marginGroup.style["grid-template-columns"] = rightWidth + " 1fr " + rightWidth;
 						}
-					}
-					
-			
+					}		
 				}else if(centerWidth !== "none" && centerWidth !== "auto"){
-					/* center computed size */
-					console.log("Center size");	
-					
-					
 					if(leftContent && leftWidth !== "none" && leftWidth !== "auto"){
-						console.log("left size + center size");	
 						marginGroup.style["grid-template-columns"] = leftWidth + " " + centerWidth + " 1fr";
 					}else if(rightContent && rightWidth !== "none" && rightWidth !== "auto"){
-						console.log("left size + right size");	
 						marginGroup.style["grid-template-columns"] = "1fr " + centerWidth + " " + rightWidth;
 					}else{
 						marginGroup.style["grid-template-columns"] = "1fr " + centerWidth + " 1fr";
@@ -926,7 +899,6 @@ class AtPage extends Handler {
 				}
 				
 			}
-			// } 
 		});
 
 		// check middle

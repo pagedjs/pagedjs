@@ -76,8 +76,15 @@ class TargetText extends Handler {
 						if (split.length > 1) {
 							psuedo += "::" + split[1];
 						}
-						// this.styleSheet.insertRule(`[data-target-text="${selector}"]${psuedo} { content: "${element.textContent}"; }`, this.styleSheet.cssRules.length);
-						this.styleSheet.insertRule(`[data-target-text="${selector}"]${psuedo} { ${target.variable}: "${element.textContent.trim()}" }`, this.styleSheet.cssRules.length);
+
+						let textContent = element.textContent.trim().replace(/[\"\']/g, (match) => {
+							return "\\" + match;
+						}).replace(/[\n]/g, (match) => {
+							return "\\00000A";
+						});
+
+						// this.styleSheet.insertRule(`[data-target-text="${selector}"]${psuedo} { content: "${element.textContent}" }`, this.styleSheet.cssRules.length);
+						this.styleSheet.insertRule(`[data-target-text="${selector}"]${psuedo} { ${target.variable}: "${textContent}" }`, this.styleSheet.cssRules.length);
 
 					}
 				} else {

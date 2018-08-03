@@ -235,7 +235,6 @@ export default `
 
 .pagedjs_pages .pagedjs_margin .pagedjs_margin-content {
   width: 100%;
-  height: 100%;
 }
 
 .pagedjs_pages .pagedjs_margin-left .pagedjs_margin-content::after,

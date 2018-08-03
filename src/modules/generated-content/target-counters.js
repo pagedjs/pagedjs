@@ -93,7 +93,7 @@ class TargetCounters extends Handler {
 						}
 
 						// this.styleSheet.insertRule(`[data-target-counter="${selector}"]${psuedo} { content: "${pg}"; }`, this.styleSheet.cssRules.length);
-						this.styleSheet.insertRule(`[data-target-counter="${selector}"] { ${target.variable}: "${pg}" }`, this.styleSheet.cssRules.length);
+						this.styleSheet.insertRule(`[data-target-counter="${selector}"]${psuedo} { ${target.variable}: "${pg}" }`, this.styleSheet.cssRules.length);
 					}
 				}
 			});

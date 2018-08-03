@@ -32,10 +32,12 @@ export default `
 .pagedjs_margin-top {
   width: calc(var(--width) - var(--margin-left) - var(--margin-right));
   height: var(--margin-top);
-  display: flex;
   grid-column: center;
   grid-row: header;
   flex-wrap: nowrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 100%;
 }
 
 .pagedjs_margin-top-left-corner-holder {
@@ -62,33 +64,28 @@ export default `
   width: var(--margin-right);
 }
 
-.pagedjs_margin-top > div {
-  flex-grow: 1;
-  position: relative;
-}
 
 .pagedjs_margin-right {
   height: calc(var(--height) - var(--margin-top) - var(--margin-bottom));
   width: var(--margin-right);
-  display: flex;
-  flex-direction: column;
   right: 0;
   grid-column: right;
   grid-row: page;
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: 100%;
 }
 
-.pagedjs_margin-right > div {
-  flex-grow: 1;
-  position: relative;
-}
+
 
 .pagedjs_margin-bottom {
   width: calc(var(--width) - var(--margin-left) - var(--margin-right));
   height: var(--margin-bottom);
-  display: flex;
   grid-column: center;
   grid-row: footer;
-  flex-wrap: nowrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 100%;
 }
 
 .pagedjs_margin-bottom-left-corner-holder {
@@ -123,29 +120,20 @@ export default `
 .pagedjs_margin-left {
   height: calc(var(--height) - var(--margin-top) - var(--margin-bottom));
   width: var(--margin-left);
-  display: flex;
-  flex-direction: column;
   grid-column: left;
   grid-row: page;
-}
-
-.pagedjs_margin-left > div {
-  flex-grow: 1;
-  position: relative;
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: 100%;
 }
 
 .pagedjs_page .pagedjs_margin.hasContent {
-  display: flex;
+  /*display: flex;*/
+  width: 100%;
+  height: 100%;
+  overflow: hidden
 }
 
-.pagedjs_page .pagedjs_margin.emptyBalance {
-  display: flex;
-  visibility: hidden;
-}
-
-.pagedjs_page .pagedjs_margin.balanceMargins {
-  flex: 1 0;
-}
 
 .pagedjs_page > .pagedjs_area {
   grid-column: center;
@@ -169,6 +157,7 @@ export default `
   counter-reset: pages var(--page-count);
 }
 
+/*
 .pagedjs_page .pagedjs_margin-top-left,
 .pagedjs_page .pagedjs_margin-top-right,
 .pagedjs_page .pagedjs_margin-bottom-left,
@@ -213,6 +202,7 @@ export default `
   display: none;
   align-items: flex-end;
 }
+*/
 
 .pagedjs_page .pagedjs_margin-top-left,
 .pagedjs_page .pagedjs_margin-top-right-corner,

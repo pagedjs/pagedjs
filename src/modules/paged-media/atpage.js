@@ -896,73 +896,100 @@ class AtPage extends Handler {
 					}else{
 						marginGroup.style["grid-template-columns"] = "0 0 1fr";
 					}				
-				}
-				
+				}				
 			}
 		});
 
 		// check middle
 		["left", "right"].forEach((loc) => {
 			let middle = page.element.querySelector(".pagedjs_margin-" + loc + "-middle.hasContent");
+			let marginGroup = page.element.querySelector(".pagedjs_margin-" + loc);
+			let top = page.element.querySelector(".pagedjs_margin-" + loc + "-top");
+			let bottom = page.element.querySelector(".pagedjs_margin-" + loc + "-bottom");
+			let topContent = top.classList.contains("hasContent");
+			let bottomContent = bottom.classList.contains("hasContent");
+			let middleHeight, topHeight, bottomHeight;
+
+			if (topContent) {
+				topHeight = window.getComputedStyle(top)["max-height"];
+			}
+
+			if (bottomContent) {
+				bottomHeight = window.getComputedStyle(bottom)["max-height"];
+			}
+
 			if (middle) {
-				let top = page.element.querySelector(".pagedjs_margin-" + loc + "-top");
-				let bottom = page.element.querySelector(".pagedjs_margin-" + loc + "-bottom");
-
-				let topContent = top.classList.contains("hasContent");
-				let bottomContent = bottom.classList.contains("hasContent");
-				let middleHeight, topHeight, bottomHeight;
-
-				if (topContent && !bottomContent) {
-					bottom.classList.add("emptyBalance");
-				}
-
-				if (!topContent && bottomContent) {
-					top.classList.add("emptyBalance");
-				}
-
-				// Balance Sizes
-				if (topContent) {
-					topHeight = window.getComputedStyle(top)["max-height"];
-				}
-
-				if (bottomContent) {
-					bottomHeight = window.getComputedStyle(bottom)["max-height"];
-				}
-
 				middleHeight = window.getComputedStyle(middle)["max-height"];
 
-				// Over-contrained
-				if (middleHeight !== "none" && middleHeight !== "auto") {
-					top.style["height"] = "auto";
-					top.style["max-height"] = "none";
-					bottom.style["height"] = "auto";
-					bottom.style["max-height"] = "none";
-				} else if ((middleHeight === "none" || middleHeight === "auto") &&
-						topContent && topHeight !== "none" && topHeight !== "auto" &&
-						bottomContent && bottomHeight !== "none" && bottomHeight !== "auto") {
-
-					// TODO: convert units before comparing
-					let newHeight = Math.max(parseFloat(topHeight), parseFloat(bottomHeight));
-
-					// Add units back
-					newHeight += topHeight.replace(parseFloat(topHeight), "");
-
-					top.style["height"] = newHeight;
-					top.style["max-height"] = newHeight;
-					// top.style["min-height"] = newHeight;
-					bottom.style["height"] = newHeight;
-					bottom.style["max-height"] = newHeight;
-					// left.style["min-height"] = newHeight;
-				} else {
-					if (topHeight !== "none" && topHeight !== "auto") {
-						bottom.style["max-height"] = topHeight;
+				if(middleHeight === "none" || middleHeight === "auto") {
+					if(!topContent && !bottomContent){
+						marginGroup.style["grid-template-rows"] = "0 1fr 0";
+					}else if(topContent){
+						if(!bottomContent){
+							if(topHeight !== "none" && topHeight !== "auto"){
+								marginGroup.style["grid-template-rows"] = topHeight + " calc(100% - " + topHeight + "*2) " + topHeight;
+							}
+						}else{
+							if(topHeight !== "none" && topHeight !== "auto"){
+								if(bottomHeight !== "none" && bottomHeight !== "auto"){
+									marginGroup.style["grid-template-rows"] = topHeight + " calc(100% - " + topHeight + " - " + bottomHeight + ") " + bottomHeight;
+								}else{
+									marginGroup.style["grid-template-rows"] = topHeight + " calc(100% - " + topHeight + "*2) " + topHeight;
+								}
+							}else{
+								if(bottomHeight !== "none" && bottomHeight !== "auto"){ 
+									marginGroup.style["grid-template-rows"] = bottomHeight + " calc(100% - " + bottomHeight + "*2) " + bottomHeight;
+								}
+							}
+						}
+					}else{
+						if(bottomHeight !== "none" && bottomHeight !== "auto"){
+							marginGroup.style["grid-template-rows"] = bottomHeight + " calc(100% - " + bottomHeight + "*2) " + bottomHeight;
+						}
+					}		
+				}else{
+					console.log("middle height")
+					if(topContent && topHeight !== "none" && topHeight !== "auto"){
+						marginGroup.style["grid-template-rows"] = topHeight +" " + middleHeight + " calc(100% - (" + topHeight + " + " + middleHeight + "))";
+					}else if(bottomContent && bottomHeight !== "none" && bottomHeight !== "auto"){
+						console.log("middle height + bottom height")
+						marginGroup.style["grid-template-rows"] = "1fr " + middleHeight + " " + bottomHeight;
+					}else{
+						marginGroup.style["grid-template-rows"] = "calc((100% - " + middleHeight + ")/2) " + middleHeight + " calc((100% - " + middleHeight + ")/2)";
 					}
 
-					if (bottomHeight !== "none" && bottomHeight !== "auto") {
-						top.style["max-height"] = bottomHeight;
-					}
 				}
+
+			}else{
+				if(topContent){
+					if(!bottomContent){
+						marginGroup.style["grid-template-rows"] = "1fr 0 0";		
+					}else{
+						if(topHeight !== "none" && topHeight !== "auto"){
+							if(bottomHeight !== "none" && bottomHeight !== "auto"){
+								marginGroup.style["grid-template-rows"] = topHeight + " 1fr " + bottomHeight;
+							}else{
+								marginGroup.style["grid-template-rows"] = topHeight + " 0 1fr";
+							}					
+						}else{
+							if(bottomHeight !== "none" && bottomHeight !== "auto"){
+								marginGroup.style["grid-template-rows"] = "1fr 0 " + bottomHeight;
+							}else{
+								marginGroup.style["grid-template-rows"] = "1fr 0 1fr";
+							}										
+						}		
+					}
+				}else{
+					if(bottomHeight !== "none" && bottomHeight !== "auto"){
+						marginGroup.style["grid-template-rows"] = "1fr 0 " + bottomHeight;
+					}else{
+						marginGroup.style["grid-template-rows"] = "0 0 1fr";
+					}				
+				}				
 			}
+
+
+			
 		});
 
 	}

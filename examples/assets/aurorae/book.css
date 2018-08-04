@@ -139,7 +139,7 @@ section[data-type="epigraph"],
 /* running elements */
 
 #cover h1 {
-  string-set: booktitle content(text);
+  /* string-set: booktitle content(text); */
 }
 
 #cover {
@@ -210,8 +210,8 @@ section[data-type="copyright"] #flexbox {
   float:right;
 }
 
-.toc-subchap a[href]::before{
-  content: target-text(attr(href)); /* pdfreactor */
+.toc-subchap a[href]::before {
+  content: target-text(attr(href));
 }
 
 .toc-subchap a[href]::after {

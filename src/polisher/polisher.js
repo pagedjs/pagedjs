@@ -16,6 +16,7 @@ class Polisher {
 		this.hooks.onDeclaration = new Hook(this);
 		this.hooks.onContent = new Hook(this);
 
+		this.hooks.beforeTreeParse = new Hook(this);
 		this.hooks.beforeTreeWalk = new Hook(this);
 		this.hooks.afterTreeWalk = new Hook(this);
 
@@ -60,12 +61,20 @@ class Polisher {
 		}
 
 		return await Promise.all(fetched)
-			.then((originals) => {
+			.then(async (originals) => {
 				let text = "";
 
-				originals.forEach((original, index) => {
-					let href = urls[index];
-					let sheet = new Sheet(original, href, this.hooks);
+				let original, index;
+				let href, sheet;
+
+				for (index = 0; index < originals.length; index++) {
+					original = originals[index];
+
+					href = urls[index];
+
+					sheet = new Sheet(href, this.hooks);
+
+					await sheet.parse(original);
 
 					this.sheets.push(sheet);
 
@@ -82,11 +91,11 @@ class Polisher {
 					}
 
  					text += sheet.toString();
-				})
+				}
 
 				let s = this.insert(text);
 				this.inserted.push(s);
-
+				// console.log(text);
 				return text;
 			});
 	}

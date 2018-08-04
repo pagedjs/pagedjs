@@ -3,7 +3,7 @@ import { UUID } from "../utils/utils";
 import Hook from "../utils/hook";
 
 class Sheet {
-	constructor(text, url, hooks) {
+	constructor(url, hooks) {
 
 		if (hooks) {
 			this.hooks = hooks;
@@ -16,6 +16,7 @@ class Sheet {
 			this.hooks.onDeclaration = new Hook(this);
 			this.hooks.onContent = new Hook(this);
 
+			this.hooks.beforeTreeParse = new Hook(this);
 			this.hooks.beforeTreeWalk = new Hook(this);
 			this.hooks.afterTreeWalk = new Hook(this);
 		}
@@ -25,13 +26,20 @@ class Sheet {
 		} catch (e) {
 			this.url = new URL(window.location.href);
 		}
+	}
 
-		// this.original = text;
 
-		// Parse the text
-		this.ast = this.parse(text);
 
-		this.hooks.beforeTreeWalk.trigger(this.ast);
+	// parse
+	async parse(text) {
+		this.text = text;
+
+		await this.hooks.beforeTreeParse.trigger(this.text, this);
+
+		// send to csstree
+		this.ast = csstree.parse(this._text);
+
+		await this.hooks.beforeTreeWalk.trigger(this.ast);
 
 		// Replace urls
 		this.replaceUrls(this.ast);
@@ -48,15 +56,10 @@ class Sheet {
 		this.rules(this.ast);
 		this.atrules(this.ast);
 
-		this.hooks.afterTreeWalk.trigger(this.ast, this);
-	}
+		await this.hooks.afterTreeWalk.trigger(this.ast, this);
 
-	// parse
-	parse(text) {
-		// send to csstree
-		let ast = csstree.parse(text);
 		// return ast
-		return ast;
+		return this.ast;
 	}
 
 	insertRule(rule) {
@@ -211,6 +214,14 @@ class Sheet {
 				});
 			}
 		});
+	}
+
+	set text(t) {
+		this._text = t;
+	}
+
+	get text() {
+		return this._text;
 	}
 
 	// generate string

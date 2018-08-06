@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>
+      Content None
+    </title>
+
+    <script src="../../../dist/paged.polyfill.js"></script>
+
+    <style>
+    /* Paged.js fragmentation rendering on screen */
+
+    /* bind chapter section to the chapter layout */
+
+    .chapter {
+      page: chapter;
+    }
+
+
+    @page chapter :first {
+      background-color: lightcyan;
+
+      @top-left {
+        content: none;
+      }
+      @top-left-corner {
+        content: none;
+      }
+      @top-right {
+        content: none;
+      }
+      @top-right-corner {
+        content: none;
+      }
+    }
+
+    @page chapter :nth(4) {
+      @top-right {
+        content: 'lol';
+      }
+    }
+
+    /* blanck page: pages with no content */
+
+    @page :blank {
+      @top-left-corner {
+        content: none;
+      }
+      @top-left {
+        content: none;
+      }
+      @top-right-corner {
+        content: none;
+      }
+      @top-right {
+        content: none;
+      }
+      background: white;
+    }
+
+
+
+
+
+
+    /* variable used for the boook */
+    :root {
+      --background: rgba(0,0,0,0.4);
+      --color-paper: white;
+      --color-margin-box: transparent;
+      --color-page-box: grey;
+      --size-margin-box: 2px;
+    }
+
+
+    /* set the running-title element AS a running title position */
+
+    .running-title {
+      position: running(titleRun);
+    }
+
+
+
+    /* Binding the part layout to the section with a class 'part'  */
+
+
+    .part  {
+      page: part;
+    }
+
+
+
+
+
+    /* print css that's being rendered on screen */
+
+    @page {
+      size: 170mm 240mm;
+      margin: 30mm 25mm;
+    }
+
+
+    @page part {
+      background: darkcyan;
+      color: white;
+      @top-left-corner {
+        content: none;
+      }
+      @top-left {
+        content: none;
+      }
+      @top-right-corner {
+        content: none;
+      }
+      @top-right {
+        content: none;
+      }
+    }
+
+    /* layout for the left page */
+
+    @page :left {
+      @top-left-corner {
+        content: counter(page);
+        padding-right: 3ch
+      }
+      @top-left {
+        content: element(titleRun);
+      }
+    }
+
+
+    /* layout for the right page */
+
+    @page :right {
+      @top-right-corner {
+        content: counter(page);
+        padding-left: 3ch;
+      }
+      @top-right {
+        content: element(titleRun);
+      }
+    }
+
+    </style>
+
+    <style>
+    /* BELOW COMES CSS FOR THE BOOK STYLING AND FOR THE THE PAGES ALIGNMENTS */
+
+    header p {
+    text-transform: uppercase;
+    font-family: sans-serif;
+    margin-top: -6em;
+    margin-left: -14ch;
+    background: white;
+    position: absolute;
+    padding: 0.5em;
+    padding-left: 4em;
+    }
+
+    header h1 {
+    margin-top: 2em;
+    }
+
+    body {
+    padding: 1em;
+    }
+
+
+    section {
+    break-before: right;
+    }
+
+    /* To define how the book look on the screen: */
+    @media screen {
+      body {
+          background-color: var(--background);
+      }
+      .pagedjs_pages {
+          display: flex;
+          width: calc(var(--width) * 2);
+          flex: 0;
+          flex-wrap: wrap;
+          margin: 0 auto;
+      }
+      .pagedjs_page {
+          background: var(--color-paper);
+          box-shadow: 0 0 0 1px inset var(--color-page-box);
+          margin: 0;
+          flex-shrink: 0;
+          flex-grow: 0;
+          margin-top: 10mm;
+
+      }
+      .pagedjs_first_page {
+          margin-left: var(--width);
+      }
+
+    /* show the margin-box */
+
+    [class*="pagedjs_margin-top"],  [class*="pagedjs_margin-left"],   [class*="pagedjs_margin-right"],   [class*="pagedjs_margin-bottom"]    {
+      box-shadow: 0 0 0 var(--size-margin-box) inset var(--color-margin-box);
+    }
+    }
+
+    body {
+    font-family: serif;
+    }
+    </style>
+
+
+
+  </head>
+  <body>
+
+
+
+  <section class="part">
+    <h1>Awesome part</h1>
+    <p>In this part, we'll talk about a lot of different things</p>
+  </section>
+  <section class="chapter">
+    <header>
+      <p>chapter one</p>
+      <h1>Margin boxes</h1>
+    </header>
+    <div class="running-title">Margin boxes </div>
+    <p>the margin boxes as declared by the W3C.</p>
+    <h2>Now, some random wikipedia article </h2>
+    <h3>Zduńska Wola Karsznice</h3>
+    <p>Zduńska Wola Karsznice is one of the biggest rail junctions in Poland, located in central part of the country, within the borders of the town of Zduńska Wola (Łódź Voivodeship). It is a station along the Polish Coal Trunk-Line; before 1930 it had been a separate village, but construction of the Trunk-Line resulted in creation of a separate district for rail workers, with numerous condominiums. A few kilometers north of Karsznice, the Trunk-Line crosses the main East-West rail route Warsaw - Łódź - Ostrów Wielkopolski - Poznań/Wrocław.     p Zduńska Wola Karsznice is one of the biggest rail junctions in Poland, located in central part of the country, within the borders of the town of Zduńska Wola (Łódź Voivodeship). It is a station along the Polish Coal Trunk-Line; before 1930 it had been a separate village, but construction of the Trunk-Line resulted in creation of a separate district for rail workers, with numerous condominiums. A few kilometers north of Karsznice, the Trunk-Line crosses the main East-West rail route Warsaw - Łódź - Ostrów Wielkopolski - Poznań/Wrocław.   </p>
+    <p>Zduńska Wola Karsznice is one of the biggest rail junctions in Poland, located in central part of the country, within the borders of the town of Zduńska Wola (Łódź Voivodeship). It is a station along the Polish Coal Trunk-Line; before 1930 it had been a separate village, but construction of the Trunk-Line resulted in creation of a separate district for rail workers, with numerous condominiums. A few kilometers north of Karsznice, the Trunk-Line crosses the main East-West rail route Warsaw - Łódź - Ostrów Wielkopolski - Poznań/Wrocław.  Zduńska Wola Karsznice is one of the biggest rail junctions in Poland, located in central part of the country, within the borders of the town of Zduńska Wola (Łódź Voivodeship). It is a station along the Polish Coal Trunk-Line; before 1930 it had been a separate village, but construction of the Trunk-Line resulted in creation of a separate district for rail workers, with numerous condominiums. A few kilometers north of Karsznice, the Trunk-Line crosses the main East-West rail route Warsaw - Łódź - Ostrów Wielkopolski - Poznań/Wrocław.   </p>
+    <p>Zduńska Wola Karsznice is one of the biggest rail junctions in Poland, located in central part of the country, within the borders of the town of Zduńska Wola (Łódź Voivodeship). It is a station along the Polish Coal Trunk-Line; before 1930 it had been a separate village, but construction of the Trunk-Line resulted in creation of a separate district for rail workers, with numerous condominiums. A few kilometers north of Karsznice, the Trunk-Line crosses the main East-West rail route Warsaw - Łódź - Ostrów Wielkopolski - Poznań/Wrocław.   </p>
+    <p>Zduńska Wola Karsznice is one of the biggest rail junctions in Poland, located in central part of the country, within the borders of the town of Zduńska Wola (Łódź Voivodeship). It is a station along the Polish Coal Trunk-Line; before 1930 it had been a separate village, but construction of the Trunk-Line resulted in creation of a separate district for rail workers, with numerous condominiums. A few kilometers north of Karsznice, the Trunk-Line crosses the main East-West rail route Warsaw - Łódź - Ostrów Wielkopolski - Poznań/Wrocław.   </p>
+    <p>Zduńska Wola Karsznice is one of the biggest rail junctions in Poland, located in central part of the country, within the borders of the town of Zduńska Wola (Łódź Voivodeship). It is a station along the Polish Coal Trunk-Line; before 1930 it had been a separate village, but construction of the Trunk-Line resulted in creation of a separate district for rail workers, with numerous condominiums. A few kilometers north of Karsznice, the Trunk-Line crosses the main East-West rail route Warsaw - Łódź - Ostrów Wielkopolski - Poznań/Wrocław.   </p>
+    <p>Zduńska Wola Karsznice is one of the biggest rail junctions in Poland, located in central part of the country, within the borders of the town of Zduńska Wola (Łódź Voivodeship). It is a station along the Polish Coal Trunk-Line; before 1930 it had been a separate village, but construction of the Trunk-Line resulted in creation of a separate district for rail workers, with numerous condominiums. A few kilometers north of Karsznice, the Trunk-Line crosses the main East-West rail route Warsaw - Łódź - Ostrów Wielkopolski - Poznań/Wrocław.   </p>
+    <p>Zduńska Wola Karsznice is one of the biggest rail junctions in Poland, located in central part of the country, within the borders of the town of Zduńska Wola (Łódź Voivodeship). It is a station along the Polish Coal Trunk-Line; before 1930 it had been a separate village, but construction of the Trunk-Line resulted in creation of a separate district for rail workers, with numerous condominiums. A few kilometers north of Karsznice, the Trunk-Line crosses the main East-West rail route Warsaw - Łódź - Ostrów Wielkopolski - Poznań/Wrocław.   </p>
+  </section>
+
+</body>

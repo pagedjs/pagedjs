@@ -537,6 +537,7 @@ class AtPage extends Handler {
 	}
 
 	addMarginaliaContent(page, list, item, sheet) {
+		let displayNone;
 		// Just content
 		for (let loc in page.marginalia) {
 			let content = csstree.clone(page.marginalia[loc]);
@@ -546,9 +547,10 @@ class AtPage extends Handler {
 					if (node.property !== "content") {
 						list.remove(item);
 					}
-					// else if (node.value.children && node.value.children.first().name === "none") {
-					// 	list.remove(item);
-					// }
+
+					if (node.value.children && node.value.children.first().name === "none") {
+						displayNone = true;
+					}
 				}
 			});
 
@@ -556,14 +558,37 @@ class AtPage extends Handler {
 				continue;
 			}
 
-			// insert display rule - handled after page layout
-			/*
 			let displaySelectors = this.selectorsForPageMargin(page, loc);
-			let displayDeclaration = this.createDeclaration("display", "flex");
-			let displayRule = this.createRule(displaySelectors, [displayDeclaration]);
+			let displayDeclaration;
 
+			displaySelectors.insertData({
+				type: 'Combinator',
+				name: ">"
+			});
+
+			displaySelectors.insertData({
+				type: 'ClassSelector',
+				name: "pagedjs_margin-content"
+			});
+
+			displaySelectors.insertData({
+				type: 'Combinator',
+				name: ">"
+			});
+
+			displaySelectors.insertData({
+				type: 'TypeSelector',
+				name: "*"
+			});
+
+			if (displayNone) {
+				displayDeclaration = this.createDeclaration("display", "none");
+			} else {
+				displayDeclaration = this.createDeclaration("display", "block");
+			}
+
+			let displayRule = this.createRule(displaySelectors, [displayDeclaration]);
 			sheet.insertRule(displayRule);
-			*/
 
 			// insert content rule
 			let contentSelectors = this.selectorsForPageMargin(page, loc);
@@ -805,6 +830,10 @@ class AtPage extends Handler {
 					left.classList.add("emptyBalance");
 				}
 
+				if (leftContent && rightContent) {
+					center.classList.add("balanceMargins");
+				}
+
 				// Balance Sizes
 				if (leftContent) {
 					leftWidth = window.getComputedStyle(left)["max-width"];
@@ -823,8 +852,8 @@ class AtPage extends Handler {
 					left.style["width"] = "auto";
 					left.style["max-width"] = "none";
 				} else if ((centerWidth === "none" || centerWidth === "auto") &&
-						leftWidth !== "none" && leftWidth !== "auto" &&
-						rightWidth !== "none" && rightWidth !== "auto") {
+						leftContent && leftWidth !== "none" && leftWidth !== "auto" &&
+						rightContent && rightWidth !== "none" && rightWidth !== "auto") {
 
 					// TODO: convert units before comparing
 					let newWidth = Math.max(parseFloat(leftWidth), parseFloat(rightWidth));
@@ -889,8 +918,8 @@ class AtPage extends Handler {
 					bottom.style["height"] = "auto";
 					bottom.style["max-height"] = "none";
 				} else if ((middleHeight === "none" || middleHeight === "auto") &&
-						topHeight !== "none" && topHeight !== "auto" &&
-						bottomHeight !== "none" && bottomHeight !== "auto") {
+						topContent && topHeight !== "none" && topHeight !== "auto" &&
+						bottomContent && bottomHeight !== "none" && bottomHeight !== "auto") {
 
 					// TODO: convert units before comparing
 					let newHeight = Math.max(parseFloat(topHeight), parseFloat(bottomHeight));

@@ -32,6 +32,8 @@ class TargetText extends Handler {
 				style = last.name;
 			}
 
+			let variable = "--" + UUID();
+
 			selector.split(",").forEach((s) => {
 				this.textTargets[s] = {
 					func: func,
@@ -39,10 +41,19 @@ class TargetText extends Handler {
 					value: value,
 					style: style || "content",
 					selector: s,
-					fullSelector: selector
+					fullSelector: selector,
+					variable: variable
 				}
 			});
 
+			// Replace with variable
+			funcNode.name = "var";
+			funcNode.children = new csstree.List()
+			funcNode.children.appendData({
+				type: "Identifier",
+				loc: 0,
+				name: variable
+			});
 		}
 	}
 
@@ -59,7 +70,6 @@ class TargetText extends Handler {
 					if (target.style === "content") {
 						let text = element.textContent;
 						let selector = UUID();
-
 						selected.setAttribute("data-target-text", selector);
 
 						let psuedo = "";
@@ -67,8 +77,18 @@ class TargetText extends Handler {
 							psuedo += "::" + split[1];
 						}
 
-						this.styleSheet.insertRule(`[data-target-text="${selector}"]${psuedo} { content: "${element.textContent}"; }`, this.styleSheet.cssRules.length);
+						let textContent = element.textContent.trim().replace(/[\"\']/g, (match) => {
+							return "\\" + match;
+						}).replace(/[\n]/g, (match) => {
+							return "\\00000A";
+						});
+
+						// this.styleSheet.insertRule(`[data-target-text="${selector}"]${psuedo} { content: "${element.textContent}" }`, this.styleSheet.cssRules.length);
+						this.styleSheet.insertRule(`[data-target-text="${selector}"]${psuedo} { ${target.variable}: "${textContent}" }`, this.styleSheet.cssRules.length);
+
 					}
+				} else {
+					console.warn("missed target", val);
 				}
 			});
 

@@ -4,6 +4,10 @@ const gs = require('ghostscript4js')
 const fs = require('fs');
 const rimraf = require('rimraf');
 const { DEBUG } = require('./constants');
+const CONFIG = {
+	failureThreshold: '0.01',
+	failureThresholdType: 'percent'
+};
 
 function toMatchPDFSnapshot(received, page=1) {
 	let pdfImage;
@@ -30,7 +34,7 @@ function toMatchPDFSnapshot(received, page=1) {
 		throw err
 	}
 
-	return toMatchImageSnapshot.apply(this, [pdfImage])
+	return toMatchImageSnapshot.apply(this, [pdfImage, CONFIG])
 }
 
 export function UUID() {

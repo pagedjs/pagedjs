@@ -81,9 +81,11 @@ class AtPage extends Handler {
 		let declarations = this.replaceDeclartations(node);
 
 		if (declarations.size) {
+			page.size = declarations.size;
 			page.width = declarations.size.width;
 			page.height = declarations.size.height;
 			page.orientation = declarations.size.orientation;
+			page.format = declarations.size.format;
 		}
 
 		if (declarations.margin) {
@@ -124,18 +126,20 @@ class AtPage extends Handler {
 		if ("*" in this.pages) {
 			let width = this.pages["*"].width;
 			let height = this.pages["*"].height;
+			let format = this.pages["*"].format;
 			let orientation = this.pages["*"].orientation;
 
 			if ((width && height) &&
 			    (this.width !== width || this.height !== height)) {
 				this.width = width;
 				this.height = height;
+				this.format = format;
 				this.orientation = orientation;
 
-				this.addRootVars(ast, width, height);
-				this.addRootPage(ast, width, height);
+				this.addRootVars(ast, width, height, orientation);
+				this.addRootPage(ast, this.pages["*"].size);
 
-				this.emit("size", { width, height, orientation });
+				this.emit("size", { width, height, orientation, format });
 			}
 
 		}
@@ -251,7 +255,7 @@ class AtPage extends Handler {
 	}
 
 	getSize(declaration) {
-		let width, height, orientation;
+		let width, height, orientation, format;
 
 		// Get size: Xmm Ymm
 		csstree.walk(declaration, {
@@ -292,6 +296,7 @@ class AtPage extends Handler {
 						width = s.width;
 						height = s.height;
 					}
+					format = name;
 				}
 			}
 		});
@@ -299,7 +304,8 @@ class AtPage extends Handler {
 		return {
 			width,
 			height,
-			orientation
+			orientation,
+			format
 		}
 	}
 
@@ -406,7 +412,7 @@ class AtPage extends Handler {
 		this.addMarginVars(page.margin, children, children.first());
 
 		if (page.width) {
-			this.addDimensions(page.width, page.height, children, children.first());
+			this.addDimensions(page.width, page.height, page.orientation, children, children.first());
 		}
 
 		if (page.marginalia) {
@@ -435,22 +441,33 @@ class AtPage extends Handler {
 		}
 	}
 
-	addDimensions(width, height, list, item) {
+	addDimensions(width, height, orientation, list, item) {
+
+		let outputWidth, outputHeight;
+		if (!orientation || orientation === "portrait") {
+			outputWidth = width;
+			outputHeight = height;
+		} else {
+			outputWidth = height;
+			outputHeight = width;
+		}
+
 		// width variable
-		let wVar = this.createVariable("--width", width.value + (width.unit || ''));
+		let wVar = this.createVariable("--width", outputWidth.value + (outputWidth.unit || ''));
 		list.appendData(wVar);
 
 		// height variable
-		let hVar = this.createVariable("--height", height.value + (height.unit || ''));
+		let hVar = this.createVariable("--height", outputHeight.value + (outputHeight.unit || ''));
 		list.appendData(hVar);
 
 		// width dimension
-		let w = this.createDimension("width", width.value, width.unit);
+		let w = this.createDimension("width", outputWidth.value, outputWidth.unit);
 		list.appendData(w);
 
 		// height dimension
-		let h = this.createDimension("height", height.value, height.unit);
+		let h = this.createDimension("height", outputHeight.value, outputHeight.unit);
 		list.appendData(h);
+
 	}
 
 	addMarginaliaStyles(page, list, item, sheet) {
@@ -614,7 +631,7 @@ class AtPage extends Handler {
 		}
 	}
 
-	addRootVars(ast, width, height) {
+	addRootVars(ast, width, height, orientation) {
 		let selectors = new csstree.List();
 		selectors.insertData({
 			type: "PseudoClassSelector",
@@ -622,44 +639,72 @@ class AtPage extends Handler {
 			children: null
 		});
 
-		// width variable
-		let wVar = this.createVariable("--width", width.value + (width.unit || ''));
+		// orientation variable
+		let oVar = this.createVariable("--orientation", orientation || "");
 
-		// height variable
-		let hVar = this.createVariable("--height", height.value + (height.unit || ''));
+		let widthString, heightString;
+		if (!orientation || orientation === "portrait") {
+			widthString = width.value + (width.unit || '');
+			heightString = height.value + (height.unit || '');
+		} else {
+			widthString = height.value + (height.unit || '');
+			heightString = width.value + (width.unit || '');
+		}
 
-		let rule = this.createRule(selectors, [wVar, hVar])
+		let wVar = this.createVariable("--width", widthString);
+		let hVar = this.createVariable("--height", heightString);
+		let rule = this.createRule(selectors, [wVar, hVar, oVar])
 
 		ast.children.appendData(rule);
 	}
 
-	addRootPage(ast, width, height) {
-		/*
-		@page {
-			size: var(--width) var(--height);
-			margin: 0;
-			padding: 0;
-		}
-		*/
+	/*
+	@page {
+		size: var(--width) var(--height);
+		margin: 0;
+		padding: 0;
+	}
+	*/
+	addRootPage(ast, size) {
+		let { width, height, orientation, format } = size;
 		let children = new csstree.List();
 		let dimensions = new csstree.List();
 
-		dimensions.appendData({
-			type: 'Dimension',
-			unit: width.unit,
-			value: width.value
-		});
+		if (format) {
+			dimensions.appendData({
+				type: 'Identifier',
+				name: format
+			});
 
-		dimensions.appendData({
-			type: 'WhiteSpace',
-			value: " "
-		});
+			if (orientation) {
+				dimensions.appendData({
+					type: 'WhiteSpace',
+					value: " "
+				});
 
-		dimensions.appendData({
-			type: 'Dimension',
-			unit: height.unit,
-			value: height.value
-		});
+				dimensions.appendData({
+					type: 'Identifier',
+					name: orientation
+				});
+			}
+		} else {
+			dimensions.appendData({
+				type: 'Dimension',
+				unit: width.unit,
+				value: width.value
+			});
+
+			dimensions.appendData({
+				type: 'WhiteSpace',
+				value: " "
+			});
+
+			dimensions.appendData({
+				type: 'Dimension',
+				unit: height.unit,
+				value: height.value
+			});
+		}
 
 		children.appendData({
 			type: 'Declaration',

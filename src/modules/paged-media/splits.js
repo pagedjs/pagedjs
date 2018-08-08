@@ -27,6 +27,10 @@ class Splits extends Handler {
 
 			if (from) {
 				from.dataset.splitTo = ref;
+
+				if (!from.dataset.splitFrom) {
+					from.dataset.splitOriginal = true;
+				}
 			}
 		});
 	}

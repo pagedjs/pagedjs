@@ -124,8 +124,9 @@ export default `
   grid-template-columns: 100%;
 }
 
-
-
+.pagedjs_pages .pagedjs_page .pagedjs_margin:not(.hasContent) {
+  visibility: hidden;
+}
 
 .pagedjs_page > .pagedjs_area {
   grid-column: center;
@@ -159,7 +160,7 @@ export default `
 .pagedjs_page .pagedjs_margin-bottom-left,
 .pagedjs_page .pagedjs_margin-bottom-right,
 .pagedjs_page .pagedjs_margin-top-center,
-.pagedjs_page .pagedjs_margin-bottom-center, 
+.pagedjs_page .pagedjs_margin-bottom-center,
 .pagedjs_page .pagedjs_margin-top-center,
 .pagedjs_page .pagedjs_margin-bottom-center,
 .pagedjs_margin-right-middle,

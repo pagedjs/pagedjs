@@ -858,28 +858,17 @@ class AtPage extends Handler {
 
 		// check center
 		["top", "bottom"].forEach((loc) => {
-			let center = page.element.querySelector(".pagedjs_margin-" + loc + "-center.hasContent");
-			if (center) {
-				let left = page.element.querySelector(".pagedjs_margin-" + loc + "-left");
-				let right = page.element.querySelector(".pagedjs_margin-" + loc + "-right");
+			let marginGroup = page.element.querySelector(".pagedjs_margin-" + loc);
+			let center = page.element.querySelector(".pagedjs_margin-" + loc + "-center");
+			let left = page.element.querySelector(".pagedjs_margin-" + loc + "-left");
+			let right = page.element.querySelector(".pagedjs_margin-" + loc + "-right");
 
+				let centerContent = center.classList.contains("hasContent");
 				let leftContent = left.classList.contains("hasContent");
 				let rightContent = right.classList.contains("hasContent");
+				let marginGroupWidth = marginGroup.offsetWidth;
 				let centerWidth, leftWidth, rightWidth;
 
-				if (leftContent && !rightContent) {
-					right.classList.add("emptyBalance");
-				}
-
-				if (!leftContent && rightContent) {
-					left.classList.add("emptyBalance");
-				}
-
-				if (leftContent && rightContent) {
-					center.classList.add("balanceMargins");
-				}
-
-				// Balance Sizes
 				if (leftContent) {
 					leftWidth = window.getComputedStyle(left)["max-width"];
 				}
@@ -888,106 +877,213 @@ class AtPage extends Handler {
 					rightWidth = window.getComputedStyle(right)["max-width"];
 				}
 
+
+			if (centerContent) {
 				centerWidth = window.getComputedStyle(center)["max-width"];
 
-				// Over-contrained
-				if (centerWidth !== "none" && centerWidth !== "auto") {
-					right.style["width"] = "auto";
-					right.style["max-width"] = "none";
-					left.style["width"] = "auto";
-					left.style["max-width"] = "none";
-				} else if ((centerWidth === "none" || centerWidth === "auto") &&
-						leftContent && leftWidth !== "none" && leftWidth !== "auto" &&
-						rightContent && rightWidth !== "none" && rightWidth !== "auto") {
-
-					// TODO: convert units before comparing
-					let newWidth = Math.max(parseFloat(leftWidth), parseFloat(rightWidth));
-
-					// Add units back
-					newWidth += leftWidth.replace(parseFloat(leftWidth), "");
-
-					right.style["width"] = newWidth;
-					right.style["max-width"] = newWidth;
-					// right.style["min-width"] = newWidth;
-					left.style["width"] = newWidth;
-					left.style["max-width"] = newWidth;
-					// left.style["min-width"] = newWidth;
-
-					center.style["flex-basis"] = 0;
-				} else {
-					if (leftWidth !== "none" && leftWidth !== "auto") {
-						right.style["max-width"] = leftWidth;
+				if(centerWidth === "none" || centerWidth === "auto") {
+					if(!leftContent && !rightContent){
+						marginGroup.style["grid-template-columns"] = "0 1fr 0";
+					}else if(leftContent){
+						if(!rightContent){
+							if(leftWidth !== "none" && leftWidth !== "auto"){
+								marginGroup.style["grid-template-columns"] = leftWidth + " 1fr " + leftWidth;
+							}else{
+								marginGroup.style["grid-template-columns"] = "auto auto 1fr";
+								left.style["white-space"] = "nowrap";
+								center.style["white-space"] = "nowrap";
+								let leftOuterWidth = left.offsetWidth;
+								let centerOuterWidth = center.offsetWidth;
+								let outerwidths = leftOuterWidth + centerOuterWidth;
+								let newcenterWidth = centerOuterWidth * 100 / outerwidths;
+								marginGroup.style["grid-template-columns"] = "minmax(16.66%, 1fr) minmax(33%, " + newcenterWidth + "%) minmax(16.66%, 1fr)";
+								left.style["white-space"] = "normal";
+								center.style["white-space"] = "normal";
+							}
+						}else{
+							if(leftWidth !== "none" && leftWidth !== "auto"){
+								if(rightWidth !== "none" && rightWidth !== "auto"){
+									marginGroup.style["grid-template-columns"] = leftWidth + " 1fr " + rightWidth;
+								}else{
+									marginGroup.style["grid-template-columns"] = leftWidth + " 1fr " + leftWidth;
+								}
+							}else{
+								if(rightWidth !== "none" && rightWidth !== "auto"){ 
+									marginGroup.style["grid-template-columns"] = rightWidth + " 1fr " + rightWidth;
+								}else{
+									marginGroup.style["grid-template-columns"] = "auto auto 1fr";
+									left.style["white-space"] = "nowrap";
+									center.style["white-space"] = "nowrap";
+									right.style["white-space"] = "nowrap";
+									let leftOuterWidth = left.offsetWidth;
+									let centerOuterWidth = center.offsetWidth;
+									let rightOuterWidth = right.offsetWidth;
+									let outerwidths = leftOuterWidth + centerOuterWidth + rightOuterWidth;
+									let newcenterWidth = centerOuterWidth * 100 / outerwidths;
+									if(newcenterWidth > 40){
+										marginGroup.style["grid-template-columns"] = "minmax(16.66%, 1fr) minmax(33%, " + newcenterWidth + "%) minmax(16.66%, 1fr)";
+									}else{
+										marginGroup.style["grid-template-columns"] = "repeat(3, 1fr)";
+									}
+									left.style["white-space"] = "normal";
+									center.style["white-space"] = "normal";
+									right.style["white-space"] = "normal";
+								}
+							}
+						}
+					}else{
+						if(rightWidth !== "none" && rightWidth !== "auto"){
+							marginGroup.style["grid-template-columns"] = rightWidth + " 1fr " + rightWidth;
+						}else{
+							marginGroup.style["grid-template-columns"] = "auto auto 1fr";
+							right.style["white-space"] = "nowrap";
+							center.style["white-space"] = "nowrap";
+							let rightOuterWidth = right.offsetWidth;
+							let centerOuterWidth = center.offsetWidth;
+							let outerwidths = rightOuterWidth + centerOuterWidth;
+							let newcenterWidth = centerOuterWidth * 100 / outerwidths;
+							marginGroup.style["grid-template-columns"] = "minmax(16.66%, 1fr) minmax(33%, " + newcenterWidth + "%) minmax(16.66%, 1fr)";
+							right.style["white-space"] = "normal";
+							center.style["white-space"] = "normal";
+						}
+					}		
+				}else if(centerWidth !== "none" && centerWidth !== "auto"){
+					if(leftContent && leftWidth !== "none" && leftWidth !== "auto"){
+						marginGroup.style["grid-template-columns"] = leftWidth + " " + centerWidth + " 1fr";
+					}else if(rightContent && rightWidth !== "none" && rightWidth !== "auto"){
+						marginGroup.style["grid-template-columns"] = "1fr " + centerWidth + " " + rightWidth;
+					}else{
+						marginGroup.style["grid-template-columns"] = "1fr " + centerWidth + " 1fr";
 					}
 
-					if (rightWidth !== "none" && rightWidth !== "auto") {
-						left.style["max-width"] = rightWidth;
-					}
 				}
+
+			}else{
+				if(leftContent){
+					if(!rightContent){
+						marginGroup.style["grid-template-columns"] = "1fr 0 0";		
+					}else{
+						if(leftWidth !== "none" && leftWidth !== "auto"){
+							if(rightWidth !== "none" && rightWidth !== "auto"){
+								marginGroup.style["grid-template-columns"] = leftWidth + " 1fr " + rightWidth;
+							}else{
+								marginGroup.style["grid-template-columns"] = leftWidth + " 0 1fr";
+							}					
+						}else{
+							if(rightWidth !== "none" && rightWidth !== "auto"){
+								marginGroup.style["grid-template-columns"] = "1fr 0 " + rightWidth;
+							}else{
+								marginGroup.style["grid-template-columns"] = "auto 1fr auto";
+								left.style["white-space"] = "nowrap";
+								right.style["white-space"] = "nowrap";
+								let leftOuterWidth = left.offsetWidth;
+								let rightOuterWidth = right.offsetWidth;
+								let outerwidths = leftOuterWidth + rightOuterWidth;
+								let newLeftWidth = leftOuterWidth * 100 / outerwidths;
+								marginGroup.style["grid-template-columns"] = "minmax(16.66%, " + newLeftWidth  + "%) 0 1fr";
+								left.style["white-space"] = "normal";
+								right.style["white-space"] = "normal";
+							}										
+						}		
+					}
+				}else{
+					if(rightWidth !== "none" && rightWidth !== "auto"){
+						marginGroup.style["grid-template-columns"] = "1fr 0 " + rightWidth;
+					}else{
+						marginGroup.style["grid-template-columns"] = "0 0 1fr";
+					}				
+				}				
 			}
 		});
 
 		// check middle
 		["left", "right"].forEach((loc) => {
 			let middle = page.element.querySelector(".pagedjs_margin-" + loc + "-middle.hasContent");
+			let marginGroup = page.element.querySelector(".pagedjs_margin-" + loc);
+			let top = page.element.querySelector(".pagedjs_margin-" + loc + "-top");
+			let bottom = page.element.querySelector(".pagedjs_margin-" + loc + "-bottom");
+			let topContent = top.classList.contains("hasContent");
+			let bottomContent = bottom.classList.contains("hasContent");
+			let middleHeight, topHeight, bottomHeight;
+
+			if (topContent) {
+				topHeight = window.getComputedStyle(top)["max-height"];
+			}
+
+			if (bottomContent) {
+				bottomHeight = window.getComputedStyle(bottom)["max-height"];
+			}
+
 			if (middle) {
-				let top = page.element.querySelector(".pagedjs_margin-" + loc + "-top");
-				let bottom = page.element.querySelector(".pagedjs_margin-" + loc + "-bottom");
-
-				let topContent = top.classList.contains("hasContent");
-				let bottomContent = bottom.classList.contains("hasContent");
-				let middleHeight, topHeight, bottomHeight;
-
-				if (topContent && !bottomContent) {
-					bottom.classList.add("emptyBalance");
-				}
-
-				if (!topContent && bottomContent) {
-					top.classList.add("emptyBalance");
-				}
-
-				// Balance Sizes
-				if (topContent) {
-					topHeight = window.getComputedStyle(top)["max-height"];
-				}
-
-				if (bottomContent) {
-					bottomHeight = window.getComputedStyle(bottom)["max-height"];
-				}
-
 				middleHeight = window.getComputedStyle(middle)["max-height"];
 
-				// Over-contrained
-				if (middleHeight !== "none" && middleHeight !== "auto") {
-					top.style["height"] = "auto";
-					top.style["max-height"] = "none";
-					bottom.style["height"] = "auto";
-					bottom.style["max-height"] = "none";
-				} else if ((middleHeight === "none" || middleHeight === "auto") &&
-						topContent && topHeight !== "none" && topHeight !== "auto" &&
-						bottomContent && bottomHeight !== "none" && bottomHeight !== "auto") {
-
-					// TODO: convert units before comparing
-					let newHeight = Math.max(parseFloat(topHeight), parseFloat(bottomHeight));
-
-					// Add units back
-					newHeight += topHeight.replace(parseFloat(topHeight), "");
-
-					top.style["height"] = newHeight;
-					top.style["max-height"] = newHeight;
-					// top.style["min-height"] = newHeight;
-					bottom.style["height"] = newHeight;
-					bottom.style["max-height"] = newHeight;
-					// left.style["min-height"] = newHeight;
-				} else {
-					if (topHeight !== "none" && topHeight !== "auto") {
-						bottom.style["max-height"] = topHeight;
+				if(middleHeight === "none" || middleHeight === "auto") {
+					if(!topContent && !bottomContent){
+						marginGroup.style["grid-template-rows"] = "0 1fr 0";
+					}else if(topContent){
+						if(!bottomContent){
+							if(topHeight !== "none" && topHeight !== "auto"){
+								marginGroup.style["grid-template-rows"] = topHeight + " calc(100% - " + topHeight + "*2) " + topHeight;
+							}
+						}else{
+							if(topHeight !== "none" && topHeight !== "auto"){
+								if(bottomHeight !== "none" && bottomHeight !== "auto"){
+									marginGroup.style["grid-template-rows"] = topHeight + " calc(100% - " + topHeight + " - " + bottomHeight + ") " + bottomHeight;
+								}else{
+									marginGroup.style["grid-template-rows"] = topHeight + " calc(100% - " + topHeight + "*2) " + topHeight;
+								}
+							}else{
+								if(bottomHeight !== "none" && bottomHeight !== "auto"){ 
+									marginGroup.style["grid-template-rows"] = bottomHeight + " calc(100% - " + bottomHeight + "*2) " + bottomHeight;
+								}
+							}
+						}
+					}else{
+						if(bottomHeight !== "none" && bottomHeight !== "auto"){
+							marginGroup.style["grid-template-rows"] = bottomHeight + " calc(100% - " + bottomHeight + "*2) " + bottomHeight;
+						}
+					}		
+				}else{
+					if(topContent && topHeight !== "none" && topHeight !== "auto"){
+						marginGroup.style["grid-template-rows"] = topHeight +" " + middleHeight + " calc(100% - (" + topHeight + " + " + middleHeight + "))";
+					}else if(bottomContent && bottomHeight !== "none" && bottomHeight !== "auto"){
+						marginGroup.style["grid-template-rows"] = "1fr " + middleHeight + " " + bottomHeight;
+					}else{
+						marginGroup.style["grid-template-rows"] = "calc((100% - " + middleHeight + ")/2) " + middleHeight + " calc((100% - " + middleHeight + ")/2)";
 					}
 
-					if (bottomHeight !== "none" && bottomHeight !== "auto") {
-						top.style["max-height"] = bottomHeight;
-					}
 				}
+
+			}else{
+				if(topContent){
+					if(!bottomContent){
+						marginGroup.style["grid-template-rows"] = "1fr 0 0";		
+					}else{
+						if(topHeight !== "none" && topHeight !== "auto"){
+							if(bottomHeight !== "none" && bottomHeight !== "auto"){
+								marginGroup.style["grid-template-rows"] = topHeight + " 1fr " + bottomHeight;
+							}else{
+								marginGroup.style["grid-template-rows"] = topHeight + " 0 1fr";
+							}					
+						}else{
+							if(bottomHeight !== "none" && bottomHeight !== "auto"){
+								marginGroup.style["grid-template-rows"] = "1fr 0 " + bottomHeight;
+							}else{
+								marginGroup.style["grid-template-rows"] = "1fr 0 1fr";
+							}										
+						}		
+					}
+				}else{
+					if(bottomHeight !== "none" && bottomHeight !== "auto"){
+						marginGroup.style["grid-template-rows"] = "1fr 0 " + bottomHeight;
+					}else{
+						marginGroup.style["grid-template-rows"] = "0 0 1fr";
+					}				
+				}				
 			}
+
+
+			
 		});
 
 	}

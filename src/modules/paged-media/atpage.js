@@ -851,7 +851,7 @@ class AtPage extends Handler {
 								let centerOuterWidth = center.offsetWidth;
 								let outerwidths = leftOuterWidth + centerOuterWidth;
 								let newcenterWidth = centerOuterWidth * 100 / outerwidths;
-								marginGroup.style["grid-template-columns"] = "minmax(10%, 1fr) minmax(33%, " + newcenterWidth + "%) minmax(10%, 1fr)";
+								marginGroup.style["grid-template-columns"] = "minmax(16.66%, 1fr) minmax(33%, " + newcenterWidth + "%) minmax(16.66%, 1fr)";
 								left.style["white-space"] = "normal";
 								center.style["white-space"] = "normal";
 							}
@@ -876,7 +876,7 @@ class AtPage extends Handler {
 									let outerwidths = leftOuterWidth + centerOuterWidth + rightOuterWidth;
 									let newcenterWidth = centerOuterWidth * 100 / outerwidths;
 									if(newcenterWidth > 40){
-										marginGroup.style["grid-template-columns"] = "minmax(10%, 1fr) minmax(33%, " + newcenterWidth + "%) minmax(10%, 1fr)";
+										marginGroup.style["grid-template-columns"] = "minmax(16.66%, 1fr) minmax(33%, " + newcenterWidth + "%) minmax(16.66%, 1fr)";
 									}else{
 										marginGroup.style["grid-template-columns"] = "repeat(3, 1fr)";
 									}
@@ -890,7 +890,6 @@ class AtPage extends Handler {
 						if(rightWidth !== "none" && rightWidth !== "auto"){
 							marginGroup.style["grid-template-columns"] = rightWidth + " 1fr " + rightWidth;
 						}else{
-							console.log("center auto + right auto");
 							marginGroup.style["grid-template-columns"] = "auto auto 1fr";
 							right.style["white-space"] = "nowrap";
 							center.style["white-space"] = "nowrap";
@@ -898,7 +897,7 @@ class AtPage extends Handler {
 							let centerOuterWidth = center.offsetWidth;
 							let outerwidths = rightOuterWidth + centerOuterWidth;
 							let newcenterWidth = centerOuterWidth * 100 / outerwidths;
-							marginGroup.style["grid-template-columns"] = "minmax(10%, 1fr) minmax(33%, " + newcenterWidth + "%) minmax(10%, 1fr)";
+							marginGroup.style["grid-template-columns"] = "minmax(16.66%, 1fr) minmax(33%, " + newcenterWidth + "%) minmax(16.66%, 1fr)";
 							right.style["white-space"] = "normal";
 							center.style["white-space"] = "normal";
 						}
@@ -929,7 +928,6 @@ class AtPage extends Handler {
 							if(rightWidth !== "none" && rightWidth !== "auto"){
 								marginGroup.style["grid-template-columns"] = "1fr 0 " + rightWidth;
 							}else{
-								// marginGroup.style["grid-template-columns"] = "1fr 0 1fr";
 								marginGroup.style["grid-template-columns"] = "auto 1fr auto";
 								left.style["white-space"] = "nowrap";
 								right.style["white-space"] = "nowrap";
@@ -937,7 +935,7 @@ class AtPage extends Handler {
 								let rightOuterWidth = right.offsetWidth;
 								let outerwidths = leftOuterWidth + rightOuterWidth;
 								let newLeftWidth = leftOuterWidth * 100 / outerwidths;
-								marginGroup.style["grid-template-columns"] = "minmax(10%, " + newLeftWidth  + "%) 0 1fr";
+								marginGroup.style["grid-template-columns"] = "minmax(16.66%, " + newLeftWidth  + "%) 0 1fr";
 								left.style["white-space"] = "normal";
 								right.style["white-space"] = "normal";
 							}										
@@ -1001,11 +999,9 @@ class AtPage extends Handler {
 						}
 					}		
 				}else{
-					console.log("middle height")
 					if(topContent && topHeight !== "none" && topHeight !== "auto"){
 						marginGroup.style["grid-template-rows"] = topHeight +" " + middleHeight + " calc(100% - (" + topHeight + " + " + middleHeight + "))";
 					}else if(bottomContent && bottomHeight !== "none" && bottomHeight !== "auto"){
-						console.log("middle height + bottom height")
 						marginGroup.style["grid-template-rows"] = "1fr " + middleHeight + " " + bottomHeight;
 					}else{
 						marginGroup.style["grid-template-rows"] = "calc((100% - " + middleHeight + ")/2) " + middleHeight + " calc((100% - " + middleHeight + ")/2)";

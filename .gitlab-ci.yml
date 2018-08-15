@@ -4,4 +4,4 @@ before_script:
 build_image:
   script:
     - docker build -t pagedmedia/pagedjs .
-    - docker run --security-opt 'seccomp=docker-chrome.json' pagedmedia/pagedjs npm test
+    - docker run --security-opt 'seccomp=seccomp.json' pagedmedia/pagedjs npm test

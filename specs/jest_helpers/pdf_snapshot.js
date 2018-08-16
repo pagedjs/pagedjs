@@ -22,7 +22,7 @@ function toMatchPDFSnapshot(received, page=1) {
 
 	try {
 		// create image
-		gs.executeSync(`-dBATCH -dNOPAUSE -dFirstPage=${page} -dLastPage=${page} -sDEVICE=pngalpha -o ${imagePath} -sDEVICE=pngalpha -r144 ${pdfPath}`)
+		gs.executeSync(`-psconv -q -dBATCH -dNOPAUSE -dFirstPage=${page} -dLastPage=${page} -sDEVICE=pngalpha -o ${imagePath} -sDEVICE=pngalpha -r144 ${pdfPath}`)
 		// load image
 		pdfImage = fs.readFileSync(imagePath);
 		// remove output

@@ -22,6 +22,16 @@ RUN apt-get update && \
 # See https://crbug.com/795759
 RUN apt-get update && apt-get install -yq libgconf-2-4
 
+# Update Freetype
+COPY docker-font.conf /etc/fonts/local.conf
+ENV FREETYPE_PROPERTIES="truetype:interpreter-version=35"
+RUN apt-get update \
+    && sh -c 'echo "deb http://http.us.debian.org/debian stable main contrib non-free" >> /etc/apt/sources.list' \
+    && apt-get update \
+    && apt-get install -y ttf-mscorefonts-installer \
+      --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install latest chrome dev package and fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
 # Note: this installs the necessary libs to make the bundled version of Chromium that Puppeteer
 # installs, work.

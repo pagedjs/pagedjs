@@ -53,7 +53,7 @@ New handlers can be registered from `import { registerHandlers } from 'pagedjs'`
 ```html
 <script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
 <script>
-	class myHandler() extends Paged.Handler {
+	class MyHandler extends Paged.Handler {
 		constructor(chunker, polisher, caller) {
 			super(chunker, polisher, caller);
 		}
@@ -62,7 +62,7 @@ New handlers can be registered from `import { registerHandlers } from 'pagedjs'`
 			console.log(pageFragment);
 		}
 	}
-	Paged.registerHandlers(myHandler);
+	Paged.registerHandlers(MyHandler);
 </script>
 ```
 

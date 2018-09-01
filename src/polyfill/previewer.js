@@ -53,6 +53,10 @@ class Previewer {
 		return handlers;
 	}
 
+	registerHandlers() {
+		return registerHandlers.apply(registerHandlers, arguments);
+	}
+
 	getParams(name) {
 		let param;
 		let url = new URL(window.location);

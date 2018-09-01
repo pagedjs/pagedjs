@@ -1,4 +1,5 @@
 import Previewer from './previewer';
+import * as Paged from '../index';
 
 let ready = new Promise(function(resolve, reject){
 	if (document.readyState === "interactive" || document.readyState === "complete") {
@@ -13,10 +14,11 @@ let ready = new Promise(function(resolve, reject){
 	}
 });
 
-let paged = new Previewer();
+let previewer = new Previewer();
 
-window.PagedPolyfill = paged;
+window.PagedPolyfill = previewer;
+window.Paged = Paged;
 
 ready.then(async function () {
-	await paged.preview();
+	await previewer.preview();
 });

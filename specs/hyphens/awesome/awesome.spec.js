@@ -14,7 +14,7 @@ describe('css is awesome', async () => {
 			}
 		})
 
-		it('should render 7 pages', async () => {
+		xit('should render 7 pages', async () => {
 			let pages = await page.$$eval(".pagedjs_page", (r) => {
 				return r.length;
 			});
@@ -22,7 +22,7 @@ describe('css is awesome', async () => {
 			expect(pages).toEqual(7);
 		})
 
-		it('page 1 should have a hyphen', async () => {
+		xit('page 1 should have a hyphen', async () => {
 			let text = await page.$eval("[data-page-number='1']", (r) => r.textContent);
 
 			expect(text).toContain('\u2010');
@@ -30,7 +30,7 @@ describe('css is awesome', async () => {
 
 
 		if (!DEBUG) {
-			it('should create a pdf', async () => {
+			xit('should create a pdf', async () => {
 				let pdf = await page.pdf(PDF_SETTINGS);
 
 				expect(pdf).toMatchPDFSnapshot(1);

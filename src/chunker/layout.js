@@ -348,8 +348,8 @@ class Layout {
       let startOffset = overflow.startOffset;
       let prevLetter = startText[startOffset-1];
 
-      // Add a hyphen if previous character is a letter
-      if (/^\w$/.test(prevLetter)) {
+      // Add a hyphen if previous character is a letter or soft hyphen
+      if (/^\w|\u00AD$/.test(prevLetter)) {
         overflow.startContainer.textContent = startText.slice(0, startOffset) + "\u2010";
         overflow.setStart(overflow.startContainer, startOffset + 1);
       }

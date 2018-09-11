@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>
+      CSS IS AWESOME!
+    </title>
+
+    <script src="../../../dist/paged.polyfill.js"></script>
+
+    <style>
+      /* interface */
+
+      @media screen {
+
+        body {
+          background: whitesmoke;
+        }
+
+        .pagedjs_page {
+          background: white;
+          margin-bottom: 10px;
+          box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
+        }
+
+        .pagedjs_pages {
+          width: calc(var(--width) * 2);
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          margin: 0 auto;
+        }
+
+        /* .pagedjs_first_page {
+          margin-left: 50%;
+        } */
+      }
+    </style>
+
+    <style>
+    @page {
+      size: 10cm 10cm;
+      margin: 0 0.3cm;
+      /* box-shadow: 0 0 0 20px black; */
+    }
+
+    p {
+      font-size: 80pt;
+      margin:0;
+      font-family: arial, sans-serif;
+      padding-left: 0;
+      padding-right: 0;
+      hyphens: auto;
+      /* 	text-transform: lowercase; */
+    }
+    </style>
+
+
+
+
+
+  </head>
+  <body>
+
+
+  <p>CSS IS AWESOME!</p>
+
+  <p>
+    The quick brown fox jumps over the lazy dog.
+  </p>
+
+</body>

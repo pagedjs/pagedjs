@@ -299,7 +299,7 @@ class Layout {
 
   findBreakToken(overflow, content) {
     let offset = overflow.startOffset;
-    let node, renderedNode, ref, parent, index, temp;
+    let node, renderedNode, ref, parent, index, temp, startOffset;
 
     if (overflow.startContainer.nodeType === 1) {
       // node = children.querySelector("[data-ref='" + overflow.startContainer.childNodes[offset].getAttribute("data-ref") + "']");
@@ -326,6 +326,8 @@ class Layout {
       renderedNode = this.wrapper.querySelector("[data-ref='" + ref + "']");
       parent = content.querySelector("[data-ref='"+ renderedNode.getAttribute("data-ref") +"']");
       node = parent.childNodes[index];
+      startOffset = overflow.startContainer.textContent.slice(offset);
+      offset = parent.textContent.indexOf(startOffset);
     }
 
     if (!node) {
@@ -341,9 +343,21 @@ class Layout {
 
   removeOverflow(overflow) {
 
-    return overflow.extractContents();
+    if (overflow.startContainer.nodeType === 3 && overflow.startOffset > 0) {
+      let startText = overflow.startContainer.textContent;
+      let startOffset = overflow.startOffset;
+      let prevLetter = startText[startOffset-1];
+
+      // Add a hyphen if previous character is a letter
+      if (/^\w$/.test(prevLetter)) {
+        overflow.startContainer.textContent = startText.slice(0, startOffset) + "\u2010";
+        overflow.setStart(overflow.startContainer, startOffset + 1);
+      }
+    }
+
 
     // _requestIdleCallback(() => this.removeEmpty());
+    return overflow.extractContents();
   }
 
   removeEmpty() {
@@ -475,9 +489,10 @@ class Layout {
           range = document.createRange();
           offset = this.textBreak(node, start, end);
           if (!offset) {
-            offset = 0;
+            range = undefined;
+          } else {
+            range.setStart(node, offset);
           }
-          range.setStart(node, offset);
           break;
         }
 
@@ -506,7 +521,9 @@ class Layout {
   textBreak(node, start, end) {
     let wordwalker = this.words(node);
     let left = 0;
+    let right = 0;
     let word, next, done, pos;
+    let offset;
     while (!done) {
       next = wordwalker.next();
       word = next.value;
@@ -519,11 +536,41 @@ class Layout {
       pos = getBoundingClientRect(word);
 
       left = Math.floor(pos.left);
+      right = Math.floor(pos.right);
+
       if (left >= end) {
+        offset = word.startOffset;
         break;
       }
+
+      if (right > end) {
+        let letterwalker = this.letters(word);
+        let letter, nextLetter, doneLetter, posLetter;
+
+        while (!doneLetter) {
+          nextLetter = letterwalker.next();
+          letter = nextLetter.value;
+          doneLetter = nextLetter.done;
+
+          if (!letter) {
+            break;
+          }
+
+          pos = getBoundingClientRect(letter);
+          left = Math.floor(pos.left);
+
+          if (left >= end) {
+            offset = letter.startOffset;
+            done = true;
+
+            break;
+          }
+        }
+      }
+
     }
-    return word && word.startOffset;
+
+    return offset;
   }
 
   *words(node) {
@@ -536,8 +583,7 @@ class Layout {
 
     while(currentOffset < max) {
         currentLetter = currentText[currentOffset];
-
-       if (/^\w$/.test(currentLetter)) {
+       if (/^\S$/.test(currentLetter)) {
          if (!range) {
            range = document.createRange();
            range.setStart(node, currentOffset);
@@ -552,10 +598,38 @@ class Layout {
 
        currentOffset += 1;
     }
+
+    if (range) {
+      range.setEnd(node, currentOffset);
+      yield range;
+      range = undefined;
+    }
+  }
+
+  *letters(wordRange) {
+    let currentText = wordRange.startContainer;
+    let max = currentText.length;
+    let currentOffset = wordRange.startOffset;
+    let currentLetter;
+
+    let range;
+
+    while(currentOffset < max) {
+       currentLetter = currentText[currentOffset];
+       range = document.createRange();
+       range.setStart(currentText, currentOffset);
+       range.setEnd(currentText, currentOffset+1);
+
+       yield range;
+
+       currentOffset += 1;
+    }
   }
 
   prepend(fragment, rebuild=true) {
-    // this.element.insertBefore(fragment, this.element.firstChild);
+    if (!fragment) {
+      return;
+    }
     let walker = walk(fragment.firstChild, this.wrapper);
     let next, node, done;
     let parent;

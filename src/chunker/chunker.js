@@ -6,7 +6,7 @@ import {
 	needsBreakBefore,
 	needsBreakAfter
 } from "../utils/dom";
-const MAX_PAGES = false;
+const MAX_PAGES = 10;
 
 const TEMPLATE = `<div class="pagedjs_page">
 	<div class="pagedjs_margin-top-left-corner-holder">
@@ -59,6 +59,7 @@ class Chunker {
 		// this.preview = preview;
 
 		this.hooks = {};
+		this.hooks.beforeParsed = new Hook(this);
 		this.hooks.afterParsed = new Hook(this);
 		this.hooks.beforePageLayout = new Hook(this);
 		this.hooks.layout = new Hook(this);
@@ -93,7 +94,13 @@ class Chunker {
 	}
 
 	async flow(content, renderTo) {
-		let parsed = new ContentParser(content);
+		let parsed;
+
+		await this.hooks.beforeParsed.trigger(content, this);
+
+		parsed = new ContentParser(content);
+
+		this.source = parsed;
 
 		this.setup(renderTo);
 
@@ -179,7 +186,7 @@ class Chunker {
 		if (page) {
 			await this.hooks.beforePageLayout.trigger(page, undefined, undefined, this);
 			this.emit("page", page);
-			await this.hooks.layout.trigger(page.element, page, undefined, this);
+			// await this.hooks.layout.trigger(page.element, page, undefined, this);
 			await this.hooks.afterPageLayout.trigger(page.element, page, undefined, this);
 			this.emit("renderedPage", page);
 		}
@@ -204,7 +211,7 @@ class Chunker {
 			// Layout content in the page, starting from the breakToken
 			breakToken = page.layout(content, breakToken);
 
-			await this.hooks.layout.trigger(page.element, page, breakToken, this);
+			// await this.hooks.layout.trigger(page.element, page, breakToken, this);
 
 			await this.hooks.afterPageLayout.trigger(page.element, page, breakToken, this);
 			this.emit("renderedPage", page);
@@ -230,24 +237,26 @@ class Chunker {
 
 		if (!blank) {
 			// Listen for page overflow
-			page.onOverflow((overflow) => {
-				_requestIdleCallback(() => {
-					let index = this.pages.indexOf(page) + 1;
-					if (index < this.pages.length &&
-							(this.pages[index].breakBefore || this.pages[index].previousBreakAfter)) {
-						let newPage = this.insertPage(index - 1);
-						newPage.prepend(overflow);
-					} else if (index < this.pages.length) {
-						this.pages[index].prepend(overflow);
-					} else {
-						let newPage = this.addPage();
-						newPage.prepend(overflow);
-					}
-				})
+			page.onOverflow((overflowToken) => {
+				// console.log("overflow on", page.id, overflowToken);
+				let index = this.pages.indexOf(page) + 1;
+				if (index < this.pages.length &&
+						(this.pages[index].breakBefore || this.pages[index].previousBreakAfter)) {
+					let newPage = this.insertPage(index - 1);
+					newPage.layout(this.source, overflowToken);
+				} else if (index < this.pages.length) {
+					this.pages[index].layout(this.source, overflowToken);
+				} else {
+					let newPage = this.addPage();
+					newPage.layout(this.source, overflowToken);
+				}
 			});
 
-			page.onUnderflow(() => {
-				// console.log("underflow on", page.id);
+			page.onUnderflow((overflowToken) => {
+				// console.log("underflow on", page.id, overflowToken);
+
+				// page.append(this.source, overflowToken);
+
 			});
 		}
 
@@ -274,15 +283,13 @@ class Chunker {
 
 		if (!blank) {
 			// Listen for page overflow
-			page.onOverflow((overflow) => {
-				_requestIdleCallback(() => {
-					if (total < this.pages.length) {
-						this.pages[total].prepend(overflow);
-					} else {
-						let newPage = this.addPage();
-						newPage.prepend(overflow);
-					}
-				})
+			page.onOverflow((overflowToken) => {
+				if (total < this.pages.length) {
+					this.pages[total].layout(this.source, overflowToken);
+				} else {
+					let newPage = this.addPage();
+					newPage.layout(this.source, overflowToken);
+				}
 			});
 
 			page.onUnderflow(() => {

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <title>Scientific math paper</title>
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        processEscapes: true
+      },
+      skipStartupTypeset: true,
+      messageStyle: "none"
+    });
+  </script>
+
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <script src="../dist/paged.polyfill.js"></script>
+  <script>
+    MathJax.Hub.Register.StartupHook("onLoad",function () {
+      console.log("*** The onLoad handler has run, page is ready to process ***");
+    });
+    MathJax.Hub.Queue(function () {
+      // let previewer = new Paged.Previewer();
+      // previewer.preview();
+    });
+
+
+
+
+    class MyHandler extends Paged.Handler {
+        constructor(chunker, polisher, caller) {
+            super(chunker, polisher, caller);
+        }
+
+        // beforeChunking(content) {
+        //     var hiddenRender = document.createElement("div");
+        //     hiddenRender.style.display = "none";
+        //     document.body.appendChild(hiddenRender);
+        //
+        //     var clone = document.importNode(content, true);
+        //     hiddenRender.appendChild(clone);
+        //
+        //     return new Promise((resolve, reject) => {
+        //       MathJax.Hub.Queue(["Typeset", MathJax.Hub, hiddenRender, () => {
+        //         document.querySelector("template").innerHTML = hiddenRender.innerHTML;
+        //         resolve();
+        //       }]);
+        //     });
+        // }
+
+        layout(pageElement) {
+            return new Promise((resolve, reject) => {
+              MathJax.Hub.Queue(["Typeset", MathJax.Hub, pageElement, () => {
+                resolve();
+              }]);
+            });
+        }
+
+        // afterRendered(pages) {
+        //     console.log(pages);
+        //     return new Promise((resolve, reject) => {
+        //       MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.body, () => {
+        //         resolve();
+        //       }]);
+        //     });
+        // }
+
+    }
+    Paged.registerHandlers(MyHandler);
+  </script>
+
+
+<style>
+    @page{
+        size: A4;
+        border: 1px solid black;
+    }
+
+    .math {
+      break-inside: avoid;
+    }
+</style>
+
+
+<!-- <script>
+
+
+        window.onload = function() {
+            var script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src  = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML";
+            document.getElementsByTagName("head")[0].appendChild(script);
+        };
+  </script> -->
+
+
+</head>
+
+<body>
+
+        <h1>An explicit formula for a weight enumerator of linear-congruence codes</h1>
+        <p id="authors">Taro Sakurai</p>
+
+        <p class="abstract">An explicit formula for a weight enumerator of linear-congruence codes is provided. This extends the work of Bibak and Milenkovic [IEEE ISIT (2018) 431–435] addressing the binary case to the non-binary case. Furthermore, the extension simplifies their proof and provides a complete solution to a problem posed by them.</p>
+        <p>Date: August 29, 2018.</p>
+        <p>2010 Mathematics Subject Classification: 94B60 (05A15, 11L15).</p>
+        <p>Keywords and phrases: weight enumerator, code size, linear-congruence code, exponential sum</p>
+        <p>Source: https://arxiv.org/abs/1808.09365v1</p>
+
+<h2 id="introduction" class="unnumbered unnumbered">Introduction</h2>
+<p>Throughout this article, <span class="math inline"><em>n</em></span> and <span class="math inline"><em>m</em></span> denote positive integers, <span class="math inline"><em>b</em></span> denotes an integer and <span class="math inline">$\mathbb{Z}_q &#x2254; \{0, 1, \dotsc, q-1\} \subset \mathbb{Z}$</span> for a positive integer <span class="math inline"><em>q</em></span>. We will use <span class="math inline"><em>n</em></span> for a code length, <span class="math inline"><em>m</em></span> for a modulus, <span class="math inline"><em>b</em></span> for a defining parameter of a code and <span class="math inline">ℤ<sub><em>q</em></sub></span> for a code alphabet.</p>
+<p>Let <span class="math inline">$a = (a_1, \dotsc, a_n) \in \mathbb{Z}^n$</span> and <span class="math inline"><em>b</em> ∈ ℤ</span>. The set <span class="math inline"><em>C</em></span> of all the solutions <span class="math inline">$x = (x_1, \dotsc, x_n) \in \mathbb{Z}_q^n$</span> for a linear congruence equation <br /><span class="math display">$$\label{eq: ax = b}
+        a\cdot x \equiv b \pmod m$$</span><br /> is said to be a <em>linear-congruence code</em> where <span class="math inline">$a\cdot x &#x2254; a_1x_1 + \dotsb + a_nx_n$</span>. A linear-congruence code <span class="math inline"><em>C</em></span> is called <em>binary</em> when <span class="math inline"><em>q</em> = 2</span>.</p>
+<p>Several deletion-correcting codes which have been studied are linear-congruence codes; the Varshamov-Tenengol’ts codes <span class="citation" data-cites="VT65"></span>, the Levenshtein codes <span class="citation" data-cites="Lev66"></span>, the Helberg codes <span class="citation" data-cites="HF02"></span>, the Le-Nguyen codes <span class="citation" data-cites="LN16"></span>, the construction <span class="math inline"><em>C</em>′</span> of Hagiwara <span class="citation" data-cites="Hag17"></span> (for some parameters), the consecutively systematic encodable codes and the ternary integer codes in <span class="citation" data-cites="Hag16"></span> fall into this category (Table).</p>
+
+<table>
+<caption>Examples of linear-congruence codes</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Linear-congruence code</th>
+<th style="text-align: right;"><span class="math inline"><em>q</em></span></th>
+<th style="text-align: right;"><span class="math inline">$(a_1, \dotsc, a_n)$</span></th>
+<th style="text-align: right;"><span class="math inline"><em>m</em></span></th>
+<th style="text-align: left;">Constraints</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Varshamov-Tenengol’ts code</td>
+<td style="text-align: right;"><span class="math inline">2</span></td>
+<td style="text-align: right;"><span class="math inline">$(  1, \dotsc,   n)$</span></td>
+<td style="text-align: right;"><span class="math inline"><em>n</em> + 1</span></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Levenshtein code</td>
+<td style="text-align: right;"><span class="math inline">2</span></td>
+<td style="text-align: right;"><span class="math inline">$(  1, \dotsc,   n)$</span></td>
+<td style="text-align: right;"><span class="math inline"><em>m</em></span></td>
+<td style="text-align: left;"><span class="math inline"><em>m</em> ≥ <em>n</em> + 1</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Helberg code</td>
+<td style="text-align: right;"><span class="math inline">2</span></td>
+<td style="text-align: right;"><span class="math inline">$(v_1, \dotsc, v_n)$</span></td>
+<td style="text-align: right;"><span class="math inline"><em>v</em><sub><em>n</em> + 1</sub></span></td>
+<td style="text-align: left;"><span class="math inline"><em>s</em> ∈ ℤ<sub> &gt; 0</sub></span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Le-Nguyen code</td>
+<td style="text-align: right;"><span class="math inline"><em>q</em></span></td>
+<td style="text-align: right;"><span class="math inline">$(w_1, \dotsc, w_n)$</span></td>
+<td style="text-align: right;"><span class="math inline"><em>m</em></span></td>
+<td style="text-align: left;"><span class="math inline"><em>m</em> ≥ <em>w</em><sub><em>n</em> + 1</sub></span>, <span class="math inline"><em>s</em> ∈ ℤ<sub> &gt; 0</sub></span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Construction <span class="math inline"><em>C</em>′</span></td>
+<td style="text-align: right;"><span class="math inline">2</span></td>
+<td style="text-align: right;"><span class="math inline">$(c_1, \dotsc, c_n)$</span></td>
+<td style="text-align: right;"><span class="math inline"><em>n</em></span></td>
+<td style="text-align: left;"><span class="math inline">$b \not\equiv 0, n(n+1)/2 \pmod n$</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Consecutively systematic encodable codes</td>
+<td style="text-align: right;"><span class="math inline">2</span></td>
+<td style="text-align: right;"><span class="math inline">$(b_1, \dotsc, b_n)$</span></td>
+<td style="text-align: right;"><span class="math inline">2<sup><em>s</em> + 1</sup></span></td>
+<td style="text-align: left;"><span class="math inline"><em>b</em> = 0</span>, <span class="math inline"><em>s</em> ∈ ℤ<sub> &gt; 0</sub></span>, <span class="math inline">0 &lt; <em>n</em> − <em>s</em> &lt; 2<sup><em>s</em> − 1</sup></span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ternary integer code</td>
+<td style="text-align: right;"><span class="math inline">3</span></td>
+<td style="text-align: right;"><span class="math inline">$(t_1, \dotsc, t_n)$</span></td>
+<td style="text-align: right;"><span class="math inline">2<sup><em>n</em> + 1</sup> − 1</span></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+<p>The following problem concerning the size of a linear-congruence code—the number of solutions for a linear congruence equation <a href="#eq: ax = b" data-reference-type="eqref" data-reference="eq: ax = b">[eq: ax = b]</a>—is posed by Bibak and Milenkovic.</p>
+<p>Give an explicit formula for the size of a linear-congruence code.</p>
+<p>Finding an explicit formula would be a first step toward understanding the asymptotic behavior of the size of a linear-congruence code. Bibak and Milenkovic provide a solution to the problem for the binary case. In this article, we provide a complete solution to the problem with a simple proof, which improves the argument of Bibak and Milenkovic. Actually, what we will show is how the Hamming weights of the solutions for a linear congruence equation distribute. This immediately gives an expression of the size of a linear-congruence code involving exponential sums—Weyl sums of degree one.</p>
+<p>To state the main theorem we need notation which will be standard.</p>
+<p>For a code <span class="math inline"><em>C</em> ⊆ ℤ<sub><em>q</em></sub><sup><em>n</em></sup></span>, we define a polynomial <span class="math inline"><em>W</em><sub><em>C</em></sub>(<em>z</em>)</span> by <br /><span class="math display">$$W_C(z)
+        = \sum_{x \in C} z^{wt(x)}
+        = \sum_{i=0}^n A_i(C) z^i,$$</span><br /> where <span class="math inline">$wt(x)$</span> denotes the Hamming weight and <br /><span class="math display">$$A_i(C) &#x2254; |{ x \in C : wt(x) = i }\rvert \qquad (0 \leq i \leq n).$$</span><br /> The polynomial <span class="math inline"><em>W</em><sub><em>C</em></sub>(<em>z</em>)</span> is said to be the (non-homogeneous) <em>weight enumerator</em> of the code <span class="math inline"><em>C</em></span>.</p>
+<p>Following custom due to Vinogradov in additive number theory, <span class="math inline"><em>e</em>(<em>α</em>)</span> denotes <span class="math inline">$e^{2\pi\alpha\sqrt{-1}}$</span> for <span class="math inline"><em>α</em> ∈ ℝ</span>. Now we are in position to state our main theorem.</p>
+<p>Let <span class="math inline">$a = (a_1, \dotsc, a_n) \in \mathbb{Z}^n$</span> and <span class="math inline"><em>b</em> ∈ ℤ</span>. Then the weight enumerator <span class="math inline"><em>W</em><sub><em>C</em></sub>(<em>z</em>)</span> of the linear-congruence code <br /><span class="math display">$$\label{eq: LCC}
+        C = { x \in \mathbb{Z}_q^n : a\cdot x \equiv b \pmod m }$$</span><br /> is given by <br /><span class="math display">$$W_C(z) =
+        \frac{1}{m}\sum_{j=1}^m e\left(-\frac{jb}{m}\right)
+            \prod_{i=1}^n\left(1 + ze\left(\frac{ja_i}{m}\right) + \dotsb + ze\left(\frac{ja_i(q-1)}{m}\right)\right).$$</span><br /></p>
+<p>With the same notation as above, the size of the code <span class="math inline"><em>C</em></span> is given by <br /><span class="math display">$$\lvert C\rvert =
+        \frac{1}{m}\sum_{j=1}^m e\left(-\frac{jb}{m}\right)
+            \prod_{i=1}^n\left(1 + e\left(\frac{ja_i}{m}\right) + \dotsb + e\left(\frac{ja_i(q-1)}{m}\right)\right).$$</span><br /></p>
+<h2 id="proof-of-theorem" class="unnumbered unnumbered">Proof of Theorem</h2>
+<p>The only lemma we need to prove the main theorem is the following trivial one.</p>
+<p><br /><span class="math display">$$\frac{1}{m}\sum_{j=1}^m e\left(\frac{jb}{m}\right)
+        = \begin{cases}
+            1 &amp; \mathrm{if   } \ b     \equiv 0 \pmod m  \\
+            0 &amp; \mathrm{if  } \ b \not\equiv 0 \pmod m .
+        \end{cases}$$</span><br /></p>
+<p>The proof is straightforward: <br /><span class="math display">$$\begin{aligned}
+        &amp;\frac{1}{m}\sum_{j=1}^m e\left(-\frac{jb}{m}\right)
+            \prod_{i=1}^n\left(1 + ze\left(\frac{ja_i}{m}\right) + \dotsb + ze\left(\frac{ja_i(q-1)}{m}\right)\right) \\
+        &amp;\qquad=
+        \frac{1}{m}\sum_{j=1}^m e\left(-\frac{jb}{m}\right)
+            \prod_{i=1}^n \sum_{x_i \in \mathbb{Z}_q} z^{wt(x_i)}e\left(\frac{ja_ix_i}{m}\right) \\
+        &amp;\qquad=
+        \frac{1}{m}\sum_{j=1}^m e\left(-\frac{jb}{m}\right)
+            \sum_{(x_1, \dotsc, x_n) \in \mathbb{Z}_q^n} \prod_{i=1}^n z^{wt(x_i)}e\left(\frac{ja_i x_i}{m}\right) \\
+        &amp;\qquad=
+        \frac{1}{m}\sum_{j=1}^m e\left(-\frac{jb}{m}\right)
+            \sum_{x \in \mathbb{Z}_q^n} z^{wt(x)}e\left(\frac{ja\cdot x}{m}\right) \\
+        &amp;\qquad=
+        \sum_{x \in \mathbb{Z}_q^n}
+            \left(\frac{1}{m}\sum_{j=1}^m
+                e\left(\frac{j(a\cdot x - b)}{m}\right) \right)
+                     z^{wt(x)} \\
+        &amp;\qquad=
+        \sum_{x \in C}z^{wt(x)} \qquad (\text{By Lemma.}) \\
+        &amp;\qquad= W_C(z).
+
+    \end{aligned}$$</span><br /></p>
+<p>The original proof by Bibak and Milenkovic <span class="citation" data-cites="BM18"></span> for the binary case uses a theorem of Lehmer <span class="citation" data-cites="Leh23"></span>, which states a linear congruence equation <br /><span class="math display">$$a\cdot x \equiv b \pmod m$$</span><br /> defined by <span class="math inline">$a = (a_1, \dotsc, a_n) \in \mathbb{Z}^n$</span> and <span class="math inline"><em>b</em> ∈ ℤ</span> has a solution <span class="math inline"><em>x</em> ∈ ℤ<sub><em>m</em></sub><sup><em>n</em></sup></span> if and only if <span class="math inline">$\gcd(a_1, \dotsc, a_n, m)$</span> divides <span class="math inline"><em>b</em></span>. Consequently, their result is stated depending on whether <span class="math inline">$\gcd(a_1, \dotsc, a_n, m)$</span> divides <span class="math inline"><em>b</em></span> or not. By contrast, our result does not refer to <span class="math inline">$\gcd(a_1, \dotsc, a_n, m)$</span> because our proof does not rely on the Lehmer theorem.</p>
+<h2 id="acknowledgments" class="unnumbered unnumbered">Acknowledgments</h2>
+<p>The author thanks Professor Manabu Hagiwara for drawing the author’s attention to the work of Bibak and Milenkovic and his invaluable help during the preparation of this article. This work is partially supported by KAKENHI(B) 18H01435, 16K12391 and 16K06336.</p>
+<p><span>99</span> K. Bibak and O. Milenkovic, Weight enumerators of some classes of deletion correcting codes, <em>IEEE ISIT</em> (2018) 431–435, doi:<a href="https://doi.org/10.1109/ISIT.2018.8437121">10.1109/ISIT.2018.8437121</a>.</p>
+
+<p>M. Hagiwara, On ordered syndromes for multi insertion/deletion error-correcting codes, <em>IEEE ISIT</em> (2016) 625–629, doi:<a href="https://doi.org/10.1109/ISIT.2016.7541374">10.1109/ISIT.2016.7541374</a>.</p>
+
+<p>, Perfect codes for single balanced adjacent deletions, <em>IEEE ISIT</em> (2017) 1938–1942, doi:<a href="https://doi.org/10.1109/ISIT.2017.8006867">10.1109/ISIT.2017.8006867</a>.</p>
+
+<p>A. S. J. Helberg and H. C. Ferreira, On multiple insertion/deletion correcting codes, <em>IEEE Trans. Inf. Theory</em> <strong>48</strong> (2002) 305–308, doi:<a href="https://doi.org/10.1109/18.971760">10.1109/18.971760</a>. MR <a href="http://www.ams.org/mathscinet-getitem?mr=1872185">1872185</a> Zbl <a href="https://zbmath.org/?q=an:1059.94040">1059.94040</a></p>
+
+<p>T. A. Le and H. D. Nguyen, New multiple insertion/deletion correcting codes for non-binary alphabets, <em>IEEE Trans. Inform. Theory</em> <strong>62</strong> (2016), 2682–2693, doi:<a href="https://doi.org/10.1109/TIT.2016.2541139">10.1109/TIT.2016.2541139</a>. MR <a href="http://www.ams.org/mathscinet-getitem?mr=3493869">3493869</a> Zbl <a href="https://zbmath.org/?q=an:1359.94714">1359.94714</a></p>
+
+<p>D. N. Lehmer, Certain theorems in the theory of quadratic residues, <em>Amer. Math. Monthly</em> <strong>20</strong> (1913) 151–157, doi:<a href="https://doi.org/10.2307/2972413">10.2307/2972413</a>. MR <a href="http://www.ams.org/mathscinet-getitem?mr=1517830">1517830</a> Zbl <a href="https://zbmath.org/?q=an:44.0248.09">44.0248.09</a></p>
+
+<p>V. I. Levenshtein, <a href="https://nymity.ch/sybilhunting/pdf/Levenshtein1966a.pdf">Binary codes capable of correcting deletions, insertions, and reversals</a>, <em>Soviet Physics Dokl.</em> <strong>10</strong> (1966) 707–710. MR <a href="http://www.ams.org/mathscinet-getitem?mr=189928">189928</a> Zbl <a href="https://zbmath.org/?q=an:0149.15905">0149.15905</a></p>
+
+<p>R. R. Varshamov and G. M. Tenengol’ts, <a href="http://mi.mathnet.ru/eng/at11293">Code correcting single asymmetric errors</a>, <em>Avtomat. i Telemeh.</em> <strong>26</strong> (1965) 288–292. MR <a href="http://www.ams.org/mathscinet-getitem?mr=172738">172738</a></p>
+
+
+
+</body>
+
+</html>

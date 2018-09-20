@@ -1,6 +1,6 @@
 import Handler from "../handler";
 import csstree from 'css-tree';
-import { split, rebuildAncestors, elementAfter } from "../../utils/dom";
+import { rebuildAncestors, elementAfter } from "../../utils/dom";
 
 class Breaks extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -147,7 +147,7 @@ class Breaks extends Handler {
 		}
 	}
 
-	layout(pageElement, page) {
+	afterLayout(pageElement, page) {
 		this.addBreakAttributes(page);
 	}
 }

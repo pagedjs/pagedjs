@@ -70,6 +70,7 @@ Handlers have methods that correspond to the hooks for the parsing, layout and r
 
 ```js
 // Chunker
+beforeParsed(content)
 afterParsed(parsed)
 beforePageLayout(page)
 afterPageLayout(pageElement, page, breakToken)
@@ -82,6 +83,10 @@ onAtPage(atPageNode)
 onRule(ruleNode)
 onDeclaration(declarationNode, ruleNode)
 onContent(contentNode, declarationNode, ruleNode)
+
+// Previewer
+beforePolishing(stylesheets)
+beforeChunking(contents)
 ```
 
 ## Setup

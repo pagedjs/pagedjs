@@ -92,7 +92,7 @@ class Layout {
 
       this.hooks && this.hooks.layoutNode.trigger(node);
 
-      // Check if the rendered element has a breakBefore set
+      // Check if the rendered element has a break set
       if (hasContent && this.shouldBreak(node)) {
         newBreakToken = this.findBreakToken(wrapper, source, bounds);
 
@@ -240,22 +240,23 @@ class Layout {
         node = findElement(renderedNode, source);
         offset = 0;
       } else {
-        renderedNode = findElement(container, rendered);
-
-        if (!renderedNode) {
-          renderedNode = findElement(prevValidNode(container), rendered);
-        }
-
-        parent = findElement(renderedNode, source);
-        index = indexOf(temp);
-        node = child(parent, index);
-        offset = 0;
+        console.error("Non-element found for breakToken", temp);
+        // renderedNode = findElement(container, rendered);
+        //
+        // if (!renderedNode) {
+        //   renderedNode = findElement(prevValidNode(container), rendered);
+        // }
+        //
+        // parent = findElement(renderedNode, source);
+        // index = indexOf(temp);
+        // node = child(parent, index);
+        // offset = 0;
       }
     } else {
-      renderedNode = findElement(container, rendered);
+      renderedNode = findElement(container.parentNode, rendered);
 
       if (!renderedNode) {
-        renderedNode = findElement(prevValidNode(container), rendered);
+        renderedNode = findElement(prevValidNode(container.parentNode), rendered);
       }
 
       parent = findElement(renderedNode, source);

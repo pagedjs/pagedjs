@@ -6,7 +6,7 @@ import {
 	needsBreakBefore,
 	needsBreakAfter
 } from "../utils/dom";
-const MAX_PAGES = 10;
+const MAX_PAGES = false;
 
 const TEMPLATE = `<div class="pagedjs_page">
 	<div class="pagedjs_margin-top-left-corner-holder">

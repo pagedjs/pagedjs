@@ -52,15 +52,17 @@ class Page {
     this.element = page;
     this.area = area;
 
+    return page;
+  }
+
+  createWrapper() {
     let wrapper = document.createElement("div");
-    // wrapper.setAttribute("contenteditable", true);
-    // wrapper.style.outline = "none";
 
     this.area.appendChild(wrapper);
 
     this.wrapper = wrapper;
 
-    return page;
+    return wrapper;
   }
 
   index(pgnum) {
@@ -111,18 +113,24 @@ class Page {
 
   layout(contents, breakToken) {
     // console.log("layout page", this.id);
-    let size = this.area.getBoundingClientRect();
-    this.l = new Layout(this.area, this.wrapper, this.hooks);
+    this.clear();
 
-    this.l.onOverflow((overflow) => {
-      this._onOverflow && this._onOverflow(overflow);
-    });
+    this.layoutMethod = new Layout(this.area, this.hooks);
 
-    this.l.onUnderflow((overflow) => {
-      this._onUnderflow && this._onUnderflow(overflow);
-    });
+    breakToken = this.layoutMethod.renderTo(this.wrapper, contents, breakToken);
 
-    breakToken = this.l.layout(size, contents, {}, {}, breakToken);
+    this.addListeners(contents);
+
+    return breakToken;
+  }
+
+  append(contents, breakToken) {
+
+    if (!this.layoutMethod) {
+      return this.layout(contents, breakToken);
+    }
+
+    breakToken = this.layoutMethod.renderTo(this.wrapper, contents, breakToken);
 
     return breakToken;
   }
@@ -146,29 +154,104 @@ class Page {
     this._onUnderflow = func;
   }
 
-  prepend(fragment) {
-    if (!this.l) {
-      this.l = new Layout(this.area, this.wrapper, this.hooks);
+  clear() {
+    this.removeListeners();
+    this.wrapper && this.wrapper.remove();
+    this.createWrapper();
+  }
 
-      this.l.onOverflow((overflow) => {
-        this._onOverflow && this._onOverflow(overflow);
-      });
+  addListeners(contents) {
+    if (typeof ResizeObserver !== "undefined") {
+      this.addResizeObserver(contents);
+    } else {
+      this.element.addEventListener("overflow", this.checkOverflowAfterResize.bind(this, contents), false);
+      this.element.addEventListener("underflow", this.checkOverflowAfterResize.bind(this, contents), false);
+    }
+    // TODO: fall back to mutation observer?
 
-      this.l.onUnderflow((overflow) => {
-        this._onUnderflow && this._onUnderflow(overflow);
-      });
+
+    // Key scroll width from changing
+    this.element.addEventListener("scroll", () => {
+      if(this.listening) {
+        this.element.scrollLeft = 0;
+      }
+    });
+
+    this.listening = true;
+
+    return true;
+  }
+
+  removeListeners() {
+    this.listening = false;
+    // clearTimeout(this.timeoutAfterResize);
+
+    if (this.element) {
+      this.element.removeEventListener("overflow", this.checkOverflowAfterResize.bind(this), false);
+      this.element.removeEventListener("underflow", this.checkOverflowAfterResize.bind(this), false);
     }
 
-    this.l.prepend(fragment);
+    if (this.ro) {
+      this.ro.disconnect();
+    }
   }
 
-  append() {
+  addResizeObserver(contents) {
+    let wrapper = this.wrapper;
+    let prevHeight = wrapper.getBoundingClientRect().height;
+    this.ro = new ResizeObserver( entries => {
 
+      if (!this.listening) {
+        return;
+      }
+
+      for (let entry of entries) {
+        const cr = entry.contentRect;
+
+        if (cr.height > prevHeight) {
+          this.checkOverflowAfterResize(contents);
+          prevHeight = wrapper.getBoundingClientRect().height;
+        } else if (cr.height < prevHeight ) { // TODO: calc line height && (prevHeight - cr.height) >= 22
+          this.checkUnderflowAfterResize(contents);
+          prevHeight = cr.height;
+        }
+      }
+    });
+
+    this.ro.observe(wrapper);
   }
 
+  checkOverflowAfterResize(contents) {
+    if (!this.listening || !this.layoutMethod) {
+      return;
+    }
+
+    let newBreakToken = this.layoutMethod.findBreakToken(this.wrapper, contents);
+
+    if (newBreakToken) {
+      this._onOverflow && this._onOverflow(newBreakToken);
+    }
+  }
+
+  checkUnderflowAfterResize(contents) {
+    if (!this.listening || !this.layoutMethod) {
+      return;
+    }
+
+    let endToken = this.layoutMethod.findEndToken(this.wrapper, contents);
+
+    // let newBreakToken = this.layoutMethod.findBreakToken(this.wrapper, contents);
+
+    if (endToken) {
+      this._onUnderflow && this._onUnderflow(endToken);
+    }
+  }
 
   destroy() {
+    this.removeListeners();
 
+    this.element = undefined;
+    this.wrapper = undefined;
   }
 }
 

@@ -2,12 +2,27 @@ import { getBoundingClientRect } from "../utils/utils";
 import {
   walk,
   nodeAfter,
+  nodeBefore,
   stackChildren,
   rebuildAncestors,
   needsBreakBefore,
   needsBreakAfter,
   needsPreviousBreakAfter,
-  needsPageBreak
+  needsPageBreak,
+  isElement,
+  isText,
+  indexOf,
+  cloneNode,
+  findElement,
+  findRef,
+  child,
+  isVisible,
+  isContainer,
+  validNode,
+  prevValidNode,
+  nextValidNode,
+  words,
+  letters
 } from "../utils/dom";
 import EventEmitter from "event-emitter";
 import Hook from "../utils/hook";
@@ -21,251 +36,142 @@ const PER_PAGE_CHECK = 4;
  */
 class Layout {
 
-  constructor(element, wrapper, hooks) {
+  constructor(element, hooks) {
     this.element = element;
-    this.wrapper = wrapper;
 
-    let space = this.element.getBoundingClientRect();
-    this.width = Math.round(space.width);
+    this.bounds = this.element.getBoundingClientRect();
 
     if (hooks) {
       this.hooks = hooks;
     } else {
       this.hooks = {};
+      this.hooks.layout = new Hook();
       this.hooks.renderNode = new Hook();
       this.hooks.layoutNode = new Hook();
       this.hooks.overflow = new Hook();
     }
+
   }
 
-  getStart(content, breakToken) {
-    let start = content;
-    let node = breakToken.node;
-
-    if (node) {
-      start = node;
-    }
-
-    return start;
-  }
-
-  isContainer(node) {
-    let container;
-
-    if (typeof node.tagName === "undefined") {
-      return true;
-    }
-
-    if (node.style.display === "none") {
-      return false;
-    }
-
-    switch (node.tagName) {
-      // Inline
-      case "A":
-      case "ABBR":
-      case "ACRONYM":
-      case "B":
-      case "BDO":
-      case "BIG":
-      case "BR":
-      case "BUTTON":
-      case "CITE":
-      case "CODE":
-      case "DFN":
-      case "EM":
-      case "I":
-      case "IMG":
-      case "INPUT":
-      case "KBD":
-      case "LABEL":
-      case "MAP":
-      case "OBJECT":
-      case "Q":
-      case "SAMP":
-      case "SCRIPT":
-      case "SELECT":
-      case "SMALL":
-      case "SPAN":
-      case "STRONG":
-      case "SUB":
-      case "SUP":
-      case "TEXTAREA":
-      case "TIME":
-      case "TT":
-      case "VAR":
-      // Content
-      case "P":
-      case "H1":
-      case "H2":
-      case "H3":
-      case "H4":
-      case "H5":
-      case "H6":
-      case "FIGCAPTION":
-      case "BLOCKQUOTE":
-      case "PRE":
-      case "LI":
-      case "TR":
-      case "DT":
-      case "DD":
-      case "VIDEO":
-      case "CANVAS":
-        container = false;
-        break;
-      default:
-        container = true;
-    }
-
-    return container;
-  }
-
-  layout(space, content, styleMap, edges, breakToken) {
-    let start = content;
-    if (breakToken.node) {
-      start = this.getStart(content, breakToken);
-    }
-
-    let walker = walk(start, content);
+  renderTo(wrapper, source, breakToken, bounds=this.bounds) {
+    let start = this.getStart(source, breakToken);
+    let walker = walk(start, source);
 
     let node;
     let done;
     let next;
-    let offset = 0;
-    let hasOverflow = false;
+
     let hasContent = false;
     let newBreakToken;
-    let after;
 
     let check = 0;
 
-    let dest = document.createDocumentFragment();
-
-    let rendered;
-    let shallow = true;
-
-    while (!done && !hasOverflow) {
+    while (!done && !newBreakToken) {
       next = walker.next();
       node = next.value;
       done = next.done;
 
-      if (node) {
-        this.hooks.layoutNode.trigger(node);
-
-        // Check if the rendered element has a breakBefore set
-        if (hasContent && (needsBreakBefore(node) || needsPreviousBreakAfter(node) || needsPageBreak(node))) {
-          // Check for overflow
-          hasOverflow = this.hasOverflow();
-
-          if (hasOverflow) {
-            let overflow = this.overflow(this.element);
-
-            if (overflow) {
-
-              newBreakToken = this.findBreakToken(overflow, content);
-
-              if (newBreakToken && newBreakToken.node) {
-                this.removeOverflow(overflow);
-              }
-
-              break;
-
-            }
-          } else {
-            // Break layout with current node
-            newBreakToken = {
-              node: node,
-              offset: 0
-            };
-            break;
-          }
-        }
-
-        shallow = this.isContainer(node);
-
-        rendered = this.render(node, this.wrapper, breakToken, shallow);
-
-        if (!hasContent) {
-          // Only register visible content
-          if (rendered.nodeType === 1 && window.getComputedStyle(rendered).display !== "none") {
-            hasContent = true;
-          } else if (rendered.nodeType === 3 &&
-              rendered.textContent.trim().length &&
-              window.getComputedStyle(rendered.parentNode).display !== "none") {
-            hasContent = true;
-          }
-        }
-
-        if (!shallow) {
-          after = nodeAfter(node, content);
-          walker = walk(after, content);
-        }
-
-
-      } else {
-        check = 1000; // Force check
+      if (!node) {
+        newBreakToken = this.findBreakToken(wrapper, source, bounds);
+        return newBreakToken;
       }
 
-      // Only check every 4 elements
+      /*
+      let exists;
+      if (isElement(node)) {
+        exists = findElement(node, wrapper);
+      } else {
+        exists = false;
+      }
+
+      if (exists) {
+        console.log("found", exists);
+        break;
+      }
+      */
+
+      this.hooks && this.hooks.layoutNode.trigger(node);
+
+      // Check if the rendered element has a break set
+      if (hasContent && this.shouldBreak(node)) {
+        newBreakToken = this.findBreakToken(wrapper, source, bounds);
+
+        if (!newBreakToken) {
+          newBreakToken = this.breakAt(node);
+        }
+
+        break;
+      }
+
+      // Should the Node be a shallow or deep clone
+      let shallow = isContainer(node);
+
+      let rendered = this.append(node, wrapper, breakToken, shallow);
+
+      // Check if layout has content yet
+      if (!hasContent) {
+        hasContent = isVisible(node);
+      }
+
+      // Skip to the next node if a deep clone was rendered
+      if (!shallow) {
+        walker = walk(nodeAfter(node, source), source);
+      }
+
+      // Only check every few elements
       if (check >= PER_PAGE_CHECK) {
         check = 0;
-        hasOverflow = this.hasOverflow();
-      }
 
-      if (hasOverflow) {
+        this.hooks && this.hooks.layout.trigger(wrapper, this);
 
-        let overflow = this.overflow(this.element);
-
-        if (overflow) {
-
-          newBreakToken = this.findBreakToken(overflow, content);
-
-          if (newBreakToken && newBreakToken.node) {
-            this.removeOverflow(overflow);
-          }
-
-          break;
-
-        } else {
-          // Underflow
-          hasOverflow = false;
-        }
-
+        newBreakToken = this.findBreakToken(wrapper, source, bounds);
       }
 
       check += 1;
     }
 
-    _requestIdleCallback(() => {
-      this.listened = this.listeners();
-    })
-
-
     return newBreakToken;
-
   }
 
-  hasOverflow() {
-    let width = Math.max(Math.floor(this.wrapper.getBoundingClientRect().width), this.element.scrollWidth);
-    return this.width < width;
+  breakAt(node, offset=0) {
+    return {
+      node,
+      offset
+    }
   }
 
-  render(node, dest, breakToken, shallow=true, rebuild=true) {
+  shouldBreak(node) {
+    return needsBreakBefore(node) || needsPreviousBreakAfter(node) || needsPageBreak(node);
+  }
 
-    let clone = this.createDOMNode(node, !shallow);
+  getStart(source, breakToken) {
+    let start;
+    let node = breakToken && breakToken.node;
 
-    this.hooks.renderNode.trigger(clone);
+    if (node) {
+      start = node;
+    } else {
+      start = source.firstChild;
+    }
 
-    if (node.parentNode && node.parentNode.nodeType === 1) {
-      let parent = dest.querySelector("[data-ref='" + node.parentNode.getAttribute("data-ref") + "']");
+    return start;
+  }
 
+  append(node, dest, breakToken, shallow=true, rebuild=true) {
+
+    let clone = cloneNode(node, !shallow);
+
+    if (node.parentNode && isElement(node.parentNode)) {
+      let parent = findElement(node.parentNode, dest);
       // Rebuild chain
       if (parent) {
         parent.appendChild(clone);
       } else if (rebuild) {
         let fragment = rebuildAncestors(node);
-        parent = fragment.querySelector("[data-ref='" + node.parentNode.getAttribute("data-ref") + "']");
-        if (breakToken && breakToken.node.nodeType === 3 && breakToken.offset > 0) {
+        parent = findElement(node.parentNode, fragment);
+        if (!parent) {
+          dest.appendChild(clone);
+        } else if (breakToken && isText(breakToken.node) && breakToken.offset > 0) {
           clone.textContent = clone.textContent.substring(breakToken.offset);
           parent.appendChild(clone);
         } else {
@@ -282,51 +188,81 @@ class Layout {
       dest.appendChild(clone);
     }
 
-    // if (!shallow && node.childNodes) {
-    //   for (let child of node.childNodes) {
-    //     this.render(child, dest, breakToken, shallow, rebuild);
-    //   }
-    // }
+    this.hooks && this.hooks.renderNode.trigger(clone);
 
     return clone;
   }
 
-  createDOMNode(n, deep=false) {
-    let node = n.cloneNode(deep);
+  avoidBreakInside(node, limiter) {
+    let breakNode;
 
-    return node;
+    if (node === limiter) {
+      return;
+    }
+
+    while (node.parentNode) {
+      node = node.parentNode;
+
+      if (node === limiter) {
+        break;
+      }
+
+      if(window.getComputedStyle(node)["break-inside"] === "avoid") {
+        breakNode = node;
+        break;
+      }
+
+    }
+    return breakNode;
   }
 
-  findBreakToken(overflow, content) {
+  createBreakToken(overflow, rendered, source) {
+    let container = overflow.startContainer;
     let offset = overflow.startOffset;
     let node, renderedNode, ref, parent, index, temp, startOffset;
 
-    if (overflow.startContainer.nodeType === 1) {
-      // node = children.querySelector("[data-ref='" + overflow.startContainer.childNodes[offset].getAttribute("data-ref") + "']");
-      temp = overflow.startContainer.childNodes[offset];
+    let parentBreak = this.avoidBreakInside(container, rendered);
+    if (parentBreak) {
+      node = parentBreak;
+      offset = 0;
+    } else if (isElement(container)) {
+      temp = child(container, offset);
 
-      if (temp.nodeType === 1) {
-        ref = temp.getAttribute("data-ref");
-        // node = this.parser.find(ref);
-        renderedNode = this.wrapper.querySelector("[data-ref='" + ref + "']");
-        node = content.querySelector("[data-ref='"+ renderedNode.getAttribute("data-ref") +"']");
+      if (isElement(temp)) {
+        renderedNode = findElement(temp, rendered);
+
+        if (!renderedNode) {
+          // Find closest element with data-ref
+          renderedNode = findElement(prevValidNode(temp), rendered);
+          return;
+        }
+
+        node = findElement(renderedNode, source);
         offset = 0;
       } else {
-        index = Array.prototype.indexOf.call(overflow.startContainer.childNodes, temp);
-        ref = overflow.startContainer.getAttribute("data-ref");
-        renderedNode = this.wrapper.querySelector("[data-ref='" + ref + "']");
-        parent = content.querySelector("[data-ref='"+ renderedNode.getAttribute("data-ref") +"']");
-        node = parent.childNodes[index];
-        offset = 0;
+        console.error("Non-element found for breakToken", temp);
+        // renderedNode = findElement(container, rendered);
+        //
+        // if (!renderedNode) {
+        //   renderedNode = findElement(prevValidNode(container), rendered);
+        // }
+        //
+        // parent = findElement(renderedNode, source);
+        // index = indexOf(temp);
+        // node = child(parent, index);
+        // offset = 0;
       }
     } else {
-      index = Array.prototype.indexOf.call(overflow.startContainer.parentNode.childNodes, overflow.startContainer);
-      // let parent = children.querySelector("[data-ref='" + overflow.startContainer.parentNode.getAttribute("data-ref") + "']");
-      ref = overflow.startContainer.parentNode.getAttribute("data-ref");
-      renderedNode = this.wrapper.querySelector("[data-ref='" + ref + "']");
-      parent = content.querySelector("[data-ref='"+ renderedNode.getAttribute("data-ref") +"']");
-      node = parent.childNodes[index];
-      startOffset = overflow.startContainer.textContent.slice(offset);
+      renderedNode = findElement(container.parentNode, rendered);
+
+      if (!renderedNode) {
+        renderedNode = findElement(prevValidNode(container.parentNode), rendered);
+      }
+
+      parent = findElement(renderedNode, source);
+      index = indexOf(container);
+      node = child(parent, index);
+      startOffset = container.textContent.slice(offset);
       offset = parent.textContent.indexOf(startOffset);
     }
 
@@ -341,122 +277,45 @@ class Layout {
 
   }
 
-  removeOverflow(overflow) {
+  findBreakToken(rendered, source, bounds=this.bounds, extract=true) {
+    let overflow = this.findOverflow(rendered, bounds);
+    let breakToken;
 
-    if (overflow.startContainer.nodeType === 3 && overflow.startOffset > 0) {
-      let startText = overflow.startContainer.textContent;
-      let startOffset = overflow.startOffset;
-      let prevLetter = startText[startOffset-1];
+    if (overflow) {
+      breakToken = this.createBreakToken(overflow, rendered, source);
 
-      // Add a hyphen if previous character is a letter or soft hyphen
-      if (/^\w|\u00AD$/.test(prevLetter)) {
-        overflow.startContainer.textContent = startText.slice(0, startOffset) + "\u2010";
-        overflow.setStart(overflow.startContainer, startOffset + 1);
+      if (breakToken && breakToken.node && extract) {
+        this.removeOverflow(overflow);
       }
+
     }
-
-
-    // _requestIdleCallback(() => this.removeEmpty());
-    return overflow.extractContents();
+    return breakToken;
   }
 
-  removeEmpty() {
-    // Clean Empty Nodes
-    let stack = stackChildren(this.wrapper);
-
-    stack.forEach((currentNode) => {
-
-      if (!currentNode) {
-        return;
-      }
-
-      if (currentNode.childNodes.length === 0) {
-        // Check in original
-        let original = currentNode.getAttribute("data-children");
-        if (original != 0) {
-          currentNode.remove();
-        }
-      } else if (currentNode.textContent.trim().length === 0) {
-        let original = currentNode.getAttribute("data-text");
-        if (original != 0) {
-          currentNode.remove();
-        }
-      }
-    });
-
-    stack = undefined;
-    _requestIdleCallback(() => this.floats());
-
+  hasOverflow(element, bounds=this.bounds) {
+    let constrainingElement = element.parentNode; // this gets the element, instead of the wrapper for the width workaround
+    let { width } = element.getBoundingClientRect();
+    let { scrollWidth } = constrainingElement;
+    return Math.max(Math.floor(width), scrollWidth) > Math.round(bounds.width);
   }
 
-  floats(area) {
-    let bounds = getBoundingClientRect(this.element);
-
-    let start = Math.round(bounds.left);
-    let end = Math.round(bounds.right);
-
-    let range;
-
-    let walker = walk(this.wrapper.firstChild, this.wrapper);
-
-    // Find Start
-    let startContainer, startOffset;
-    let next, done, node, offset;
-    while (!done) {
-      next = walker.next();
-      done = next.done;
-      node = next.value;
-
-      if (node) {
-        let pos = getBoundingClientRect(node);
-        let left = Math.floor(pos.left);
-        let right = Math.floor(pos.right);
-
-        if (left >= end) {
-          range = document.createRange();
-          range.selectNode(node);
-          // let extracted = range.extractContents();
-          let extracted = this.removeOverflow(range);
-          this._onOverflow && this._onOverflow(extracted);
-        }
-
-      }
-    }
-
-  }
-
-  onEnter(node) {
-
-  }
-
-  onExit(node) {
-
-  }
-
-  onOverflow(func) {
-    this._onOverflow = func;
-  }
-
-  onUnderflow(func) {
-    this._onUnderflow = func;
-  }
-
-  overflow(area) {
-    let bounds = getBoundingClientRect(this.element);
+  findOverflow(rendered, bounds=this.bounds) {
+    if (!this.hasOverflow(rendered, bounds)) return;
 
     let start = Math.round(bounds.left);
     let end =  Math.round(bounds.right);
     let range;
 
-    let walker = walk(this.wrapper.firstChild, this.wrapper);
+    let walker = walk(rendered.firstChild, rendered);
 
     // Find Start
     let startContainer, startOffset;
-    let next, done, node, offset;
+    let next, done, node, offset, skip;
     while (!done) {
       next = walker.next();
       done = next.done;
       node = next.value;
+      skip = false;
 
       if (node) {
         let pos = getBoundingClientRect(node);
@@ -466,18 +325,19 @@ class Layout {
         if (!range && left >= end) {
           // Check if it is a float
           let isFloat = false;
-          if (node.nodeType === 1) {
+          if (isElement(node)) {
             let styles = window.getComputedStyle(node);
             isFloat = styles.getPropertyValue("float") !== "none";
+            skip = window.getComputedStyle(node)["break-inside"] === "avoid";
           }
 
-          if (!isFloat && node.nodeType === 1) {
+          if (!isFloat && isElement(node)) {
             range = document.createRange();
             range.setStartBefore(node);
             break;
           }
 
-          if (node.nodeType === 3 && node.textContent.trim().length) {
+          if (isText(node) && node.textContent.trim().length) {
             range = document.createRange();
             range.setStartBefore(node);
             break;
@@ -485,7 +345,9 @@ class Layout {
 
         }
 
-        if (!range && node.nodeType === 3 && right > end && node.textContent.trim().length) {
+        if (!range && isText(node) &&
+            right > end && node.textContent.trim().length &&
+            window.getComputedStyle(node.parentNode)["break-inside"] !== "avoid") {
           range = document.createRange();
           offset = this.textBreak(node, start, end);
           if (!offset) {
@@ -497,29 +359,70 @@ class Layout {
         }
 
         // Skip children
-        if (right < end) {
+        if (skip || right < end) {
 
-          next = nodeAfter(node, this.wrapper);
+          next = nodeAfter(node, rendered);
           if (next) {
-            walker = walk(next, this.wrapper);
+            walker = walk(next, rendered);
           }
 
         }
 
       }
     }
+
+    // Find End
     if (range) {
-      range.setEndAfter(this.wrapper.lastChild);
-
-      this.hooks.overflow.trigger(range);
-
+      range.setEndAfter(rendered.lastChild);
       return range;
     }
 
   }
 
+  findEndToken(rendered, source, bounds=this.bounds) {
+    if (rendered.childNodes.length === 0) {
+      return;
+    }
+
+    let lastChild = rendered.lastChild;
+
+    let lastNodeIndex;
+    while (lastChild && lastChild.lastChild) {
+      if (!validNode(lastChild)) {
+        // Only get elements with refs
+        lastChild = lastChild.previousSibling;
+      } else if(!validNode(lastChild.lastChild)) {
+        // Deal with invalid dom items
+        lastChild = prevValidNode(lastChild.lastChild);
+        break;
+      } else {
+        lastChild = lastChild.lastChild;
+      }
+    }
+
+    if (isText(lastChild)) {
+
+      if (lastChild.parentNode.dataset.ref) {
+        lastNodeIndex = indexOf(lastChild);
+        lastChild = lastChild.parentNode;
+      } else {
+        lastChild = lastChild.previousSibling;
+      }
+    }
+
+    let original = findElement(lastChild, source);
+
+    if (lastNodeIndex) {
+      original = original.childNodes[lastNodeIndex];
+    }
+
+    let after = nodeAfter(original);
+
+    return this.breakAt(after);
+  }
+
   textBreak(node, start, end) {
-    let wordwalker = this.words(node);
+    let wordwalker = words(node);
     let left = 0;
     let right = 0;
     let word, next, done, pos;
@@ -544,7 +447,7 @@ class Layout {
       }
 
       if (right > end) {
-        let letterwalker = this.letters(word);
+        let letterwalker = letters(word);
         let letter, nextLetter, doneLetter, posLetter;
 
         while (!doneLetter) {
@@ -573,187 +476,25 @@ class Layout {
     return offset;
   }
 
-  *words(node) {
-    let currentText = node.nodeValue;
-    let max = currentText.length;
-    let currentOffset = 0;
-    let currentLetter;
+  removeOverflow(overflow) {
+    this.hyphenateAtBreak(overflow);
 
-    let range;
-
-    while(currentOffset < max) {
-        currentLetter = currentText[currentOffset];
-       if (/^\S$/.test(currentLetter)) {
-         if (!range) {
-           range = document.createRange();
-           range.setStart(node, currentOffset);
-         }
-       } else {
-         if (range) {
-           range.setEnd(node, currentOffset);
-           yield range;
-           range = undefined;
-         }
-       }
-
-       currentOffset += 1;
-    }
-
-    if (range) {
-      range.setEnd(node, currentOffset);
-      yield range;
-      range = undefined;
-    }
+    return overflow.extractContents();
   }
 
-  *letters(wordRange) {
-    let currentText = wordRange.startContainer;
-    let max = currentText.length;
-    let currentOffset = wordRange.startOffset;
-    let currentLetter;
+  hyphenateAtBreak(overflow) {
+    if (isText(overflow.startContainer) && overflow.startOffset > 0) {
+      let startText = overflow.startContainer.textContent;
+      let startOffset = overflow.startOffset;
+      let prevLetter = startText[startOffset-1];
 
-    let range;
-
-    while(currentOffset < max) {
-       currentLetter = currentText[currentOffset];
-       range = document.createRange();
-       range.setStart(currentText, currentOffset);
-       range.setEnd(currentText, currentOffset+1);
-
-       yield range;
-
-       currentOffset += 1;
-    }
-  }
-
-  prepend(fragment, rebuild=true) {
-    if (!fragment) {
-      return;
-    }
-    let walker = walk(fragment.firstChild, this.wrapper);
-    let next, node, done;
-    let parent;
-    while (!done) {
-      next = walker.next();
-      node = next.value;
-      done = next.done;
-
-      if (!node) {
-        break;
-      }
-
-      let exists = false;
-
-      if (node.nodeType === 1) {
-        exists = this.wrapper.querySelector("[data-ref='" + node.getAttribute("data-ref") + "']");
-      }
-
-      if (exists) {
-        parent = exists;
-      } else {
-        if(parent) {
-          parent.insertBefore(node, parent.firstChild);
-          break;
-        } else {
-          this.wrapper.insertBefore(node, this.wrapper.firstChild);
-        }
+      // Add a hyphen if previous character is a letter or soft hyphen
+      if (/^\w|\u00AD$/.test(prevLetter)) {
+        overflow.startContainer.textContent = startText.slice(0, startOffset) + "\u2010";
+        overflow.setStart(overflow.startContainer, startOffset + 1);
       }
     }
-
-    let hasOverflow = this.hasOverflow();
-
-    if (hasOverflow) {
-
-      let overflow = this.overflow(this.element);
-
-      if (overflow) {
-        // let extracted = overflow.extractContents();
-        let extracted = this.removeOverflow(overflow);
-        this._onOverflow && this._onOverflow(extracted);
-      }
-    }
-
-    if (!this.listened) {
-      this.listened = this.listeners();
-    }
   }
-
-  getOverflow() {
-    let overflow = this.overflow(this.element);
-
-    if (overflow) {
-      // let extracted = overflow.extractContents();
-      let extracted = this.removeOverflow(overflow);
-      this._onOverflow && this._onOverflow(extracted);
-    }
-  }
-
-  getUnderflow() {
-    this._onUnderflow && this._onUnderflow();
-  }
-
-  listeners() {
-    if (typeof ResizeObserver !== "undefined") {
-      this.addResizeObserver();
-    } else {
-      this.element.addEventListener("overflow", this.getOverflow.bind(this), false);
-      this.element.addEventListener("underflow", this.getUnderflow.bind(this), false);
-    }
-    // TODO: fall back to mutation observer?
-
-
-    // Key scroll width from changing
-    this.element.addEventListener("scroll", () => {
-      this.element.scrollLeft = 0;
-    });
-
-    return true;
-  }
-
-  addResizeObserver() {
-    let wrapper = this.wrapper;
-    let prevHeight = wrapper.getBoundingClientRect().height;
-    this.ro = new ResizeObserver( entries => {
-      for (let entry of entries) {
-        const cr = entry.contentRect;
-
-        if (cr.height > prevHeight) {
-          let hasOverflow = this.hasOverflow();
-
-          if (hasOverflow) {
-
-            let overflow = this.overflow(this.element);
-
-            if (overflow) {
-              // let extracted = overflow.extractContents();
-              let extracted = this.removeOverflow(overflow);
-              this._onOverflow && this._onOverflow(extracted);
-              prevHeight = wrapper.getBoundingClientRect().height;
-            }
-          } else {
-            prevHeight = cr.height;
-          }
-
-        } else if (cr.height < prevHeight ) { // TODO: calc line height && (prevHeight - cr.height) >= 22
-          this._onUnderflow && this._onUnderflow();
-          prevHeight = cr.height;
-        }
-      }
-    });
-
-    this.ro.observe(wrapper);
-  }
-
-  destroy() {
-    this.element.removeEventListener("overflow", this.getOverflow.bind(this), false);
-    this.element.removeEventListener("underflow", this.getUnderflow.bind(this), false);
-
-    this.ro.disconnect();
-
-    this.element = element;
-    this.wrapper = wrapper;
-  }
-
 }
 
 EventEmitter(Layout.prototype);

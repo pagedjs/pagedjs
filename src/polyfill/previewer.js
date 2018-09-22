@@ -1,4 +1,5 @@
 import EventEmitter from "event-emitter";
+import Hook from "../utils/hook";
 
 import Chunker from '../chunker/chunker';
 import Polisher from '../polisher/polisher';
@@ -14,6 +15,11 @@ class Previewer {
 
 		// Chunk contents
 		this.chunker = new Chunker();
+
+		// Hooks
+		this.hooks = {};
+		this.hooks.beforePolishing = new Hook(this);
+		this.hooks.beforeChunking = new Hook(this);
 
 		// default size
 		this.size = {
@@ -110,28 +116,32 @@ class Previewer {
 	}
 
 	async preview(content, stylesheets, renderTo) {
-		if (!stylesheets) {
-			stylesheets = this.removeStyles();
-		}
-
 		if (!content) {
 			content = this.wrapContent();
+		}
+
+		if (!stylesheets) {
+			stylesheets = this.removeStyles();
 		}
 
 		this.polisher.setup();
 
 		let handlers = this.initializeHandlers();
 
+		await this.hooks.beforePolishing.trigger(stylesheets, this);
+
 		let styleText = await this.polisher.add(...stylesheets);
 
 		let startTime = performance.now();
+
+		await this.hooks.beforeChunking.trigger(content, this);
 
 		// Render flow
 		let flow = await this.chunker.flow(content, renderTo);
 
 		let endTime = performance.now();
 		let msg = "Rendering " + flow.total + " pages took " + (endTime - startTime) + " milliseconds.";
-
+		console.log(msg);
 		this.emit("rendered", msg, this.size.width && this.size.width.value + this.size.width.unit, this.size.height && this.size.height.value + this.size.height.unit, this.size.orientation, this.size.format);
 		if (typeof window.onPagesRendered !== "undefined") {
 			window.onPagesRendered(msg, this.size.width && this.size.width.value + this.size.width.unit, this.size.height && this.size.height.value + this.size.height.unit, this.size.orientation, this.size.format);

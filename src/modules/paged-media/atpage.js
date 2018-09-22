@@ -908,7 +908,7 @@ class AtPage extends Handler {
 									marginGroup.style["grid-template-columns"] = leftWidth + " 1fr " + leftWidth;
 								}
 							}else{
-								if(rightWidth !== "none" && rightWidth !== "auto"){ 
+								if(rightWidth !== "none" && rightWidth !== "auto"){
 									marginGroup.style["grid-template-columns"] = rightWidth + " 1fr " + rightWidth;
 								}else{
 									marginGroup.style["grid-template-columns"] = "auto auto 1fr";
@@ -946,7 +946,7 @@ class AtPage extends Handler {
 							right.style["white-space"] = "normal";
 							center.style["white-space"] = "normal";
 						}
-					}		
+					}
 				}else if(centerWidth !== "none" && centerWidth !== "auto"){
 					if(leftContent && leftWidth !== "none" && leftWidth !== "auto"){
 						marginGroup.style["grid-template-columns"] = leftWidth + " " + centerWidth + " 1fr";
@@ -961,14 +961,14 @@ class AtPage extends Handler {
 			}else{
 				if(leftContent){
 					if(!rightContent){
-						marginGroup.style["grid-template-columns"] = "1fr 0 0";		
+						marginGroup.style["grid-template-columns"] = "1fr 0 0";
 					}else{
 						if(leftWidth !== "none" && leftWidth !== "auto"){
 							if(rightWidth !== "none" && rightWidth !== "auto"){
 								marginGroup.style["grid-template-columns"] = leftWidth + " 1fr " + rightWidth;
 							}else{
 								marginGroup.style["grid-template-columns"] = leftWidth + " 0 1fr";
-							}					
+							}
 						}else{
 							if(rightWidth !== "none" && rightWidth !== "auto"){
 								marginGroup.style["grid-template-columns"] = "1fr 0 " + rightWidth;
@@ -983,16 +983,16 @@ class AtPage extends Handler {
 								marginGroup.style["grid-template-columns"] = "minmax(16.66%, " + newLeftWidth  + "%) 0 1fr";
 								left.style["white-space"] = "normal";
 								right.style["white-space"] = "normal";
-							}										
-						}		
+							}
+						}
 					}
 				}else{
 					if(rightWidth !== "none" && rightWidth !== "auto"){
 						marginGroup.style["grid-template-columns"] = "1fr 0 " + rightWidth;
 					}else{
 						marginGroup.style["grid-template-columns"] = "0 0 1fr";
-					}				
-				}				
+					}
+				}
 			}
 		});
 
@@ -1033,7 +1033,7 @@ class AtPage extends Handler {
 									marginGroup.style["grid-template-rows"] = topHeight + " calc(100% - " + topHeight + "*2) " + topHeight;
 								}
 							}else{
-								if(bottomHeight !== "none" && bottomHeight !== "auto"){ 
+								if(bottomHeight !== "none" && bottomHeight !== "auto"){
 									marginGroup.style["grid-template-rows"] = bottomHeight + " calc(100% - " + bottomHeight + "*2) " + bottomHeight;
 								}
 							}
@@ -1042,7 +1042,7 @@ class AtPage extends Handler {
 						if(bottomHeight !== "none" && bottomHeight !== "auto"){
 							marginGroup.style["grid-template-rows"] = bottomHeight + " calc(100% - " + bottomHeight + "*2) " + bottomHeight;
 						}
-					}		
+					}
 				}else{
 					if(topContent && topHeight !== "none" && topHeight !== "auto"){
 						marginGroup.style["grid-template-rows"] = topHeight +" " + middleHeight + " calc(100% - (" + topHeight + " + " + middleHeight + "))";
@@ -1057,33 +1057,33 @@ class AtPage extends Handler {
 			}else{
 				if(topContent){
 					if(!bottomContent){
-						marginGroup.style["grid-template-rows"] = "1fr 0 0";		
+						marginGroup.style["grid-template-rows"] = "1fr 0 0";
 					}else{
 						if(topHeight !== "none" && topHeight !== "auto"){
 							if(bottomHeight !== "none" && bottomHeight !== "auto"){
 								marginGroup.style["grid-template-rows"] = topHeight + " 1fr " + bottomHeight;
 							}else{
 								marginGroup.style["grid-template-rows"] = topHeight + " 0 1fr";
-							}					
+							}
 						}else{
 							if(bottomHeight !== "none" && bottomHeight !== "auto"){
 								marginGroup.style["grid-template-rows"] = "1fr 0 " + bottomHeight;
 							}else{
 								marginGroup.style["grid-template-rows"] = "1fr 0 1fr";
-							}										
-						}		
+							}
+						}
 					}
 				}else{
 					if(bottomHeight !== "none" && bottomHeight !== "auto"){
 						marginGroup.style["grid-template-rows"] = "1fr 0 " + bottomHeight;
 					}else{
 						marginGroup.style["grid-template-rows"] = "0 0 1fr";
-					}				
-				}				
+					}
+				}
 			}
 
 
-			
+
 		});
 
 	}

@@ -54,15 +54,19 @@ class ContentParser {
 
 		let node;
 		while(node = treeWalker.nextNode()) {
-			let uuid = UUID();
 
-			node.setAttribute("data-ref", uuid);
+			if (!node.hasAttribute("data-ref")) {
+				let uuid = UUID();
+				node.setAttribute("data-ref", uuid);
+			}
+
 			if (node.id) {
 				node.setAttribute("data-id", node.id);
 			}
-			node.setAttribute("data-children", node.childNodes.length);
 
-			node.setAttribute("data-text", node.textContent.trim().length);
+			// node.setAttribute("data-children", node.childNodes.length);
+
+			// node.setAttribute("data-text", node.textContent.trim().length);
 		}
 	}
 

@@ -83,10 +83,6 @@ onAtPage(atPageNode)
 onRule(ruleNode)
 onDeclaration(declarationNode, ruleNode)
 onContent(contentNode, declarationNode, ruleNode)
-
-// Previewer
-beforePolishing(stylesheets)
-beforeChunking(contents)
 ```
 
 ## Setup

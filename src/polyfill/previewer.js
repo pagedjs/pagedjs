@@ -128,20 +128,16 @@ class Previewer {
 
 		let handlers = this.initializeHandlers();
 
-		await this.hooks.beforePolishing.trigger(stylesheets, this);
-
 		let styleText = await this.polisher.add(...stylesheets);
 
 		let startTime = performance.now();
-
-		await this.hooks.beforeChunking.trigger(content, this);
 
 		// Render flow
 		let flow = await this.chunker.flow(content, renderTo);
 
 		let endTime = performance.now();
 		let msg = "Rendering " + flow.total + " pages took " + (endTime - startTime) + " milliseconds.";
-		console.log(msg);
+
 		this.emit("rendered", msg, this.size.width && this.size.width.value + this.size.width.unit, this.size.height && this.size.height.value + this.size.height.unit, this.size.orientation, this.size.format);
 		if (typeof window.onPagesRendered !== "undefined") {
 			window.onPagesRendered(msg, this.size.width && this.size.width.value + this.size.width.unit, this.size.height && this.size.height.value + this.size.height.unit, this.size.orientation, this.size.format);

@@ -221,11 +221,7 @@ class Layout {
     let offset = overflow.startOffset;
     let node, renderedNode, ref, parent, index, temp, startOffset;
 
-    let parentBreak = this.avoidBreakInside(container, rendered);
-    if (parentBreak) {
-      node = parentBreak;
-      offset = 0;
-    } else if (isElement(container)) {
+    if (isElement(container)) {
       temp = child(container, offset);
 
       if (isElement(temp)) {
@@ -240,17 +236,16 @@ class Layout {
         node = findElement(renderedNode, source);
         offset = 0;
       } else {
-        console.error("Non-element found for breakToken", temp);
-        // renderedNode = findElement(container, rendered);
-        //
-        // if (!renderedNode) {
-        //   renderedNode = findElement(prevValidNode(container), rendered);
-        // }
-        //
-        // parent = findElement(renderedNode, source);
-        // index = indexOf(temp);
-        // node = child(parent, index);
-        // offset = 0;
+        renderedNode = findElement(container, rendered);
+
+        if (!renderedNode) {
+          renderedNode = findElement(prevValidNode(container), rendered);
+        }
+
+        parent = findElement(renderedNode, source);
+        index = indexOf(temp);
+        node = child(parent, index);
+        offset = 0;
       }
     } else {
       renderedNode = findElement(container.parentNode, rendered);

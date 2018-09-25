@@ -25,6 +25,38 @@ Add the the `paged.polyfill.js` script to replace all `@page` css and render the
 
 Try the [polyfill with Aurorae](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/polyfill.html).
 
+By default the polyfill will run automatically as soon as the DOM is ready.
+However, you can add an async `before` function or return a Promise to delay the polyfill starting.
+
+```html
+<script>
+	window.PagedConfig = {
+		before: () => {
+			return new Promise(resolve, reject) {
+				setTimeout(() => { resolve() }, 1000);
+			}
+		},
+		after: (flow) => { console.log("after", flow) },
+	};
+</script>
+```
+
+Otherwise you can disable `auto` running the previewer and call `window.PagedPolyfill.preview();`
+whenever you want to start.
+
+```html
+<script>
+	window.PagedConfig = {
+		auto: false
+		after: (flow) => { console.log("after", flow) },
+	};
+
+	setTimeout(() => {
+		window.PagedPolyfill.preview();
+	}, 1000);
+</script>
+```
+
 ## Chunker
 Chunks up a document into paged media flows and applies print classes.
 

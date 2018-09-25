@@ -12,68 +12,22 @@
       tex2jax: {
         inlineMath: [ ['$','$'], ["\\(","\\)"] ],
         processEscapes: true
-      },
-      skipStartupTypeset: true,
-      messageStyle: "none"
+      }
     });
   </script>
 
-
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+  <script>
+    window.PagedConfig = {
+      auto: false
+    };
+  </script>
   <script src="../dist/paged.polyfill.js"></script>
   <script>
-    MathJax.Hub.Register.StartupHook("onLoad",function () {
-      console.log("*** The onLoad handler has run, page is ready to process ***");
-    });
     MathJax.Hub.Queue(function () {
-      // let previewer = new Paged.Previewer();
-      // previewer.preview();
+      window.PagedPolyfill.preview();
     });
-
-
-
-
-    class MyHandler extends Paged.Handler {
-        constructor(chunker, polisher, caller) {
-            super(chunker, polisher, caller);
-        }
-
-        // beforeChunking(content) {
-        //     var hiddenRender = document.createElement("div");
-        //     hiddenRender.style.display = "none";
-        //     document.body.appendChild(hiddenRender);
-        //
-        //     var clone = document.importNode(content, true);
-        //     hiddenRender.appendChild(clone);
-        //
-        //     return new Promise((resolve, reject) => {
-        //       MathJax.Hub.Queue(["Typeset", MathJax.Hub, hiddenRender, () => {
-        //         document.querySelector("template").innerHTML = hiddenRender.innerHTML;
-        //         resolve();
-        //       }]);
-        //     });
-        // }
-
-        layout(pageElement) {
-            return new Promise((resolve, reject) => {
-              MathJax.Hub.Queue(["Typeset", MathJax.Hub, pageElement, () => {
-                resolve();
-              }]);
-            });
-        }
-
-        // afterRendered(pages) {
-        //     console.log(pages);
-        //     return new Promise((resolve, reject) => {
-        //       MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.body, () => {
-        //         resolve();
-        //       }]);
-        //     });
-        // }
-
-    }
-    Paged.registerHandlers(MyHandler);
   </script>
 
 
@@ -82,23 +36,7 @@
         size: A4;
         border: 1px solid black;
     }
-
-    .math {
-      break-inside: avoid;
-    }
 </style>
-
-
-<!-- <script>
-
-
-        window.onload = function() {
-            var script = document.createElement("script");
-            script.type = "text/javascript";
-            script.src  = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML";
-            document.getElementsByTagName("head")[0].appendChild(script);
-        };
-  </script> -->
 
 
 </head>

@@ -1,6 +1,8 @@
 import Previewer from './previewer';
 import * as Paged from '../index';
 
+window.Paged = Paged;
+
 let ready = new Promise(function(resolve, reject){
 	if (document.readyState === "interactive" || document.readyState === "complete") {
 		resolve(document.readyState);
@@ -14,11 +16,32 @@ let ready = new Promise(function(resolve, reject){
 	}
 });
 
-let previewer = new Previewer();
+let config = window.PagedConfig || {
+	auto: true,
+	before: undefined,
+	after: undefined,
+	content: undefined,
+	stylesheets: undefined,
+	renderTo: undefined
+};
 
-window.PagedPolyfill = previewer;
-window.Paged = Paged;
+let previewer = new Previewer(config.content, config.stylesheets, config.renderTo);
+
 
 ready.then(async function () {
-	await previewer.preview();
+	let done;
+	if (config.before) {
+		await config.before();
+	}
+
+	if(config.auto !== false) {
+		done = await previewer.preview();
+	}
+
+
+	if (config.after) {
+		await config.after(done);
+	}
 });
+
+export default previewer;

@@ -42,10 +42,7 @@
         .then(str => (new DOMParser()).parseFromString(str, "text/html"))
 
       // Gather all stylesheets from html document
-      let stylesheets = Array.from(html.querySelectorAll("link[rel='stylesheet']"));
-      let hrefs = stylesheets.map((sheet) => {
-        return sheet.href;
-      });
+      let hrefs = previewer.removeStyles(html);
 
       // Add a stylesheet url in params
       let stylesheet = params && params.get("stylesheet") && decodeURIComponent(params.get("stylesheet"));
@@ -74,7 +71,7 @@
 
       .pagedjs_page {
         background-color: #fdfdfd;
-        margin-bottom: 20px;
+        margin: 10px auto;
         flex: none;
         box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
       }

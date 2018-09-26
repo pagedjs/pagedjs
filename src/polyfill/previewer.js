@@ -93,16 +93,16 @@ class Previewer {
 		return template.content;
 	}
 
-	removeStyles() {
+	removeStyles(doc=document) {
 		// Get all stylesheets
-		let stylesheets = Array.from(document.querySelectorAll("link[rel='stylesheet']"));
+		let stylesheets = Array.from(doc.querySelectorAll("link[rel='stylesheet']"));
 		let hrefs = stylesheets.map((sheet) => {
 			sheet.remove();
 			return sheet.href;
 		});
 
 		// Get inline styles
-		let inlineStyles = Array.from(document.querySelectorAll("style:not([data-pagedjs-inserted-styles])"));
+		let inlineStyles = Array.from(doc.querySelectorAll("style:not([data-pagedjs-inserted-styles])"));
 		inlineStyles.forEach((inlineStyle) => {
 			let obj = {};
 			obj[window.location.href] = inlineStyle.textContent;

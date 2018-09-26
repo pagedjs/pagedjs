@@ -18,8 +18,6 @@ class Previewer {
 
 		// Hooks
 		this.hooks = {};
-		this.hooks.beforePolishing = new Hook(this);
-		this.hooks.beforeChunking = new Hook(this);
 
 		// default size
 		this.size = {
@@ -116,6 +114,7 @@ class Previewer {
 	}
 
 	async preview(content, stylesheets, renderTo) {
+
 		if (!content) {
 			content = this.wrapContent();
 		}

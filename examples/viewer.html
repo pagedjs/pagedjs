@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+
+  <title>Pagedjs Viewer</title>
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+
+  <script src="../dist/paged.js"></script>
+
+  <script>
+    let ready = new Promise(function(resolve, reject){
+      if (document.readyState === "interactive" || document.readyState === "complete") {
+        resolve(document.readyState);
+        return;
+      }
+
+      document.onreadystatechange = function ($) {
+        if (document.readyState === "interactive") {
+          resolve(document.readyState);
+        }
+      }
+    });
+
+    ready.then(async function () {
+      // Create a new Previewer
+      let previewer = new Paged.Previewer();
+
+      // Get the URL to load
+      let params = URLSearchParams && new URLSearchParams(document.location.search.substring(1));
+      let url = params && params.get("url") && decodeURIComponent(params.get("url"));
+
+      if (!url) {
+        console.error("No 'url' parameter given.");
+        return;
+      }
+
+      // Fetch and Parse Contents
+      let html = await fetch(url)
+        .then(response => response.text())
+        .then(str => (new DOMParser()).parseFromString(str, "text/html"))
+
+      // Gather all stylesheets from html document
+      let stylesheets = Array.from(html.querySelectorAll("link[rel='stylesheet']"));
+      let hrefs = stylesheets.map((sheet) => {
+        return sheet.href;
+      });
+
+      // Add a stylesheet url in params
+      let stylesheet = params && params.get("stylesheet") && decodeURIComponent(params.get("stylesheet"));
+      if (stylesheet) {
+        hrefs.push(stylesheet);
+      }
+
+      // Push all body elements to a document fragment
+      let content = html.querySelectorAll('body > *');
+      let fragment = document.createDocumentFragment();
+      for (let i = 0; i < content.length; i++) {
+        fragment.appendChild(content[i]);
+      }
+
+      // Run the Paged Preview
+      let done = await previewer.preview(fragment, hrefs, document.body);
+    });
+  </script>
+
+  <style>
+    @media screen {
+
+      body {
+        background-color: whitesmoke;
+      }
+
+      .pagedjs_page {
+        background-color: #fdfdfd;
+        margin-bottom: 20px;
+        flex: none;
+        box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+
+</body>
+
+</html>

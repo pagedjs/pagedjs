@@ -67,12 +67,11 @@ export function nodeAfter(node, limiter) {
 
 export function nodeBefore(node, limiter) {
 	let before = node;
-
-	if (before.prevSibling) {
+	if (before.previousSibling) {
 		if (limiter && node === limiter) {
 			return;
 		}
-		before = before.prevSibling;
+		before = before.previousSibling;
 	} else {
 		while (before) {
 			before = before.parentNode;
@@ -80,8 +79,8 @@ export function nodeBefore(node, limiter) {
 				before = undefined;
 				break;
 			}
-			if (before && before.prevSibling) {
-				before = prev.nextSibling;
+			if (before && before.previousSibling) {
+				before = prev.previousSibling;
 				break;
 			}
 		}

@@ -305,25 +305,35 @@ class Layout {
 
     // Find Start
     let startContainer, startOffset;
-    let next, done, node, offset, skip;
+    let next, done, node, offset, skip, breakAvoid, prev;
     while (!done) {
       next = walker.next();
       done = next.done;
       node = next.value;
       skip = false;
+      breakAvoid = false;
+      prev = undefined;
 
       if (node) {
         let pos = getBoundingClientRect(node);
         let left = Math.floor(pos.left);
         let right = Math.floor(pos.right);
-
+        // console.log(node);
         if (!range && left >= end) {
           // Check if it is a float
           let isFloat = false;
           if (isElement(node)) {
             let styles = window.getComputedStyle(node);
             isFloat = styles.getPropertyValue("float") !== "none";
-            skip = window.getComputedStyle(node)["break-inside"] === "avoid";
+            skip = styles.getPropertyValue("break-inside") === "avoid";
+            breakAvoid = node.dataset.breakBefore === "avoid" || node.dataset.previousBreakAfter === "avoid";
+            prev = breakAvoid && nodeBefore(node, rendered);
+          }
+
+          if (prev) {
+            range = document.createRange();
+            range.setStartBefore(prev);
+            break;
           }
 
           if (!isFloat && isElement(node)) {

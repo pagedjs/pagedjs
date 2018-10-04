@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <title>
+    Break after Avoid
+  </title>
+
+  <script src="../../../../../dist/paged.polyfill.js"></script>
+
+
+  <style>
+    :root {
+      font-size: 18px;
+    }
+
+    @page {
+      size: 6in 8in;
+      margin: 20mm 20mm;
+      /* border: solid 1px black; */
+      @bottom-left {
+        content: counter(page);
+      }
+    }
+
+    section {
+      /* break-before: page;
+      break-after: left; */
+    }
+
+    h1 {
+      break-after: avoid;
+    }
+
+    .break {
+      break-after: avoid;
+    }
+
+    /* style */
+
+    * {
+      font-family: Times New Roman, sans-serif;
+    }
+
+    p {
+      line-height: 22px;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-top: 0;
+      text-transform: uppercase;
+    }
+
+    h2,
+    h3 {
+      font-size: 20px;
+      margin-top: 0;
+    }
+
+
+    /* interface */
+
+    @media screen {
+
+      body {
+        background-color: whitesmoke;
+      }
+
+      .pagedjs_page {
+        margin-bottom: 20px;
+        flex: none;
+        box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
+        background-color: white;
+      }
+
+      .pagedjs_pages {
+        width: calc(var(--width) * 2);
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        transform-origin: 0 0;
+        margin: 0 auto;
+      }
+
+      .pagedjs_first_page {
+        margin-left: 50%;
+      }
+    }
+  </style>
+
+
+
+
+
+</head>
+
+<body>
+  <section>
+    <h1>Section 1: section element</h1>
+    <p>Praesent placerat lectus ac mauris rhoncus, eget iaculis nisl molestie. Etiam posuere luctus ligula quis ornare. Duis semper lectus vel bibendum dapibus. Morbi a lacus eget augue sagittis euismod. Aliquam non leo quis dui bibendum viverra eu vel erat. Fusce iaculis vulputate leo, sit amet laoreet eros aliquam a. Sed id tellus at ligula porttitor pharetra. Morbi non fringilla augue. Cras sodales egestas mi, et porta orci ultricies sed. Sed et nulla a ligula aliquet accumsan non eleifend quam. Aliquam pellentesque, justo vel interdum accumsan, purus ipsum porttitor lectus, ac luctus risus lectus nec lectus. Cras ut augue condimentum, egestas nisi in, dictum erat. Nullam tincidunt tincidunt tempor. Sed in eleifend nibh, sit amet feugiat nisi. Cras at ante ut urna sagittis dictum ut nec elit.</p>
+    <p>In feugiat euismod massa sagittis dictum. Nullam eu nisl eu elit laoreet tincidunt id sed ligula. Praesent vulputate faucibus nibh, ut ultrices nunc aliquam nec. Mauris et condimentum ligula. Vestibulum nec tortor quis urna dictum luctus. Cras quis suscipit metus. Ut dignissim ullamcorper aliquam. Donec condimentum eu tellus at interdum.</p>
+    <p>Proin eu quam id arcu interdum laoreet nec at urna. Vivamus non sem quis dolor sagittis facilisis. Nunc quis urna non neque sollicitudin hendrerit. Vestibulum odio velit, vestibulum vitae elementum convallis, tristique eu est. Sed vitae tortor sed purus accumsan euismod nec finibus lorem. Donec consectetur libero sit amet pretium eleifend. Nulla placerat ipsum sed eros aliquet, at venenatis purus convallis. Pellentesque pulvinar, justo eget tincidunt semper, augue massa placerat enim, non tempus quam erat eu orci. Suspendisse auctor consectetur lectus, a mattis odio. Pellentesque id sem sit amet justo fringilla bibendum id sit amet quam. Vivamus ex est, ultrices non pharetra eu, facilisis nec quam.</p>
+    <p>Etiam molestie sed orci sed suscipit. Donec ipsum est, venenatis ut nisl ut, viverra auctor diam. Cras vestibulum lacus vel nunc dapibus aliquam. Aliquam accumsan lorem rhoncus tortor rhoncus, ut euismod sapien ullamcorper. Vivamus et dictum lacus, eu pellentesque dolor. Suspendisse potenti. Mauris vitae volutpat odio. Duis vitae purus nec enim posuere efficitur at vitae nisl. Etiam enim nisl, rutrum in vestibulum nec, dapibus ut dui. Pellentesque imperdiet molestie ante quis feugiat. Sed nec felis congue, cursus ligula eget, bibendum est. Proin mattis, tortor non lobortis lobortis, nibh quam aliquam neque, sed tristique nibh ex aliquet felis. Phasellus non augue ac ante efficitur consectetur at at est. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+  </section>
+  <section>
+    <h1>Section 2: section element</h1>
+    <p>Aliquam eget massa lobortis, maximus leo ac, iaculis quam. Sed non aliquet eros. Integer ultrices consequat tortor eget ullamcorper. Integer quis justo dignissim, porttitor urna sed, faucibus ex. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur elit tortor, pharetra eu nisl vitae, placerat tempus lorem. Praesent rhoncus venenatis sodales. Cras tempor tempus lacus et pharetra. Phasellus at nulla sed ligula gravida hendrerit. Sed lorem tortor, consectetur id tempus eget, accumsan at eros.</p>
+    <p>Aliquam erat volutpat. Aenean ornare elit magna, et efficitur massa dapibus sit amet. Interdum et malesuada fames ac ante ipsum primis in faucibus. Phasellus ultricies posuere magna. Vestibulum placerat ligula bibendum tempus viverra. Morbi et magna eleifend, scelerisque justo ut, suscipit enim. Vestibulum ex arcu, dictum ut ligula feugiat, fringilla feugiat dui. Aenean velit nisi, consectetur eu mi quis, sollicitudin elementum mauris. Phasellus condimentum eu magna nec sollicitudin. Morbi sed velit mollis, aliquam libero vel, rutrum sapien. Etiam sit amet turpis tincidunt, euismod justo eget, pretium leo. Quisque a blandit justo. Proin dolor leo, semper non rhoncus sit amet, varius ac erat. Donec in lacus nec purus iaculis posuere eget et ligula.</p>
+    <p>Vivamus vel velit vel metus bibendum luctus ut vitae tortor. Nullam at ante eu felis ultrices ultrices at in diam. Pellentesque eleifend leo sapien, vel commodo orci mollis vel. Phasellus placerat fermentum odio. Cras placerat posuere risus et consectetur. Fusce dictum faucibus est quis imperdiet. Ut tristique, enim ultrices scelerisque imperdiet, ex mauris pellentesque arcu, sit amet mattis lacus purus in ligula. Vestibulum rhoncus dapibus orci, sit amet volutpat turpis semper ullamcorper. Nullam tincidunt lacus vel purus molestie fermentum. Fusce dapibus pulvinar vehicula. Pellentesque tempor elementum fermentum. Nunc ex erat, gravida sit amet dictum at, semper ut mi. Vestibulum pulvinar congue eros id faucibus. In non tellus et mi egestas aliquet id non dolor.</p>
+    <p>Nam eros tellus, hendrerit ut rhoncus sed, aliquet et felis. Cras a ex malesuada, fringilla magna elementum, cursus purus. Etiam fringilla leo non diam congue tempor. Ut laoreet, est eget blandit congue, mauris magna cursus sapien, dictum tempus sapien diam et dolor. Vestibulum vel egestas velit. Pellentesque vel consectetur urna, eu consequat odio. Sed ac pretium magna, ut ultrices tortor.</p>
+    <p>Nulla dignissim pellentesque magna ac maximus. Integer id tincidunt erat. Sed elementum posuere augue, quis pharetra mi vehicula in. Nullam rhoncus mi quis lectus gravida dignissim. Pellentesque a tortor ut leo pretium auctor non in massa. Nunc efficitur vestibulum mi, id mattis quam aliquet id. Ut semper tortor sit amet molestie mattis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec laoreet eleifend purus ut sagittis. Nunc consequat vel sapien at convallis. Maecenas sollicitudin quis justo non varius.</p>
+  </section>
+</body>

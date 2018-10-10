@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>
+      Issue #12 problem
+    </title>
+
+
+    <!-- Paged js-->
+    <script src="../../../dist/paged.polyfill.js"></script>
+
+    <style>
+      /* interface */
+
+      @media screen {
+
+        body {
+          background: whitesmoke;
+        }
+
+        .pagedjs_page {
+          background: white;
+          margin-bottom: 10px;
+          box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
+        }
+
+        .pagedjs_pages {
+          width: calc(var(--width) * 2);
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          margin: 0 auto;
+        }
+
+        .pagedjs_first_page {
+          margin-left: 50%;
+        }
+      }
+    </style>
+
+    <style>
+    @page {
+        size: 140mm 205mm;
+        margin: 12mm 12mm;
+
+      }
+
+
+    .section {
+      counter-reset: paragraph
+    }
+
+    .section p:before {
+      /*display:block;*/
+      background-color: red;
+      color: white;
+      font-weight:bold;
+      padding: 3px;
+      margin-right: 3px;
+      content: counter(paragraph) ;
+    }
+
+
+    .section p {
+      counter-increment: paragraph;
+    }
+
+
+
+
+    /* style */
+
+
+    #margin{
+      margin-bottom:130px;
+    }
+
+    h3 {
+      font-family: sans-serif;
+      text-align:center;
+      /*width: auto;*/
+      border: 1px solid black;
+      padding: 4px;
+    }
+
+
+    strong {
+      color: blue;
+    }
+
+    </style>
+  </head>
+  <body>
+
+  <header>
+    <p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam malesuada lacus vehicula massa consequat, maximus faucibus libero laoreet. Nullam maximus, diam consectetur tincidunt gravida, ligula orci venenatis dolor, facilisis dignissim tellus libero vel turpis. Proin in elit mattis, egestas sapien eu, hendrerit est. Pellentesque aliquet dui non lorem pellentesque posuere. Donec et erat efficitur, vulputate erat vitae, rhoncus mi. Aliquam rhoncus sem libero, non luctus ex rutrum non. Proin ligula tortor, lacinia in urna et, suscipit lobortis dui. Praesent lacinia neque eget tincidunt sagittis. Nunc egestas dui ac gravida consequat. Nunc porta viverra massa quis pharetra.
+    </p>
+  </header>
+
+  <section class="section">
+    <h3>This is a new section</h3>
+    <p>
+    <strong>This is PARAGRAPH 1.</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam malesuada lacus vehicula massa consequat, maximus faucibus libero laoreet. Nullam maximus, diam consectetur tincidunt gravida, ligula orci venenatis dolor, facilisis dignissim tellus libero vel turpis. Proin in elit mattis, egestas sapien eu, hendrerit est. Pellentesque aliquet dui non lorem pellentesque posuere. Donec et erat efficitur, vulputate erat vitae, rhoncus mi. Aliquam rhoncus sem libero, non luctus ex rutrum non. Proin ligula tortor, lacinia in urna et, suscipit lobortis dui. Praesent lacinia neque eget tincidunt sagittis. Nunc egestas dui ac gravida consequat. Nunc porta viverra massa quis pharetra.
+    </p>
+    <p id="margin">
+    <strong>This is PARAGRAPH 2.</strong> Integer ipsum felis, tincidunt eu laoreet et, cursus ac quam. Nulla gravida et nibh in elementum. Praesent iaculis eu erat eget sagittis. Curabitur ut neque id nulla dignissim vehicula eu in augue. Donec pulvinar, velit eu cursus rhoncus, mauris turpis venenatis leo, id malesuada tortor enim nec purus. Donec tincidunt, odio vel vestibulum sollicitudin, nibh dolor tempor sapien, ac laoreet sem felis ut purus. Morbi cursus bibendum consectetur. Nullam vel lacus congue nibh pulvinar maximus sit amet eu risus. Curabitur semper odio mauris, nec imperdiet velit pharetra non. Aenean accumsan nulla ac ex iaculis interdum. Curabitur hendrerit lacinia arcu non consequat. Nulla ornare, nibh id fermentum pharetra, dolor ante laoreet ligula, id sodales nunc leo ut libero. Nam ut ipsum sit amet nunc dignissim porta vel sagittis nunc. Vestibulum convallis fringilla ante sit amet ultrices. Vestibulum neque ex, ullamcorper sit amet diam sed, pharetra laoreet sem.
+    </p>
+    <p>
+    <strong>This is PARAGRAPH 3.</strong> Vestibulum velit massa, rhoncus non congue vitae, hendrerit eu metus. Donec lorem nisi, rutrum quis erat id, egestas iaculis ex. Pellentesque lacinia blandit dignissim. Nam at lorem finibus, facilisis orci eu, pellentesque enim. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce fermentum lorem quis finibus mattis. Vestibulum in ipsum cursus, mattis elit ut, sodales libero. Sed blandit iaculis ex, sit amet volutpat massa fringilla sed. Proin porta enim justo, sed hendrerit leo efficitur sit amet. Maecenas ultrices nunc ut mi convallis vestibulum. Morbi imperdiet blandit malesuada. Nulla rhoncus non turpis non gravida. Quisque cursus turpis urna, ac auctor nunc ullamcorper id.
+    </p>
+    <p>
+    <strong>This is PARAGRAPH 4.</strong> Mauris at ligula id risus interdum cursus ut at massa. Fusce ut augue quis lacus maximus placerat at in quam. Ut id sem sed ipsum lobortis laoreet. Sed dictum sodales nisi. Fusce lacus nulla, maximus quis malesuada egestas, egestas ut nulla. Nulla id ultrices felis. Proin molestie quam nec varius vulputate. Nullam luctus sapien massa. Nullam ac dignissim leo. Cras at neque sed neque faucibus ultrices a quis dolor. Donec vestibulum elit sed augue porta, et imperdiet velit sodales. Suspendisse erat nibh, lacinia at varius sed, tempus vitae diam. Suspendisse potenti.
+    </p>
+    <p>
+    <strong>This is PARAGRAPH 5.</strong> Praesent velit massa, placerat in risus vitae, commodo tempor lectus. Donec eget accumsan nisl, gravida ornare dolor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam sed leo vel metus vulputate lobortis. Cras ultricies sagittis metus, nec feugiat turpis rutrum iaculis. Nunc fermentum tristique erat et aliquam. Vivamus ut sagittis quam. Vestibulum fringilla iaculis euismod.
+    </p>
+  </section>
+
+
+
+  <section class="section">
+    <h3>This is an other section</h3>
+    <p>
+    <strong>This is PARAGRAPH 1.</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam malesuada lacus vehicula massa consequat, maximus faucibus libero laoreet. Nullam maximus, diam consectetur tincidunt gravida, ligula orci venenatis dolor, facilisis dignissim tellus libero vel turpis. Proin in elit mattis, egestas sapien eu, hendrerit est. Pellentesque aliquet dui non lorem pellentesque posuere. Donec et erat efficitur, vulputate erat vitae, rhoncus mi. Aliquam rhoncus sem libero, non luctus ex rutrum non. Proin ligula tortor, lacinia in urna et, suscipit lobortis dui. Praesent lacinia neque eget tincidunt sagittis. Nunc egestas dui ac gravida consequat. Nunc porta viverra massa quis pharetra.
+    </p>
+    <p id="margin">
+    <strong>This is PARAGRAPH 2.</strong> Integer ipsum felis, tincidunt eu laoreet et, cursus ac quam. Nulla gravida et nibh in elementum. Praesent iaculis eu erat eget sagittis. Curabitur ut neque id nulla dignissim vehicula eu in augue. Donec pulvinar, velit eu cursus rhoncus, mauris turpis venenatis leo, id malesuada tortor enim nec purus. Donec tincidunt, odio vel vestibulum sollicitudin, nibh dolor tempor sapien, ac laoreet sem felis ut purus. Morbi cursus bibendum consectetur. Nullam vel lacus congue nibh pulvinar maximus sit amet eu risus. Curabitur semper odio mauris, nec imperdiet velit pharetra non. Aenean accumsan nulla ac ex iaculis interdum. Curabitur hendrerit lacinia arcu non consequat. Nulla ornare, nibh id fermentum pharetra, dolor ante laoreet ligula, id sodales nunc leo ut libero. Nam ut ipsum sit amet nunc dignissim porta vel sagittis nunc. Vestibulum convallis fringilla ante sit amet ultrices. Vestibulum neque ex, ullamcorper sit amet diam sed, pharetra laoreet sem.
+    </p>
+    <p>
+    <strong>This is PARAGRAPH 3.</strong> Vestibulum velit massa, rhoncus non congue vitae, hendrerit eu metus. Donec lorem nisi, rutrum quis erat id, egestas iaculis ex. Pellentesque lacinia blandit dignissim. Nam at lorem finibus, facilisis orci eu, pellentesque enim. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce fermentum lorem quis finibus mattis. Vestibulum in ipsum cursus, mattis elit ut, sodales libero. Sed blandit iaculis ex, sit amet volutpat massa fringilla sed. Proin porta enim justo, sed hendrerit leo efficitur sit amet. Maecenas ultrices nunc ut mi convallis vestibulum. Morbi imperdiet blandit malesuada. Nulla rhoncus non turpis non gravida. Quisque cursus turpis urna, ac auctor nunc ullamcorper id.
+    </p>
+    <p>
+    <strong>This is PARAGRAPH 4.</strong> Mauris at ligula id risus interdum cursus ut at massa. Fusce ut augue quis lacus maximus placerat at in quam. Ut id sem sed ipsum lobortis laoreet. Sed dictum sodales nisi. Fusce lacus nulla, maximus quis malesuada egestas, egestas ut nulla. Nulla id ultrices felis. Proin molestie quam nec varius vulputate. Nullam luctus sapien massa. Nullam ac dignissim leo. Cras at neque sed neque faucibus ultrices a quis dolor. Donec vestibulum elit sed augue porta, et imperdiet velit sodales. Suspendisse erat nibh, lacinia at varius sed, tempus vitae diam. Suspendisse potenti.
+    </p>
+    <p>
+    <strong>This is PARAGRAPH 5.</strong> Praesent velit massa, placerat in risus vitae, commodo tempor lectus. Donec eget accumsan nisl, gravida ornare dolor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam sed leo vel metus vulputate lobortis. Cras ultricies sagittis metus, nec feugiat turpis rutrum iaculis. Nunc fermentum tristique erat et aliquam. Vivamus ut sagittis quam. Vestibulum fringilla iaculis euismod.
+    </p>
+  </section>
+
+</body>

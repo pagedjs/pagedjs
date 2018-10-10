@@ -290,7 +290,9 @@ export default `
   list-style: none;
 }
 
-.pagedjs_pages > .pagedjs_page > .pagedjs_area > div [data-split-to] {
+.pagedjs_pages > .pagedjs_page > .pagedjs_area > div p[data-split-to],
+.pagedjs_pages > .pagedjs_page > .pagedjs_area > div blockquote[data-split-to],
+.pagedjs_pages > .pagedjs_page > .pagedjs_area > div li[data-split-to] {
   text-align-last: justify;
 }
 

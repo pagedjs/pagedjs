@@ -290,6 +290,9 @@ export default `
   list-style: none;
 }
 
+.pagedjs_pages > .pagedjs_page > .pagedjs_area > div [data-split-to] {
+  text-align-last: justify;
+}
 
 /*
 [data-page]:not([data-split-from]),

@@ -286,6 +286,11 @@ export default `
   content: unset;
 }
 
+.pagedjs_pages > .pagedjs_page > .pagedjs_area > div li[data-split-from]:first-of-type {
+  list-style: none;
+}
+
+
 /*
 [data-page]:not([data-split-from]),
 [data-break-before="page"]:not([data-split-from]),

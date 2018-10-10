@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>
+      Lists
+    </title>
+
+
+    <!-- Paged js-->
+    <script src="../../../dist/paged.polyfill.js"></script>
+
+    <style>
+      /* interface */
+
+      @media screen {
+
+        body {
+          background: whitesmoke;
+        }
+
+        .pagedjs_page {
+          background: white;
+          margin-bottom: 10px;
+          box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
+        }
+
+        .pagedjs_pages {
+          width: calc(var(--width) * 2);
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          margin: 0 auto;
+        }
+
+        .pagedjs_first_page {
+          margin-left: 50%;
+        }
+      }
+    </style>
+
+    <style>
+    @page {
+      size: 140mm 205mm;
+      margin: 12mm 12mm;
+    }
+
+    h3 {
+      font-family: sans-serif;
+      text-align:center;
+      /*width: auto;*/
+      border: 1px solid black;
+      padding: 4px;
+    }
+
+
+    strong {
+      color: blue;
+    }
+
+    </style>
+  </head>
+  <body>
+  <section>
+    <h3>This is a new section</h3>
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam malesuada lacus vehicula massa consequat, maximus faucibus libero laoreet. Nullam maximus, diam consectetur tincidunt gravida, ligula orci venenatis dolor, facilisis dignissim tellus libero vel turpis. Proin in elit mattis, egestas sapien eu, hendrerit est. Pellentesque aliquet dui non lorem pellentesque posuere. Donec et erat efficitur, vulputate erat vitae, rhoncus mi. Aliquam rhoncus sem libero, non luctus ex rutrum non. Proin ligula tortor, lacinia in urna et, suscipit lobortis dui. Praesent lacinia neque eget tincidunt sagittis. Nunc egestas dui ac gravida consequat. Nunc porta viverra massa quis pharetra.
+    </p>
+    <p>
+      Integer ipsum felis, tincidunt eu laoreet et, cursus ac quam. Nulla gravida et nibh in elementum. Praesent iaculis eu erat eget sagittis. Curabitur ut neque id nulla dignissim vehicula eu in augue. Donec pulvinar, velit eu cursus rhoncus, mauris turpis venenatis leo, id malesuada tortor enim nec purus. Donec tincidunt, odio vel vestibulum sollicitudin, nibh dolor tempor sapien, ac laoreet sem felis ut purus. Morbi cursus bibendum consectetur. Nullam vel lacus congue nibh pulvinar maximus sit amet eu risus. Curabitur semper odio mauris, nec imperdiet velit pharetra non. Aenean accumsan nulla ac ex iaculis interdum. Curabitur hendrerit lacinia arcu non consequat. Nulla ornare, nibh id fermentum pharetra, dolor ante laoreet ligula, id sodales nunc leo ut libero. Nam ut ipsum sit amet nunc dignissim porta vel sagittis nunc. Vestibulum convallis fringilla ante sit amet ultrices. Vestibulum neque ex, ullamcorper sit amet diam sed, pharetra laoreet sem.
+    </p>
+    <p>
+      <ol>
+        <li>Item 1</li>
+        <li>Item 2</li>
+        <li>Item 3</li>
+        <li>Item 4</li>
+        <li>Item 5</li>
+        <li>Item 6</li>
+        <li>Item 7</li>
+        <li>Item 8</li>
+        <li>Item 9</li>
+        <li>Item 10</li>
+      </ol>
+    </p>
+    <p>
+      Integer ipsum felis, tincidunt eu laoreet et, cursus ac quam. Nulla gravida et nibh in elementum. Praesent iaculis eu erat eget sagittis. Curabitur ut neque id nulla dignissim vehicula eu in augue. Donec pulvinar, velit eu cursus rhoncus, mauris turpis venenatis leo, id malesuada tortor enim nec purus. Donec tincidunt, odio vel vestibulum sollicitudin, nibh dolor tempor sapien, ac laoreet sem felis ut purus. Morbi cursus bibendum consectetur. Nullam vel lacus congue nibh pulvinar maximus sit amet eu risus. Curabitur semper odio mauris, nec imperdiet velit pharetra non. Aenean accumsan nulla ac ex iaculis interdum. Curabitur hendrerit lacinia arcu non consequat. Nulla ornare, nibh id fermentum pharetra, dolor ante laoreet ligula, id sodales nunc leo ut libero. Nam ut ipsum sit amet nunc dignissim porta vel sagittis nunc. Vestibulum convallis fringilla ante sit amet ultrices. Vestibulum neque ex, ullamcorper sit amet diam sed, pharetra laoreet sem.
+    </p>
+    <p>
+      <ul>
+					<li>Morbi in sem quis dui placerat ornare. Pellentesque odio nisi, euismod in, pharetra a, ultricies in, diam. Sed arcu. Cras consequat</li>
+					<li>Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus.</li>
+					<li>Phasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus. Nam nulla quam, gravida non, commodo a, sodales sit amet, nisi.</li>
+					<li>Pellentesque fermentum dolor. Aliquam quam lectus, facilisis auctor, ultrices ut, elementum vulputate, nunc.</li>
+					<li>Sed adipiscing ornare risus. Morbi est est, blandit sit amet, sagittis vel, euismod vel, velit. Pellentesque egestas sem. Suspendisse commodo ullamcorper magna.</li>
+					<li>Nulla sed leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+					    Fusce lacinia arcu et nulla. Nulla vitae mauris non felis mollis faucibus.</li>
+					<li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna nibh, viverra non, semper suscipit, posuere a, pede.</li>
+					<li>Donec nec justo eget felis facilisis fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque felis.</li>
+					<li>Morbi in sem quis dui placerat ornare. Pellentesque odio nisi, euismod in, pharetra a, ultricies in, diam. Sed arcu. Cras consequat.</li>
+			</ul>
+    </p>
+  </section>
+</body>

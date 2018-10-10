@@ -5,10 +5,6 @@ class Splits extends Handler {
 		super(chunker, polisher, caller);
 	}
 
-	// layout(pageElement, page) {
-	//
-	// }
-
 	afterPageLayout(pageElement, page, breakToken, chunker) {
 		let splits = Array.from(pageElement.querySelectorAll("[data-split-from]"));
 		let pages = pageElement.parentNode;

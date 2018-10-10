@@ -26,8 +26,7 @@ class Polisher {
 	}
 
 	setup() {
-		this.base = this.addBase();
-		this.inserted.push(this.base);
+		this.base = this.insert(baseStyles);
 		this.styleEl = document.createElement("style");
 		document.head.appendChild(this.styleEl);
 		this.styleSheet = this.styleEl.sheet;
@@ -63,47 +62,30 @@ class Polisher {
 		return await Promise.all(fetched)
 			.then(async (originals) => {
 				let text = "";
-
-				let original, index;
-				let href, sheet;
-
-				for (index = 0; index < originals.length; index++) {
-					original = originals[index];
-
-					href = urls[index];
-
-					sheet = new Sheet(href, this.hooks);
-
-					await sheet.parse(original);
-
-					this.sheets.push(sheet);
-
-					if (typeof sheet.width !== "undefined") {
-						this.width = sheet.width;
-					}
-
-					if (typeof sheet.height !== "undefined") {
-						this.height = sheet.height;
-					}
-
-					if (typeof sheet.orientation !== "undefined") {
-						this.orientation = sheet.orientation;
-					}
-
- 					text += sheet.toString();
+				for (let index = 0; index < originals.length; index++) {
+					text += await this.convertViaSheet(originals[index], urls[index]);
 				}
-
-				let s = this.insert(text);
-				this.inserted.push(s);
-				// console.log(text);
+				this.insert(text);
 				return text;
 			});
 	}
 
-	addBase() {
-		return this.insert(baseStyles);
-	}
+	async convertViaSheet(cssStr, href) {
+		let sheet = new Sheet(href, this.hooks);
+		await sheet.parse(cssStr);
+		this.sheets.push(sheet);
 
+		if (typeof sheet.width !== "undefined") {
+			this.width = sheet.width;
+		}
+		if (typeof sheet.height !== "undefined") {
+			this.height = sheet.height;
+		}
+		if (typeof sheet.orientation !== "undefined") {
+			this.orientation = sheet.orientation;
+		}
+		return sheet.toString();
+	}
 
 	insert(text){
 		let head = document.querySelector("head");
@@ -115,6 +97,7 @@ class Polisher {
 
 		head.appendChild(style);
 
+		this.inserted.push(style);
 		return style;
 	}
 

@@ -292,7 +292,7 @@ export function *words(node) {
 
 	while(currentOffset < max) {
 			currentLetter = currentText[currentOffset];
-		 if (/^\S$/.test(currentLetter)) {
+		 if (/^[\S\u202F\u00A0]$/.test(currentLetter)) {
 			 if (!range) {
 				 range = document.createRange();
 				 range.setStart(node, currentOffset);

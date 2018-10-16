@@ -257,8 +257,6 @@ class Layout {
       parent = findElement(renderedNode, source);
       index = indexOf(container);
       node = child(parent, index);
-      startOffset = container.textContent.slice(offset);
-      offset = parent.textContent.indexOf(startOffset);
     }
 
     if (!node) {
@@ -318,7 +316,7 @@ class Layout {
         let pos = getBoundingClientRect(node);
         let left = Math.floor(pos.left);
         let right = Math.floor(pos.right);
-        // console.log(node);
+
         if (!range && left >= end) {
           // Check if it is a float
           let isFloat = false;
@@ -365,7 +363,6 @@ class Layout {
 
         // Skip children
         if (skip || right < end) {
-
           next = nodeAfter(node, rendered);
           if (next) {
             walker = walk(next, rendered);

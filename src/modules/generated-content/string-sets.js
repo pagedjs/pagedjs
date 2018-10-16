@@ -55,6 +55,7 @@ class StringSets extends Handler {
 					// this.styleSheet.insertRule(`:root { --string-${name}: "${cssVar}"; }`, this.styleSheet.cssRules.length);
 					// fragment.style.setProperty(`--string-${name}`, `"${cssVar}"`);
 					set.first = cssVar;
+					fragment.style.setProperty(`--string-${name}`, `"${set.first}"`);
 				} else {
 					console.log(set.value + "needs css replacement");
 				}

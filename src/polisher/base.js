@@ -318,6 +318,10 @@ export default `
   content: none !important;
 }
 
+img {
+  height: auto;
+}
+
 @media print {
   html {
     width: 100%;

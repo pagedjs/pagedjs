@@ -328,7 +328,7 @@ class Layout {
             skip = styles.getPropertyValue("break-inside") === "avoid";
             breakAvoid = node.dataset.breakBefore === "avoid" || node.dataset.previousBreakAfter === "avoid";
             prev = breakAvoid && nodeBefore(node, rendered);
-            br = node.tagName === "BR";
+            br = node.tagName === "BR" || node.tagName === "WBR";
           }
 
           if (prev) {

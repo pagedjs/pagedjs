@@ -1,5 +1,5 @@
 import Handler from "../handler";
-import { UUID, attr } from "../../utils/utils";
+import { UUID, attr, querySelectorEscape } from "../../utils/utils";
 import csstree from 'css-tree';
 
 class TargetText extends Handler {
@@ -65,7 +65,7 @@ class TargetText extends Handler {
 			let queried = fragment.querySelectorAll(query);
 			queried.forEach((selected, index) => {
 				let val = attr(selected, target.args);
-				let element = fragment.querySelector(CSS.escape(val));
+				let element = fragment.querySelector(querySelectorEscape(val));
 				if (element) {
 					if (target.style === "content") {
 						let text = element.textContent;

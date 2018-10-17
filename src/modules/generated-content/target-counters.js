@@ -1,5 +1,5 @@
 import Handler from "../handler";
-import { UUID, attr } from "../../utils/utils";
+import { UUID, attr, querySelectorEscape } from "../../utils/utils";
 import csstree from 'css-tree';
 
 class TargetCounters extends Handler {
@@ -71,7 +71,7 @@ class TargetCounters extends Handler {
 					return;
 				}
 				let val = attr(selected, target.args);
-				let element = chunker.pagesArea.querySelector(CSS.escape(val));
+				let element = chunker.pagesArea.querySelector(querySelectorEscape(val));
 
 				if (element) {
 					let selector = UUID();

@@ -3,8 +3,6 @@ import baseStyles from './base';
 import { UUID } from '../utils/utils';
 import Hook from "../utils/hook";
 
-import "css.escape"; // polyfill for CSS.escape
-
 class Polisher {
 	constructor(setup) {
 		this.sheets = [];

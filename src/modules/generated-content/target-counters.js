@@ -71,7 +71,7 @@ class TargetCounters extends Handler {
 					return;
 				}
 				let val = attr(selected, target.args);
-				let element = chunker.pagesArea.querySelector(val);
+				let element = chunker.pagesArea.querySelector(CSS.escape(val));
 
 				if (element) {
 					let selector = UUID();

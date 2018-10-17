@@ -13,6 +13,21 @@ export function getBoundingClientRect(element) {
 	return rect;
 }
 
+export function getClientRects(element) {
+	if (!element) {
+		return;
+	}
+	let rect;
+	if (typeof element.getClientRects !== "undefined") {
+		rect = element.getClientRects();
+	} else {
+		let range = document.createRange();
+		range.selectNode(element);
+		rect = range.getClientRects();
+	}
+	return rect;
+}
+
 /**
  * Generates a UUID
  * based on: http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript

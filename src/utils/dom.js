@@ -480,8 +480,24 @@ export function isVisible(node) {
 	if (isElement(node) && window.getComputedStyle(node).display !== "none") {
 		return true;
 	} else if (isText(node) &&
-			node.textContent.trim().length &&
+			hasTextContent(node) &&
 			window.getComputedStyle(node.parentNode).display !== "none") {
+		return true;
+	}
+	return false;
+}
+
+export function hasTextContent(node) {
+	if (isElement(node)) {
+		let child;
+		for (var i = 0; i < node.childNodes.length; i++) {
+			child = node.childNodes[i];
+			if (child && isText(child) && child.textContent.trim().length) {
+				return true;
+			}
+		}
+	} else if (isText(node) &&
+			node.textContent.trim().length) {
 		return true;
 	}
 	return false;

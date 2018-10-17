@@ -18,6 +18,7 @@ import {
   child,
   isVisible,
   isContainer,
+  hasTextContent,
   validNode,
   prevValidNode,
   nextValidNode,
@@ -110,7 +111,7 @@ class Layout {
 
       // Check if layout has content yet
       if (!hasContent) {
-        hasContent = isVisible(node);
+        hasContent = hasTextContent(node);
       }
 
       // Skip to the next node if a deep clone was rendered

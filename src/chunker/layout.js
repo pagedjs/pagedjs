@@ -1,4 +1,4 @@
-import { getBoundingClientRect } from "../utils/utils";
+import { getBoundingClientRect, getClientRects } from "../utils/utils";
 import {
   walk,
   nodeAfter,
@@ -303,7 +303,7 @@ class Layout {
 
     // Find Start
     let startContainer, startOffset;
-    let next, done, node, offset, skip, breakAvoid, prev;
+    let next, done, node, offset, skip, breakAvoid, prev, br;
     while (!done) {
       next = walker.next();
       done = next.done;
@@ -311,6 +311,7 @@ class Layout {
       skip = false;
       breakAvoid = false;
       prev = undefined;
+      br = undefined;
 
       if (node) {
         let pos = getBoundingClientRect(node);
@@ -320,12 +321,14 @@ class Layout {
         if (!range && left >= end) {
           // Check if it is a float
           let isFloat = false;
-          if (isElement(node)) {
+
+          if (isElement(node) ) {
             let styles = window.getComputedStyle(node);
             isFloat = styles.getPropertyValue("float") !== "none";
             skip = styles.getPropertyValue("break-inside") === "avoid";
             breakAvoid = node.dataset.breakBefore === "avoid" || node.dataset.previousBreakAfter === "avoid";
             prev = breakAvoid && nodeBefore(node, rendered);
+            br = node.tagName === "BR";
           }
 
           if (prev) {
@@ -334,7 +337,7 @@ class Layout {
             break;
           }
 
-          if (!isFloat && isElement(node)) {
+          if (!br && !isFloat && isElement(node)) {
             range = document.createRange();
             range.setStartBefore(node);
             break;
@@ -349,16 +352,29 @@ class Layout {
         }
 
         if (!range && isText(node) &&
-            right > end && node.textContent.trim().length &&
+            node.textContent.trim().length &&
             window.getComputedStyle(node.parentNode)["break-inside"] !== "avoid") {
-          range = document.createRange();
-          offset = this.textBreak(node, start, end);
-          if (!offset) {
-            range = undefined;
-          } else {
-            range.setStart(node, offset);
+
+          let rects = getClientRects(node);
+          let rect;
+          left = 0;
+          for (var i = 0; i != rects.length; i++) {
+            rect = rects[i];
+            if (!left || rect.left > left) {
+              left = rect.left;
+            }
           }
-          break;
+
+          if(left >= end) {
+            range = document.createRange();
+            offset = this.textBreak(node, start, end);
+            if (!offset) {
+              range = undefined;
+            } else {
+              range.setStart(node, offset);
+            }
+            break;
+          }
         }
 
         // Skip children

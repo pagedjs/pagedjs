@@ -18,6 +18,7 @@ import {
   child,
   isVisible,
   isContainer,
+  hasContent,
   hasTextContent,
   validNode,
   prevValidNode,
@@ -62,7 +63,7 @@ class Layout {
     let done;
     let next;
 
-    let hasContent = false;
+    let hasRenderedContent = false;
     let newBreakToken;
 
     let check = 0;
@@ -94,7 +95,7 @@ class Layout {
       this.hooks && this.hooks.layoutNode.trigger(node);
 
       // Check if the rendered element has a break set
-      if (hasContent && this.shouldBreak(node)) {
+      if (hasRenderedContent && this.shouldBreak(node)) {
         newBreakToken = this.findBreakToken(wrapper, source, bounds);
 
         if (!newBreakToken) {
@@ -110,8 +111,8 @@ class Layout {
       let rendered = this.append(node, wrapper, breakToken, shallow);
 
       // Check if layout has content yet
-      if (!hasContent) {
-        hasContent = hasTextContent(node);
+      if (!hasRenderedContent) {
+        hasRenderedContent = hasContent(node);
       }
 
       // Skip to the next node if a deep clone was rendered
@@ -142,7 +143,15 @@ class Layout {
   }
 
   shouldBreak(node) {
-    return needsBreakBefore(node) || needsPreviousBreakAfter(node) || needsPageBreak(node);
+    let parentNode = node.parentNode;
+    let parentBreakBefore = needsBreakBefore(node) && parentNode && needsBreakBefore(parentNode);
+    let doubleBreakBefore;
+
+    if (parentBreakBefore) {
+      doubleBreakBefore = node.dataset.breakBefore === parentNode.dataset.breakBefore;
+    }
+
+    return !doubleBreakBefore && needsBreakBefore(node) || needsPreviousBreakAfter(node) || needsPageBreak(node);
   }
 
   getStart(source, breakToken) {

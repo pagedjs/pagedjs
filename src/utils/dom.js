@@ -487,6 +487,16 @@ export function isVisible(node) {
 	return false;
 }
 
+export function hasContent(node) {
+	if (isElement(node)) {
+		return true;
+	} else if (isText(node) &&
+			node.textContent.trim().length) {
+		return true;
+	}
+	return false;
+}
+
 export function hasTextContent(node) {
 	if (isElement(node)) {
 		let child;

@@ -152,7 +152,6 @@ export function querySelectorEscape(value) {
 	var firstCodeUnit = string.charCodeAt(0);
 	while (++index < length) {
 		codeUnit = string.charCodeAt(index);
-		console.log("codeUnit", codeUnit, string.charAt(index));
 		// Note: there’s no need to special-case astral symbols, surrogate
 		// pairs, or lone surrogates.
 

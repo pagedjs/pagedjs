@@ -143,8 +143,9 @@ class Layout {
   }
 
   shouldBreak(node) {
+    let previousSibling = node.previousSibling;
     let parentNode = node.parentNode;
-    let parentBreakBefore = needsBreakBefore(node) && parentNode && needsBreakBefore(parentNode);
+    let parentBreakBefore = needsBreakBefore(node) && parentNode && !previousSibling && needsBreakBefore(parentNode);
     let doubleBreakBefore;
 
     if (parentBreakBefore) {

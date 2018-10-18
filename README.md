@@ -1,5 +1,10 @@
+<p style="text-align: center; margin: 4em 0">
+<img src="assets/pagedjs.svg" alt="Paged.js logo - pagination in the browser"/></p>
+
 Paged.js - Paged Media Tools
 ===========
+
+
 
 ## NPM Module
 ```sh
@@ -199,3 +204,12 @@ The tests and specs can be run within the container by passing a `seccomp` file 
 ```bash
 docker run -it --security-opt 'seccomp=seccomp.json' pagedmedia/pagedjs npm test
 ```
+
+## Contributors 
+
+### Core team
+The core team behind paged.js includes [Adam Hyde](https://adamhyde.net), [Julie Blanc](http://julie-blanc.fr/), [Fred Chasen](http://fchasen.com/) & Julien Taquet.
+
+## Licence
+
+MIT License (MIT), which you can read [here](LICENCE.html)

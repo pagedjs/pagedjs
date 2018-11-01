@@ -211,4 +211,4 @@ The core team behind paged.js includes [Adam Hyde](https://adamhyde.net), [Julie
 
 ## Licence
 
-MIT License (MIT), which you can read [here](LICENCE.md)
+MIT License (MIT), which you can read [here](https://gitlab.pagedmedia.org/tools/pagedjs/blob/master/LICENSE.md)

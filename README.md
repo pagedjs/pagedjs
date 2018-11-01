@@ -1,4 +1,3 @@
-
 <img style="display: block; margin: 5em 0 auto;" src="https://www.pagedmedia.org/wp-content/uploads/2018/11/pagedjs.png" alt="Paged.js logo - pagination in the browser"/>
 
 Paged.js - Paged Media Tools
@@ -212,4 +211,4 @@ The core team behind paged.js includes [Adam Hyde](https://adamhyde.net), [Julie
 
 ## Licence
 
-MIT License (MIT), which you can read [here](LICENCE.html)
+MIT License (MIT), which you can read [here](LICENCE.md)

@@ -1,5 +1,5 @@
-<p style="text-align: center; margin: 4em 0">
-<img src="assets/pagedjs.svg" alt="Paged.js logo - pagination in the browser"/></p>
+
+<img style="display: block; margin: 5em 0 auto;" src="https://www.pagedmedia.org/wp-content/uploads/2018/11/pagedjs.png" alt="Paged.js logo - pagination in the browser"/>
 
 Paged.js - Paged Media Tools
 ===========

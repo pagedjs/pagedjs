@@ -91,6 +91,7 @@ class Chunker {
 
 		this.pageTemplate = document.createElement("template");
 		this.pageTemplate.innerHTML = TEMPLATE;
+
 	}
 
 	async flow(content, renderTo) {
@@ -107,6 +108,10 @@ class Chunker {
 		this.emit("rendering", content);
 
 		await this.hooks.afterParsed.trigger(parsed, this);
+
+		if (typeof document.fonts.ready !== "undefined") {
+			await document.fonts.ready;
+		}
 
 		await this.render(parsed, renderTo);
 

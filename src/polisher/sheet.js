@@ -136,7 +136,7 @@ class Sheet {
 		csstree.walk(ast, {
 			visit: 'Url',
 			enter: (node, item, list) => {
-				let href = node.value.value.replace(/["|']/g, '');
+				let href = node.value.value.replace(/["']/g, '');
 				let url = new URL(href, this.url)
 				node.value.value = url.toString();
 			}

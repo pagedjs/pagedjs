@@ -11,8 +11,6 @@ class Page {
     this.pageTemplate = pageTemplate;
     this.blank = blank;
 
-    // this.mapper = new Mapping(undefined, undefined, undefined, true);
-
     this.width = undefined;
     this.height = undefined;
 
@@ -111,28 +109,34 @@ class Page {
   }
   */
 
-  layout(contents, breakToken) {
-    // console.log("layout page", this.id);
+  async layout(contents, breakToken) {
+
     this.clear();
+
+    this.startToken = breakToken;
 
     this.layoutMethod = new Layout(this.area, this.hooks);
 
-    breakToken = this.layoutMethod.renderTo(this.wrapper, contents, breakToken);
+    let newBreakToken = await this.layoutMethod.renderTo(this.wrapper, contents, breakToken);
 
     this.addListeners(contents);
 
-    return breakToken;
+    this.endToken = newBreakToken;
+
+    return newBreakToken;
   }
 
-  append(contents, breakToken) {
+  async append(contents, breakToken) {
 
     if (!this.layoutMethod) {
       return this.layout(contents, breakToken);
     }
 
-    breakToken = this.layoutMethod.renderTo(this.wrapper, contents, breakToken);
+    let newBreakToken = await this.layoutMethod.renderTo(this.wrapper, contents, breakToken);
 
-    return breakToken;
+    this.endToken = newBreakToken;
+
+    return newBreakToken;
   }
 
   getByParent(ref, entries) {
@@ -170,7 +174,7 @@ class Page {
     // TODO: fall back to mutation observer?
 
 
-    // Key scroll width from changing
+    // Keep scroll left from changing
     this.element.addEventListener("scroll", () => {
       if(this.listening) {
         this.element.scrollLeft = 0;
@@ -229,6 +233,7 @@ class Page {
     let newBreakToken = this.layoutMethod.findBreakToken(this.wrapper, contents);
 
     if (newBreakToken) {
+      this.endToken = newBreakToken;
       this._onOverflow && this._onOverflow(newBreakToken);
     }
   }
@@ -247,8 +252,11 @@ class Page {
     }
   }
 
+
   destroy() {
     this.removeListeners();
+
+    this.element.remove();
 
     this.element = undefined;
     this.wrapper = undefined;

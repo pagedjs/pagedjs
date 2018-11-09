@@ -219,3 +219,23 @@ export function querySelectorEscape(value) {
 	}
 	return result;
 }
+
+/**
+ * Creates a new pending promise and provides methods to resolve or reject it.
+ * From: https://developer.mozilla.org/en-US/docs/Mozilla/JavaScript_code_modules/Promise.jsm/Deferred#backwards_forwards_compatible
+ */
+export function defer() {
+	this.resolve = null;
+
+	this.reject = null;
+
+	this.id = UUID();
+
+	this.promise = new Promise((resolve, reject) => {
+		this.resolve = resolve;
+		this.reject = reject;
+	});
+	Object.freeze(this);
+}
+
+export const requestIdleCallback = 'requestIdleCallback' in window ? window.requestIdleCallback : window.requestAnimationFrame;

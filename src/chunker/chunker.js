@@ -2,10 +2,16 @@ import Page from "./page";
 import ContentParser from "./parser";
 import EventEmitter from "event-emitter";
 import Hook from "../utils/hook";
+import Queue from "../utils/queue";
 import {
 	needsBreakBefore,
 	needsBreakAfter
 } from "../utils/dom";
+import {
+	requestIdleCallback,
+	defer
+} from "../utils/utils";
+
 const MAX_PAGES = false;
 
 const TEMPLATE = `<div class="pagedjs_page">
@@ -48,8 +54,6 @@ const TEMPLATE = `<div class="pagedjs_page">
 	</div>
 </div>`;
 
-const _requestIdleCallback = 'requestIdleCallback' in window ? requestIdleCallback : requestAnimationFrame;
-
 /**
  * Chop up text into flows
  * @class
@@ -71,6 +75,9 @@ class Chunker {
 
 		this.pages = [];
 		this._total = 0;
+
+		this.q = new Queue(this);
+		this.stopped = false;
 
 		this.content = content;
 
@@ -102,18 +109,28 @@ class Chunker {
 		parsed = new ContentParser(content);
 
 		this.source = parsed;
+		this.breakToken = undefined;
 
-		this.setup(renderTo);
+		if (this.pagesArea && this.pageTemplate) {
+			this.q.clear();
+			this.removePages();
+		} else {
+			this.setup(renderTo);
+		}
 
 		this.emit("rendering", content);
 
 		await this.hooks.afterParsed.trigger(parsed, this);
 
-		if (typeof document.fonts.ready !== "undefined") {
-			await document.fonts.ready;
+		await this.loadFonts();
+
+		let rendered = await this.render(parsed, this.breakToken);
+		while (rendered.canceled) {
+			this.start();
+			rendered = await this.render(parsed, this.breakToken);
 		}
 
-		await this.render(parsed, renderTo);
+		this.rendered = true;
 
 		await this.hooks.afterRendered.trigger(this.pages, this);
 
@@ -122,25 +139,70 @@ class Chunker {
 		return this;
 	}
 
-	async render(parsed, renderTo) {
-		let renderer = this.layout(parsed);
+	// oversetPages() {
+	// 	let overset = [];
+	// 	for (let i = 0; i < this.pages.length; i++) {
+	// 		let page = this.pages[i];
+	// 		if (page.overset) {
+	// 			overset.push(page);
+	// 			// page.overset = false;
+	// 		}
+	// 	}
+	// 	return overset;
+	// }
+	//
+	// async handleOverset(parsed) {
+	// 	let overset = this.oversetPages();
+	// 	if (overset.length) {
+	// 		console.log("overset", overset);
+	// 		let index = this.pages.indexOf(overset[0]) + 1;
+	// 		console.log("INDEX", index);
+	//
+	// 		// Remove pages
+	// 		// this.removePages(index);
+	//
+	// 		// await this.render(parsed, overset[0].overset);
+	//
+	// 		// return this.handleOverset(parsed);
+	// 	}
+	// }
+
+	async render(parsed, startAt) {
+		let renderer = this.layout(parsed, startAt);
 
 		let done = false;
 		let result;
 
 		while (!done) {
-			result = await this.renderOnIdle(renderer);
+			result = await this.q.enqueue(async () => { return this.renderOnIdle(renderer) });
 			done = result.done;
 		}
 
-		return this;
+		return result;
+	}
+
+	start() {
+		this.rendered = false;
+		this.stopped = false;
+	}
+
+	stop() {
+		this.stopped = true;
+		this.q.clear();
 	}
 
 	renderOnIdle(renderer) {
 		return new Promise(resolve => {
-			_requestIdleCallback(() => {
-				let result = renderer.next();
-				resolve(result);
+			requestIdleCallback(async () => {
+				if (this.stopped) {
+					return resolve({ done: true, canceled: true });
+				}
+				let result = await renderer.next();
+				if (this.stopped) {
+					resolve({ done: true, canceled: true });
+				} else {
+					resolve(result);
+				}
 			});
 		});
 	}
@@ -197,8 +259,8 @@ class Chunker {
 		}
 	}
 
-	async *layout(content) {
-		let breakToken = false;
+	async *layout(content, startAt) {
+		let breakToken = startAt || false;
 
 		while (breakToken !== undefined && (MAX_PAGES ? this.total < MAX_PAGES : true)) {
 
@@ -214,9 +276,7 @@ class Chunker {
 			this.emit("page", page);
 
 			// Layout content in the page, starting from the breakToken
-			breakToken = page.layout(content, breakToken);
-
-			// await this.hooks.layout.trigger(page.element, page, breakToken, this);
+			breakToken = await page.layout(content, breakToken);
 
 			await this.hooks.afterPageLayout.trigger(page.element, page, breakToken, this);
 			this.emit("renderedPage", page);
@@ -225,8 +285,24 @@ class Chunker {
 
 			// Stop if we get undefined, showing we have reached the end of the content
 		}
+	}
 
-		this.rendered = true;
+	removePages(fromIndex=0) {
+
+		if (fromIndex >= this.pages.length) {
+			return;
+		}
+
+		// Remove pages
+		for (let i = fromIndex; i < this.pages.length; i++) {
+			this.pages[i].destroy();
+		}
+
+		if (fromIndex > 0) {
+			this.pages.splice(fromIndex);
+		} else {
+			this.pages = [];
+		}
 	}
 
 	addPage(blank) {
@@ -245,16 +321,24 @@ class Chunker {
 			page.onOverflow((overflowToken) => {
 				// console.log("overflow on", page.id, overflowToken);
 				let index = this.pages.indexOf(page) + 1;
-				if (index < this.pages.length &&
-						(this.pages[index].breakBefore || this.pages[index].previousBreakAfter)) {
-					let newPage = this.insertPage(index - 1);
-					newPage.layout(this.source, overflowToken);
-				} else if (index < this.pages.length) {
-					this.pages[index].layout(this.source, overflowToken);
-				} else {
-					let newPage = this.addPage();
-					newPage.layout(this.source, overflowToken);
-				}
+
+				// Stop the rendering
+				this.stop();
+
+				// Set the breakToken to resume at
+				this.breakToken = overflowToken;
+
+				// Remove pages
+				this.removePages(index);
+
+				this.q.enqueue(async () => {
+
+					if (this.rendered) {
+						this.start();
+						this.render(this.source, this.breakToken);
+					}
+
+				});
 			});
 
 			page.onUnderflow((overflowToken) => {
@@ -265,11 +349,11 @@ class Chunker {
 			});
 		}
 
-		this.total += 1;
+		this.total = this.pages.length;
 
 		return page;
 	}
-
+	/*
 	insertPage(index, blank) {
 		let lastPage = this.pages[index];
 		// Create a new page from the template
@@ -306,6 +390,7 @@ class Chunker {
 
 		return page;
 	}
+	*/
 
 	get total() {
 		return this._total;
@@ -314,6 +399,16 @@ class Chunker {
 	set total(num) {
 		this.pagesArea.style.setProperty('--page-count', num);
 		this._total = num;
+	}
+
+	loadFonts() {
+		let fontPromises = [];
+		for (let fontFace of document.fonts.values()) {
+			if (fontFace.status !== "loaded") {
+				fontPromises.push(fontFace.load());
+			}
+		}
+		return Promise.all(fontPromises);
 	}
 
 	destroy() {

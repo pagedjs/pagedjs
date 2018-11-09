@@ -55,7 +55,7 @@ class Layout {
 
   }
 
-  renderTo(wrapper, source, breakToken, bounds=this.bounds) {
+  async renderTo(wrapper, source, breakToken, bounds=this.bounds) {
     let start = this.getStart(source, breakToken);
     let walker = walk(start, source);
 
@@ -78,24 +78,18 @@ class Layout {
         return newBreakToken;
       }
 
-      /*
-      let exists;
-      if (isElement(node)) {
-        exists = findElement(node, wrapper);
-      } else {
-        exists = false;
-      }
-
-      if (exists) {
-        console.log("found", exists);
-        break;
-      }
-      */
-
       this.hooks && this.hooks.layoutNode.trigger(node);
 
       // Check if the rendered element has a break set
       if (hasRenderedContent && this.shouldBreak(node)) {
+
+        this.hooks && this.hooks.layout.trigger(wrapper, this);
+
+        let imgs = wrapper.querySelectorAll("img");
+        if (imgs.length) {
+          await this.waitForImages(imgs);
+        }
+
         newBreakToken = this.findBreakToken(wrapper, source, bounds);
 
         if (!newBreakToken) {
@@ -125,6 +119,11 @@ class Layout {
         check = 0;
 
         this.hooks && this.hooks.layout.trigger(wrapper, this);
+
+        let imgs = wrapper.querySelectorAll("img");
+        if (imgs.length) {
+          await this.waitForImages(imgs);
+        }
 
         newBreakToken = this.findBreakToken(wrapper, source, bounds);
       }
@@ -202,6 +201,31 @@ class Layout {
     this.hooks && this.hooks.renderNode.trigger(clone);
 
     return clone;
+  }
+
+  async waitForImages(imgs) {
+    let results = Array.from(imgs).map(async (img) => {
+      return this.awaitImageLoaded(img);
+    });
+    await Promise.all(results);
+  }
+
+  async awaitImageLoaded(image) {
+    return new Promise(resolve => {
+      if (image.complete !== true) {
+        image.onload = function() {
+          let { width, height } = window.getComputedStyle(image);
+          resolve(width, height);
+        };
+        image.onerror = function(e) {
+          let { width, height } = window.getComputedStyle(image);
+          resolve(width, height, e);
+        };
+      } else {
+        let { width, height } = window.getComputedStyle(image);
+        resolve(width, height);
+      }
+    });
   }
 
   avoidBreakInside(node, limiter) {
@@ -297,9 +321,9 @@ class Layout {
   }
 
   hasOverflow(element, bounds=this.bounds) {
-    let constrainingElement = element.parentNode; // this gets the element, instead of the wrapper for the width workaround
+    let constrainingElement = element && element.parentNode; // this gets the element, instead of the wrapper for the width workaround
     let { width } = element.getBoundingClientRect();
-    let { scrollWidth } = constrainingElement;
+    let scrollWidth = constrainingElement ? constrainingElement.scrollWidth : 0;
     return Math.max(Math.floor(width), scrollWidth) > Math.round(bounds.width);
   }
 

@@ -405,10 +405,18 @@ class Chunker {
 		let fontPromises = [];
 		for (let fontFace of document.fonts.values()) {
 			if (fontFace.status !== "loaded") {
-				fontPromises.push(fontFace.load());
+				let fontLoaded = fontFace.load().then((r) => {
+					return fontFace.family;
+				}, (r) => {
+					console.warn("Failed to preload font-family:", fontFace.family);
+					return fontFace.family;
+				})
+				fontPromises.push(fontLoaded);
 			}
 		}
-		return Promise.all(fontPromises);
+		return Promise.all(fontPromises).catch((err) => {
+			console.warn(err)
+		})
 	}
 
 	destroy() {

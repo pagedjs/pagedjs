@@ -1,4 +1,5 @@
 import { UUID } from "../utils/utils";
+import { isElement } from "../utils/dom";
 
 /**
  * Render a flow of text offscreen
@@ -77,6 +78,15 @@ class ContentParser {
 			{ acceptNode: function(node) {
 				// Only remove more than a single space
 				if (node.textContent.length > 1 && !node.textContent.trim()) {
+
+					// Don't touch whitespace if text is preformated
+					let parent = node.parentNode;
+					let pre = isElement(parent) && parent.closest("pre");
+					console.log(pre);
+					if (pre) {
+						return NodeFilter.FILTER_REJECT;
+					}
+
 					return NodeFilter.FILTER_ACCEPT;
 				} else {
 					return NodeFilter.FILTER_REJECT;

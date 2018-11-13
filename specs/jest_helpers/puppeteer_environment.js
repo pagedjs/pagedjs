@@ -45,14 +45,25 @@ class PuppeteerEnvironment extends NodeEnvironment {
 
 	async loadPage(path) {
 		let page = await this.global.browser.newPage();
-		page.addListener('pageerror', this.handleError);
-		page.addListener('error', this.handleError);
-
 		let renderedResolve, renderedReject;
 		page.rendered = new Promise(function(resolve, reject) {
 			renderedResolve = resolve;
 			renderedReject = reject;
 		});
+
+		page.addListener('pageerror', (error) => {
+			this.handleError(error);
+			renderedReject(error);
+		});
+
+		page.addListener('error', (error) => {
+			this.handleError(error);
+			renderedReject(error);
+		});
+
+		// await page.exposeFunction('PuppeteerLogger', (msg, counter) => {
+		// 	console.log(msg, counter);
+		// });
 
 		await page.exposeFunction('onPagesRendered', (msg, width, height, orientation) => {
 			renderedResolve(msg, width, height, orientation);

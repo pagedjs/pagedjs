@@ -1,10 +1,10 @@
 const TIMEOUT = 10000;
 
-describe('issue-74', async () => {
+describe('roman-numerals', async () => {
 		let page;
 		let rendered;
 		beforeAll(async () => {
-			page = await loadPage('issues/issue-74/issue-74.html')
+			page = await loadPage('issues/roman-numerals/roman-numerals.html')
 			return page.rendered;
 		}, TIMEOUT)
 
@@ -18,7 +18,7 @@ describe('issue-74', async () => {
 			let pages = await page.$$eval(".pagedjs_page", (r) => {
 				return r.length;
 			});
-
+			console.log("pages", pages)
 			expect(pages).toEqual(5);
 		})
 

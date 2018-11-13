@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    Reset counter page
+  </title>
+
+  <script src="../../../dist/paged.polyfill.js"></script>
+
+  <style>
+    :root{
+      font-size: 18px;
+    }
+
+    @page {
+      size: 6in 8in;
+      margin: 20mm 20mm;
+
+    }
+
+    @page frontmatter {
+      @bottom-right {
+        content: counter(page, lower-roman);
+      }
+    }
+
+    @page main {
+      @top-right {
+        content: counter(page);
+      }
+    }
+
+    /* @page main:first {
+      counter-reset: page;
+    } */
+
+    .front-matter, .toc {
+      page: frontmatter;
+    }
+
+    .chapter {
+      page: main;
+    }
+
+    #first-chapter {
+      counter-reset: page 1;
+    }
+
+    p {
+      line-height: 22px;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-top: 0;
+    }
+
+    a {
+      text-decoration: none;
+      color: currentColor;
+    }
+
+    nav a::after {
+      content: target-counter(attr(href), page);
+      float: right;
+    }
+
+    nav a.roman::after {
+      float: right;
+      content: target-counter(attr(href), page, lower-roman);
+    }
+  </style>
+
+  <style>
+    /* interface */
+
+    @media screen {
+
+      body {
+        background: whitesmoke;
+      }
+
+      .pagedjs_page {
+        background: white;
+        margin-bottom: 10px;
+        box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
+      }
+
+      .pagedjs_pages {
+        width: calc(var(--width) * 2);
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        margin: 0 auto;
+      }
+
+      .pagedjs_first_page {
+        margin-left: 50%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="front-matter" id="foreword">
+    <h1>Foreword</h1>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean eros sapien, iaculis eget
+      egestas eu, tempus eu tellus. Aliquam in facilisis sapien. Nulla blandit, ligula vel auctor
+      facilisis, quam felis rhoncus arcu, non rhoncus nulla felis sed est. Pellentesque ac velit
+      arcu, placerat dignissim augue. Nulla vitae tortor in elit ultrices dictum. Quisque eget
+      massa at nisl malesuada sodales sed id est. Pellentesque vehicula venenatis justo, sit amet
+      vehicula leo laoreet eget. Donec vel urna quis metus feugiat vulputate eget ut urna. In
+      tristique semper diam ut adipiscing. Fusce sagittis congue purus scelerisque hendrerit.
+      Donec sit amet interdum massa.</p>
+  </section>
+  <section class="toc" id="TOC">
+    <nav>
+      <h1>Table of contents</h1>
+      <ul>
+        <li><a id="toc-preface" href="#preface" class="roman">Preface</a></li>
+        <li><a id="toc-first-chapter" href="#first-chapter">First Chapter</a></li>
+        <li><a href="#second-chapter">Second Chapter</a></li>
+      </ul>
+    </nav>
+  </section>
+  <section class="front-matter" id="preface">
+    <h1>Preface</h1>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean eros sapien, iaculis eget
+      egestas eu, tempus eu tellus. Aliquam in facilisis sapien. Nulla blandit, ligula vel auctor
+      facilisis, quam felis rhoncus arcu, non rhoncus nulla felis sed est. Pellentesque ac velit
+      arcu, placerat dignissim augue. Nulla vitae tortor in elit ultrices dictum. Quisque eget
+      massa at nisl malesuada sodales sed id est. Pellentesque vehicula venenatis justo, sit amet
+      vehicula leo laoreet eget. Donec vel urna quis metus feugiat vulputate eget ut urna. In
+      tristique semper diam ut adipiscing. Fusce sagittis congue purus scelerisque hendrerit.
+      Donec sit amet interdum massa.</p>
+  </section>
+  <section class="chapter" id="first-chapter">
+    <h1>First Chapter</h1>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean eros sapien, iaculis eget
+      egestas eu, tempus eu tellus. Aliquam in facilisis sapien. Nulla blandit, ligula vel auctor
+      facilisis, quam felis rhoncus arcu, non rhoncus nulla felis sed est. Pellentesque ac velit
+      arcu, placerat dignissim augue. Nulla vitae tortor in elit ultrices dictum. Quisque eget
+      massa at nisl malesuada sodales sed id est. Pellentesque vehicula venenatis justo, sit amet
+      vehicula leo laoreet eget. Donec vel urna quis metus feugiat vulputate eget ut urna. In
+      tristique semper diam ut adipiscing. Fusce sagittis congue purus scelerisque hendrerit.
+      Donec sit amet interdum massa.</p>
+  </section>
+  <section class="chapter" id="second-chapter">
+    <h1>Second Chapter</h1>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean eros sapien, iaculis eget
+      egestas eu, tempus eu tellus. Aliquam in facilisis sapien. Nulla blandit, ligula vel auctor
+      facilisis, quam felis rhoncus arcu, non rhoncus nulla felis sed est. Pellentesque ac velit
+      arcu, placerat dignissim augue. Nulla vitae tortor in elit ultrices dictum. Quisque eget
+      massa at nisl malesuada sodales sed id est. Pellentesque vehicula venenatis justo, sit amet
+      vehicula leo laoreet eget. Donec vel urna quis metus feugiat vulputate eget ut urna. In
+      tristique semper diam ut adipiscing. Fusce sagittis congue purus scelerisque hendrerit.
+      Donec sit amet interdum massa.</p>
+  </section>
+</body>
+</html>

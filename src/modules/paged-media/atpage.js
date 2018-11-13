@@ -790,6 +790,7 @@ class AtPage extends Handler {
 
 	addPageAttributes(page, start, pages) {
 		let named = start.dataset.page;
+		let index = pages.indexOf(page);
 
 		if (named) {
 			page.name = named;

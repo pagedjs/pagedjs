@@ -29,11 +29,21 @@ class TargetCounters extends Handler {
 			});
 
 			let counter;
-			if (last !== first) {
-				counter = last.name;
-			}
+			let style;
+			let styleIdentifier;
 
-			let variable = "--" + UUID();
+			funcNode.children.forEach((child) => {
+				if (child.type === "Identifier") {
+					if (!counter) {
+						counter = child.name;
+					} else if (!style) {
+						styleIdentifier = csstree.clone(child);
+						style = child.name;
+					}
+				}
+			})
+
+			let variable = "target-counter-" + UUID();
 
 			selector.split(",").forEach((s) => {
 				this.counterTargets[s] = {
@@ -41,20 +51,25 @@ class TargetCounters extends Handler {
 					args: args,
 					value: value,
 					counter: counter,
+					style: style,
 					selector: s,
 					fullSelector: selector,
 					variable: variable
 				}
 			});
 
-			// Replace with variable
-			funcNode.name = "var";
+			// Replace with counter
+			funcNode.name = "counter";
 			funcNode.children = new csstree.List()
 			funcNode.children.appendData({
 				type: "Identifier",
 				loc: 0,
 				name: variable
 			});
+			if (styleIdentifier) {
+				funcNode.children.appendData({type: "Operator", loc: null, value: ","});
+				funcNode.children.appendData(styleIdentifier);
+			}
 		}
 	}
 
@@ -63,7 +78,8 @@ class TargetCounters extends Handler {
 			let target = this.counterTargets[name];
 			let split = target.selector.split("::");
 			let query = split[0];
-			let queried = chunker.pagesArea.querySelectorAll(query + ":not([data-target-counter])");
+
+			let queried = chunker.pagesArea.querySelectorAll(query + ":not([data-" + target.variable + "])");
 
 			queried.forEach((selected, index) => {
 				// TODO: handle func other than attr
@@ -75,13 +91,20 @@ class TargetCounters extends Handler {
 
 				if (element) {
 					let selector = UUID();
-					selected.setAttribute("data-target-counter", selector);
+					selected.setAttribute("data-" + target.variable, selector);
 					// TODO: handle other counter types (by query)
 					if (target.counter === "page") {
 						let pages = chunker.pagesArea.querySelectorAll(".pagedjs_page");
 						let pg = 0;
 						for (var i = 0; i < pages.length; i++) {
+							let styles = window.getComputedStyle(pages[i]);
+							let reset = styles["counter-reset"].replace("page", "").trim();
+
+							if (reset !== "none") {
+								pg = parseInt(reset);
+							}
 							pg += 1;
+
 							if (pages[i].contains( element )){
 								break;
 							}
@@ -92,8 +115,12 @@ class TargetCounters extends Handler {
 							psuedo += "::" + split[1];
 						}
 
-						// this.styleSheet.insertRule(`[data-target-counter="${selector}"]${psuedo} { content: "${pg}"; }`, this.styleSheet.cssRules.length);
-						this.styleSheet.insertRule(`[data-target-counter="${selector}"]${psuedo} { ${target.variable}: "${pg}" }`, this.styleSheet.cssRules.length);
+						this.styleSheet.insertRule(`[data-${target.variable}="${selector}"] { counter-increment: ${target.variable} ${pg}; }`, this.styleSheet.cssRules.length);
+					} else {
+						let value = element.getAttribute(`data-counter-${target.counter}-value`);
+						if (value) {
+							this.styleSheet.insertRule(`[data-${target.variable}="${selector}"] { counter-increment: ${target.variable} ${parseInt(value)}; }`, this.styleSheet.cssRules.length);
+						}
 					}
 				}
 			});

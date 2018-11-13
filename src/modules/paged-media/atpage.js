@@ -797,7 +797,7 @@ class AtPage extends Handler {
 			page.element.classList.add("pagedjs_named_page");
 			page.element.classList.add("pagedjs_" + named + "_page");
 
-			if (index === 0 || pages[index-1].name !== named) {
+			if (!start.dataset.splitFrom) {
 				page.element.classList.add("pagedjs_" + named + "_first_page");
 			}
 		}

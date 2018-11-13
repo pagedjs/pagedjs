@@ -14,11 +14,15 @@ class Counters extends Handler {
 		let property = declaration.property;
 
 		if (property === "counter-increment") {
-			this.handleIncrement(declaration, rule);
-			dList.remove(dItem);
+			let inc = this.handleIncrement(declaration, rule);
+			if (inc) {
+				dList.remove(dItem);
+			}
 		} else if (property === "counter-reset") {
-			this.handleReset(declaration, rule);
-			dList.remove(dItem);
+			let reset = this.handleReset(declaration, rule);
+			if (reset) {
+				dList.remove(dItem);
+			}
 		}
 	}
 
@@ -51,6 +55,11 @@ class Counters extends Handler {
 		let number = declaration.value.children.getSize() > 1
 							&& declaration.value.children.last().value;
 		let name = identifier && identifier.name;
+
+		if (name === "page" || name.indexOf("target-counter-") === 0) {
+			return;
+		}
+
 		let selector = csstree.generate(rule.ruleNode.prelude);
 
 		let counter;
@@ -60,7 +69,7 @@ class Counters extends Handler {
 			counter = this.counters[name];
 		}
 
-		counter.increments[selector] = {
+		return counter.increments[selector] = {
 			selector: selector,
 			number: number || 1
 		};
@@ -72,15 +81,17 @@ class Counters extends Handler {
 							&& declaration.value.children.last().value;
 		let name = identifier && identifier.name;
 		let selector = csstree.generate(rule.ruleNode.prelude);
-
 		let counter;
+		if (name === "page") {
+			return;
+		}
 		if (!(name in this.counters)) {
 			counter = this.addCounter(name);
 		} else {
 			counter = this.counters[name];
 		}
 
-		counter.resets[selector] = {
+		return counter.resets[selector] = {
 			selector: selector,
 			number: number || 0
 		};

@@ -50,7 +50,7 @@ class StringSets extends Handler {
 			let selected = fragment.querySelector(set.selector);
 			if (selected) {
 				let cssVar;
-				if (set.value === "content" || set.value === "content(text)") {
+				if (set.value === "content" || set.value === "content()" || set.value === "content(text)") {
 					cssVar = selected.textContent.replace(/\\([\s\S])|(["|'])/g,"\\$1$2");
 					// this.styleSheet.insertRule(`:root { --string-${name}: "${cssVar}"; }`, this.styleSheet.cssRules.length);
 					// fragment.style.setProperty(`--string-${name}`, `"${cssVar}"`);

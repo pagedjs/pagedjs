@@ -82,9 +82,7 @@ class Counters extends Handler {
 		let name = identifier && identifier.name;
 		let selector = csstree.generate(rule.ruleNode.prelude);
 		let counter;
-		if (name === "page") {
-			return;
-		}
+
 		if (!(name in this.counters)) {
 			counter = this.addCounter(name);
 		} else {
@@ -162,6 +160,14 @@ class Counters extends Handler {
 			}
 
 		}
+	}
+
+	afterPageLayout(pageElement, page) {
+		let pgreset = pageElement.querySelectorAll("[data-counter-page-reset]");
+		pgreset.forEach((reset) => {
+			let value = reset.datasetCounterPageReset;
+			this.styleSheet.insertRule(`[data-page-number="${pageElement.dataset.pageNumber}"] { counter-reset: page ${value} }`, this.styleSheet.cssRules.length);
+		});
 	}
 
 }

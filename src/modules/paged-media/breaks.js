@@ -149,7 +149,7 @@ class Breaks extends Handler {
 		}
 	}
 
-	afterLayout(pageElement, page) {
+	afterPageLayout(pageElement, page) {
 		this.addBreakAttributes(page);
 	}
 }

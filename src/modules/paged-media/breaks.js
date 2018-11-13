@@ -117,28 +117,28 @@ class Breaks extends Handler {
 		return pageBreaks;
 	}
 
-	addBreakAttributes(page) {
-		let before = page.wrapper.querySelector("[data-break-before]");
-		let after = page.wrapper.querySelector("[data-break-after]");
-		let previousBreakAfter = page.wrapper.querySelector("[data-previous-break-after]");
+	addBreakAttributes(pageElement, page) {
+		let before = pageElement.querySelector("[data-break-before]");
+		let after = pageElement.querySelector("[data-break-after]");
+		let previousBreakAfter = pageElement.querySelector("[data-previous-break-after]");
 
 		if (before) {
 			if (before.dataset.splitFrom) {
 				page.splitFrom = before.dataset.splitFrom;
-				page.element.setAttribute("data-split-from", before.dataset.splitFrom);
+				pageElement.setAttribute("data-split-from", before.dataset.splitFrom);
 			} else if (before.dataset.breakBefore && before.dataset.breakBefore !== "avoid") {
 				page.breakBefore = before.dataset.breakBefore;
-				page.element.setAttribute("data-break-before", before.dataset.breakBefore);
+				pageElement.setAttribute("data-break-before", before.dataset.breakBefore);
 			}
 		}
 
 		if (after && after.dataset) {
 			if (after.dataset.splitTo) {
 				page.splitTo = after.dataset.splitTo;
-				page.element.setAttribute("data-split-to", after.dataset.splitTo);
+				pageElement.setAttribute("data-split-to", after.dataset.splitTo);
 			} else if (after.dataset.breakAfter && after.dataset.breakAfter !== "avoid") {
 				page.breakAfter = after.dataset.breakAfter;
-				page.element.setAttribute("data-break-after", after.dataset.breakAfter);
+				pageElement.setAttribute("data-break-after", after.dataset.breakAfter);
 			}
 		}
 
@@ -150,7 +150,7 @@ class Breaks extends Handler {
 	}
 
 	afterPageLayout(pageElement, page) {
-		this.addBreakAttributes(page);
+		this.addBreakAttributes(pageElement, page);
 	}
 }
 

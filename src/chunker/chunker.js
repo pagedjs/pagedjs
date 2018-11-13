@@ -403,7 +403,7 @@ class Chunker {
 
 	loadFonts() {
 		let fontPromises = [];
-		for (let fontFace of document.fonts.values()) {
+		document.fonts.forEach((fontFace) => {
 			if (fontFace.status !== "loaded") {
 				let fontLoaded = fontFace.load().then((r) => {
 					return fontFace.family;
@@ -413,7 +413,7 @@ class Chunker {
 				})
 				fontPromises.push(fontLoaded);
 			}
-		}
+		});
 		return Promise.all(fontPromises).catch((err) => {
 			console.warn(err)
 		})

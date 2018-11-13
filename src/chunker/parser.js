@@ -82,7 +82,6 @@ class ContentParser {
 					// Don't touch whitespace if text is preformated
 					let parent = node.parentNode;
 					let pre = isElement(parent) && parent.closest("pre");
-					console.log(pre);
 					if (pre) {
 						return NodeFilter.FILTER_REJECT;
 					}

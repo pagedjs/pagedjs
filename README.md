@@ -114,6 +114,8 @@ afterRendered(pages)
 
 // Polisher
 beforeTreeParse(text, sheet)
+beforeTreeWalk(ast)
+afterTreeWalk(ast, sheet)
 onUrl(urlNode)
 onAtPage(atPageNode)
 onRule(ruleNode)
@@ -204,7 +206,7 @@ The tests and specs can be run within the container by passing a `seccomp` file 
 docker run -it --security-opt 'seccomp=seccomp.json' pagedmedia/pagedjs npm test
 ```
 
-## Contributors 
+## Contributors
 
 ### Core team
 The core team behind paged.js includes [Adam Hyde](https://adamhyde.net), [Julie Blanc](http://julie-blanc.fr/), [Fred Chasen](http://fchasen.com/) & Julien Taquet.

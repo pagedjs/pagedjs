@@ -52,6 +52,7 @@ class Previewer {
 
 		handlers.on("size", (size) => {
 			this.size = size;
+			this.emit("size", size);
 		});
 
 		return handlers;
@@ -125,7 +126,7 @@ class Previewer {
 
 		this.polisher.setup();
 
-		let handlers = this.initializeHandlers();
+		this.handlers = this.initializeHandlers();
 
 		let styleText = await this.polisher.add(...stylesheets);
 

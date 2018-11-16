@@ -168,18 +168,20 @@ class Page {
     if (typeof ResizeObserver !== "undefined") {
       this.addResizeObserver(contents);
     } else {
-      this.element.addEventListener("overflow", this.checkOverflowAfterResize.bind(this, contents), false);
-      this.element.addEventListener("underflow", this.checkOverflowAfterResize.bind(this, contents), false);
+      this._checkOverflowAfterResize = this.checkOverflowAfterResize.bind(this, contents);
+      this.element.addEventListener("overflow", this._checkOverflowAfterResize, false);
+      this.element.addEventListener("underflow", this._checkOverflowAfterResize, false);
     }
     // TODO: fall back to mutation observer?
 
-
-    // Keep scroll left from changing
-    this.element.addEventListener("scroll", () => {
+    this._onScroll = function() {
       if(this.listening) {
         this.element.scrollLeft = 0;
       }
-    });
+    }.bind(this);
+
+    // Keep scroll left from changing
+    this.element.addEventListener("scroll", this._onScroll);
 
     this.listening = true;
 
@@ -188,16 +190,16 @@ class Page {
 
   removeListeners() {
     this.listening = false;
-    // clearTimeout(this.timeoutAfterResize);
 
-    if (this.element) {
-      this.element.removeEventListener("overflow", this.checkOverflowAfterResize.bind(this), false);
-      this.element.removeEventListener("underflow", this.checkOverflowAfterResize.bind(this), false);
-    }
-
-    if (this.ro) {
+    if (typeof ResizeObserver !== "undefined" && this.ro) {
       this.ro.disconnect();
+    } else if (this.element) {
+      this.element.removeEventListener("overflow", this._checkOverflowAfterResize, false);
+      this.element.removeEventListener("underflow", this._checkOverflowAfterResize, false);
     }
+
+    this.element &&this.element.removeEventListener("scroll", this._onScroll);
+
   }
 
   addResizeObserver(contents) {

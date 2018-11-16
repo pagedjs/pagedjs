@@ -238,4 +238,4 @@ export function defer() {
 	Object.freeze(this);
 }
 
-export const requestIdleCallback = 'requestIdleCallback' in window ? window.requestIdleCallback : window.requestAnimationFrame;
+export const requestIdleCallback = typeof window !== "undefined" && ('requestIdleCallback' in window ? window.requestIdleCallback : window.requestAnimationFrame);

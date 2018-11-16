@@ -10,7 +10,7 @@ html{
 }
 
 @page {
-  size: A5 portait
+  size: A5 portrait;
 }
 
 @media screen {

@@ -28,7 +28,7 @@ import {
 } from "../utils/dom";
 import EventEmitter from "event-emitter";
 import Hook from "../utils/hook";
-const _requestIdleCallback = 'requestIdleCallback' in window ? requestIdleCallback : requestAnimationFrame;
+const _requestIdleCallback = typeof window !== "undefined" && ('requestIdleCallback' in window ? requestIdleCallback : requestAnimationFrame);
 
 const PER_PAGE_CHECK = 4;
 

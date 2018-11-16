@@ -159,11 +159,10 @@ Specs run a html file in Chrome (using puppeteer) to test against CSS specificat
 
 They can also output a pdf and compare pages (one at a time) in that PDF with samples PDFs (saved as images).
 
-To test the pdf output of specs, you'll need to install ghostscript locally.
+To test the pdf output of specs, you'll need to build the library locally.
 
 ```bash
-brew install ghostscript
-npm install ghostscript4js --no-save
+npm run build
 ```
 
 Then run the jest tests in puppeteer.

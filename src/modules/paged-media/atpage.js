@@ -130,7 +130,7 @@ class AtPage extends Handler {
 			let orientation = this.pages["*"].orientation;
 
 			if ((width && height) &&
-			    (this.width !== width || this.height !== height)) {
+					(this.width !== width || this.height !== height)) {
 				this.width = width;
 				this.height = height;
 				this.format = format;

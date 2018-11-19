@@ -49,8 +49,8 @@ class ContentParser {
 		var treeWalker = document.createTreeWalker(
 			content,
 			NodeFilter.SHOW_ELEMENT,
-		 	{ acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } },
-		 	false
+			{ acceptNode: function(node) { return NodeFilter.FILTER_ACCEPT; } },
+			false
 		);
 
 		let node;

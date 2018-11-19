@@ -5,10 +5,10 @@ import Handler from './modules/handler';
 import { registerHandlers, initializeHandlers } from './utils/handlers';
 
 export {
-  Chunker,
-  Polisher,
-  Previewer,
-  Handler,
-  registerHandlers,
-  initializeHandlers
+	Chunker,
+	Polisher,
+	Previewer,
+	Handler,
+	registerHandlers,
+	initializeHandlers
 };

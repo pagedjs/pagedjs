@@ -34,7 +34,7 @@ class Splits extends Handler {
 		});
 	}
 
-  handleAlignment(node) {
+	handleAlignment(node) {
 		let styles = window.getComputedStyle(node);
 		let align = styles["text-align"];
 		let alignLast = styles["text-align-last"];

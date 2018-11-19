@@ -24,6 +24,7 @@
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
     "chalk": "^2.4.1",
+    "eslint": "^5.9.0",
     "express": "^4.16.3",
     "ghostscript4js": "^3.0.0",
     "jest": "^23.4.1",
@@ -48,7 +49,8 @@
     "compile": "./node_modules/.bin/babel src/ -d lib/",
     "pretest": "npm run build",
     "prepublishOnly": "npm run build && npm run compile && npm run legacy",
-    "watch": "./node_modules/.bin/rollup -w -c"
+    "watch": "./node_modules/.bin/rollup -w -c",
+    "lint": "./node_modules/.bin/eslint -c .eslintrc.js src; exit 0"
   },
   "repository": {
     "type": "git",

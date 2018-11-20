@@ -4,12 +4,7 @@ import EventEmitter from "event-emitter";
 import Hook from "../utils/hook";
 import Queue from "../utils/queue";
 import {
-	needsBreakBefore,
-	needsBreakAfter
-} from "../utils/dom";
-import {
-	requestIdleCallback,
-	defer
+	requestIdleCallback
 } from "../utils/utils";
 
 const MAX_PAGES = false;
@@ -174,7 +169,7 @@ class Chunker {
 		let result;
 
 		while (!done) {
-			result = await this.q.enqueue(async () => { return this.renderOnIdle(renderer) });
+			result = await this.q.enqueue(async () => { return this.renderOnIdle(renderer); });
 			done = result.done;
 		}
 
@@ -309,7 +304,8 @@ class Chunker {
 		let lastPage = this.pages[this.pages.length - 1];
 		// Create a new page from the template
 		let page = new Page(this.pagesArea, this.pageTemplate, blank, this.hooks);
-		let total = this.pages.push(page);
+
+		this.pages.push(page);
 
 		// Create the pages
 		page.create(undefined, lastPage && lastPage.element);
@@ -397,7 +393,7 @@ class Chunker {
 	}
 
 	set total(num) {
-		this.pagesArea.style.setProperty('--page-count', num);
+		this.pagesArea.style.setProperty("--page-count", num);
 		this._total = num;
 	}
 
@@ -410,17 +406,17 @@ class Chunker {
 				}, (r) => {
 					console.warn("Failed to preload font-family:", fontFace.family);
 					return fontFace.family;
-				})
+				});
 				fontPromises.push(fontLoaded);
 			}
 		});
 		return Promise.all(fontPromises).catch((err) => {
-			console.warn(err)
-		})
+			console.warn(err);
+		});
 	}
 
 	destroy() {
-		this.pagesArea.remove()
+		this.pagesArea.remove();
 		this.pageTemplate.remove();
 	}
 

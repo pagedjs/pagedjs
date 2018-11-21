@@ -109,13 +109,13 @@ class Page {
 	}
 	*/
 
-	async layout(contents, breakToken) {
+	async layout(contents, breakToken, maxChars) {
 
 		this.clear();
 
 		this.startToken = breakToken;
 
-		this.layoutMethod = new Layout(this.area, this.hooks);
+		this.layoutMethod = new Layout(this.area, this.hooks, maxChars);
 
 		let newBreakToken = await this.layoutMethod.renderTo(this.wrapper, contents, breakToken);
 

@@ -76,6 +76,9 @@ class Chunker {
 
 		this.content = content;
 
+		this.charsPerBreak = [];
+		this.maxChars;
+
 		if (content) {
 			this.flow(content, renderTo);
 		}
@@ -169,7 +172,7 @@ class Chunker {
 		let result;
 
 		while (!done) {
-			result = await this.q.enqueue(async () => { return this.renderOnIdle(renderer); });
+			result = await this.q.enqueue(() => { return this.renderAsync(renderer); });
 			done = result.done;
 		}
 
@@ -200,6 +203,18 @@ class Chunker {
 				}
 			});
 		});
+	}
+
+	async renderAsync(renderer) {
+		if (this.stopped) {
+			return { done: true, canceled: true };
+		}
+		let result = await renderer.next();
+		if (this.stopped) {
+			return { done: true, canceled: true };
+		} else {
+			return result;
+		}
 	}
 
 	async handleBreaks(node) {
@@ -271,15 +286,32 @@ class Chunker {
 			this.emit("page", page);
 
 			// Layout content in the page, starting from the breakToken
-			breakToken = await page.layout(content, breakToken);
+			breakToken = await page.layout(content, breakToken, this.maxChars);
 
 			await this.hooks.afterPageLayout.trigger(page.element, page, breakToken, this);
 			this.emit("renderedPage", page);
+
+			this.recoredCharLength(page.wrapper.textContent.length);
 
 			yield breakToken;
 
 			// Stop if we get undefined, showing we have reached the end of the content
 		}
+	}
+
+	recoredCharLength(length) {
+		if (length === 0) {
+			return;
+		}
+
+		this.charsPerBreak.push(length);
+
+		// Keep the length of the last few breaks
+		if (this.charsPerBreak.length > 4) {
+			this.charsPerBreak.shift();
+		}
+
+		this.maxChars = this.charsPerBreak.reduce((a, b) => a + b, 0) / (this.charsPerBreak.length);
 	}
 
 	removePages(fromIndex=0) {

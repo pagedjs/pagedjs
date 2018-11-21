@@ -9,6 +9,11 @@
 
     <link rel="coverpage" href="assets/aurorae/images/cover.jpg" />
 
+    <script>
+      window.PagedConfig = {
+        after: (flow) => console.log(flow.performance)
+      }
+    </script>
     <script src="../dist/paged.polyfill.js"></script>
 
     <link href="assets/aurorae/book.css" rel="stylesheet" type='text/css'>

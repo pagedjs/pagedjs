@@ -1,12 +1,13 @@
-import { getBoundingClientRect, getClientRects } from "../utils/utils";
+import {
+	getBoundingClientRect,
+	getClientRects
+} from "../utils/utils";
 import {
 	walk,
 	nodeAfter,
 	nodeBefore,
-	stackChildren,
 	rebuildAncestors,
 	needsBreakBefore,
-	needsBreakAfter,
 	needsPreviousBreakAfter,
 	needsPageBreak,
 	isElement,
@@ -14,23 +15,18 @@ import {
 	indexOf,
 	cloneNode,
 	findElement,
-	findRef,
 	child,
-	isVisible,
 	isContainer,
 	hasContent,
-	hasTextContent,
 	validNode,
 	prevValidNode,
-	nextValidNode,
 	words,
 	letters
 } from "../utils/dom";
 import EventEmitter from "event-emitter";
 import Hook from "../utils/hook";
-const _requestIdleCallback = typeof window !== "undefined" && ('requestIdleCallback' in window ? requestIdleCallback : requestAnimationFrame);
 
-const PER_PAGE_CHECK = 4;
+const MAX_CHARS_PER_BREAK = 1500;
 
 /**
  * Layout
@@ -38,7 +34,7 @@ const PER_PAGE_CHECK = 4;
  */
 class Layout {
 
-	constructor(element, hooks) {
+	constructor(element, hooks, maxChars) {
 		this.element = element;
 
 		this.bounds = this.element.getBoundingClientRect();
@@ -53,6 +49,7 @@ class Layout {
 			this.hooks.overflow = new Hook();
 		}
 
+		this.maxChars = maxChars || MAX_CHARS_PER_BREAK;
 	}
 
 	async renderTo(wrapper, source, breakToken, bounds=this.bounds) {
@@ -67,6 +64,7 @@ class Layout {
 		let newBreakToken;
 
 		let check = 0;
+		let length = 0;
 
 		while (!done && !newBreakToken) {
 			next = walker.next();
@@ -74,6 +72,13 @@ class Layout {
 			done = next.done;
 
 			if (!node) {
+				this.hooks && this.hooks.layout.trigger(wrapper, this);
+
+				let imgs = wrapper.querySelectorAll("img");
+				if (imgs.length) {
+					await this.waitForImages(imgs);
+				}
+
 				newBreakToken = this.findBreakToken(wrapper, source, bounds);
 				return newBreakToken;
 			}
@@ -96,6 +101,8 @@ class Layout {
 					newBreakToken = this.breakAt(node);
 				}
 
+				length = 0;
+
 				break;
 			}
 
@@ -103,6 +110,8 @@ class Layout {
 			let shallow = isContainer(node);
 
 			let rendered = this.append(node, wrapper, breakToken, shallow);
+
+			length += rendered.textContent.length;
 
 			// Check if layout has content yet
 			if (!hasRenderedContent) {
@@ -114,9 +123,8 @@ class Layout {
 				walker = walk(nodeAfter(node, source), source);
 			}
 
-			// Only check every few elements
-			if (check >= PER_PAGE_CHECK) {
-				check = 0;
+			// Only check x characters
+			if (length >= this.maxChars) {
 
 				this.hooks && this.hooks.layout.trigger(wrapper, this);
 
@@ -126,9 +134,12 @@ class Layout {
 				}
 
 				newBreakToken = this.findBreakToken(wrapper, source, bounds);
+
+				if (newBreakToken) {
+					length = 0;
+				}
 			}
 
-			check += 1;
 		}
 
 		return newBreakToken;

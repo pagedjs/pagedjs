@@ -1,5 +1,4 @@
 import Handler from "../handler";
-import csstree from 'css-tree';
 
 class Splits extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -34,7 +33,7 @@ class Splits extends Handler {
 		});
 	}
 
-  handleAlignment(node) {
+	handleAlignment(node) {
 		let styles = window.getComputedStyle(node);
 		let align = styles["text-align"];
 		let alignLast = styles["text-align-last"];

@@ -1,5 +1,5 @@
-import pagedMediaHandlers from '../modules/paged-media/index';
-import generatedContentHandlers from '../modules/generated-content/index';
+import pagedMediaHandlers from "../modules/paged-media/index";
+import generatedContentHandlers from "../modules/generated-content/index";
 import EventEmitter from "event-emitter";
 import pipe from "event-emitter/pipe";
 

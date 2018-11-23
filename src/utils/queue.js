@@ -16,7 +16,7 @@ class Queue {
 
 	/**
 	 * Add an item to the queue
-	 * @return {Promise}
+	 * @return {Promise} enqueued
 	 */
 	enqueue() {
 		var deferred, promise;
@@ -65,7 +65,7 @@ class Queue {
 
 	/**
 	 * Run one item
-	 * @return {Promise}
+	 * @return {Promise} dequeued
 	 */
 	dequeue(){
 		var inwait, task, result;
@@ -115,7 +115,7 @@ class Queue {
 
 	/**
 	 * Run all tasks sequentially, at convince
-	 * @return {Promise}
+	 * @return {Promise} all run
 	 */
 	run(){
 
@@ -150,7 +150,7 @@ class Queue {
 
 	/**
 	 * Flush all, as quickly as possible
-	 * @return {Promise}
+	 * @return {Promise} ran
 	 */
 	flush(){
 
@@ -172,6 +172,7 @@ class Queue {
 
 	/**
 	 * Clear all items in wait
+	 * @return {void}
 	 */
 	clear(){
 		this._q = [];
@@ -187,6 +188,7 @@ class Queue {
 
 	/**
 	 * Pause a running queue
+	 * @return {void}
 	 */
 	pause(){
 		this.paused = true;
@@ -194,6 +196,7 @@ class Queue {
 
 	/**
 	 * End the queue
+	 * @return {void}
 	 */
 	stop(){
 		this._q = [];
@@ -207,9 +210,9 @@ class Queue {
  * Create a new task from a callback
  * @class
  * @private
- * @param {function} task
- * @param {array} args
- * @param {scope} context
+ * @param {function} task task to complete
+ * @param {array} args arguments for the task
+ * @param {scope} context scope of the task
  * @return {function} task
  */
 class Task {

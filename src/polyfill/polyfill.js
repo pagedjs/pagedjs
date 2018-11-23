@@ -1,5 +1,5 @@
-import Previewer from './previewer';
-import * as Paged from '../index';
+import Previewer from "./previewer";
+import * as Paged from "../index";
 
 window.Paged = Paged;
 
@@ -13,7 +13,7 @@ let ready = new Promise(function(resolve, reject){
 		if (document.readyState === "interactive") {
 			resolve(document.readyState);
 		}
-	}
+	};
 });
 
 let config = window.PagedConfig || {

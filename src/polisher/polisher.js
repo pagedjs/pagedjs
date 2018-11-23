@@ -1,6 +1,5 @@
-import Sheet from './sheet';
-import baseStyles from './base';
-import { UUID } from '../utils/utils';
+import Sheet from "./sheet";
+import baseStyles from "./base";
 import Hook from "../utils/hook";
 
 class Polisher {
@@ -52,7 +51,7 @@ class Polisher {
 				urls.push(arguments[i]);
 				f = fetch(arguments[i]).then((response) => {
 					return response.text();
-				})
+				});
 			}
 
 

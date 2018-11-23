@@ -1,4 +1,4 @@
-import csstree from 'css-tree';
+import csstree from "css-tree";
 import { UUID } from "../utils/utils";
 import Hook from "../utils/hook";
 
@@ -66,12 +66,12 @@ class Sheet {
 		let inserted = this.ast.children.appendData(rule);
 		inserted.forEach((item) => {
 			this.declarations(item);
-		})
+		});
 	}
 
 	urls(ast) {
 		csstree.walk(ast, {
-			visit: 'Url',
+			visit: "Url",
 			enter: (node, item, list) => {
 				this.hooks.onUrl.trigger(node, item, list);
 			}
@@ -80,7 +80,7 @@ class Sheet {
 
 	atrules(ast) {
 		csstree.walk(ast, {
-			visit: 'Atrule',
+			visit: "Atrule",
 			enter: (node, item, list) => {
 				const basename = csstree.keyword(node.name).basename;
 
@@ -99,9 +99,8 @@ class Sheet {
 
 
 	rules(ast) {
-		let parsed = {};
 		csstree.walk(ast, {
-			visit: 'Rule',
+			visit: "Rule",
 			enter: (ruleNode, ruleItem, rulelist) => {
 				// console.log("rule", ruleNode);
 
@@ -113,7 +112,7 @@ class Sheet {
 
 	declarations(ruleNode, ruleItem, rulelist) {
 		csstree.walk(ruleNode, {
-			visit: 'Declaration',
+			visit: "Declaration",
 			enter: (declarationNode, dItem, dList) => {
 				// console.log(declarationNode);
 
@@ -121,7 +120,7 @@ class Sheet {
 
 				if (declarationNode.property === "content") {
 					csstree.walk(declarationNode, {
-						visit: 'Function',
+						visit: "Function",
 						enter: (funcNode, fItem, fList) => {
 							this.hooks.onContent.trigger(funcNode, fItem, fList, {declarationNode, dItem, dList}, {ruleNode, ruleItem, rulelist});
 						}
@@ -134,10 +133,10 @@ class Sheet {
 
 	replaceUrls(ast) {
 		csstree.walk(ast, {
-			visit: 'Url',
+			visit: "Url",
 			enter: (node, item, list) => {
-				let href = node.value.value.replace(/["']/g, '');
-				let url = new URL(href, this.url)
+				let href = node.value.value.replace(/["']/g, "");
+				let url = new URL(href, this.url);
 				node.value.value = url.toString();
 			}
 		});
@@ -147,15 +146,15 @@ class Sheet {
 		// Get all selector lists
 		// add an id
 		csstree.walk(ast, {
-			visit: 'Selector',
+			visit: "Selector",
 			enter: (node, item, list) => {
 				let children = node.children;
 				children.prepend(children.createItem({
-					type: 'WhiteSpace',
+					type: "WhiteSpace",
 					value: " "
 				}));
 				children.prepend(children.createItem({
-					type: 'IdSelector',
+					type: "IdSelector",
 					name: id,
 					loc: null,
 					children: null
@@ -167,10 +166,10 @@ class Sheet {
 	getNamedPageSelectors(ast) {
 		let namedPageSelectors = {};
 		csstree.walk(ast, {
-			visit: 'Rule',
+			visit: "Rule",
 			enter: (node, item, list) => {
 				csstree.walk(node, {
-					visit: 'Declaration',
+					visit: "Declaration",
 					enter: (declaration, dItem, dList) => {
 						if (declaration.property === "page") {
 							let value = declaration.value.children.first();
@@ -179,7 +178,7 @@ class Sheet {
 							namedPageSelectors[name] = {
 								name: name,
 								selector: selector
-							}
+							};
 
 							// dList.remove(dItem);
 
@@ -198,11 +197,11 @@ class Sheet {
 
 	replaceIds(ast) {
 		csstree.walk(ast, {
-			visit: 'Rule',
+			visit: "Rule",
 			enter: (node, item, list) => {
 
 				csstree.walk(node, {
-					visit: 'IdSelector',
+					visit: "IdSelector",
 					enter: (idNode, idItem, idList) => {
 						let name = idNode.name;
 						idNode.flags = null;

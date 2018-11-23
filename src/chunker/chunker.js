@@ -4,12 +4,7 @@ import EventEmitter from "event-emitter";
 import Hook from "../utils/hook";
 import Queue from "../utils/queue";
 import {
-	needsBreakBefore,
-	needsBreakAfter
-} from "../utils/dom";
-import {
-	requestIdleCallback,
-	defer
+	requestIdleCallback
 } from "../utils/utils";
 
 const MAX_PAGES = false;
@@ -80,6 +75,9 @@ class Chunker {
 		this.stopped = false;
 
 		this.content = content;
+
+		this.charsPerBreak = [];
+		this.maxChars;
 
 		if (content) {
 			this.flow(content, renderTo);
@@ -174,7 +172,7 @@ class Chunker {
 		let result;
 
 		while (!done) {
-			result = await this.q.enqueue(async () => { return this.renderOnIdle(renderer) });
+			result = await this.q.enqueue(() => { return this.renderAsync(renderer); });
 			done = result.done;
 		}
 
@@ -205,6 +203,18 @@ class Chunker {
 				}
 			});
 		});
+	}
+
+	async renderAsync(renderer) {
+		if (this.stopped) {
+			return { done: true, canceled: true };
+		}
+		let result = await renderer.next();
+		if (this.stopped) {
+			return { done: true, canceled: true };
+		} else {
+			return result;
+		}
 	}
 
 	async handleBreaks(node) {
@@ -276,15 +286,32 @@ class Chunker {
 			this.emit("page", page);
 
 			// Layout content in the page, starting from the breakToken
-			breakToken = await page.layout(content, breakToken);
+			breakToken = await page.layout(content, breakToken, this.maxChars);
 
 			await this.hooks.afterPageLayout.trigger(page.element, page, breakToken, this);
 			this.emit("renderedPage", page);
+
+			this.recoredCharLength(page.wrapper.textContent.length);
 
 			yield breakToken;
 
 			// Stop if we get undefined, showing we have reached the end of the content
 		}
+	}
+
+	recoredCharLength(length) {
+		if (length === 0) {
+			return;
+		}
+
+		this.charsPerBreak.push(length);
+
+		// Keep the length of the last few breaks
+		if (this.charsPerBreak.length > 4) {
+			this.charsPerBreak.shift();
+		}
+
+		this.maxChars = this.charsPerBreak.reduce((a, b) => a + b, 0) / (this.charsPerBreak.length);
 	}
 
 	removePages(fromIndex=0) {
@@ -309,7 +336,8 @@ class Chunker {
 		let lastPage = this.pages[this.pages.length - 1];
 		// Create a new page from the template
 		let page = new Page(this.pagesArea, this.pageTemplate, blank, this.hooks);
-		let total = this.pages.push(page);
+
+		this.pages.push(page);
 
 		// Create the pages
 		page.create(undefined, lastPage && lastPage.element);
@@ -397,7 +425,7 @@ class Chunker {
 	}
 
 	set total(num) {
-		this.pagesArea.style.setProperty('--page-count', num);
+		this.pagesArea.style.setProperty("--page-count", num);
 		this._total = num;
 	}
 
@@ -410,17 +438,17 @@ class Chunker {
 				}, (r) => {
 					console.warn("Failed to preload font-family:", fontFace.family);
 					return fontFace.family;
-				})
+				});
 				fontPromises.push(fontLoaded);
 			}
 		});
 		return Promise.all(fontPromises).catch((err) => {
-			console.warn(err)
-		})
+			console.warn(err);
+		});
 	}
 
 	destroy() {
-		this.pagesArea.remove()
+		this.pagesArea.remove();
 		this.pageTemplate.remove();
 	}
 

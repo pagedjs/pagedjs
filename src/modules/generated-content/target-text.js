@@ -1,6 +1,6 @@
 import Handler from "../handler";
 import { UUID, attr, querySelectorEscape } from "../../utils/utils";
-import csstree from 'css-tree';
+import csstree from "css-tree";
 
 class TargetText extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -19,7 +19,7 @@ class TargetText extends Handler {
 
 			let value = csstree.generate(funcNode);
 
-			let args = []
+			let args = [];
 
 			first.children.forEach((child) => {
 				if (child.type === "Identifier") {
@@ -43,12 +43,12 @@ class TargetText extends Handler {
 					selector: s,
 					fullSelector: selector,
 					variable: variable
-				}
+				};
 			});
 
 			// Replace with variable
 			funcNode.name = "var";
-			funcNode.children = new csstree.List()
+			funcNode.children = new csstree.List();
 			funcNode.children.appendData({
 				type: "Identifier",
 				loc: 0,
@@ -68,7 +68,6 @@ class TargetText extends Handler {
 				let element = fragment.querySelector(querySelectorEscape(val));
 				if (element) {
 					if (target.style === "content") {
-						let text = element.textContent;
 						let selector = UUID();
 						selected.setAttribute("data-target-text", selector);
 
@@ -77,7 +76,7 @@ class TargetText extends Handler {
 							psuedo += "::" + split[1];
 						}
 
-						let textContent = element.textContent.trim().replace(/[\"\']/g, (match) => {
+						let textContent = element.textContent.trim().replace(/["']/g, (match) => {
 							return "\\" + match;
 						}).replace(/[\n]/g, (match) => {
 							return "\\00000A";

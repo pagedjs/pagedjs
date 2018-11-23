@@ -1,6 +1,5 @@
 import Handler from "../handler";
-import csstree from 'css-tree';
-import { rebuildAncestors, elementAfter } from "../../utils/dom";
+import csstree from "css-tree";
 
 class Counters extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -45,7 +44,7 @@ class Counters extends Handler {
 			name: name,
 			increments: {},
 			resets: {}
-		}
+		};
 
 		return this.counters[name];
 	}

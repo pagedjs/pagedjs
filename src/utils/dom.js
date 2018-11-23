@@ -1,5 +1,3 @@
-import { UUID } from "../utils/utils";
-
 export function isElement(node) {
 	return node && node.nodeType === 1;
 }
@@ -80,7 +78,7 @@ export function nodeBefore(node, limiter) {
 				break;
 			}
 			if (before && before.previousSibling) {
-				before = prev.previousSibling;
+				before = before.previousSibling;
 				break;
 			}
 		}
@@ -291,21 +289,21 @@ export function *words(node) {
 	let range;
 
 	while(currentOffset < max) {
-			currentLetter = currentText[currentOffset];
-		 if (/^[\S\u202F\u00A0]$/.test(currentLetter)) {
-			 if (!range) {
-				 range = document.createRange();
-				 range.setStart(node, currentOffset);
-			 }
-		 } else {
-			 if (range) {
-				 range.setEnd(node, currentOffset);
-				 yield range;
-				 range = undefined;
-			 }
-		 }
+		currentLetter = currentText[currentOffset];
+		if (/^[\S\u202F\u00A0]$/.test(currentLetter)) {
+			if (!range) {
+				range = document.createRange();
+				range.setStart(node, currentOffset);
+			}
+		} else {
+			if (range) {
+				range.setEnd(node, currentOffset);
+				yield range;
+				range = undefined;
+			}
+		}
 
-		 currentOffset += 1;
+		currentOffset += 1;
 	}
 
 	if (range) {
@@ -319,12 +317,12 @@ export function *letters(wordRange) {
 	let currentText = wordRange.startContainer;
 	let max = currentText.length;
 	let currentOffset = wordRange.startOffset;
-	let currentLetter;
+	// let currentLetter;
 
 	let range;
 
 	while(currentOffset < max) {
-		 currentLetter = currentText[currentOffset];
+		 // currentLetter = currentText[currentOffset];
 		 range = document.createRange();
 		 range.setStart(currentText, currentOffset);
 		 range.setEnd(currentText, currentOffset+1);
@@ -336,87 +334,86 @@ export function *letters(wordRange) {
 }
 
 export function isContainer(node) {
-  let container;
+	let container;
 
-  if (typeof node.tagName === "undefined") {
-    return true;
-  }
+	if (typeof node.tagName === "undefined") {
+		return true;
+	}
 
-  if (node.style.display === "none") {
-    return false;
-  }
+	if (node.style.display === "none") {
+		return false;
+	}
 
-  switch (node.tagName) {
-    // Inline
-    case "A":
-    case "ABBR":
-    case "ACRONYM":
-    case "B":
-    case "BDO":
-    case "BIG":
-    case "BR":
-    case "BUTTON":
-    case "CITE":
-    case "CODE":
-    case "DFN":
-    case "EM":
-    case "I":
-    case "IMG":
-    case "INPUT":
-    case "KBD":
-    case "LABEL":
-    case "MAP":
-    case "OBJECT":
-    case "Q":
-    case "SAMP":
-    case "SCRIPT":
-    case "SELECT":
-    case "SMALL":
-    case "SPAN":
-    case "STRONG":
-    case "SUB":
-    case "SUP":
-    case "TEXTAREA":
-    case "TIME":
-    case "TT":
-    case "VAR":
-    // Content
-    case "P":
-    case "H1":
-    case "H2":
-    case "H3":
-    case "H4":
-    case "H5":
-    case "H6":
-    case "FIGCAPTION":
-    case "BLOCKQUOTE":
-    case "PRE":
-    case "LI":
-    case "TR":
-    case "DT":
-    case "DD":
-    case "VIDEO":
-    case "CANVAS":
-      container = false;
-      break;
-    default:
-      container = true;
-  }
+	switch (node.tagName) {
+		// Inline
+		case "A":
+		case "ABBR":
+		case "ACRONYM":
+		case "B":
+		case "BDO":
+		case "BIG":
+		case "BR":
+		case "BUTTON":
+		case "CITE":
+		case "CODE":
+		case "DFN":
+		case "EM":
+		case "I":
+		case "IMG":
+		case "INPUT":
+		case "KBD":
+		case "LABEL":
+		case "MAP":
+		case "OBJECT":
+		case "Q":
+		case "SAMP":
+		case "SCRIPT":
+		case "SELECT":
+		case "SMALL":
+		case "SPAN":
+		case "STRONG":
+		case "SUB":
+		case "SUP":
+		case "TEXTAREA":
+		case "TIME":
+		case "TT":
+		case "VAR":
+		case "P":
+		case "H1":
+		case "H2":
+		case "H3":
+		case "H4":
+		case "H5":
+		case "H6":
+		case "FIGCAPTION":
+		case "BLOCKQUOTE":
+		case "PRE":
+		case "LI":
+		case "TR":
+		case "DT":
+		case "DD":
+		case "VIDEO":
+		case "CANVAS":
+			container = false;
+			break;
+		default:
+			container = true;
+	}
 
-  return container;
+	return container;
 }
 
 export function cloneNode(n, deep=false) {
-  return n.cloneNode(deep);
+	return n.cloneNode(deep);
 }
 
 export function findElement(node, doc) {
-  const ref = node.getAttribute("data-ref");
-  return findRef(ref, doc);
+	const ref = node.getAttribute("data-ref");
+	return findRef(ref, doc);
 }
 
 export function findRef(ref, doc) {
-  return doc.querySelector(`[data-ref='${ref}']`);
+	return doc.querySelector(`[data-ref='${ref}']`);
 }
 
 export function validNode(node) {
@@ -465,15 +462,15 @@ export function nextValidNode(node) {
 
 
 export function indexOf(node) {
-  let parent = node.parentNode;
-  if (!parent) {
-    return 0;
-  }
-  return Array.prototype.indexOf.call(parent.childNodes, node);
+	let parent = node.parentNode;
+	if (!parent) {
+		return 0;
+	}
+	return Array.prototype.indexOf.call(parent.childNodes, node);
 }
 
 export function child(node, index) {
-  return node.childNodes[index];
+	return node.childNodes[index];
 }
 
 export function isVisible(node) {

@@ -1,5 +1,5 @@
 import Handler from "../handler";
-import csstree from 'css-tree';
+import csstree from "css-tree";
 
 class PrintMedia extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -23,7 +23,7 @@ class PrintMedia extends Handler {
 	}
 
 	getMediaName(node) {
-		let media = '';
+		let media = "";
 
 		if (typeof node.prelude === "undefined" ||
 				node.prelude.type !== "AtrulePrelude" ) {
@@ -31,7 +31,7 @@ class PrintMedia extends Handler {
 		}
 
 		csstree.walk(node.prelude, {
-			visit: 'Identifier',
+			visit: "Identifier",
 			enter: (identNode, iItem, iList) => {
 				media = identNode.name;
 			}

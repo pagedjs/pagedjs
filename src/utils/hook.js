@@ -15,6 +15,7 @@ class Hook {
 	/**
 	 * Adds a function to be run before a hook completes
 	 * @example this.content.register(function(){...});
+	 * @return {undefined} void
 	 */
 	register(){
 		for(var i = 0; i < arguments.length; ++i) {
@@ -32,6 +33,7 @@ class Hook {
 	/**
 	 * Triggers a hook to run all functions
 	 * @example this.content.trigger(args).then(function(){...});
+	 * @return {undefined} void
 	 */
 	trigger(){
 		var args = arguments;

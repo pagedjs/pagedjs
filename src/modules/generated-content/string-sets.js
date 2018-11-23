@@ -1,5 +1,5 @@
 import Handler from "../handler";
-import csstree from 'css-tree';
+import csstree from "css-tree";
 
 class StringSets extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -12,11 +12,11 @@ class StringSets extends Handler {
 		if (declaration.property === "string-set") {
 			let selector = csstree.generate(rule.ruleNode.prelude);
 
-			let identifier = declaration.value.children.first().name
+			let identifier = declaration.value.children.first().name;
 
 			let value;
 			csstree.walk(declaration, {
-				visit: 'Function',
+				visit: "Function",
 				enter: (node, item, list) => {
 					value = csstree.generate(node);
 				}
@@ -26,7 +26,7 @@ class StringSets extends Handler {
 				identifier: identifier,
 				value: value,
 				selector: selector
-			}
+			};
 		}
 	}
 
@@ -57,7 +57,7 @@ class StringSets extends Handler {
 					set.first = cssVar;
 					fragment.style.setProperty(`--string-${name}`, `"${set.first}"`);
 				} else {
-					console.log(set.value + "needs css replacement");
+					console.warn(set.value + "needs css replacement");
 				}
 			} else {
 				// Use the previous values

@@ -63,7 +63,6 @@ class Layout {
 		let hasRenderedContent = false;
 		let newBreakToken;
 
-		let check = 0;
 		let length = 0;
 
 		while (!done && !newBreakToken) {
@@ -149,7 +148,7 @@ class Layout {
 		return {
 			node,
 			offset
-		}
+		};
 	}
 
 	shouldBreak(node) {
@@ -265,7 +264,7 @@ class Layout {
 	createBreakToken(overflow, rendered, source) {
 		let container = overflow.startContainer;
 		let offset = overflow.startOffset;
-		let node, renderedNode, ref, parent, index, temp, startOffset;
+		let node, renderedNode, parent, index, temp;
 
 		if (isElement(container)) {
 			temp = child(container, offset);
@@ -348,7 +347,6 @@ class Layout {
 		let walker = walk(rendered.firstChild, rendered);
 
 		// Find Start
-		let startContainer, startOffset;
 		let next, done, node, offset, skip, breakAvoid, prev, br;
 		while (!done) {
 			next = walker.next();
@@ -512,7 +510,7 @@ class Layout {
 
 			if (right > end) {
 				let letterwalker = letters(word);
-				let letter, nextLetter, doneLetter, posLetter;
+				let letter, nextLetter, doneLetter;
 
 				while (!doneLetter) {
 					nextLetter = letterwalker.next();

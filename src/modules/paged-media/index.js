@@ -1,9 +1,9 @@
-import AtPage from './atpage';
-import Breaks from './breaks';
-import PrintMedia from './print-media';
-import Splits from './splits';
-import Counters from './counters';
-import Lists from './lists';
+import AtPage from "./atpage";
+import Breaks from "./breaks";
+import PrintMedia from "./print-media";
+import Splits from "./splits";
+import Counters from "./counters";
+import Lists from "./lists";
 
 export default [
 	AtPage,
@@ -12,4 +12,4 @@ export default [
 	Splits,
 	Counters,
 	Lists
-]
+];

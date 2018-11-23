@@ -1,5 +1,5 @@
 import Handler from "../handler";
-import csstree from 'css-tree';
+import csstree from "css-tree";
 
 class RunningHeaders extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -12,12 +12,12 @@ class RunningHeaders extends Handler {
 	onDeclaration(declaration, dItem, dList, rule) {
 		if (declaration.property === "position") {
 			let selector = csstree.generate(rule.ruleNode.prelude);
-			let identifier = declaration.value.children.first().name
+			let identifier = declaration.value.children.first().name;
 
 			if (identifier === "running") {
 				let value;
 				csstree.walk(declaration, {
-					visit: 'Function',
+					visit: "Function",
 					enter: (node, item, list) => {
 						value = node.children.first().name;
 					}
@@ -27,14 +27,14 @@ class RunningHeaders extends Handler {
 					identifier: identifier,
 					value: value,
 					selector: selector
-				}
+				};
 			}
 		}
 
 		if (declaration.property === "content") {
 
 			csstree.walk(declaration, {
-				visit: 'Function',
+				visit: "Function",
 				enter: (funcNode, fItem, fList) => {
 
 					if (funcNode.name.indexOf("element") > -1) {
@@ -61,7 +61,7 @@ class RunningHeaders extends Handler {
 								style: style || "first",
 								selector: s,
 								fullSelector: selector
-							}
+							};
 						});
 					}
 
@@ -89,14 +89,14 @@ class RunningHeaders extends Handler {
 			let set = this.runningSelectors[name];
 			let selected = fragment.querySelector(set.selector);
 			if (selected) {
-				let cssVar;
+				// let cssVar;
 				if (set.identifier === "running") {
 					// cssVar = selected.textContent.replace(/\\([\s\S])|(["|'])/g,"\\$1$2");
 					// this.styleSheet.insertRule(`:root { --string-${name}: "${cssVar}"; }`, this.styleSheet.cssRules.length);
 					// fragment.style.setProperty(`--string-${name}`, `"${cssVar}"`);
 					set.first = selected;
 				} else {
-					console.log(set.value + "needs css replacement");
+					console.warn(set.value + "needs css replacement");
 				}
 			}
 		}
@@ -134,13 +134,15 @@ class RunningHeaders extends Handler {
 	* 5) named page
 	* 6) named left & right
 	* 7) named first & nth
+	* @param {string} [s] selector string
+	* @return {int} weight
 	*/
 	pageWeight(s) {
 		let weight = 1;
 		let selector = s.split(" ");
 		let parts = selector.length && selector[0].split(".");
 
-		parts.shift() // remove empty first part
+		parts.shift(); // remove empty first part
 
 		switch (parts.length) {
 			case 4:
@@ -184,6 +186,8 @@ class RunningHeaders extends Handler {
 	*
 	* Does not try to deduplicate base on specifity of the selector
 	* Previous matched selector will just be overwritten
+	* @param {obj} [obj] selectors object
+	* @return {Array} orderedSelectors
 	*/
 	orderSelectors(obj) {
 		let selectors = Object.keys(obj);
@@ -213,7 +217,7 @@ class RunningHeaders extends Handler {
 
 	beforeTreeParse(text, sheet) {
 		// element(x) is parsed as image element selector, so update element to element-ident
-		sheet.text = text.replace(/element[\s]*\(([^\|^#)]*)\)/g, "element-ident($1)");
+		sheet.text = text.replace(/element[\s]*\(([^|^#)]*)\)/g, "element-ident($1)");
 	}
 }
 

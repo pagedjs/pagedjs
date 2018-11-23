@@ -1,10 +1,9 @@
 import EventEmitter from "event-emitter";
-import Hook from "../utils/hook";
 
-import Chunker from '../chunker/chunker';
-import Polisher from '../polisher/polisher';
+import Chunker from "../chunker/chunker";
+import Polisher from "../polisher/polisher";
 
-import { registerHandlers, initializeHandlers } from '../utils/handlers';
+import { registerHandlers, initializeHandlers } from "../utils/handlers";
 
 class Previewer {
 	constructor() {
@@ -31,7 +30,7 @@ class Previewer {
 			},
 			format: undefined,
 			orientation: undefined
-		}
+		};
 
 		let counter = 0;
 		this.chunker.on("page", (page) => {
@@ -40,11 +39,11 @@ class Previewer {
 			if (typeof window.PuppeteerLogger !== "undefined") {
 				window.PuppeteerLogger("page", counter);
 			}
-		})
+		});
 
 		this.chunker.on("rendering", () => {
 			this.emit("rendering", this.chunker);
-		})
+		});
 	}
 
 	initializeHandlers() {
@@ -87,7 +86,7 @@ class Previewer {
 			// Otherwise create one
 			template = document.createElement("template");
 			template.innerHTML = body.innerHTML;
-			body.innerHTML = '';
+			body.innerHTML = "";
 			body.appendChild(template);
 		}
 
@@ -128,7 +127,7 @@ class Previewer {
 
 		this.handlers = this.initializeHandlers();
 
-		let styleText = await this.polisher.add(...stylesheets);
+		await this.polisher.add(...stylesheets);
 
 		let startTime = performance.now();
 

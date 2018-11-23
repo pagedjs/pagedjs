@@ -1,5 +1,4 @@
 import Handler from "../handler";
-import csstree from 'css-tree';
 
 class Splits extends Handler {
 	constructor(chunker, polisher, caller) {

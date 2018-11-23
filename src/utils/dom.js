@@ -1,5 +1,3 @@
-import { UUID } from "../utils/utils";
-
 export function isElement(node) {
 	return node && node.nodeType === 1;
 }
@@ -80,7 +78,7 @@ export function nodeBefore(node, limiter) {
 				break;
 			}
 			if (before && before.previousSibling) {
-				before = prev.previousSibling;
+				before = before.previousSibling;
 				break;
 			}
 		}
@@ -291,21 +289,21 @@ export function *words(node) {
 	let range;
 
 	while(currentOffset < max) {
-			currentLetter = currentText[currentOffset];
-		 if (/^[\S\u202F\u00A0]$/.test(currentLetter)) {
-			 if (!range) {
-				 range = document.createRange();
-				 range.setStart(node, currentOffset);
-			 }
-		 } else {
-			 if (range) {
-				 range.setEnd(node, currentOffset);
-				 yield range;
-				 range = undefined;
-			 }
-		 }
+		currentLetter = currentText[currentOffset];
+		if (/^[\S\u202F\u00A0]$/.test(currentLetter)) {
+			if (!range) {
+				range = document.createRange();
+				range.setStart(node, currentOffset);
+			}
+		} else {
+			if (range) {
+				range.setEnd(node, currentOffset);
+				yield range;
+				range = undefined;
+			}
+		}
 
-		 currentOffset += 1;
+		currentOffset += 1;
 	}
 
 	if (range) {
@@ -319,12 +317,12 @@ export function *letters(wordRange) {
 	let currentText = wordRange.startContainer;
 	let max = currentText.length;
 	let currentOffset = wordRange.startOffset;
-	let currentLetter;
+	// let currentLetter;
 
 	let range;
 
 	while(currentOffset < max) {
-		 currentLetter = currentText[currentOffset];
+		 // currentLetter = currentText[currentOffset];
 		 range = document.createRange();
 		 range.setStart(currentText, currentOffset);
 		 range.setEnd(currentText, currentOffset+1);
@@ -380,7 +378,6 @@ export function isContainer(node) {
 		case "TIME":
 		case "TT":
 		case "VAR":
-		// Content
 		case "P":
 		case "H1":
 		case "H2":

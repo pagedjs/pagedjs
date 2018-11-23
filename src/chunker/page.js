@@ -145,7 +145,6 @@ class Page {
 			e = entries[i];
 			if(e.dataset.ref === ref) {
 				return e;
-				break;
 			}
 		}
 	}

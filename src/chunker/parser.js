@@ -19,8 +19,6 @@ class ContentParser {
 	}
 
 	parse(markup, mime) {
-		let parser = new DOMParser();
-
 		let range = document.createRange();
 		let fragment = range.createContextualFragment(markup);
 
@@ -53,8 +51,8 @@ class ContentParser {
 			false
 		);
 
-		let node;
-		while(node = treeWalker.nextNode()) {
+		let node = treeWalker.nextNode();
+		while(node) {
 
 			if (!node.hasAttribute("data-ref")) {
 				let uuid = UUID();
@@ -68,6 +66,7 @@ class ContentParser {
 			// node.setAttribute("data-children", node.childNodes.length);
 
 			// node.setAttribute("data-text", node.textContent.trim().length);
+			node = treeWalker.nextNode();
 		}
 	}
 

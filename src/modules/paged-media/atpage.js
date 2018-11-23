@@ -1,7 +1,7 @@
 import Handler from "../handler";
-import csstree from 'css-tree';
-import pageSizes from '../../polisher/sizes';
-import { rebuildAncestors, elementAfter } from "../../utils/dom";
+import csstree from "css-tree";
+import pageSizes from "../../polisher/sizes";
+import { rebuildAncestors } from "../../utils/dom";
 
 class AtPage extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -34,14 +34,13 @@ class AtPage extends Handler {
 			},
 			block: {},
 			marks: undefined
-		}
+		};
 	}
 
 	// Find and Remove @page rules
 	onAtPage(node, item, list) {
 		let page, marginalia;
 		let selector = "";
-		let name = "";
 		let named, psuedo, nth;
 		let needsMerge = false;
 
@@ -152,7 +151,7 @@ class AtPage extends Handler {
 		csstree.walk(ast, {
 			visit: "TypeSelector",
 			enter: (node, item, list) => {
-				name = node.name
+				name = node.name;
 			}
 		});
 
@@ -194,7 +193,7 @@ class AtPage extends Handler {
 		let parsed = {};
 
 		csstree.walk(ast.block, {
-			visit: 'Atrule',
+			visit: "Atrule",
 			enter: (node, item, list) => {
 				let name = node.name;
 				if (name === "top") {
@@ -221,7 +220,7 @@ class AtPage extends Handler {
 		let parsed = {};
 
 		csstree.walk(ast.block, {
-			visit: 'Declaration',
+			visit: "Declaration",
 			enter: (declaration, dItem, dList) => {
 				let prop = csstree.property(declaration.property).name;
 				let value = declaration.value;
@@ -249,7 +248,7 @@ class AtPage extends Handler {
 				}
 
 			}
-		})
+		});
 
 		return parsed;
 	}
@@ -259,7 +258,7 @@ class AtPage extends Handler {
 
 		// Get size: Xmm Ymm
 		csstree.walk(declaration, {
-			visit: 'Dimension',
+			visit: "Dimension",
 			enter: (node, item, list) => {
 				let {value, unit} = node;
 				if (typeof width === "undefined") {
@@ -270,11 +269,11 @@ class AtPage extends Handler {
 			}
 		});
 
-		// Get size: 'A4'
+		// Get size: "A4"
 		csstree.walk(declaration, {
-			visit: 'String',
+			visit: "String",
 			enter: (node, item, list) => {
-				let name = node.value.replace(/["|']/g, '');
+				let name = node.value.replace(/["|']/g, "");
 				let s = pageSizes[name];
 				if (s) {
 					width = s.width;
@@ -306,7 +305,7 @@ class AtPage extends Handler {
 			height,
 			orientation,
 			format
-		}
+		};
 	}
 
 	getMargins(declaration) {
@@ -319,7 +318,7 @@ class AtPage extends Handler {
 		};
 
 		csstree.walk(declaration, {
-			visit: 'Dimension',
+			visit: "Dimension",
 			enter: (node, item, list) => {
 				margins.push(node);
 			}
@@ -403,9 +402,9 @@ class AtPage extends Handler {
 		let selectors = this.selectorsForPage(page);
 		let children = page.block.children.copy();
 		let block = {
-				type: 'Block',
-				loc: 0,
-				children: children
+			type: "Block",
+			loc: 0,
+			children: children
 		};
 		let rule = this.createRule(selectors, block);
 
@@ -427,9 +426,9 @@ class AtPage extends Handler {
 		// variables for margins
 		for (let m in margin) {
 			if (typeof margin[m].value !== "undefined") {
-				let value = margin[m].value + (margin[m].unit || '');
+				let value = margin[m].value + (margin[m].unit || "");
 				let mVar = list.createItem({
-					type: 'Declaration',
+					type: "Declaration",
 					property: "--margin-" + m,
 					value: {
 						type: "Raw",
@@ -453,11 +452,11 @@ class AtPage extends Handler {
 		}
 
 		// width variable
-		let wVar = this.createVariable("--width", outputWidth.value + (outputWidth.unit || ''));
+		let wVar = this.createVariable("--width", outputWidth.value + (outputWidth.unit || ""));
 		list.appendData(wVar);
 
 		// height variable
-		let hVar = this.createVariable("--height", outputHeight.value + (outputHeight.unit || ''));
+		let hVar = this.createVariable("--height", outputHeight.value + (outputHeight.unit || ""));
 		list.appendData(hVar);
 
 		// width dimension
@@ -514,9 +513,9 @@ class AtPage extends Handler {
 						 loc === "bottom-left" ||
 						 loc === "bottom-center" ||
 						 loc === "bottom-right")) {
-							let c = csstree.clone(node);
-							c.property = "max-width";
-							list.appendData(c);
+						let c = csstree.clone(node);
+						c.property = "max-width";
+						list.appendData(c);
 					}
 
 					if (node.property === "height" &&
@@ -526,9 +525,9 @@ class AtPage extends Handler {
 						 loc === "right-top" ||
 						 loc === "right-middle" ||
 						 loc === "right-bottom")) {
-							let c = csstree.clone(node);
-							c.property = "max-height";
-							list.appendData(c);
+						let c = csstree.clone(node);
+						c.property = "max-height";
+						list.appendData(c);
 					}
 				}
 			});
@@ -539,7 +538,7 @@ class AtPage extends Handler {
 			list.appendData(marginRule);
 
 			let sel = csstree.generate({
-				type: 'Selector',
+				type: "Selector",
 				children: marginSelectors
 			});
 
@@ -548,7 +547,7 @@ class AtPage extends Handler {
 				selector: sel,
 				block: page.marginalia[loc],
 				hasContent: hasContent
-			}
+			};
 
 		}
 	}
@@ -579,22 +578,22 @@ class AtPage extends Handler {
 			let displayDeclaration;
 
 			displaySelectors.insertData({
-				type: 'Combinator',
+				type: "Combinator",
 				name: ">"
 			});
 
 			displaySelectors.insertData({
-				type: 'ClassSelector',
+				type: "ClassSelector",
 				name: "pagedjs_margin-content"
 			});
 
 			displaySelectors.insertData({
-				type: 'Combinator',
+				type: "Combinator",
 				name: ">"
 			});
 
 			displaySelectors.insertData({
-				type: 'TypeSelector',
+				type: "TypeSelector",
 				name: "*"
 			});
 
@@ -611,17 +610,17 @@ class AtPage extends Handler {
 			let contentSelectors = this.selectorsForPageMargin(page, loc);
 
 			contentSelectors.insertData({
-				type: 'Combinator',
+				type: "Combinator",
 				name: ">"
 			});
 
 			contentSelectors.insertData({
-				type: 'ClassSelector',
+				type: "ClassSelector",
 				name: "pagedjs_margin-content"
 			});
 
 			contentSelectors.insertData({
-				type: 'PseudoElementSelector',
+				type: "PseudoElementSelector",
 				name: "after",
 				children: null
 			});
@@ -644,16 +643,16 @@ class AtPage extends Handler {
 
 		let widthString, heightString;
 		if (!orientation || orientation === "portrait") {
-			widthString = width.value + (width.unit || '');
-			heightString = height.value + (height.unit || '');
+			widthString = width.value + (width.unit || "");
+			heightString = height.value + (height.unit || "");
 		} else {
-			widthString = height.value + (height.unit || '');
-			heightString = width.value + (width.unit || '');
+			widthString = height.value + (height.unit || "");
+			heightString = width.value + (width.unit || "");
 		}
 
 		let wVar = this.createVariable("--width", widthString);
 		let hVar = this.createVariable("--height", heightString);
-		let rule = this.createRule(selectors, [wVar, hVar, oVar])
+		let rule = this.createRule(selectors, [wVar, hVar, oVar]);
 
 		ast.children.appendData(rule);
 	}
@@ -672,42 +671,42 @@ class AtPage extends Handler {
 
 		if (format) {
 			dimensions.appendData({
-				type: 'Identifier',
+				type: "Identifier",
 				name: format
 			});
 
 			if (orientation) {
 				dimensions.appendData({
-					type: 'WhiteSpace',
+					type: "WhiteSpace",
 					value: " "
 				});
 
 				dimensions.appendData({
-					type: 'Identifier',
+					type: "Identifier",
 					name: orientation
 				});
 			}
 		} else {
 			dimensions.appendData({
-				type: 'Dimension',
+				type: "Dimension",
 				unit: width.unit,
 				value: width.value
 			});
 
 			dimensions.appendData({
-				type: 'WhiteSpace',
+				type: "WhiteSpace",
 				value: " "
 			});
 
 			dimensions.appendData({
-				type: 'Dimension',
+				type: "Dimension",
 				unit: height.unit,
 				value: height.value
 			});
 		}
 
 		children.appendData({
-			type: 'Declaration',
+			type: "Declaration",
 			property: "size",
 			loc: null,
 			value: {
@@ -717,28 +716,28 @@ class AtPage extends Handler {
 		});
 
 		children.appendData({
-			type: 'Declaration',
+			type: "Declaration",
 			property: "margin",
 			loc: null,
 			value: {
 				type: "Value",
 				children: [{
-					type: 'Dimension',
-					unit: 'px',
+					type: "Dimension",
+					unit: "px",
 					value: 0
 				}]
 			}
 		});
 
 		children.appendData({
-			type: 'Declaration',
+			type: "Declaration",
 			property: "padding",
 			loc: null,
 			value: {
 				type: "Value",
 				children: [{
-					type: 'Dimension',
-					unit: 'px',
+					type: "Dimension",
+					unit: "px",
 					value: 0
 				}]
 			}
@@ -746,13 +745,13 @@ class AtPage extends Handler {
 
 
 		let rule = ast.children.createItem({
-			type: 'Atrule',
+			type: "Atrule",
 			prelude: null,
 			name: "page",
 			block: {
-					type: 'Block',
-					loc: null,
-					children: children
+				type: "Block",
+				loc: null,
+				children: children
 			}
 		});
 
@@ -776,7 +775,7 @@ class AtPage extends Handler {
 		}
 
 		return {
-			type: 'Nth',
+			type: "Nth",
 			loc: null,
 			selector: null,
 			nth: {
@@ -785,12 +784,11 @@ class AtPage extends Handler {
 				a: a,
 				b: b
 			}
-		}
+		};
 	}
 
 	addPageAttributes(page, start, pages) {
 		let named = start.dataset.page;
-		let index = pages.indexOf(page);
 
 		if (named) {
 			page.name = named;
@@ -804,9 +802,7 @@ class AtPage extends Handler {
 	}
 
 	getStartElement(content, breakToken) {
-		let start = content;
 		let node = breakToken && breakToken.node;
-		let index, ref, parent;
 
 		if (!content && !breakToken) {
 			return;
@@ -864,19 +860,18 @@ class AtPage extends Handler {
 			let left = page.element.querySelector(".pagedjs_margin-" + loc + "-left");
 			let right = page.element.querySelector(".pagedjs_margin-" + loc + "-right");
 
-				let centerContent = center.classList.contains("hasContent");
-				let leftContent = left.classList.contains("hasContent");
-				let rightContent = right.classList.contains("hasContent");
-				let marginGroupWidth = marginGroup.offsetWidth;
-				let centerWidth, leftWidth, rightWidth;
+			let centerContent = center.classList.contains("hasContent");
+			let leftContent = left.classList.contains("hasContent");
+			let rightContent = right.classList.contains("hasContent");
+			let centerWidth, leftWidth, rightWidth;
 
-				if (leftContent) {
-					leftWidth = window.getComputedStyle(left)["max-width"];
-				}
+			if (leftContent) {
+				leftWidth = window.getComputedStyle(left)["max-width"];
+			}
 
-				if (rightContent) {
-					rightWidth = window.getComputedStyle(right)["max-width"];
-				}
+			if (rightContent) {
+				rightWidth = window.getComputedStyle(right)["max-width"];
+			}
 
 
 			if (centerContent) {
@@ -1098,20 +1093,19 @@ class AtPage extends Handler {
 		let selectors = new csstree.List();
 
 		selectors.insertData({
-			type: 'ClassSelector',
-			name: 'pagedjs_page'
+			type: "ClassSelector",
+			name: "pagedjs_page"
 		});
 
 		// Named page
 		if (page.name) {
 			selectors.insertData({
-				type: 'ClassSelector',
+				type: "ClassSelector",
 				name: "pagedjs_named_page"
 			});
 
-			name = page.name + "_page";
 			selectors.insertData({
-				type: 'ClassSelector',
+				type: "ClassSelector",
 				name: "pagedjs_" + page.name + "_page"
 			});
 		}
@@ -1119,14 +1113,14 @@ class AtPage extends Handler {
 		// PsuedoSelector
 		if (page.psuedo && !(page.name && page.psuedo === "first")) {
 			selectors.insertData({
-				type: 'ClassSelector',
+				type: "ClassSelector",
 				name: "pagedjs_" + page.psuedo + "_page"
 			});
 		}
 
 		if (page.name && page.psuedo === "first") {
 			selectors.insertData({
-				type: 'ClassSelector',
+				type: "ClassSelector",
 				name: "pagedjs_" + page.name + "_" + page.psuedo + "_page"
 			});
 		}
@@ -1139,8 +1133,8 @@ class AtPage extends Handler {
 			nthlist.insertData(nth);
 
 			selectors.insertData({
-				type: 'PseudoClassSelector',
-				name: 'nth-of-type',
+				type: "PseudoClassSelector",
+				name: "nth-of-type",
 				children: nthlist
 			});
 		}
@@ -1152,12 +1146,12 @@ class AtPage extends Handler {
 		let selectors = this.selectorsForPage(page);
 
 		selectors.insertData({
-			type: 'Combinator',
+			type: "Combinator",
 			name: " "
 		});
 
 		selectors.insertData({
-			type: 'ClassSelector',
+			type: "ClassSelector",
 			name: "pagedjs_margin-" + margin
 		});
 
@@ -1183,7 +1177,7 @@ class AtPage extends Handler {
 				loc: null,
 				children: children
 			}
-		}
+		};
 	}
 
 	createVariable(property, value) {
@@ -1195,7 +1189,7 @@ class AtPage extends Handler {
 				type: "Raw",
 				value: value
 			}
-		}
+		};
 	}
 
 	createDimension(property, value, unit, important) {
@@ -1218,7 +1212,7 @@ class AtPage extends Handler {
 				loc: null,
 				children: children
 			}
-		}
+		};
 	}
 
 	createBlock(declarations) {
@@ -1229,16 +1223,16 @@ class AtPage extends Handler {
 		});
 
 		return {
-			type: 'Block',
+			type: "Block",
 			loc: null,
 			children: block
-		}
+		};
 	}
 
 	createRule(selectors, block) {
 		let selectorList = new csstree.List();
 		selectorList.insertData({
-			type: 'Selector',
+			type: "Selector",
 			children: selectors
 		});
 
@@ -1247,9 +1241,9 @@ class AtPage extends Handler {
 		}
 
 		return {
-			type: 'Rule',
+			type: "Rule",
 			prelude: {
-				type: 'SelectorList',
+				type: "SelectorList",
 				children: selectorList
 			},
 			block: block

@@ -1,6 +1,6 @@
 import Handler from "../handler";
-import csstree from 'css-tree';
-import { rebuildAncestors, elementAfter } from "../../utils/dom";
+import csstree from "css-tree";
+import { elementAfter } from "../../utils/dom";
 
 class Breaks extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -31,7 +31,7 @@ class Breaks extends Handler {
 				} else {
 					this.breaks[s].push(breaker);
 				}
-			})
+			});
 
 			dList.remove(dItem);
 		}
@@ -63,7 +63,7 @@ class Breaks extends Handler {
 				} else {
 					this.breaks[s].push(breaker);
 				}
-			})
+			});
 
 			// Remove from CSS -- handle right / left in module
 			dList.remove(dItem);

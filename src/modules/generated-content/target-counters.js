@@ -1,6 +1,6 @@
 import Handler from "../handler";
 import { UUID, attr, querySelectorEscape } from "../../utils/utils";
-import csstree from 'css-tree';
+import csstree from "css-tree";
 
 class TargetCounters extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -15,12 +15,11 @@ class TargetCounters extends Handler {
 		if (funcNode.name === "target-counter") {
 			let selector = csstree.generate(rule.ruleNode.prelude);
 			let first = funcNode.children.first();
-			let last = funcNode.children.last();
 			let func = first.name;
 
 			let value = csstree.generate(funcNode);
 
-			let args = []
+			let args = [];
 
 			first.children.forEach((child) => {
 				if (child.type === "Identifier") {
@@ -41,7 +40,7 @@ class TargetCounters extends Handler {
 						style = child.name;
 					}
 				}
-			})
+			});
 
 			let variable = "target-counter-" + UUID();
 
@@ -55,12 +54,12 @@ class TargetCounters extends Handler {
 					selector: s,
 					fullSelector: selector,
 					variable: variable
-				}
+				};
 			});
 
 			// Replace with counter
 			funcNode.name = "counter";
-			funcNode.children = new csstree.List()
+			funcNode.children = new csstree.List();
 			funcNode.children.appendData({
 				type: "Identifier",
 				loc: 0,
@@ -110,10 +109,10 @@ class TargetCounters extends Handler {
 							}
 						}
 
-						let psuedo = "";
-						if (split.length > 1) {
-							psuedo += "::" + split[1];
-						}
+						// let psuedo = "";
+						// if (split.length > 1) {
+						// 	psuedo += "::" + split[1];
+						// }
 
 						this.styleSheet.insertRule(`[data-${target.variable}="${selector}"] { counter-increment: ${target.variable} ${pg}; }`, this.styleSheet.cssRules.length);
 					} else {

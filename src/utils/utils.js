@@ -35,13 +35,13 @@ export function getClientRects(element) {
  */
 export function UUID() {
 	var d = new Date().getTime();
-	if (typeof performance !== 'undefined' && typeof performance.now === 'function'){
-			d += performance.now(); //use high-precision timer if available
+	if (typeof performance !== "undefined" && typeof performance.now === "function"){
+		d += performance.now(); //use high-precision timer if available
 	}
-	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-			var r = (d + Math.random() * 16) % 16 | 0;
-			d = Math.floor(d / 16);
-			return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+	return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+		var r = (d + Math.random() * 16) % 16 | 0;
+		d = Math.floor(d / 16);
+		return (c === "x" ? r : (r & 0x3 | 0x8)).toString(16);
 	});
 }
 
@@ -49,7 +49,9 @@ export function UUID() {
 
 /**
  * Find the position of [element] in [nodeList].
- * @returns an index of the match, or -1 if there is no match
+ * @param {Element} element to check
+ * @param {NodeList} nodeList to find in
+ * @returns {int} an index of the match, or -1 if there is no match
  */
 export function positionInNodeList(element, nodeList) {
 	for (let i = 0; i < nodeList.length; i++) {
@@ -62,7 +64,8 @@ export function positionInNodeList(element, nodeList) {
 
 /**
  * Find a unique CSS selector for a given element
- * @returns a string such that ele.ownerDocument.querySelector(reply) === ele
+ * @param {Element} ele to check
+ * @returns {string} a string such that ele.ownerDocument.querySelector(reply) === ele
  * and ele.ownerDocument.querySelectorAll(reply).length === 1
  */
 export function findCssSelector(ele) {
@@ -127,7 +130,7 @@ export function findCssSelector(ele) {
 	}
 
 	return selector;
-};
+}
 
 export function attr(element, attributes) {
 	for (var i = 0; i < attributes.length; i++) {
@@ -142,13 +145,13 @@ export function attr(element, attributes) {
  */
 export function querySelectorEscape(value) {
 	if (arguments.length == 0) {
-		throw new TypeError('`CSS.escape` requires an argument.');
+		throw new TypeError("`CSS.escape` requires an argument.");
 	}
 	var string = String(value);
 	var length = string.length;
 	var index = -1;
 	var codeUnit;
-	var result = '';
+	var result = "";
 	var firstCodeUnit = string.charCodeAt(0);
 	while (++index < length) {
 		codeUnit = string.charCodeAt(index);
@@ -158,7 +161,7 @@ export function querySelectorEscape(value) {
 		// If the character is NULL (U+0000), then the REPLACEMENT CHARACTER
 		// (U+FFFD).
 		if (codeUnit == 0x0000) {
-			result += '\uFFFD';
+			result += "\uFFFD";
 			continue;
 		}
 
@@ -178,7 +181,7 @@ export function querySelectorEscape(value) {
 			)
 		) {
 			// https://drafts.csswg.org/cssom/#escape-a-character-as-code-point
-			result += '\\' + codeUnit.toString(16) + ' ';
+			result += "\\" + codeUnit.toString(16) + " ";
 			continue;
 		}
 
@@ -189,7 +192,7 @@ export function querySelectorEscape(value) {
 			length == 1 &&
 			codeUnit == 0x002D
 		) {
-			result += '\\' + string.charAt(index);
+			result += "\\" + string.charAt(index);
 			continue;
 		}
 
@@ -214,7 +217,7 @@ export function querySelectorEscape(value) {
 
 		// Otherwise, the escaped character.
 		// https://drafts.csswg.org/cssom/#escape-a-character
-		result += '\\' + string.charAt(index);
+		result += "\\" + string.charAt(index);
 
 	}
 	return result;
@@ -223,6 +226,7 @@ export function querySelectorEscape(value) {
 /**
  * Creates a new pending promise and provides methods to resolve or reject it.
  * From: https://developer.mozilla.org/en-US/docs/Mozilla/JavaScript_code_modules/Promise.jsm/Deferred#backwards_forwards_compatible
+ * @returns {object} defered
  */
 export function defer() {
 	this.resolve = null;
@@ -238,4 +242,4 @@ export function defer() {
 	Object.freeze(this);
 }
 
-export const requestIdleCallback = typeof window !== "undefined" && ('requestIdleCallback' in window ? window.requestIdleCallback : window.requestAnimationFrame);
+export const requestIdleCallback = typeof window !== "undefined" && ("requestIdleCallback" in window ? window.requestIdleCallback : window.requestAnimationFrame);

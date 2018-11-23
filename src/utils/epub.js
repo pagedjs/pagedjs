@@ -1,5 +1,5 @@
-import ePub from 'epubjs';
-// import JSZip from 'jszip';
+import ePub from "epubjs";
+// import JSZip from "jszip";
 
 // window.JSZip = JSZip;
 
@@ -15,7 +15,7 @@ class Epub {
 		return ePub(bookData, {replacements: true} ).then((book) => {
 			this.book = book;
 			return this.sections(this.book.spine);
-		})
+		});
 	}
 
 	async sections(spine) {

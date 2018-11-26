@@ -115,7 +115,7 @@ class Previewer {
 
 	async preview(content, stylesheets, renderTo) {
 
-		if (!content) {
+		if (typeof content === undefined || content === null) {
 			content = this.wrapContent();
 		}
 

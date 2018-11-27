@@ -244,12 +244,20 @@
 
             }
           };
-          resizer();
 
-          window.addEventListener("resize", resizer, false);
+          chunker.on("rendering", () => {
+            resizer();
+
+            window.addEventListener("resize", resizer, false);
+          });
 
 
-          setTimeout(() => {
+          let pg = false;
+          chunker.on("page", () => {
+            if (pg) {
+              return;
+            }
+            pg = true;
             let page = document.querySelector(".pagedjs_page");
             let height = (page.offsetHeight + 51) * scale;
             var next = document.getElementById("next");
@@ -283,7 +291,7 @@
             };
 
             document.addEventListener("keyup", keyListener, false);
-          }, 200);
+          });
 
 
           epub = undefined;

@@ -348,6 +348,12 @@ class Chunker {
 			// Listen for page overflow
 			page.onOverflow((overflowToken) => {
 				// console.log("overflow on", page.id, overflowToken);
+
+				// Only reflow while rendering
+				if (this.rendered) {
+					return;
+				}
+
 				let index = this.pages.indexOf(page) + 1;
 
 				// Stop the rendering
@@ -361,10 +367,11 @@ class Chunker {
 
 				this.q.enqueue(async () => {
 
-					if (this.rendered) {
-						this.start();
-						this.render(this.source, this.breakToken);
-					}
+					this.start();
+
+					await this.render(this.source, this.breakToken);
+
+					this.rendered = true;
 
 				});
 			});

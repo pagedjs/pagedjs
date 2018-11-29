@@ -114,11 +114,11 @@ class TargetCounters extends Handler {
 						// 	psuedo += "::" + split[1];
 						// }
 
-						this.styleSheet.insertRule(`[data-${target.variable}="${selector}"] { counter-increment: ${target.variable} ${pg}; }`, this.styleSheet.cssRules.length);
+						this.styleSheet.insertRule(`[data-${target.variable}="${selector}"] { counter-reset: ${target.variable} ${pg}; }`, this.styleSheet.cssRules.length);
 					} else {
 						let value = element.getAttribute(`data-counter-${target.counter}-value`);
 						if (value) {
-							this.styleSheet.insertRule(`[data-${target.variable}="${selector}"] { counter-increment: ${target.variable} ${parseInt(value)}; }`, this.styleSheet.cssRules.length);
+							this.styleSheet.insertRule(`[data-${target.variable}="${selector}"] { counter-reset: ${target.variable} ${target.variable} ${parseInt(value)}; }`, this.styleSheet.cssRules.length);
 						}
 					}
 				}

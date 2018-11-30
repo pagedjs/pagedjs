@@ -73,6 +73,7 @@ class Chunker {
 
 		this.q = new Queue(this);
 		this.stopped = false;
+		this.rendered = false;
 
 		this.content = content;
 
@@ -186,7 +187,7 @@ class Chunker {
 
 	stop() {
 		this.stopped = true;
-		this.q.clear();
+		// this.q.clear();
 	}
 
 	renderOnIdle(renderer) {
@@ -347,7 +348,7 @@ class Chunker {
 		if (!blank) {
 			// Listen for page overflow
 			page.onOverflow((overflowToken) => {
-				// console.log("overflow on", page.id, overflowToken);
+				console.warn("overflow on", page.id, overflowToken);
 
 				// Only reflow while rendering
 				if (this.rendered) {
@@ -365,15 +366,22 @@ class Chunker {
 				// Remove pages
 				this.removePages(index);
 
-				this.q.enqueue(async () => {
+				if (this.rendered === true) {
+					this.rendered = false;
 
-					this.start();
+					this.q.enqueue(async () => {
+						console.log("start",page.id, this.rendered);
 
-					await this.render(this.source, this.breakToken);
+						this.start();
 
-					this.rendered = true;
+						await this.render(this.source, this.breakToken);
 
-				});
+						this.rendered = true;
+
+					});
+				}
+
+
 			});
 
 			page.onUnderflow((overflowToken) => {

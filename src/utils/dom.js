@@ -509,3 +509,24 @@ export function hasTextContent(node) {
 	}
 	return false;
 }
+
+export function indexOfTextNode(node, parent) {
+	if (!isText(node)) {
+		return -1;
+	}
+	let nodeTextContent = node.textContent;
+	let child;
+	let index = -1;
+	for (var i = 0; i < parent.childNodes.length; i++) {
+		child = parent.childNodes[i];
+		if (child.nodeType === 3) {
+			let text = parent.childNodes[i].textContent;
+			if (text.includes(nodeTextContent)) {
+				index = i;
+				break;
+			}
+		}
+	}
+
+	return index;
+}

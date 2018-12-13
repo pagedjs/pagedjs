@@ -370,7 +370,6 @@ class Chunker {
 					this.rendered = false;
 
 					this.q.enqueue(async () => {
-						console.log("start",page.id, this.rendered);
 
 						this.start();
 

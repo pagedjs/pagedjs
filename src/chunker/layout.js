@@ -13,6 +13,7 @@ import {
 	isElement,
 	isText,
 	indexOf,
+	indexOfTextNode,
 	cloneNode,
 	findElement,
 	child,
@@ -288,7 +289,7 @@ class Layout {
 				}
 
 				parent = findElement(renderedNode, source);
-				index = indexOf(temp);
+				index = indexOfTextNode(temp, parent);
 				node = child(parent, index);
 				offset = 0;
 			}
@@ -300,8 +301,10 @@ class Layout {
 			}
 
 			parent = findElement(renderedNode, source);
-			index = indexOf(container);
+			index = indexOfTextNode(container, parent);
 			node = child(parent, index);
+
+			offset += node.textContent.indexOf(container.textContent);
 		}
 
 		if (!node) {

@@ -1,6 +1,7 @@
 import Sheet from "./sheet";
 import baseStyles from "./base";
 import Hook from "../utils/hook";
+import request from "../utils/request";
 
 class Polisher {
 	constructor(setup) {
@@ -49,7 +50,7 @@ class Polisher {
 				}
 			} else {
 				urls.push(arguments[i]);
-				f = fetch(arguments[i]).then((response) => {
+				f = request(arguments[i]).then((response) => {
 					return response.text();
 				});
 			}

@@ -80,11 +80,12 @@ class Previewer {
 
 		// Check if a template exists
 		let template;
-		template = body.querySelector(":scope > template");
+		template = body.querySelector(":scope > template[data-ref='pagedjs-content']");
 
 		if (!template) {
 			// Otherwise create one
 			template = document.createElement("template");
+			template.dataset.ref = "pagedjs-content";
 			template.innerHTML = body.innerHTML;
 			body.innerHTML = "";
 			body.appendChild(template);

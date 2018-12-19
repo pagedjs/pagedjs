@@ -15,6 +15,7 @@ class Polisher {
 		this.hooks.onRule = new Hook(this);
 		this.hooks.onDeclaration = new Hook(this);
 		this.hooks.onContent = new Hook(this);
+		this.hooks.onImport = new Hook(this);
 
 		this.hooks.beforeTreeParse = new Hook(this);
 		this.hooks.beforeTreeWalk = new Hook(this);
@@ -63,9 +64,9 @@ class Polisher {
 			.then(async (originals) => {
 				let text = "";
 				for (let index = 0; index < originals.length; index++) {
-					text += await this.convertViaSheet(originals[index], urls[index]);
+					text = await this.convertViaSheet(originals[index], urls[index]);
+					this.insert(text);
 				}
-				this.insert(text);
 				return text;
 			});
 	}
@@ -73,6 +74,16 @@ class Polisher {
 	async convertViaSheet(cssStr, href) {
 		let sheet = new Sheet(href, this.hooks);
 		await sheet.parse(cssStr);
+
+		// Insert the imported sheets first
+		for (let url of sheet.imported) {
+			let str = await request(url).then((response) => {
+				return response.text();
+			});
+			let text = await this.convertViaSheet(str, url);
+			this.insert(text);
+		}
+
 		this.sheets.push(sheet);
 
 		if (typeof sheet.width !== "undefined") {

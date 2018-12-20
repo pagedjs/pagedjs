@@ -1,0 +1,13 @@
+@page {
+  size: A5;
+  margin: 20mm 20mm;
+
+  @bottom-left{
+    content: counter(page);
+  }
+
+}
+
+p:nth-of-type(1) {
+  color: green;
+}

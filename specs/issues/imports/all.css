@@ -1,0 +1,13 @@
+section {
+  break-before: page;
+  page-break-before: always;
+}
+
+p {
+  line-height: 22px;
+}
+
+h1{
+  font-size: 24px;
+  margin-top: 0;
+}

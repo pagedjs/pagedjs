@@ -15,6 +15,7 @@ class Sheet {
 			this.hooks.onRule = new Hook(this);
 			this.hooks.onDeclaration = new Hook(this);
 			this.hooks.onContent = new Hook(this);
+			this.hooks.onImport = new Hook(this);
 
 			this.hooks.beforeTreeParse = new Hook(this);
 			this.hooks.beforeTreeWalk = new Hook(this);
@@ -50,6 +51,8 @@ class Sheet {
 
 		// Replace IDs with data-id
 		this.replaceIds(this.ast);
+
+		this.imported = [];
 
 		// Trigger Hooks
 		this.urls(this.ast);
@@ -92,6 +95,11 @@ class Sheet {
 				if (basename === "media") {
 					this.hooks.onAtMedia.trigger(node, item, list);
 					this.declarations(node, item, list);
+				}
+
+				if (basename === "import") {
+					this.hooks.onImport.trigger(node, item, list);
+					this.imports(node, item, list);
 				}
 			}
 		});
@@ -211,6 +219,51 @@ class Sheet {
 						idNode.value = {type: "String", loc: null, value: `"${name}"`};
 					}
 				});
+			}
+		});
+	}
+
+	imports(node, item, list) {
+		// console.log("import", node, item, list);
+		let queries = [];
+		csstree.walk(node, {
+			visit: "MediaQuery",
+			enter: (mqNode, mqItem, mqList) => {
+				csstree.walk(mqNode, {
+					visit: "Identifier",
+					enter: (identNode, identItem, identList) => {
+						queries.push(identNode.name);
+					}
+				});
+			}
+		});
+
+		// Just basic media query support for now
+		let shouldNotApply = queries.some((query, index) => {
+			let q = query;
+			if (q === "not") {
+				q = queries[index + 1];
+				return !(q === "screen" || q === "speech");
+			} else {
+				return (q === "screen" || q === "speech");
+			}
+		});
+
+		if (shouldNotApply) {
+			return;
+		}
+
+		csstree.walk(node, {
+			visit: "String",
+			enter: (urlNode, urlItem, urlList) => {
+				let href = urlNode.value.replace(/["']/g, "");
+				let url = new URL(href, this.url);
+				let value = url.toString();
+
+				this.imported.push(value);
+
+				// Remove the original
+				list.remove(item);
 			}
 		});
 	}

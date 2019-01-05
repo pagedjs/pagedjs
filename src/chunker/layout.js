@@ -302,6 +302,11 @@ class Layout {
 
 			parent = findElement(renderedNode, source);
 			index = indexOfTextNode(container, parent);
+
+			if (index === -1) {
+				return;
+			}
+
 			node = child(parent, index);
 
 			offset += node.textContent.indexOf(container.textContent);
@@ -407,7 +412,7 @@ class Layout {
 					left = 0;
 					for (var i = 0; i != rects.length; i++) {
 						rect = rects[i];
-						if (!left || rect.left > left) {
+						if (rect.width > 0 && (!left || rect.left > left)) {
 							left = rect.left;
 						}
 					}
@@ -542,21 +547,23 @@ class Layout {
 	}
 
 	removeOverflow(overflow) {
-		this.hyphenateAtBreak(overflow);
+		let {startContainer} = overflow;
+		let extracted = overflow.extractContents();
 
-		return overflow.extractContents();
+		this.hyphenateAtBreak(startContainer);
+
+		return extracted;
 	}
 
-	hyphenateAtBreak(overflow) {
-		if (isText(overflow.startContainer) && overflow.startOffset > 0) {
-			let startText = overflow.startContainer.textContent;
-			let startOffset = overflow.startOffset;
-			let prevLetter = startText[startOffset-1];
+	hyphenateAtBreak(startContainer) {
+		if (isText(startContainer)) {
+			let startText = startContainer.textContent;
+			let prevLetter = startText[startText.length-1];
 
 			// Add a hyphen if previous character is a letter or soft hyphen
 			if (/^\w|\u00AD$/.test(prevLetter)) {
-				overflow.startContainer.textContent = startText.slice(0, startOffset) + "\u2010";
-				overflow.setStart(overflow.startContainer, startOffset + 1);
+				startContainer.parentNode.classList.add("pagedjs_hyphen");
+				startContainer.textContent += "\u2011";
 			}
 		}
 	}

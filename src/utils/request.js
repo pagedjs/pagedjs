@@ -11,7 +11,9 @@ export default async function request(url, options={}) {
 		request.withCredentials = options.credentials=='include';
 
 		request.onload = () => {
-			resolve(new Response(request.responseText, {status: request.status}));
+ 			// Chrome returns a status code of 0 for local files
+ 			const status = request.status === 0 && url.startsWith('file://') ? 200 : request.status;
+			resolve(new Response(request.responseText, {status}));
 		};
 
 		request.onerror = reject;

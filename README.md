@@ -129,6 +129,9 @@ Install dependencies
 $ npm install
 ```
 
+NOTE: This library depends on the `ghostscript4js` package.
+Make sure that all the prerequisites are met before installing the dependencies: https://www.npmjs.com/package/ghostscript4js#prerequisites
+
 ## Development
 Run the local dev-server with livereload and autocompile on [http://localhost:9090/](http://localhost:9090/)
 ```sh

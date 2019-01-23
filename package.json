@@ -13,8 +13,7 @@
     "@babel/runtime": "^7.2.0",
     "css-tree": "1.0.0-alpha.29",
     "event-emitter": "^0.3.5",
-    "lodash": "^4.17.11",
-    "npm-check-updates": "^2.15.0"
+    "lodash": "^4.17.11"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.0",

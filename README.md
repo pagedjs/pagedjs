@@ -129,9 +129,6 @@ Install dependencies
 $ npm install
 ```
 
-NOTE: This library depends on the `ghostscript4js` package.
-Make sure that all the prerequisites are met before installing the dependencies: https://www.npmjs.com/package/ghostscript4js#prerequisites
-
 ## Development
 Run the local dev-server with livereload and autocompile on [http://localhost:9090/](http://localhost:9090/)
 ```sh
@@ -161,6 +158,29 @@ npm run tests
 Specs run a html file in Chrome (using puppeteer) to test against CSS specifications.
 
 They can also output a pdf and compare pages (one at a time) in that PDF with samples PDFs (saved as images).
+
+The PDF comparison tests depend on the `ghostscript` and the `ghostscript4js` package.
+
+To run them you'll need to install a local version of Ghostscript for you system according to https://www.npmjs.com/package/ghostscript4js#prerequisites
+
+For Mac you can install it with
+
+```bash
+brew install ghostscript
+```
+
+For Debian you can install it with
+
+```bash
+sudo apt-get install ghostscript
+sudo apt-get install libgs-dev
+```
+
+Then you can install the node library
+
+```bash
+npm install ghostscript4js --no-save
+```
 
 To test the pdf output of specs, you'll need to build the library locally.
 

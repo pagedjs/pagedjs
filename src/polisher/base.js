@@ -21,8 +21,8 @@ export default `
 	overflow: hidden;
 	position: relative;
 	display: grid;
-	grid-template-columns: [left] var(--margin-left) [center] calc(var(--width) - var(--margin-left) - var(--margin-right)) [right] var(--margin-right);
-	grid-template-rows: [header] var(--margin-top) [page] calc(var(--height) - var(--margin-top) - var(--margin-bottom)) [footer] var(--margin-bottom);
+	grid-template-columns: [bleed-left] var(--bleed-left) [left] var(--margin-left) [center] calc(var(--width) - var(--margin-left) - var(--margin-right)) [right] var(--margin-right) [bleed-right] var(--bleed-right);
+	grid-template-rows: [bleed-top] var(--bleed-top) [header] var(--margin-top) [page] calc(var(--height) - var(--margin-top) - var(--margin-bottom)) [footer] var(--margin-bottom) [bleed-bottom] var(--bleed-bottom);
 }
 
 .pagedjs_page * {

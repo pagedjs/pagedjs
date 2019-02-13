@@ -2,6 +2,7 @@ import Handler from "../handler";
 import csstree from "css-tree";
 import pageSizes from "../../polisher/sizes";
 import { rebuildAncestors } from "../../utils/dom";
+import { CSSValueToString } from "../../utils/utils";
 
 class AtPage extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -78,13 +79,64 @@ class AtPage extends Handler {
 		}
 
 		let declarations = this.replaceDeclartations(node);
-
+		console.log(declarations);
 		if (declarations.size) {
 			page.size = declarations.size;
 			page.width = declarations.size.width;
 			page.height = declarations.size.height;
 			page.orientation = declarations.size.orientation;
 			page.format = declarations.size.format;
+		}
+
+		if (declarations.marks) {
+			page.marks = declarations.marks;
+		}
+
+		if (declarations.bleed) {
+			if (declarations.bleed[0] === "auto") {
+				if (page.marks) {
+					page.bleed = {
+						top: { value: 6, unit: "pt" },
+						right: { value: 6, unit: "pt" },
+						bottom: { value: 6, unit: "pt" },
+						left: { value: 6, unit: "pt" }
+					}
+				}
+			} else {
+				switch (declarations.bleed.length) {
+					case 4: // top right bottom left
+						page.bleed = {
+							top: declarations.bleed[0],
+							right: declarations.bleed[1],
+							bottom: declarations.bleed[2],
+							left: declarations.bleed[3]
+						}
+						break;
+					case 3: // top right bottom right
+						page.bleed = {
+							top: declarations.bleed[0],
+							right: declarations.bleed[1],
+							bottom: declarations.bleed[2],
+							left: declarations.bleed[1]
+						}
+						break;
+					case 2: // top right top right
+						page.bleed = {
+							top: declarations.bleed[0],
+							right: declarations.bleed[1],
+							bottom: declarations.bleed[0],
+							left: declarations.bleed[1]
+						}
+						break;
+					default:
+						page.bleed = {
+							top: declarations.bleed[0],
+							right: declarations.bleed[0],
+							bottom: declarations.bleed[0],
+							left: declarations.bleed[0]
+						}
+				}
+			}
 		}
 
 		if (declarations.margin) {
@@ -127,6 +179,8 @@ class AtPage extends Handler {
 			let height = this.pages["*"].height;
 			let format = this.pages["*"].format;
 			let orientation = this.pages["*"].orientation;
+			let bleed = this.pages["*"].bleed;
+
 
 			if ((width && height) &&
 					(this.width !== width || this.height !== height)) {
@@ -135,10 +189,10 @@ class AtPage extends Handler {
 				this.format = format;
 				this.orientation = orientation;
 
-				this.addRootVars(ast, width, height, orientation);
-				this.addRootPage(ast, this.pages["*"].size);
+				this.addRootVars(ast, width, height, orientation, bleed);
+				this.addRootPage(ast, this.pages["*"].size, bleed);
 
-				this.emit("size", { width, height, orientation, format });
+				this.emit("size", { width, height, orientation, format, bleed });
 			}
 
 		}
@@ -224,7 +278,9 @@ class AtPage extends Handler {
 			enter: (declaration, dItem, dList) => {
 				let prop = csstree.property(declaration.property).name;
 				let value = declaration.value;
+
 				if (prop === "marks") {
+					console.log("marks", value.children);
 					parsed.marks = value.children.first().name;
 					dList.remove(dItem);
 				} else if (prop === "margin") {
@@ -244,6 +300,31 @@ class AtPage extends Handler {
 					dList.remove(dItem);
 				} else if (prop === "size") {
 					parsed.size = this.getSize(declaration);
+					dList.remove(dItem);
+				} else if (prop === "bleed") {
+					parsed.bleed = []
+
+					// bleed: "auto"
+					csstree.walk(declaration, {
+						visit: "String",
+						enter: (stringNode) => {
+							if (stringNode.value.indexOf("auto") > -1) {
+								parsed.bleed.push("auto");
+							}
+						}
+					});
+
+					// bleed: 1in 2in, bleed: 20px ect.
+					csstree.walk(declaration, {
+						visit: "Dimension",
+						enter: (dimensionNode) => {
+							parsed.bleed.push({
+								value: dimensionNode.value,
+								unit: dimensionNode.unit,
+							});
+						}
+					});
+
 					dList.remove(dItem);
 				}
 
@@ -411,7 +492,7 @@ class AtPage extends Handler {
 		this.addMarginVars(page.margin, children, children.first());
 
 		if (page.width) {
-			this.addDimensions(page.width, page.height, page.orientation, children, children.first());
+			this.addDimensions(page.width, page.height, page.orientation, page.bleed, children, children.first());
 		}
 
 		if (page.marginalia) {
@@ -440,31 +521,37 @@ class AtPage extends Handler {
 		}
 	}
 
-	addDimensions(width, height, orientation, list, item) {
+	addDimensions(width, height, orientation, bleed, list, item) {
+		let widthString, heightString;
 
-		let outputWidth, outputHeight;
-		if (!orientation || orientation === "portrait") {
-			outputWidth = width;
-			outputHeight = height;
+		if (!bleed) {
+			widthString = CSSValueToString(width);
+			heightString = CSSValueToString(height);
 		} else {
-			outputWidth = height;
-			outputHeight = width;
+			widthString = `calc( ${CSSValueToString(width)} + ${CSSValueToString(bleed.left)} + ${CSSValueToString(bleed.right)} )`;
+			heightString = `calc( ${CSSValueToString(height)} + ${CSSValueToString(bleed.top)} + ${CSSValueToString(bleed.bottom)} )`;
+		}
+
+
+		if (orientation && orientation !== "portrait") {
+			// reverse for orientation
+			[widthString, heightString] = [heightString, widthString];
 		}
 
 		// width variable
-		let wVar = this.createVariable("--width", outputWidth.value + (outputWidth.unit || ""));
+		let wVar = this.createVariable("--width", widthString);
 		list.appendData(wVar);
 
 		// height variable
-		let hVar = this.createVariable("--height", outputHeight.value + (outputHeight.unit || ""));
+		let hVar = this.createVariable("--height", heightString);
 		list.appendData(hVar);
 
 		// width dimension
-		let w = this.createDimension("width", outputWidth.value, outputWidth.unit);
+		let w = this.createDimension("width", widthString);
 		list.appendData(w);
 
 		// height dimension
-		let h = this.createDimension("height", outputHeight.value, outputHeight.unit);
+		let h = this.createDimension("height", heightString);
 		list.appendData(h);
 
 	}
@@ -630,7 +717,8 @@ class AtPage extends Handler {
 		}
 	}
 
-	addRootVars(ast, width, height, orientation) {
+	addRootVars(ast, width, height, orientation, bleed) {
+		let rules = [];
 		let selectors = new csstree.List();
 		selectors.insertData({
 			type: "PseudoClassSelector",
@@ -638,21 +726,40 @@ class AtPage extends Handler {
 			children: null
 		});
 
-		// orientation variable
-		let oVar = this.createVariable("--orientation", orientation || "");
-
 		let widthString, heightString;
-		if (!orientation || orientation === "portrait") {
-			widthString = width.value + (width.unit || "");
-			heightString = height.value + (height.unit || "");
+
+		if (!bleed) {
+			widthString = CSSValueToString(width);
+			heightString = CSSValueToString(height);
 		} else {
-			widthString = height.value + (height.unit || "");
-			heightString = width.value + (width.unit || "");
+			widthString = `calc( ${CSSValueToString(width)} + ${CSSValueToString(bleed.left)} + ${CSSValueToString(bleed.right)} )`;
+			heightString = `calc( ${CSSValueToString(height)} + ${CSSValueToString(bleed.top)} + ${CSSValueToString(bleed.bottom)} )`;
+
+			let bleedTop = this.createVariable("--bleed-top", CSSValueToString(bleed.top));
+			let bleedRight = this.createVariable("--bleed-right", CSSValueToString(bleed.right));
+			let bleedBottom = this.createVariable("--bleed-bottom", CSSValueToString(bleed.bottom));
+			let bleedLeft = this.createVariable("--bleed-left", CSSValueToString(bleed.left));
+
+			rules.push(bleedTop, bleedRight, bleedBottom, bleedLeft);
+		}
+
+		// orientation variable
+		if (orientation) {
+			let oVar = this.createVariable("--orientation", orientation);
+			rules.push(oVar);
+
+			if (orientation !== "portrait") {
+				// reverse for orientation
+				[widthString, heightString] = [heightString, widthString];
+			}
 		}
 
 		let wVar = this.createVariable("--width", widthString);
 		let hVar = this.createVariable("--height", heightString);
-		let rule = this.createRule(selectors, [wVar, hVar, oVar]);
+
+		rules.push(wVar, hVar);
+
+		let rule = this.createRule(selectors, rules);
 
 		ast.children.appendData(rule);
 	}
@@ -664,12 +771,131 @@ class AtPage extends Handler {
 		padding: 0;
 	}
 	*/
-	addRootPage(ast, size) {
+	addRootPage(ast, size, bleed) {
 		let { width, height, orientation, format } = size;
 		let children = new csstree.List();
 		let dimensions = new csstree.List();
 
-		if (format) {
+		if (bleed) {
+			let widthCalculations = new csstree.List();
+			let heightCalculations = new csstree.List();
+
+			// width
+			widthCalculations.appendData({
+				type: "Dimension",
+				unit: width.unit,
+				value: width.value
+			});
+
+			widthCalculations.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			widthCalculations.appendData({
+				type: "Operator",
+				value: "+"
+			});
+
+			widthCalculations.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			widthCalculations.appendData({
+				type: "Dimension",
+				unit: bleed.left.unit,
+				value: bleed.left.value
+			});
+
+			widthCalculations.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			widthCalculations.appendData({
+				type: "Operator",
+				value: "+"
+			});
+
+			widthCalculations.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			widthCalculations.appendData({
+				type: "Dimension",
+				unit: bleed.right.unit,
+				value: bleed.right.value
+			});
+
+			// height
+			heightCalculations.appendData({
+				type: "Dimension",
+				unit: height.unit,
+				value: height.value
+			});
+
+			heightCalculations.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			heightCalculations.appendData({
+				type: "Operator",
+				value: "+"
+			});
+
+			heightCalculations.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			heightCalculations.appendData({
+				type: "Dimension",
+				unit: bleed.top.unit,
+				value: bleed.top.value
+			});
+
+			heightCalculations.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			heightCalculations.appendData({
+				type: "Operator",
+				value: "+"
+			});
+
+			heightCalculations.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			heightCalculations.appendData({
+				type: "Dimension",
+				unit: bleed.bottom.unit,
+				value: bleed.bottom.value
+			});
+
+			dimensions.appendData({
+				type: "Function",
+				name: "calc",
+				children: widthCalculations
+			});
+
+			dimensions.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			dimensions.appendData({
+				type: "Function",
+				name: "calc",
+				children: heightCalculations
+			});
+
+		} else if (format) {
 			dimensions.appendData({
 				type: "Identifier",
 				name: format

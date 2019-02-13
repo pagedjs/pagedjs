@@ -243,3 +243,7 @@ export function defer() {
 }
 
 export const requestIdleCallback = typeof window !== "undefined" && ("requestIdleCallback" in window ? window.requestIdleCallback : window.requestAnimationFrame);
+
+export function CSSValueToString(obj) {
+	return obj.value + (obj.unit || "");
+}

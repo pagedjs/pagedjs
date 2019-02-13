@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>
+      Bleeds
+    </title>
+
+    <script src="../../../dist/paged.polyfill.js"></script>
+
+		<style>
+			@page {
+				size: A4;
+				margin: 10mm;
+        bleed: 20mm 40mm;
+        marks: crop cross;
+			}
+
+      @media screen {
+        .pagedjs_page {
+          box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
+        }
+      }
+		</style>
+
+  </head>
+<body>
+	<section>
+	<header>
+	   <h1>Chapter 1. Loomings.</h1>
+  </header>
+
+	 <p>Call me Ishmael.</p>
+  </section>
+</body>
+</html>

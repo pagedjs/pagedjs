@@ -21,7 +21,7 @@ describe('default', async () => {
 
 		it('should render 1 page', async () => {
 			let pages = await page.$$eval(".pagedjs_page", (r) => r.length);
-			expect(pages).toBe(1);
+			expect(pages).toBe(5);
 		})
 
 		if (!DEBUG) {

@@ -28,7 +28,7 @@
     "express": "^4.16.4",
     "jest": "^23.6.0",
     "jest-image-snapshot": "^2.7.0",
-    "puppeteer": "GoogleChrome/puppeteer",
+    "puppeteer": "^1.12.2",
     "rimraf": "^2.6.2",
     "rollup": "^0.68.0",
     "rollup-plugin-commonjs": "^9.2.0",

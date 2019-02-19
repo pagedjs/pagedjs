@@ -73,6 +73,7 @@ class Page {
 		this.id = id;
 
 		page.dataset.pageNumber = pgnum+1;
+		page.setAttribute('id', id);
 
 		if (this.name) {
 			page.classList.add("pagedjs_" + this.name + "_page");

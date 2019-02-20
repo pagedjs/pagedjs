@@ -362,7 +362,7 @@ class Chunker {
 		this.pages.push(page);
 
 		// Create the pages
-		page.create(undefined, lastPage && lastPage.element);
+		page.create(undefined, lastPage && lastPage.sheet);
 
 		page.index(this.total);
 
@@ -425,7 +425,7 @@ class Chunker {
 		let total = this.pages.splice(index, 0, page);
 
 		// Create the pages
-		page.create(undefined, lastPage && lastPage.element);
+		page.create(undefined, lastPage && lastPage.sheet);
 
 		page.index(index + 1);
 

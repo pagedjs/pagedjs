@@ -79,7 +79,7 @@ class AtPage extends Handler {
 		}
 
 		let declarations = this.replaceDeclartations(node);
-		console.log(declarations);
+
 		if (declarations.size) {
 			page.size = declarations.size;
 			page.width = declarations.size.width;
@@ -88,55 +88,54 @@ class AtPage extends Handler {
 			page.format = declarations.size.format;
 		}
 
-		if (declarations.marks) {
-			page.marks = declarations.marks;
+		if (declarations.bleed && declarations.bleed[0] != "auto") {
+			switch (declarations.bleed.length) {
+				case 4: // top right bottom left
+					page.bleed = {
+						top: declarations.bleed[0],
+						right: declarations.bleed[1],
+						bottom: declarations.bleed[2],
+						left: declarations.bleed[3]
+					}
+					break;
+				case 3: // top right bottom right
+					page.bleed = {
+						top: declarations.bleed[0],
+						right: declarations.bleed[1],
+						bottom: declarations.bleed[2],
+						left: declarations.bleed[1]
+					}
+					break;
+				case 2: // top right top right
+					page.bleed = {
+						top: declarations.bleed[0],
+						right: declarations.bleed[1],
+						bottom: declarations.bleed[0],
+						left: declarations.bleed[1]
+					}
+					break;
+				default:
+					page.bleed = {
+						top: declarations.bleed[0],
+						right: declarations.bleed[0],
+						bottom: declarations.bleed[0],
+						left: declarations.bleed[0]
+					}
+			}
 		}
 
-		if (declarations.bleed) {
-			if (declarations.bleed[0] === "auto") {
-				if (page.marks) {
-					page.bleed = {
-						top: { value: 6, unit: "pt" },
-						right: { value: 6, unit: "pt" },
-						bottom: { value: 6, unit: "pt" },
-						left: { value: 6, unit: "pt" }
-					}
-				}
-			} else {
-				switch (declarations.bleed.length) {
-					case 4: // top right bottom left
-						page.bleed = {
-							top: declarations.bleed[0],
-							right: declarations.bleed[1],
-							bottom: declarations.bleed[2],
-							left: declarations.bleed[3]
-						}
-						break;
-					case 3: // top right bottom right
-						page.bleed = {
-							top: declarations.bleed[0],
-							right: declarations.bleed[1],
-							bottom: declarations.bleed[2],
-							left: declarations.bleed[1]
-						}
-						break;
-					case 2: // top right top right
-						page.bleed = {
-							top: declarations.bleed[0],
-							right: declarations.bleed[1],
-							bottom: declarations.bleed[0],
-							left: declarations.bleed[1]
-						}
-						break;
-					default:
-						page.bleed = {
-							top: declarations.bleed[0],
-							right: declarations.bleed[0],
-							bottom: declarations.bleed[0],
-							left: declarations.bleed[0]
-						}
+		if (declarations.marks) {
+			if (!declarations.bleed || declarations.bleed && declarations.bleed[0] === "auto") {
+				// Spec say 6pt, but needs more space for marks
+				page.bleed = {
+					top: { value: 6, unit: "mm" },
+					right: { value: 6, unit: "mm" },
+					bottom: { value: 6, unit: "mm" },
+					left: { value: 6, unit: "mm" }
 				}
 			}
+
+			page.marks = declarations.marks;
 		}
 
 		if (declarations.margin) {
@@ -180,6 +179,7 @@ class AtPage extends Handler {
 			let format = this.pages["*"].format;
 			let orientation = this.pages["*"].orientation;
 			let bleed = this.pages["*"].bleed;
+			let marks = this.pages["*"].marks;
 
 
 			if ((width && height) &&
@@ -189,7 +189,7 @@ class AtPage extends Handler {
 				this.format = format;
 				this.orientation = orientation;
 
-				this.addRootVars(ast, width, height, orientation, bleed);
+				this.addRootVars(ast, width, height, orientation, bleed, marks);
 				this.addRootPage(ast, this.pages["*"].size, bleed);
 
 				this.emit("size", { width, height, orientation, format, bleed });
@@ -280,8 +280,13 @@ class AtPage extends Handler {
 				let value = declaration.value;
 
 				if (prop === "marks") {
-					console.log("marks", value.children);
-					parsed.marks = value.children.first().name;
+					parsed.marks = [];
+					csstree.walk(declaration, {
+						visit: "Identifier",
+						enter: (ident) => {
+							parsed.marks.push(ident.name);
+						}
+					});
 					dList.remove(dItem);
 				} else if (prop === "margin") {
 					parsed.margin = this.getMargins(declaration);
@@ -304,24 +309,30 @@ class AtPage extends Handler {
 				} else if (prop === "bleed") {
 					parsed.bleed = []
 
-					// bleed: "auto"
 					csstree.walk(declaration, {
-						visit: "String",
-						enter: (stringNode) => {
-							if (stringNode.value.indexOf("auto") > -1) {
-								parsed.bleed.push("auto");
+						enter: (subNode) => {
+							switch (subNode.type) {
+								case "String": // bleed: "auto"
+									if (subNode.value.indexOf("auto") > -1) {
+										parsed.bleed.push("auto");
+									}
+									break;
+								case "Dimension": // bleed: 1in 2in, bleed: 20px ect.
+									parsed.bleed.push({
+										value: subNode.value,
+										unit: subNode.unit
+									});
+									break;
+								case "Number":
+									parsed.bleed.push({
+										value: subNode.value,
+										unit: "px"
+									});
+									break;
+								default:
+									// ignore
 							}
-						}
-					});
 
-					// bleed: 1in 2in, bleed: 20px ect.
-					csstree.walk(declaration, {
-						visit: "Dimension",
-						enter: (dimensionNode) => {
-							parsed.bleed.push({
-								value: dimensionNode.value,
-								unit: dimensionNode.unit,
-							});
 						}
 					});
 
@@ -492,7 +503,7 @@ class AtPage extends Handler {
 		this.addMarginVars(page.margin, children, children.first());
 
 		if (page.width) {
-			this.addDimensions(page.width, page.height, page.orientation, page.bleed, children, children.first());
+			this.addDimensions(page.width, page.height, page.orientation, children, children.first());
 		}
 
 		if (page.marginalia) {
@@ -521,17 +532,11 @@ class AtPage extends Handler {
 		}
 	}
 
-	addDimensions(width, height, orientation, bleed, list, item) {
+	addDimensions(width, height, orientation, list, item) {
 		let widthString, heightString;
 
-		if (!bleed) {
-			widthString = CSSValueToString(width);
-			heightString = CSSValueToString(height);
-		} else {
-			widthString = `calc( ${CSSValueToString(width)} + ${CSSValueToString(bleed.left)} + ${CSSValueToString(bleed.right)} )`;
-			heightString = `calc( ${CSSValueToString(height)} + ${CSSValueToString(bleed.top)} + ${CSSValueToString(bleed.bottom)} )`;
-		}
-
+		widthString = CSSValueToString(width);
+		heightString = CSSValueToString(height);
 
 		if (orientation && orientation !== "portrait") {
 			// reverse for orientation
@@ -546,14 +551,10 @@ class AtPage extends Handler {
 		let hVar = this.createVariable("--height", heightString);
 		list.appendData(hVar);
 
-		// width dimension
-		let w = this.createDimension("width", widthString);
+		let w = this.createDimension("width", width);
+		let h = this.createDimension("height", height);
 		list.appendData(w);
-
-		// height dimension
-		let h = this.createDimension("height", heightString);
 		list.appendData(h);
-
 	}
 
 	addMarginaliaStyles(page, list, item, sheet) {
@@ -717,7 +718,7 @@ class AtPage extends Handler {
 		}
 	}
 
-	addRootVars(ast, width, height, orientation, bleed) {
+	addRootVars(ast, width, height, orientation, bleed, marks) {
 		let rules = [];
 		let selectors = new csstree.List();
 		selectors.insertData({
@@ -741,6 +742,13 @@ class AtPage extends Handler {
 			let bleedLeft = this.createVariable("--bleed-left", CSSValueToString(bleed.left));
 
 			rules.push(bleedTop, bleedRight, bleedBottom, bleedLeft);
+		}
+
+		if (marks) {
+			marks.forEach((mark) => {
+				let markDisplay = this.createVariable("--mark-" + mark + "-display", "block");
+				rules.push(markDisplay);
+			})
 		}
 
 		// orientation variable
@@ -1418,14 +1426,63 @@ class AtPage extends Handler {
 		};
 	}
 
-	createDimension(property, value, unit, important) {
+	createCalculatedDimension(property, items, important, operator="+") {
+		let children = new csstree.List();
+		let calculations = new csstree.List();
+
+		items.forEach((item, index) => {
+			calculations.appendData({
+				type: "Dimension",
+				unit: item.unit,
+				value: item.value
+			});
+
+			calculations.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			if (index + 1 < items.length) {
+				calculations.appendData({
+					type: "Operator",
+					value: operator
+				});
+
+				calculations.appendData({
+					type: "WhiteSpace",
+					value: " "
+				});
+			}
+		});
+
+		children.insertData({
+			type: "Function",
+			loc: null,
+			name: "calc",
+			children: calculations
+		});
+
+		return {
+			type: "Declaration",
+			loc: null,
+			important: important,
+			property: property,
+			value: {
+				type: "Value",
+				loc: null,
+				children: children
+			}
+		};
+	}
+
+	createDimension(property, cssValue, important) {
 		let children = new csstree.List();
 
 		children.insertData({
 			type: "Dimension",
 			loc: null,
-			value: value,
-			unit: unit
+			value: cssValue.value,
+			unit: cssValue.unit
 		});
 
 		return {

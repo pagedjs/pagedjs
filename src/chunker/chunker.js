@@ -13,22 +13,28 @@ const TEMPLATE = `
 <div class="pagedjs_sheet">
 	<div class="pagedjs_bleed pagedjs_bleed-top">
 		<div class="pagedjs_marks-crop"></div>
-		<div class="pagedjs_marks-cross"></div>
+		<div class="pagedjs_marks-middle">
+			<div class="pagedjs_marks-cross"></div>
+		</div>
 		<div class="pagedjs_marks-crop"></div>
 	</div>
 	<div class="pagedjs_bleed pagedjs_bleed-bottom">
 		<div class="pagedjs_marks-crop"></div>
-		<div class="pagedjs_marks-cross"></div>
-		<div class="pagedjs_marks-crop"></div>
+		<div class="pagedjs_marks-middle">
+			<div class="pagedjs_marks-cross"></div>
+		</div>		<div class="pagedjs_marks-crop"></div>
 	</div>
 	<div class="pagedjs_bleed pagedjs_bleed-left">
 		<div class="pagedjs_marks-crop"></div>
-		<div class="pagedjs_marks-cross"></div>
-		<div class="pagedjs_marks-crop"></div>
+		<div class="pagedjs_marks-middle">
+			<div class="pagedjs_marks-cross"></div>
+		</div>		<div class="pagedjs_marks-crop"></div>
 	</div>
 	<div class="pagedjs_bleed pagedjs_bleed-right">
 		<div class="pagedjs_marks-crop"></div>
-		<div class="pagedjs_marks-cross"></div>
+		<div class="pagedjs_marks-middle">
+			<div class="pagedjs_marks-cross"></div>
+		</div>
 		<div class="pagedjs_marks-crop"></div>
 	</div>
 	<div class="pagedjs_page">

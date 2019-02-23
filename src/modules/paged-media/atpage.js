@@ -741,7 +741,10 @@ class AtPage extends Handler {
 			let bleedBottom = this.createVariable("--bleed-bottom", CSSValueToString(bleed.bottom));
 			let bleedLeft = this.createVariable("--bleed-left", CSSValueToString(bleed.left));
 
-			rules.push(bleedTop, bleedRight, bleedBottom, bleedLeft);
+			let pageWidthVar = this.createVariable("--page-width", CSSValueToString(width));
+			let pageHeightVar = this.createVariable("--page-height", CSSValueToString(height));
+
+			rules.push(bleedTop, bleedRight, bleedBottom, bleedLeft, pageWidthVar, pageHeightVar);
 		}
 
 		if (marks) {

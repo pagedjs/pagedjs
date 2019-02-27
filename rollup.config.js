@@ -22,15 +22,16 @@ export default [
 		plugins: plugins
 	},
 
-	// {
-	// 	input: pkg.module,
-	// 	output: [
-	// 		{
-	// 			file: pkg.main,
-	// 			format: 'cjs'
-	// 		},
-	// 	]
-	// },
+	{
+		input: pkg.module,
+		output: [
+			{
+			    name: "PagedModule",
+	 			file: "./dist/paged.esm.js",
+	 			format: 'es'
+	 		},
+	 	]
+	},
 
 	{
 		input: "./src/polyfill/polyfill.js",

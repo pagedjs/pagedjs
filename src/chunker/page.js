@@ -24,16 +24,17 @@ class Page {
 		//let page = documentFragment.children[0];
 		let clone = document.importNode(this.pageTemplate.content, true);
 
-		let page;
+		let page, index;
 		if (after) {
-			this.pagesArea.insertBefore(clone, after.nextSibling);
-			let index = Array.prototype.indexOf.call(this.pagesArea.children, after.nextSibling);
+			this.pagesArea.insertBefore(clone, after.nextElementSibling);
+			index = Array.prototype.indexOf.call(this.pagesArea.children, after.nextElementSibling);
 			page = this.pagesArea.children[index];
 		} else {
 			this.pagesArea.appendChild(clone);
 			page = this.pagesArea.lastChild;
 		}
 
+		let pagebox = page.querySelector(".pagedjs_pagebox");
 		let area = page.querySelector(".pagedjs_page_content");
 
 
@@ -48,6 +49,7 @@ class Page {
 		this.height = Math.round(size.height);
 
 		this.element = page;
+		this.pagebox = pagebox;
 		this.area = area;
 
 		return page;
@@ -67,12 +69,17 @@ class Page {
 		this.position = pgnum;
 
 		let page = this.element;
+		// let pagebox = this.pagebox;
 
-		let id = `page-${pgnum+1}`;
+		let index = pgnum+1;
+
+		let id = `page-${index}`;
 
 		this.id = id;
 
-		page.dataset.pageNumber = pgnum+1;
+		// page.dataset.pageNumber = index;
+
+		page.dataset.pageNumber = index;
 		page.setAttribute('id', id);
 
 		if (this.name) {

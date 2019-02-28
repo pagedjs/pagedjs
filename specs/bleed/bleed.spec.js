@@ -19,9 +19,9 @@ describe('bleed', async () => {
 			expect(text).toContain('Chapter 1. Loomings.');
 		})
 
-		it('should render 1 page', async () => {
+		it('should render 7 pages', async () => {
 			let pages = await page.$$eval(".pagedjs_page", (r) => r.length);
-			expect(pages).toBe(1);
+			expect(pages).toBe(7);
 		})
 
 		if (!DEBUG) {

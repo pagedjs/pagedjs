@@ -372,20 +372,20 @@ export default `
 	display: block;
 }
 
-.pagedjs_pages > .pagedjs_page > .pagedjs_pagebox > .pagedjs_area > div [data-split-to] {
+.pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div [data-split-to] {
 	margin-bottom: unset;
 	padding-bottom: unset;
 }
 
-.pagedjs_pages > .pagedjs_page > .pagedjs_pagebox > .pagedjs_area > div [data-split-from] {
+.pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div [data-split-from] {
 	text-indent: unset;
 	margin-top: unset;
 	padding-top: unset;
 	initial-letter: unset;
 }
 
-.pagedjs_pages > .pagedjs_page > .pagedjs_pagebox > .pagedjs_area > div [data-split-from] > *::first-letter,
-.pagedjs_pages > .pagedjs_page > .pagedjs_pagebox > .pagedjs_area > div [data-split-from]::first-letter {
+.pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div [data-split-from] > *::first-letter,
+.pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div [data-split-from]::first-letter {
 	color: unset;
 	font-size: unset;
 	font-weight: unset;
@@ -397,17 +397,17 @@ export default `
 	margin: unset;
 }
 
-.pagedjs_pages > .pagedjs_page > .pagedjs_pagebox > .pagedjs_area > div [data-split-to]:after,
-.pagedjs_pages > .pagedjs_page > .pagedjs_pagebox > .pagedjs_area > div [data-split-to]::after {
+.pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div [data-split-to]:after,
+.pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div [data-split-to]::after {
 	content: unset;
 }
 
-.pagedjs_pages > .pagedjs_page > .pagedjs_pagebox > .pagedjs_area > div [data-split-from]:before,
-.pagedjs_pages > .pagedjs_page > .pagedjs_pagebox > .pagedjs_area > div [data-split-from]::before {
+.pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div [data-split-from]:before,
+.pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div [data-split-from]::before {
 	content: unset;
 }
 
-.pagedjs_pages > .pagedjs_page > .pagedjs_pagebox > .pagedjs_area > div li[data-split-from]:first-of-type {
+.pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div li[data-split-from]:first-of-type {
 	list-style: none;
 }
 

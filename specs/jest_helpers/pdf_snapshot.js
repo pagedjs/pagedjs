@@ -4,10 +4,24 @@ const gs = require('ghostscript4js')
 const fs = require('fs');
 const rimraf = require('rimraf');
 const { DEBUG } = require('./constants');
-const CONFIG = {
-	failureThreshold: '0.01',
-	failureThresholdType: 'percent'
-};
+// const CONFIG = {
+// 	customSnapshotsDir: `__image_snapshots_${platformToOS(process.platform)}__`
+// };
+
+function platformToOS(platform) {
+	let os = "";
+	switch (platform) {
+		case "darwin":
+			os = "mac";
+			break;
+		case "win32":
+			os = "windows";
+			break;
+		default:
+			os = "linux"
+	}
+	return os
+}
 
 function toMatchPDFSnapshot(received, page=1) {
 	let pdfImage;
@@ -34,7 +48,11 @@ function toMatchPDFSnapshot(received, page=1) {
 		throw err
 	}
 
-	return toMatchImageSnapshot.apply(this, [pdfImage, CONFIG])
+	const config = {
+		customSnapshotsDir: dirname + `/__image_snapshots_${platformToOS(process.platform)}__`
+	};
+
+	return toMatchImageSnapshot.apply(this, [pdfImage, config])
 }
 
 export function UUID() {

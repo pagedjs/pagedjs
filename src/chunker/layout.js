@@ -47,6 +47,7 @@ class Layout {
 			this.hooks.layout = new Hook();
 			this.hooks.renderNode = new Hook();
 			this.hooks.layoutNode = new Hook();
+			this.hooks.beforeOverflow = new Hook();
 			this.hooks.overflow = new Hook();
 		}
 

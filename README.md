@@ -3,7 +3,9 @@
 Paged.js - Paged Media Tools
 ===========
 
-
+Page.js is a way to build paginated documents in PDF format from HTML files.
+In other words: make books with web technology.
+Here is an introduction to Paged.js: [Paged.js – sneak peeks](https://www.pagedmedia.org/pagedjs-sneak-peeks/)
 
 ## NPM Module
 ```sh

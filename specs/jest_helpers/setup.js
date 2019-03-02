@@ -19,7 +19,7 @@ module.exports = async function() {
 	global.origin = `http://localhost:${PORT}`;
 
 	DEBUG && console.log(chalk.green('Setup Puppeteer'));
-	let args = CI ? ['--no-sandbox', '--disable-setuid-sandbox'] : [];
+	let args = CI ? ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] : ['--disable-dev-shm-usage'];
 	const browser = await puppeteer.launch({
 		headless: DEBUG ? false : true,
 		args: args

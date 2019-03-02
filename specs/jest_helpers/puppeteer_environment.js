@@ -51,14 +51,24 @@ class PuppeteerEnvironment extends NodeEnvironment {
 			renderedReject = reject;
 		});
 
-		page.addListener('pageerror', (error) => {
+		page.on('pageerror', (error) => {
 			this.handleError(error);
 			renderedReject(error);
 		});
 
-		page.addListener('error', (error) => {
+		page.on('error', (error) => {
 			this.handleError(error);
 			renderedReject(error);
+		});
+
+		page.on('requestfailed', (error) => {
+			this.handleError(error);
+			renderedReject(error);
+		});
+
+		page.on('console', (msg) => {
+		  for (let i = 0; i < msg.args().length; ++i)
+		    console.log(`TestPage - ${i}: ${msg.args()[i]}`);
 		});
 
 		// await page.exposeFunction('PuppeteerLogger', (msg, counter) => {

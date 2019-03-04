@@ -17,7 +17,10 @@ class Lists extends Handler {
 		for (var list of orderedLists) {
 			if (list.hasChildNodes()) {
 			list.start = list.firstElementChild.dataset.itemNum;
-		    }
+			}
+			else {
+				list.parentNode.removeChild(list);
+			}
 		}
 	}
 

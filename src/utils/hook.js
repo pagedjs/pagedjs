@@ -33,7 +33,7 @@ class Hook {
 	/**
 	 * Triggers a hook to run all functions
 	 * @example this.content.trigger(args).then(function(){...});
-	 * @return {undefined} void
+	 * @return {Promise} results
 	 */
 	trigger(){
 		var args = arguments;
@@ -47,12 +47,35 @@ class Hook {
 				// Task is a function that returns a promise
 				promises.push(executing);
 			}
-			// Otherwise Task resolves immediately, continue
+			// Otherwise Task resolves immediately, add resolved promise with result
+			promises.push(new Promise((resolve, reject) => {
+				resolve(executing);
+			}));
 		});
 
 
 		return Promise.all(promises);
 	}
+
+  /**
+   * Triggers a hook to run all functions synchronously
+   * @example this.content.trigger(args).then(function(){...});
+   * @return {Array} results
+   */
+  triggerSync(){
+    var args = arguments;
+    var context = this.context;
+    var results = [];
+
+    this.hooks.forEach(function(task) {
+      var executing = task.apply(context, args);
+
+      results.push(executing);
+    });
+
+
+    return results;
+  }
 
 	// Adds a function to be run before a hook completes
 	list(){

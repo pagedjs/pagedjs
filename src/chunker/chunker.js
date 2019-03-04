@@ -93,8 +93,8 @@ class Chunker {
 		this.hooks.layout = new Hook(this);
 		this.hooks.renderNode = new Hook(this);
 		this.hooks.layoutNode = new Hook(this);
-		this.hooks.beforeOverflow = new Hook(this);
-		this.hooks.overflow = new Hook(this);
+		this.hooks.onOverflow = new Hook(this);
+		this.hooks.onBreakToken = new Hook();
 		this.hooks.afterPageLayout = new Hook(this);
 		this.hooks.afterRendered = new Hook(this);
 
@@ -377,9 +377,8 @@ class Chunker {
 
 		if (!blank) {
 			// Listen for page overflow
-			page.onOverflow(async (overflowToken) => {
+			page.onOverflow((overflowToken) => {
 				console.warn("overflow on", page.id, overflowToken);
-				await this.hooks.overflow.trigger(overflowToken, this);
 
 				// Only reflow while rendering
 				if (this.rendered) {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width">
-    <title>Chunking Test - Epub Parser</title>
+    <title>Pagedjs - Epub Viewer</title>
     <script>this.ready=new Promise(function($){document.addEventListener('DOMContentLoaded',$,{once:true})})</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.1/jszip.min.js"></script>
     <script src="https://unpkg.com/epubjs@0.4.2/dist/epub.min.js"></script>
@@ -209,8 +209,6 @@
               $cover.style.display = "none";
             }
 
-
-
           return book;
         }).then((book) => {
           chunker = new Paged.Chunker()
@@ -234,10 +232,14 @@
           let resizer = () => {
             let pages = document.querySelector(".pagedjs_pages");
             scale = ((window.innerWidth ) / pages.offsetWidth) * .75;
-
+            let style = document.createElement('style');
+            style.setAttribute("media", "screen");
+            document.head.appendChild(style);
+            let sheet = style.sheet;
             if (scale < 1) {
-              pages.style.transform = `scale(${scale})`;
-              pages.style.marginLeft = `${(window.innerWidth / 2) - ((pages.offsetWidth/ 2) )  * scale }px`;
+              // pages.style.transform = `scale(${scale})`;
+              // pages.style.marginLeft = `${(window.innerWidth / 2) - ((pages.offsetWidth/ 2) )  * scale }px`;
+              sheet.insertRule(`#viewer .pagedjs_pages { transform: scale(${scale}); margin-left: ${(window.innerWidth / 2) - ((pages.offsetWidth/ 2) )  * scale }px }`, sheet.cssRules.length);
             } else {
               pages.style.transform = "none";
               pages.style.marginLeft = "0";
@@ -302,168 +304,63 @@
   <style>
 
   :root {
-      /* --width: 8.5in; */
-      /* --height: 11in; */
       --margin: 100px;
   }
 
-  /* section {
-    break-before: column;
-  } */
+  #opener, #controls, #next, #prev, #navigation {
+    display: none;
+  }
 
-    @media screen {
+  @media screen {
 
-      body {
-        background-color: whitesmoke;
-      }
-
-      #main {
-        display: block;
-      }
-
-      #viewer {
-        /* width: calc(var(--width) * 2);
-        height: var(--height);
-        overflow: scroll;
-        margin-top: 80px; */
-      }
-      /* .scaled {
-        transform: scale(.6);
-        transform-origin: 0 0;
-      } */
-
-      .pagedjs_page {
-        background-color: #fdfdfd;
-        margin-bottom: calc(var(--margin) / 2);
-        flex: none;
-      }
-
-      .pagedjs_pages {
-        width: calc(var(--width) * 2);
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-        transform-origin: 0 0;
-        margin: 0 auto;
-      }
-
-      .pagedjs_pages > .section {
-        width: calc(var(--width) * 2);
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-      }
-
-      .pagedjs_first_page {
-        margin-left: 50%;
-      }
-
-      #controls {
-        margin: 20px 0;
-        text-align: center;
-      }
+    body {
+      background-color: whitesmoke;
     }
 
-    .box {
-      font-size: 1.25rem; /* 20 */
-      background-color: #ddd;
-      position: relative;
-      padding: 100px 20px;
-
-      outline: 2px dashed #ccc;
-      outline-offset: -10px;
-
-      -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
-      transition: outline-offset .15s ease-in-out, background-color .15s linear;
-
-      width: 400px;
-      margin: 80px auto;
-    }
-
-    .box.is-dragover {
-      outline-offset: -20px;
-      outline-color: #000;
-      background-color: #ccc;
-    }
-
-    .box .box__dragndrop {
-      display: inline;
-    }
-
-    .box .box__icon {
-      width: 100%;
-      height: 80px;
-      fill: #92b0b3;
+    #main {
       display: block;
-      margin-bottom: 40px;
-      font-size: 100px;
     }
 
-    .box.is-uploading .box__input,
-    .box.is-success .box__input,
-    .box.is-error .box__input
-    {
-      visibility: hidden;
+    #opener, #controls, #next, #prev, #navigation {
+      display: unset;
     }
 
-    .box__uploading,
-    .box__success,
-    .box__error
-    {
-      display: none;
+
+    #viewer {
+      margin-top: 40px;
     }
 
-    .box.is-uploading .box__uploading,
-    .box.is-success .box__success,
-    .box.is-error .box__error
-    {
-      display: block;
-      position: absolute;
-      top: 50%;
-      right: 0;
-      left: 0;
-
-      -webkit-transform: translateY( -50% );
-      transform: translateY( -50% );
+    .pagedjs_page {
+      background-color: #fdfdfd;
+      margin-bottom: calc(var(--margin) / 2);
+      flex: none;
     }
 
-    .box__uploading
-    {
-      font-style: italic;
-    }
-    .box__success
-    {
-      -webkit-animation: appear-from-inside .25s ease-in-out;
-      animation: appear-from-inside .25s ease-in-out;
-    }
-
-    @-webkit-keyframes appear-from-inside
-    {
-      from	{ -webkit-transform: translateY( -50% ) scale( 0 ); }
-      75%		{ -webkit-transform: translateY( -50% ) scale( 1.1 ); }
-      to		{ -webkit-transform: translateY( -50% ) scale( 1 ); }
-    }
-    @keyframes appear-from-inside
-    {
-      from	{ transform: translateY( -50% ) scale( 0 ); }
-      75%		{ transform: translateY( -50% ) scale( 1.1 ); }
-      to		{ transform: translateY( -50% ) scale( 1 ); }
+    .pagedjs_pages {
+      width: calc(var(--width) * 2);
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      transform-origin: 0 0;
+      margin: 0 auto;
     }
 
-    .box__file + label
-		{
-			max-width: 80%;
-			text-overflow: ellipsis;
-			white-space: nowrap;
-			cursor: pointer;
-			display: inline-block;
-			overflow: hidden;
-		}
+    .pagedjs_pages > .section {
+      width: calc(var(--width) * 2);
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
 
-    #input {
-      display: none;
+    .pagedjs_first_page {
+      margin-left: 50%;
+    }
+
+    #controls {
+      margin: 20px 0;
+      text-align: center;
     }
 
     .arrow {
@@ -493,88 +390,190 @@
       font-size: 64px;
     }
 
-.navlink {
-  margin: 14px;
-  display: block;
-  text-align: center;
-  text-decoration: none;
-  color: #ccc;
-}
+    .navlink {
+      margin: 14px;
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      color: #ccc;
+    }
 
-.arrow:hover, .navlink:hover {
-  color: #777;
-}
+    .arrow:hover, .navlink:hover {
+      color: #777;
+    }
 
-.arrow:active, .navlink:hover {
-  color: #000;
-}
+    .arrow:active, .navlink:hover {
+      color: #000;
+    }
 
-#toc {
-  display: block;
-  margin: 10px auto;
-}
+    #toc {
+      display: block;
+      margin: 10px auto;
+    }
 
-#navigation h1 {
-  width: 200px;
-  font-size: 16px;
-  font-weight: normal;
-  color: #232323;
-  margin-bottom: 10px;
-  margin-left: 24px;
-}
+    #navigation h1 {
+      width: 200px;
+      font-size: 16px;
+      font-weight: normal;
+      color: #232323;
+      margin-bottom: 10px;
+      margin-left: 24px;
+    }
 
-#navigation h2 {
-  font-size: 14px;
-  font-weight: normal;
-  color: #B0B0B0;
-  margin-bottom: 20px;
-  text-align: left;
-  margin-left: 24px;
-}
+    #navigation h2 {
+      font-size: 14px;
+      font-weight: normal;
+      color: #B0B0B0;
+      margin-bottom: 20px;
+      text-align: left;
+      margin-left: 24px;
+    }
 
-#navigation ul {
-  padding-left: 36px;
-  margin-left: 0;
-  margin-top: 12px;
-  margin-bottom: 12px;
-  width: 340px;
-}
+    #navigation ul {
+      padding-left: 36px;
+      margin-left: 0;
+      margin-top: 12px;
+      margin-bottom: 12px;
+      width: 340px;
+    }
 
-#navigation ul li {
-  list-style: decimal;
-  margin-bottom: 10px;
-  color: #cccddd;
-  font-size: 12px;
-  padding-left: 0;
-  margin-left: 0;
-}
+    #navigation ul li {
+      list-style: decimal;
+      margin-bottom: 10px;
+      color: #cccddd;
+      font-size: 12px;
+      padding-left: 0;
+      margin-left: 0;
+    }
 
-#navigation ul li a {
-  color: #ccc;
-  text-decoration: none;
-}
+    #navigation ul li a {
+      color: #ccc;
+      text-decoration: none;
+    }
 
-#navigation ul li a:hover {
-  color: #fff;
-  text-decoration: underline;
-}
+    #navigation ul li a:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
 
-#navigation ul li a.active {
-  color: #fff;
-}
+    #navigation ul li a.active {
+      color: #fff;
+    }
 
-#navigation #cover {
-  display: block;
-  margin: 24px auto;
-}
+    #navigation #cover {
+      display: block;
+      margin: 24px auto;
+    }
 
-#opener {
-  position: fixed;
-}
+    #opener {
+      position: fixed;
+    }
 
-#next, #prev {
-  visibility: hidden;
-}
+    #next, #prev {
+      visibility: hidden;
+    }
+  }
+
+  .box {
+    font-size: 1.25rem; /* 20 */
+    background-color: #ddd;
+    position: relative;
+    padding: 100px 20px;
+
+    outline: 2px dashed #ccc;
+    outline-offset: -10px;
+
+    -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+    transition: outline-offset .15s ease-in-out, background-color .15s linear;
+
+    width: 400px;
+    margin: 80px auto;
+  }
+
+  .box.is-dragover {
+    outline-offset: -20px;
+    outline-color: #000;
+    background-color: #ccc;
+  }
+
+  .box .box__dragndrop {
+    display: inline;
+  }
+
+  .box .box__icon {
+    width: 100%;
+    height: 80px;
+    fill: #92b0b3;
+    display: block;
+    margin-bottom: 40px;
+    font-size: 100px;
+  }
+
+  .box.is-uploading .box__input,
+  .box.is-success .box__input,
+  .box.is-error .box__input
+  {
+    visibility: hidden;
+  }
+
+  .box__uploading,
+  .box__success,
+  .box__error
+  {
+    display: none;
+  }
+
+  .box.is-uploading .box__uploading,
+  .box.is-success .box__success,
+  .box.is-error .box__error
+  {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+
+    -webkit-transform: translateY( -50% );
+    transform: translateY( -50% );
+  }
+
+  .box__uploading
+  {
+    font-style: italic;
+  }
+  .box__success
+  {
+    -webkit-animation: appear-from-inside .25s ease-in-out;
+    animation: appear-from-inside .25s ease-in-out;
+  }
+
+  @-webkit-keyframes appear-from-inside
+  {
+    from	{ -webkit-transform: translateY( -50% ) scale( 0 ); }
+    75%		{ -webkit-transform: translateY( -50% ) scale( 1.1 ); }
+    to		{ -webkit-transform: translateY( -50% ) scale( 1 ); }
+  }
+  @keyframes appear-from-inside
+  {
+    from	{ transform: translateY( -50% ) scale( 0 ); }
+    75%		{ transform: translateY( -50% ) scale( 1.1 ); }
+    to		{ transform: translateY( -50% ) scale( 1 ); }
+  }
+
+  .box__file + label
+	{
+		max-width: 80%;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		cursor: pointer;
+		display: inline-block;
+		overflow: hidden;
+	}
+
+  #input {
+    display: none;
+  }
+
   </style>
 <body>
 

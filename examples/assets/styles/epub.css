@@ -1,7 +1,7 @@
 @page {
   size: 8.5in 11in;
   margin: 20mm 25mm;
-  marks: crop;
+  /* marks: crop; */
 
   @footnote {
     margin: 0.6em 0 0 0;
@@ -12,7 +12,7 @@
   @top-center {
     vertical-align: bottom;
     padding-bottom: 10mm;
-    content: string(booktitle);
+    content: string(booktitle, first-except);
   }
 }
 
@@ -52,7 +52,7 @@
  }
 
  @top-center{
-   content: string(booktitle);
+   content: string(booktitle, first-except);
   }
 }
 
@@ -115,7 +115,7 @@ font-style: italic;
 }
 
 
-article.section:nth-child(1) h1 {
+article.section:nth-child(1) h1, article.section:nth-child(1) .title {
   string-set: booktitle content(text);
 }
 

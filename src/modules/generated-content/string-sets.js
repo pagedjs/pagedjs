@@ -39,7 +39,7 @@ class StringSets extends Handler {
 			funcNode.children.append(funcNode.children.createItem({
 				type: "Identifier",
 				loc: null,
-				name: "--string-" + identifier
+				name: "--pagedjs-string-" + identifier
 			}));
 		}
 	}
@@ -52,17 +52,17 @@ class StringSets extends Handler {
 				let cssVar;
 				if (set.value === "content" || set.value === "content()" || set.value === "content(text)") {
 					cssVar = selected.textContent.replace(/\\([\s\S])|(["|'])/g,"\\$1$2");
-					// this.styleSheet.insertRule(`:root { --string-${name}: "${cssVar}"; }`, this.styleSheet.cssRules.length);
-					// fragment.style.setProperty(`--string-${name}`, `"${cssVar}"`);
+					// this.styleSheet.insertRule(`:root { --pagedjs-string-${name}: "${cssVar}"; }`, this.styleSheet.cssRules.length);
+					// fragment.style.setProperty(`--pagedjs-string-${name}`, `"${cssVar}"`);
 					set.first = cssVar;
-					fragment.style.setProperty(`--string-${name}`, `"${set.first}"`);
+					fragment.style.setProperty(`--pagedjs-string-${name}`, `"${set.first}"`);
 				} else {
 					console.warn(set.value + "needs css replacement");
 				}
 			} else {
 				// Use the previous values
 				if (set.first) {
-					fragment.style.setProperty(`--string-${name}`, `"${set.first}"`);
+					fragment.style.setProperty(`--pagedjs-string-${name}`, `"${set.first}"`);
 				}
 			}
 		}

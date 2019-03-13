@@ -468,7 +468,7 @@ class Chunker {
 	}
 
 	set total(num) {
-		this.pagesArea.style.setProperty("--page-count", num);
+		this.pagesArea.style.setProperty("--pagedjs-page-count", num);
 		this._total = num;
 	}
 

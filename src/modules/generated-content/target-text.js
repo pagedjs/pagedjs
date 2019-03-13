@@ -32,7 +32,7 @@ class TargetText extends Handler {
 				style = last.name;
 			}
 
-			let variable = "--" + UUID();
+			let variable = "--pagedjs-" + UUID();
 
 			selector.split(",").forEach((s) => {
 				this.textTargets[s] = {

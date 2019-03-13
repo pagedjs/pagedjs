@@ -521,7 +521,7 @@ class AtPage extends Handler {
 				let value = margin[m].value + (margin[m].unit || "");
 				let mVar = list.createItem({
 					type: "Declaration",
-					property: "--margin-" + m,
+					property: "--pagedjs-margin-" + m,
 					value: {
 						type: "Raw",
 						value: value
@@ -544,11 +544,11 @@ class AtPage extends Handler {
 		}
 
 		// width variable
-		let wVar = this.createVariable("--width", widthString);
+		let wVar = this.createVariable("--pagedjs-width", widthString);
 		list.appendData(wVar);
 
 		// height variable
-		let hVar = this.createVariable("--height", heightString);
+		let hVar = this.createVariable("--pagedjs-height", heightString);
 		list.appendData(hVar);
 
 		let w = this.createDimension("width", width);
@@ -736,27 +736,27 @@ class AtPage extends Handler {
 			widthString = `calc( ${CSSValueToString(width)} + ${CSSValueToString(bleed.left)} + ${CSSValueToString(bleed.right)} )`;
 			heightString = `calc( ${CSSValueToString(height)} + ${CSSValueToString(bleed.top)} + ${CSSValueToString(bleed.bottom)} )`;
 
-			let bleedTop = this.createVariable("--bleed-top", CSSValueToString(bleed.top));
-			let bleedRight = this.createVariable("--bleed-right", CSSValueToString(bleed.right));
-			let bleedBottom = this.createVariable("--bleed-bottom", CSSValueToString(bleed.bottom));
-			let bleedLeft = this.createVariable("--bleed-left", CSSValueToString(bleed.left));
+			let bleedTop = this.createVariable("--pagedjs-bleed-top", CSSValueToString(bleed.top));
+			let bleedRight = this.createVariable("--pagedjs-bleed-right", CSSValueToString(bleed.right));
+			let bleedBottom = this.createVariable("--pagedjs-bleed-bottom", CSSValueToString(bleed.bottom));
+			let bleedLeft = this.createVariable("--pagedjs-bleed-left", CSSValueToString(bleed.left));
 
-			let pageWidthVar = this.createVariable("--page-width", CSSValueToString(width));
-			let pageHeightVar = this.createVariable("--page-height", CSSValueToString(height));
+			let pageWidthVar = this.createVariable("--pagedjs-page-width", CSSValueToString(width));
+			let pageHeightVar = this.createVariable("--pagedjs-page-height", CSSValueToString(height));
 
 			rules.push(bleedTop, bleedRight, bleedBottom, bleedLeft, pageWidthVar, pageHeightVar);
 		}
 
 		if (marks) {
 			marks.forEach((mark) => {
-				let markDisplay = this.createVariable("--mark-" + mark + "-display", "block");
+				let markDisplay = this.createVariable("--pagedjs-mark-" + mark + "-display", "block");
 				rules.push(markDisplay);
 			})
 		}
 
 		// orientation variable
 		if (orientation) {
-			let oVar = this.createVariable("--orientation", orientation);
+			let oVar = this.createVariable("--pagedjs-orientation", orientation);
 			rules.push(oVar);
 
 			if (orientation !== "portrait") {
@@ -765,8 +765,8 @@ class AtPage extends Handler {
 			}
 		}
 
-		let wVar = this.createVariable("--width", widthString);
-		let hVar = this.createVariable("--height", heightString);
+		let wVar = this.createVariable("--pagedjs-width", widthString);
+		let hVar = this.createVariable("--pagedjs-height", heightString);
 
 		rules.push(wVar, hVar);
 
@@ -777,7 +777,7 @@ class AtPage extends Handler {
 
 	/*
 	@page {
-		size: var(--width) var(--height);
+		size: var(--pagedjs-width) var(--pagedjs-height);
 		margin: 0;
 		padding: 0;
 	}

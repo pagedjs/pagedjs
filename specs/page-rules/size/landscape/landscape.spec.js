@@ -24,7 +24,7 @@ describe('landscape', async () => {
 
 		it('should give the page a width of 210mm', async () => {
 			let width = await page.$eval(".pagedjs_page", (r) => {
-				return window.getComputedStyle(r).getPropertyValue("--width");
+				return window.getComputedStyle(r).getPropertyValue("--pagedjs-width");
 			});
 
 			expect(width).toEqual("210mm");
@@ -32,7 +32,7 @@ describe('landscape', async () => {
 
     it('should give the page a height of 148mm', async () => {
 			let width = await page.$eval(".pagedjs_page", (r) => {
-				return window.getComputedStyle(r).getPropertyValue("--height");
+				return window.getComputedStyle(r).getPropertyValue("--pagedjs-height");
 			});
 
 			expect(width).toEqual("148mm");

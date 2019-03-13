@@ -47,7 +47,9 @@ class Layout {
 			this.hooks.layout = new Hook();
 			this.hooks.renderNode = new Hook();
 			this.hooks.layoutNode = new Hook();
-			this.hooks.overflow = new Hook();
+			this.hooks.beforeOverflow = new Hook();
+			this.hooks.onOverflow = new Hook();
+			this.hooks.onBreakToken = new Hook();
 		}
 
 		this.maxChars = maxChars || MAX_CHARS_PER_BREAK;
@@ -209,7 +211,12 @@ class Layout {
 			dest.appendChild(clone);
 		}
 
-		this.hooks && this.hooks.renderNode.trigger(clone);
+		let nodeHooks = this.hooks.renderNode.triggerSync(clone, node);
+		nodeHooks.forEach((newNode) => {
+			if (typeof newNode != "undefined") {
+				clone = newNode;
+			}
+		});
 
 		return clone;
 	}
@@ -327,8 +334,23 @@ class Layout {
 		let overflow = this.findOverflow(rendered, bounds);
 		let breakToken;
 
+		let overflowHooks = this.hooks.onOverflow.triggerSync(overflow, rendered, bounds, this);
+		overflowHooks.forEach((newOverflow) => {
+			if (typeof newOverflow != "undefined") {
+				overflow = newOverflow;
+			}
+		});
+
 		if (overflow) {
 			breakToken = this.createBreakToken(overflow, rendered, source);
+
+			let breakHooks = this.hooks.onBreakToken.triggerSync(breakToken, overflow, rendered, this);
+			breakHooks.forEach((newToken) => {
+				if (typeof newToken != "undefined") {
+					breakToken = newToken;
+				}
+			});
+
 
 			if (breakToken && breakToken.node && extract) {
 				this.removeOverflow(overflow);

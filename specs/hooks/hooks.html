@@ -10,7 +10,24 @@
     <link rel="coverpage" href="images/cover.jpg" />
 
     <script src="../../../dist/paged.polyfill.js"></script>
+    <script>
+    class TestHandler extends Paged.Handler {
+      constructor(chunker, polisher, caller) {
+        super(chunker, polisher, caller);
+      }
 
+      onOverflow(overflow, rendered, bounds) {
+        console.log("overflow", overflow);
+        // return false;
+      }
+
+      onBreakToken(breakToken, overflow, rendered) {
+        console.log("breakToken", breakToken);
+        // return false;
+      }
+    }
+    Paged.registerHandlers(TestHandler);
+    </script>
 		<style>
 			@page {
 				size: 'letter';

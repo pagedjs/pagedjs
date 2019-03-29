@@ -2,6 +2,8 @@ export default `
 :root {
 	--pagedjs-width: 8.5in;
 	--pagedjs-height: 11in;
+	--pagedjs-pagebox-width: 8.5in;
+	--pagedjs-pagebox-height: 11in;
 	--pagedjs-margin-top: 1in;
 	--pagedjs-margin-right: 1in;
 	--pagedjs-margin-bottom: 1in;
@@ -139,12 +141,12 @@ export default `
 
 .pagedjs_pagebox {
 	box-sizing: border-box;
-	width: var(--pagedjs-width);
-	height: var(--pagedjs-height);
+	width: var(--pagedjs-pagebox-width);
+	height: var(--pagedjs-pagebox-height);
 	position: relative;
 	display: grid;
-	grid-template-columns: [left] var(--pagedjs-margin-left) [center] calc(var(--pagedjs-width) - var(--pagedjs-margin-left) - var(--pagedjs-margin-right)) [right] var(--pagedjs-margin-right);
-	grid-template-rows: [header] var(--pagedjs-margin-top) [page] calc(var(--pagedjs-height) - var(--pagedjs-margin-top) - var(--pagedjs-margin-bottom)) [footer] var(--pagedjs-margin-bottom);
+	grid-template-columns: [left] var(--pagedjs-margin-left) [center] calc(var(--pagedjs-pagebox-width) - var(--pagedjs-margin-left) - var(--pagedjs-margin-right)) [right] var(--pagedjs-margin-right);
+	grid-template-rows: [header] var(--pagedjs-margin-top) [page] calc(var(--pagedjs-pagebox-height) - var(--pagedjs-margin-top) - var(--pagedjs-margin-bottom)) [footer] var(--pagedjs-margin-bottom);
 	grid-column: sheet-center;
 	grid-row: sheet-middle;
 }
@@ -154,7 +156,7 @@ export default `
 }
 
 .pagedjs_margin-top {
-	width: calc(var(--pagedjs-width) - var(--pagedjs-margin-left) - var(--pagedjs-margin-right));
+	width: calc(var(--pagedjs-pagebox-width) - var(--pagedjs-margin-left) - var(--pagedjs-margin-right));
 	height: var(--pagedjs-margin-top);
 	grid-column: center;
 	grid-row: header;
@@ -189,7 +191,7 @@ export default `
 }
 
 .pagedjs_margin-right {
-	height: calc(var(--pagedjs-height) - var(--pagedjs-margin-top) - var(--pagedjs-margin-bottom));
+	height: calc(var(--pagedjs-pagebox-height) - var(--pagedjs-margin-top) - var(--pagedjs-margin-bottom));
 	width: var(--pagedjs-margin-right);
 	right: 0;
 	grid-column: right;
@@ -200,7 +202,7 @@ export default `
 }
 
 .pagedjs_margin-bottom {
-	width: calc(var(--pagedjs-width) - var(--pagedjs-margin-left) - var(--pagedjs-margin-right));
+	width: calc(var(--pagedjs-pagebox-width) - var(--pagedjs-margin-left) - var(--pagedjs-margin-right));
 	height: var(--pagedjs-margin-bottom);
 	grid-column: center;
 	grid-row: footer;
@@ -236,7 +238,7 @@ export default `
 
 
 .pagedjs_margin-left {
-	height: calc(var(--pagedjs-height) - var(--pagedjs-margin-top) - var(--pagedjs-margin-bottom));
+	height: calc(var(--pagedjs-pagebox-height) - var(--pagedjs-margin-top) - var(--pagedjs-margin-bottom));
 	width: var(--pagedjs-margin-left);
 	grid-column: left;
 	grid-row: page;
@@ -265,6 +267,8 @@ export default `
 
 .pagedjs_page {
 	counter-increment: page;
+	width: var(--pagedjs-width);
+	height: var(--pagedjs-height);
 }
 
 .pagedjs_pages {

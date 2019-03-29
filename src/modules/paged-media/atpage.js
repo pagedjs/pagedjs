@@ -544,17 +544,17 @@ class AtPage extends Handler {
 		}
 
 		// width variable
-		let wVar = this.createVariable("--pagedjs-width", widthString);
+		let wVar = this.createVariable("--pagedjs-pagebox-width", widthString);
 		list.appendData(wVar);
 
 		// height variable
-		let hVar = this.createVariable("--pagedjs-height", heightString);
+		let hVar = this.createVariable("--pagedjs-pagebox-height", heightString);
 		list.appendData(hVar);
 
-		let w = this.createDimension("width", width);
-		let h = this.createDimension("height", height);
-		list.appendData(w);
-		list.appendData(h);
+		// let w = this.createDimension("width", width);
+		// let h = this.createDimension("height", height);
+		// list.appendData(w);
+		// list.appendData(h);
 	}
 
 	addMarginaliaStyles(page, list, item, sheet) {
@@ -741,8 +741,8 @@ class AtPage extends Handler {
 			let bleedBottom = this.createVariable("--pagedjs-bleed-bottom", CSSValueToString(bleed.bottom));
 			let bleedLeft = this.createVariable("--pagedjs-bleed-left", CSSValueToString(bleed.left));
 
-			let pageWidthVar = this.createVariable("--pagedjs-page-width", CSSValueToString(width));
-			let pageHeightVar = this.createVariable("--pagedjs-page-height", CSSValueToString(height));
+			let pageWidthVar = this.createVariable("--pagedjs-width", CSSValueToString(width));
+			let pageHeightVar = this.createVariable("--pagedjs-height", CSSValueToString(height));
 
 			rules.push(bleedTop, bleedRight, bleedBottom, bleedLeft, pageWidthVar, pageHeightVar);
 		}

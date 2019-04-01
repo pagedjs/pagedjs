@@ -123,7 +123,7 @@ export default {
 	},
 	"B5": {
 		width: {
-			value: 250,
+			value: 176,
 			unit: "mm"
 		},
 		height: {
@@ -144,21 +144,21 @@ export default {
 	"legal": {
 		width: {
 			value: 8.5,
-			unit: "mm"
+			unit: "in"
 		},
 		height: {
 			value: 14,
-			unit: "mm"
+			unit: "in"
 		}
 	},
 	"ledger": {
 		width: {
 			value: 11,
-			unit: "mm"
+			unit: "in"
 		},
 		height: {
 			value: 17,
-			unit: "mm"
+			unit: "in"
 		}
 	}
 };

@@ -8,10 +8,10 @@ export default `
 	--pagedjs-margin-right: 1in;
 	--pagedjs-margin-bottom: 1in;
 	--pagedjs-margin-left: 1in;
-	--pagedjs-bleed-top: 0;
-	--pagedjs-bleed-right: 0;
-	--pagedjs-bleed-bottom: 0;
-	--pagedjs-bleed-left: 0;
+	--pagedjs-bleed-top: 0mm;
+	--pagedjs-bleed-right: 0mm;
+	--pagedjs-bleed-bottom: 0mm;
+	--pagedjs-bleed-left: 0mm;
 	--pagedjs-crop-color: black;
 	--pagedjs-crop-offset: 2mm;
 	--pagedjs-crop-stroke: 1px;

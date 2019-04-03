@@ -6,7 +6,9 @@ import pkg from './package.json';
 
 const plugins = [
 	resolve(),
-	commonjs(),
+	commonjs({
+		include: 'node_modules/**'
+	}),
 	json()
 ];
 
@@ -24,13 +26,12 @@ export default [
 
 	{
 		input: pkg.module,
-		output: [
-			{
-			    name: "PagedModule",
-	 			file: "./dist/paged.esm.js",
-	 			format: 'es'
-	 		},
-	 	]
+		output: {
+				name: "PagedModule",
+				file: "./dist/paged.esm.js",
+				format: 'es'
+		},
+		plugins: plugins
 	},
 
 	{

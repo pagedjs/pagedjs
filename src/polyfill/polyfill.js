@@ -25,8 +25,7 @@ let config = window.PagedConfig || {
 	renderTo: undefined
 };
 
-let previewer = new Previewer(config.content, config.stylesheets, config.renderTo);
-
+let previewer = new Previewer();
 
 ready.then(async function () {
 	let done;
@@ -35,7 +34,7 @@ ready.then(async function () {
 	}
 
 	if(config.auto !== false) {
-		done = await previewer.preview();
+		done = await previewer.preview(config.content, config.stylesheets, config.renderTo);
 	}
 
 

@@ -71,12 +71,17 @@ class PuppeteerEnvironment extends NodeEnvironment {
 		    console.log(`TestPage - ${i}: ${msg.args()[i]}`);
 		});
 
-		// await page.exposeFunction('PuppeteerLogger', (msg, counter) => {
-		// 	console.log(msg, counter);
-		// });
-
-		await page.exposeFunction('onPagesRendered', (msg, width, height, orientation) => {
+		await page.exposeFunction('onRendered', (msg, width, height, orientation) => {
 			renderedResolve(msg, width, height, orientation);
+		});
+
+		await page.evaluateOnNewDocument(() => {
+			document.addEventListener("DOMContentLoaded", () => {
+				window.PagedPolyfill.on("rendered", (flow) => {
+					let msg = "Rendering " + flow.total + " pages took " + flow.performance + " milliseconds.";
+					window.onRendered(msg, flow.width, flow.height, flow.orientation);
+				});
+			});
 		});
 
 		await page.goto(ORIGIN + '/specs/' + path, { waitUntil: 'networkidle2' });

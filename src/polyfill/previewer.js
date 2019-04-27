@@ -33,7 +33,6 @@ class Previewer {
 		};
 
 		this.chunker.on("page", (page) => {
-			console.log(page);
 			this.emit("page", page);
 		});
 
@@ -53,7 +52,6 @@ class Previewer {
 		handlers.on("atpages", (pages) => {
 			this.atpages = pages;
 			this.emit("atpages", pages);
-			console.log(pages);
 		});
 
 		return handlers;

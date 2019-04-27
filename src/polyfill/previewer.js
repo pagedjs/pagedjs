@@ -32,13 +32,9 @@ class Previewer {
 			orientation: undefined
 		};
 
-		let counter = 0;
 		this.chunker.on("page", (page) => {
-			counter += 1;
+			console.log(page);
 			this.emit("page", page);
-			if (typeof window.PuppeteerLogger !== "undefined") {
-				window.PuppeteerLogger("page", counter);
-			}
 		});
 
 		this.chunker.on("rendering", () => {
@@ -52,6 +48,12 @@ class Previewer {
 		handlers.on("size", (size) => {
 			this.size = size;
 			this.emit("size", size);
+		});
+
+		handlers.on("atpages", (pages) => {
+			this.atpages = pages;
+			this.emit("atpages", pages);
+			console.log(pages);
 		});
 
 		return handlers;
@@ -136,15 +138,11 @@ class Previewer {
 		let flow = await this.chunker.flow(content, renderTo);
 
 		let endTime = performance.now();
-		let msg = "Rendering " + flow.total + " pages took " + (endTime - startTime) + " milliseconds.";
 
 		flow.performance = (endTime - startTime);
 		flow.size = this.size;
 
-		this.emit("rendered", msg, this.size.width && this.size.width.value + this.size.width.unit, this.size.height && this.size.height.value + this.size.height.unit, this.size.orientation, this.size.format);
-		if (typeof window.onPagesRendered !== "undefined") {
-			window.onPagesRendered(msg, this.size.width && this.size.width.value + this.size.width.unit, this.size.height && this.size.height.value + this.size.height.unit, this.size.orientation, this.size.format);
-		}
+		this.emit("rendered", flow);
 
 		return flow;
 	}

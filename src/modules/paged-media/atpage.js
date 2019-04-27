@@ -193,6 +193,7 @@ class AtPage extends Handler {
 				this.addRootPage(ast, this.pages["*"].size, bleed);
 
 				this.emit("size", { width, height, orientation, format, bleed });
+				this.emit("atpages", this.pages);
 			}
 
 		}

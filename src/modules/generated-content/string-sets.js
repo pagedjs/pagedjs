@@ -56,6 +56,21 @@ class StringSets extends Handler {
 					// fragment.style.setProperty(`--pagedjs-string-${name}`, `"${cssVar}"`);
 					set.first = cssVar;
 					fragment.style.setProperty(`--pagedjs-string-${name}`, `"${set.first}"`);
+				} else if (set.value === "content(first-letter)"){
+					cssVar = selected.textContent.replace().charAt(0);
+					set.first = cssVar;
+					fragment.style.setProperty(`--pagedjs-string-${name}`, `"${set.first}"`);
+
+				} else if (set.value === "content(before)"){
+					cssVar = getComputedStyle(selected, ':before').getPropertyValue('content').replace(/\\([\s\S])|(["|'])/g,"\\$1$2");
+					set.first = cssVar;
+					console.log(set.first);
+					//fragment.style.setProperty(`--pagedjs-string-${name}`, `"${set.first}"`);
+				} else if (set.value === "content(after)"){
+					cssVar = getComputedStyle(selected, ':after').getPropertyValue('content').replace(/\\([\s\S])|(["|'])/g,"\\$1$2");
+					set.first = cssVar;
+					console.log(set.first);
+					//fragment.style.setProperty(`--pagedjs-string-${name}`, `"${set.first}"`);
 				} else {
 					console.warn(set.value + "needs css replacement");
 				}

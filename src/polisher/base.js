@@ -488,4 +488,8 @@ img {
 		height: 100% !important;
 	}
 }
+
+.node-align-last [data-split-original="true"] {
+text-align-last: justify;
+}
 `;

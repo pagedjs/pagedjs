@@ -17,9 +17,10 @@ class Splits extends Handler {
 
 		prevPage = pages.children[index - 1];
 
+		let from; // Capture the last from element
 		splits.forEach((split) => {
 			let ref = split.dataset.ref;
-			let from = prevPage.querySelector("[data-ref='"+ ref +"']:not([data-split-to])");
+			from = prevPage.querySelector("[data-ref='"+ ref +"']:not([data-split-to])");
 
 			if (from) {
 				from.dataset.splitTo = ref;
@@ -28,17 +29,22 @@ class Splits extends Handler {
 					from.dataset.splitOriginal = true;
 				}
 
-				this.handleAlignment(from);
 			}
 		});
+
+		// Fix alignment on the deepest split element
+		if (from) {
+			this.handleAlignment(from);
+		}
 	}
 
 	handleAlignment(node) {
 		let styles = window.getComputedStyle(node);
 		let align = styles["text-align"];
 		let alignLast = styles["text-align-last"];
+
 		if (align === "justify" && alignLast === "auto") {
-			node.style["text-align-last"] = "justify";
+			node.dataset.forceTextAlignLast = "justify";
 		}
 	}
 

@@ -415,6 +415,11 @@ export default `
 	list-style: none;
 }
 
+.pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div [data-force-text-align-last='justify']
+{
+	text-align-last: justify;
+}
+
 /*
 [data-page]:not([data-split-from]),
 [data-break-before="page"]:not([data-split-from]),

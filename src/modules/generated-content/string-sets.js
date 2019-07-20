@@ -1,5 +1,6 @@
 import Handler from "../handler";
 import csstree from "css-tree";
+import { counterStyle } from "../../utils/counter-style";
 
 class StringSets extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -67,21 +68,26 @@ class StringSets extends Handler {
 						if(beforeCounter !== null){
 							for(let i = 0; i < beforeCounter.length; i++){
 								let counter = beforeCounter[i].replace(/\s?counter\(/g, '').replace(/\)\s?/g, '').split(',');
-								console.log()
 								let counterName = counter[0];
-								// let counterStyle = counter[1];
-								let valueCounter = selected.getAttribute('data-counter-' + counterName + '-value');	
-								let newCounter = valueCounter;
+								let valueCounter = selected.getAttribute('data-counter-' + counterName + '-value');
+								let counterType;	
+								if(counter[1] !== undefined){ 
+									counterType = counter[1].replace(/\s/g, ''); 
+								} else { 
+									counterType = 'decimal'; 
+								}
+																
+								let newCounter = counterStyle(valueCounter, counterType);
 								cssVar = before.replace(beforeCounter[i], newCounter).replace(/"/g, '');
 							}
-							
 						}else{
-							cssVar = before;
+							cssVar = before.replace(/"/g, '');
 						}
-						console.log(cssVar);
 						set.first = cssVar;
 						fragment.style.setProperty(`--pagedjs-string-${name}`, `"${set.first}"`);
 					}
+				} else if(set.value === "content(after)"){
+				
 				} else {
 					console.warn(set.value + "needs css replacement");
 				}

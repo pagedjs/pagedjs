@@ -1,6 +1,6 @@
 import Handler from "../handler";
 import csstree from "css-tree";
-import { counterStyle } from "../../utils/counter-style";
+import { getGeneratedContent } from "../generated-content/get-generated-content.js";
 
 class StringSets extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -64,25 +64,7 @@ class StringSets extends Handler {
 				} else if(set.value === "content(before)"){
 					let before = getComputedStyle(selected, ':before').getPropertyValue('content');
 					if(before !== 'none'){
-						let beforeCounter = before.match(/counter\((.*?)\)\s?/g);
-						if(beforeCounter !== null){
-							for(let i = 0; i < beforeCounter.length; i++){
-								let counter = beforeCounter[i].replace(/\s?counter\(/g, '').replace(/\)\s?/g, '').split(',');
-								let counterName = counter[0];
-								let valueCounter = selected.getAttribute('data-counter-' + counterName + '-value');
-								let counterType;	
-								if(counter[1] !== undefined){ 
-									counterType = counter[1].replace(/\s/g, ''); 
-								} else { 
-									counterType = 'decimal'; 
-								}
-																
-								let newCounter = counterStyle(valueCounter, counterType);
-								cssVar = before.replace(beforeCounter[i], newCounter).replace(/"/g, '');
-							}
-						}else{
-							cssVar = before.replace(/"/g, '');
-						}
+						let cssVar = getGeneratedContent(before, selected);
 						set.first = cssVar;
 						fragment.style.setProperty(`--pagedjs-string-${name}`, `"${set.first}"`);
 					}

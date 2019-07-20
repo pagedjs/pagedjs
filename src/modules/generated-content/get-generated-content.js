@@ -1,4 +1,42 @@
-export function counterType(element, type) {
+/* 
+Get generated content into ::before and ::after elements
+Utils for string-sets and target-text properties
+
+counter = OK
+string = OK
+attr = TO-DO
+*/
+
+export function getGeneratedContent(content, elem){
+    let cssVar;
+	let contentCounter = content.match(/counter\((.*?)\)\s?/g);
+	if(contentCounter !== null){
+		for(let i = 0; i < contentCounter.length; i++){
+			let counter = contentCounter[i].replace(/\s?counter\(/g, '').replace(/\)\s?/g, '').split(',');
+			let counterName = counter[0];
+			let valueCounter = elem.getAttribute('data-counter-' + counterName + '-value');
+			let counterTypeElem;	
+			if(counter[1] !== undefined){ 
+				counterTypeElem = counter[1].replace(/\s/g, ''); 
+			} else { 
+				counterTypeElem = 'decimal'; 
+			}
+											
+			let newCounter = counterType(valueCounter, counterTypeElem);
+			cssVar = content.replace(contentCounter[i], newCounter).replace(/"/g, '');
+		}
+	}else{
+		cssVar = content.replace(/"/g, '');
+	}
+	return cssVar;
+}
+
+
+
+/* Functions for counterType ----------------------------------------------------------------- 
+----------------------------------------------------------------------------------------------*/
+
+function counterType(element, type) {
 	if (!type) {
 		return;
     }
@@ -21,7 +59,6 @@ export function counterType(element, type) {
 }
 
 
-
 function leadingZero(num){
     var result;
     if(num == 1 || num == 2 || num == 3 || num == 4 || num == 5 || num == 6 || num == 7 || num == 8 || num == 9|| num == 0){
@@ -31,7 +68,6 @@ function leadingZero(num){
     }
     return result;
 }
-
 
 /**
  * based on: https://www.selftaughtjs.com/algorithm-sundays-converting-roman-numerals/
@@ -92,6 +128,4 @@ function upperLatin(num){
   return s || undefined;
 
 }
-
-
 

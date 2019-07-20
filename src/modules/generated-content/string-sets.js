@@ -69,7 +69,12 @@ class StringSets extends Handler {
 						fragment.style.setProperty(`--pagedjs-string-${name}`, `"${set.first}"`);
 					}
 				} else if(set.value === "content(after)"){
-				
+					let after = getComputedStyle(selected, ':after').getPropertyValue('content');
+					if(after !== 'none'){
+						let cssVar = getGeneratedContent(after, selected);
+						set.first = cssVar;
+						fragment.style.setProperty(`--pagedjs-string-${name}`, `"${set.first}"`);
+					}
 				} else {
 					console.warn(set.value + "needs css replacement");
 				}

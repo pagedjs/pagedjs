@@ -1,14 +1,10 @@
 /* 
 Get generated content into ::before and ::after elements
 Utils for string-sets and target-text properties
-
-counter = OK
-string = OK
-attr = TO-DO
 */
 
 export function getGeneratedContent(content, elem){
-    let cssVar;
+  let cssVar;
 	let contentCounter = content.match(/counter\((.*?)\)\s?/g);
 	if(contentCounter !== null){
 		for(let i = 0; i < contentCounter.length; i++){
@@ -27,7 +23,7 @@ export function getGeneratedContent(content, elem){
 		}
 	}else{
 		cssVar = content.replace(/"/g, '');
-	}
+  }
 	return cssVar;
 }
 

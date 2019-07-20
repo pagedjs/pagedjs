@@ -56,6 +56,32 @@ class StringSets extends Handler {
 					// fragment.style.setProperty(`--pagedjs-string-${name}`, `"${cssVar}"`);
 					set.first = cssVar;
 					fragment.style.setProperty(`--pagedjs-string-${name}`, `"${set.first}"`);
+				} else if(set.value === "content(first-letter)"){
+					cssVar = selected.textContent.replace(/\\([\s\S])|(["|'])/g,"\\$1$2").charAt(0);
+					set.first = cssVar;
+					fragment.style.setProperty(`--pagedjs-string-${name}`, `"${set.first}"`);
+				} else if(set.value === "content(before)"){
+					let before = getComputedStyle(selected, ':before').getPropertyValue('content');
+					if(before !== 'none'){
+						let beforeCounter = before.match(/counter\((.*?)\)\s?/g);
+						if(beforeCounter !== null){
+							for(let i = 0; i < beforeCounter.length; i++){
+								let counter = beforeCounter[i].replace(/\s?counter\(/g, '').replace(/\)\s?/g, '').split(',');
+								console.log()
+								let counterName = counter[0];
+								// let counterStyle = counter[1];
+								let valueCounter = selected.getAttribute('data-counter-' + counterName + '-value');	
+								let newCounter = valueCounter;
+								cssVar = before.replace(beforeCounter[i], newCounter).replace(/"/g, '');
+							}
+							
+						}else{
+							cssVar = before;
+						}
+						console.log(cssVar);
+						set.first = cssVar;
+						fragment.style.setProperty(`--pagedjs-string-${name}`, `"${set.first}"`);
+					}
 				} else {
 					console.warn(set.value + "needs css replacement");
 				}

@@ -361,6 +361,8 @@ class Chunker {
 		} else {
 			this.pages = [];
 		}
+
+		this.total = this.pages.length;
 	}
 
 	addPage(blank) {

@@ -38,7 +38,7 @@ class Splits extends Handler {
 		let align = styles["text-align"];
 		let alignLast = styles["text-align-last"];
 		if (align === "justify" && alignLast === "auto") {
-			node.style["text-align-last"] = "justify";
+			node.classList.add("last-item-justify");
 		}
 	}
 

@@ -29,6 +29,7 @@ describe('bleed', async () => {
 				let pdf = await page.pdf(PDF_SETTINGS);
 
 				expect(pdf).toMatchPDFSnapshot(1);
+				expect(pdf).toMatchPDFSnapshot(2);
 			})
 		}
 	}

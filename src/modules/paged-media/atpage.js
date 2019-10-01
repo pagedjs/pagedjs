@@ -180,7 +180,16 @@ class AtPage extends Handler {
 			let orientation = this.pages["*"].orientation;
 			let bleed = this.pages["*"].bleed;
 			let marks = this.pages["*"].marks;
+			let bleedverso = undefined;
+			let bleedrecto = undefined;
 
+			if (":left" in this.pages) {
+	      bleedverso = this.pages[":left"].bleed;
+	    }
+
+	    if (":right" in this.pages) {
+	      bleedrecto = this.pages[":right"].bleed;
+	    }
 
 			if ((width && height) &&
 					(this.width !== width || this.height !== height)) {
@@ -189,8 +198,8 @@ class AtPage extends Handler {
 				this.format = format;
 				this.orientation = orientation;
 
-				this.addRootVars(ast, width, height, orientation, bleed, marks);
-				this.addRootPage(ast, this.pages["*"].size, bleed);
+				this.addRootVars(ast, width, height, orientation, bleed, bleedrecto, bleedverso, marks);
+				this.addRootPage(ast, this.pages["*"].size, bleed, bleedrecto, bleedverso);
 
 				this.emit("size", { width, height, orientation, format, bleed });
 				this.emit("atpages", this.pages);
@@ -719,7 +728,7 @@ class AtPage extends Handler {
 		}
 	}
 
-	addRootVars(ast, width, height, orientation, bleed, marks) {
+	addRootVars(ast, width, height, orientation, bleed, bleedrecto, bleedverso, marks) {
 		let rules = [];
 		let selectors = new csstree.List();
 		selectors.insertData({
@@ -729,23 +738,79 @@ class AtPage extends Handler {
 		});
 
 		let widthString, heightString;
+		let widthStringRight, heightStringRight;
+		let widthStringLeft, heightStringLeft;
 
 		if (!bleed) {
 			widthString = CSSValueToString(width);
 			heightString = CSSValueToString(height);
+			widthStringRight = CSSValueToString(width);
+			heightStringRight = CSSValueToString(height);
+			widthStringLeft = CSSValueToString(width);
+			heightStringLeft = CSSValueToString(height);
 		} else {
 			widthString = `calc( ${CSSValueToString(width)} + ${CSSValueToString(bleed.left)} + ${CSSValueToString(bleed.right)} )`;
 			heightString = `calc( ${CSSValueToString(height)} + ${CSSValueToString(bleed.top)} + ${CSSValueToString(bleed.bottom)} )`;
+
+			widthStringRight = `calc( ${CSSValueToString(width)} + ${CSSValueToString(bleed.left)} + ${CSSValueToString(bleed.right)} )`;
+			heightStringRight = `calc( ${CSSValueToString(height)} + ${CSSValueToString(bleed.top)} + ${CSSValueToString(bleed.bottom)} )`;
+
+			widthStringLeft = `calc( ${CSSValueToString(width)} + ${CSSValueToString(bleed.left)} + ${CSSValueToString(bleed.right)} )`;
+			heightStringLeft = `calc( ${CSSValueToString(height)} + ${CSSValueToString(bleed.top)} + ${CSSValueToString(bleed.bottom)} )`;
 
 			let bleedTop = this.createVariable("--pagedjs-bleed-top", CSSValueToString(bleed.top));
 			let bleedRight = this.createVariable("--pagedjs-bleed-right", CSSValueToString(bleed.right));
 			let bleedBottom = this.createVariable("--pagedjs-bleed-bottom", CSSValueToString(bleed.bottom));
 			let bleedLeft = this.createVariable("--pagedjs-bleed-left", CSSValueToString(bleed.left));
 
+			let bleedTopRecto = this.createVariable("--pagedjs-bleed-right-top", CSSValueToString(bleed.top));
+      let bleedRightRecto = this.createVariable("--pagedjs-bleed-right-right", CSSValueToString(bleed.right));
+      let bleedBottomRecto = this.createVariable("--pagedjs-bleed-right-bottom", CSSValueToString(bleed.bottom));
+      let bleedLeftRecto = this.createVariable("--pagedjs-bleed-right-left", CSSValueToString(bleed.left));
+
+      let bleedTopVerso = this.createVariable("--pagedjs-bleed-left-top", CSSValueToString(bleed.top));
+      let bleedRightVerso = this.createVariable("--pagedjs-bleed-left-right", CSSValueToString(bleed.right));
+      let bleedBottomVerso = this.createVariable("--pagedjs-bleed-left-bottom", CSSValueToString(bleed.bottom));
+      let bleedLeftVerso = this.createVariable("--pagedjs-bleed-left-left", CSSValueToString(bleed.left));
+
+			if (bleedrecto) {
+        bleedTopRecto = this.createVariable("--pagedjs-bleed-right-top", CSSValueToString(bleedrecto.top));
+        bleedRightRecto = this.createVariable("--pagedjs-bleed-right-right", CSSValueToString(bleedrecto.right));
+        bleedBottomRecto = this.createVariable("--pagedjs-bleed-right-bottom", CSSValueToString(bleedrecto.bottom));
+        bleedLeftRecto = this.createVariable("--pagedjs-bleed-right-left", CSSValueToString(bleedrecto.left));
+
+        widthStringRight = `calc( ${CSSValueToString(width)} + ${CSSValueToString(bleedrecto.left)} + ${CSSValueToString(bleedrecto.right)} )`;
+			  heightStringRight = `calc( ${CSSValueToString(height)} + ${CSSValueToString(bleedrecto.top)} + ${CSSValueToString(bleedrecto.bottom)} )`;
+      }
+      if (bleedverso) {
+        bleedTopVerso = this.createVariable("--pagedjs-bleed-left-top", CSSValueToString(bleedverso.top));
+        bleedRightVerso = this.createVariable("--pagedjs-bleed-left-right", CSSValueToString(bleedverso.right));
+        bleedBottomVerso = this.createVariable("--pagedjs-bleed-left-bottom", CSSValueToString(bleedverso.bottom));
+        bleedLeftVerso = this.createVariable("--pagedjs-bleed-left-left", CSSValueToString(bleedverso.left));
+
+        widthStringLeft = `calc( ${CSSValueToString(width)} + ${CSSValueToString(bleedverso.left)} + ${CSSValueToString(bleedverso.right)} )`;
+			  heightStringLeft = `calc( ${CSSValueToString(height)} + ${CSSValueToString(bleedverso.top)} + ${CSSValueToString(bleedverso.bottom)} )`;
+      }
+
 			let pageWidthVar = this.createVariable("--pagedjs-width", CSSValueToString(width));
 			let pageHeightVar = this.createVariable("--pagedjs-height", CSSValueToString(height));
 
-			rules.push(bleedTop, bleedRight, bleedBottom, bleedLeft, pageWidthVar, pageHeightVar);
+			rules.push(
+				bleedTop, 
+				bleedRight, 
+				bleedBottom, 
+				bleedLeft, 
+				bleedTopRecto, 
+				bleedRightRecto,
+				bleedBottomRecto,
+				bleedLeftRecto,
+				bleedTopVerso,
+				bleedRightVerso,
+				bleedBottomVerso,
+				bleedLeftVerso,
+				pageWidthVar, 
+				pageHeightVar
+			);
 		}
 
 		if (marks) {
@@ -763,13 +828,21 @@ class AtPage extends Handler {
 			if (orientation !== "portrait") {
 				// reverse for orientation
 				[widthString, heightString] = [heightString, widthString];
+				[widthStringRight, heightStringRight] = [heightStringRight, widthStringRight];
+				[widthStringLeft, heightStringLeft] = [heightStringLeft, widthStringLeft];
 			}
 		}
 
 		let wVar = this.createVariable("--pagedjs-width", widthString);
 		let hVar = this.createVariable("--pagedjs-height", heightString);
 
-		rules.push(wVar, hVar);
+		let wVarR = this.createVariable("--pagedjs-width-right", widthStringRight);
+		let hVarR = this.createVariable("--pagedjs-height-right", heightStringRight);
+
+		let wVarL = this.createVariable("--pagedjs-width-left", widthStringLeft);
+		let hVarL = this.createVariable("--pagedjs-height-left", heightStringLeft);
+
+		rules.push(wVar, hVar, wVarR, hVarR, wVarL, hVarL);
 
 		let rule = this.createRule(selectors, rules);
 
@@ -783,10 +856,14 @@ class AtPage extends Handler {
 		padding: 0;
 	}
 	*/
-	addRootPage(ast, size, bleed) {
+	addRootPage(ast, size, bleed, bleedrecto, bleedverso) {
 		let { width, height, orientation, format } = size;
 		let children = new csstree.List();
+		let childrenLeft = new csstree.List();
+		let childrenRight = new csstree.List();
 		let dimensions = new csstree.List();
+		let dimensionsLeft = new csstree.List();
+		let dimensionsRight = new csstree.List();
 
 		if (bleed) {
 			let widthCalculations = new csstree.List();
@@ -981,7 +1058,6 @@ class AtPage extends Handler {
 			}
 		});
 
-
 		let rule = ast.children.createItem({
 			type: "Atrule",
 			prelude: null,
@@ -994,6 +1070,294 @@ class AtPage extends Handler {
 		});
 
 		ast.children.append(rule);
+
+		if (bleedverso) {
+			let widthCalculationsLeft = new csstree.List();
+			let heightCalculationsLeft = new csstree.List();
+
+			// width
+			widthCalculationsLeft.appendData({
+				type: "Dimension",
+				unit: width.unit,
+				value: width.value
+			});
+
+			widthCalculationsLeft.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			widthCalculationsLeft.appendData({
+				type: "Operator",
+				value: "+"
+			});
+
+			widthCalculationsLeft.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			widthCalculationsLeft.appendData({
+				type: "Dimension",
+				unit: bleedverso.left.unit,
+				value: bleedverso.left.value
+			});
+
+			widthCalculationsLeft.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			widthCalculationsLeft.appendData({
+				type: "Operator",
+				value: "+"
+			});
+
+			widthCalculationsLeft.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			widthCalculationsLeft.appendData({
+				type: "Dimension",
+				unit: bleedverso.right.unit,
+				value: bleedverso.right.value
+			});
+
+			// height
+			heightCalculationsLeft.appendData({
+				type: "Dimension",
+				unit: height.unit,
+				value: height.value
+			});
+
+			heightCalculationsLeft.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			heightCalculationsLeft.appendData({
+				type: "Operator",
+				value: "+"
+			});
+
+			heightCalculationsLeft.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			heightCalculationsLeft.appendData({
+				type: "Dimension",
+				unit: bleedverso.top.unit,
+				value: bleedverso.top.value
+			});
+
+			heightCalculationsLeft.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			heightCalculationsLeft.appendData({
+				type: "Operator",
+				value: "+"
+			});
+
+			heightCalculationsLeft.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			heightCalculationsLeft.appendData({
+				type: "Dimension",
+				unit: bleedverso.bottom.unit,
+				value: bleedverso.bottom.value
+			});
+
+			dimensionsLeft.appendData({
+				type: "Function",
+				name: "calc",
+				children: widthCalculationsLeft
+			});
+
+			dimensionsLeft.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			dimensionsLeft.appendData({
+				type: "Function",
+				name: "calc",
+				children: heightCalculationsLeft
+			});
+
+			childrenLeft.appendData({
+				type: "Declaration",
+				property: "size",
+				loc: null,
+				value: {
+					type: "Value",
+					children: dimensionsLeft
+				}
+			});
+
+			let ruleLeft = ast.children.createItem({
+				type: "Atrule",
+				prelude: null,
+				name: "page :left",
+				block: {
+					type: "Block",
+					loc: null,
+					children: childrenLeft
+				}
+			});
+
+			ast.children.append(ruleLeft);
+
+		}
+
+		if (bleedrecto) {
+			let widthCalculationsRight = new csstree.List();
+			let heightCalculationsRight = new csstree.List();
+
+			// width
+			widthCalculationsRight.appendData({
+				type: "Dimension",
+				unit: width.unit,
+				value: width.value
+			});
+
+			widthCalculationsRight.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			widthCalculationsRight.appendData({
+				type: "Operator",
+				value: "+"
+			});
+
+			widthCalculationsRight.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			widthCalculationsRight.appendData({
+				type: "Dimension",
+				unit: bleedrecto.left.unit,
+				value: bleedrecto.left.value
+			});
+
+			widthCalculationsRight.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			widthCalculationsRight.appendData({
+				type: "Operator",
+				value: "+"
+			});
+
+			widthCalculationsRight.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			widthCalculationsRight.appendData({
+				type: "Dimension",
+				unit: bleedrecto.right.unit,
+				value: bleedrecto.right.value
+			});
+
+			// height
+			heightCalculationsRight.appendData({
+				type: "Dimension",
+				unit: height.unit,
+				value: height.value
+			});
+
+			heightCalculationsRight.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			heightCalculationsRight.appendData({
+				type: "Operator",
+				value: "+"
+			});
+
+			heightCalculationsRight.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			heightCalculationsRight.appendData({
+				type: "Dimension",
+				unit: bleedrecto.top.unit,
+				value: bleedrecto.top.value
+			});
+
+			heightCalculationsRight.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			heightCalculationsRight.appendData({
+				type: "Operator",
+				value: "+"
+			});
+
+			heightCalculationsRight.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			heightCalculationsRight.appendData({
+				type: "Dimension",
+				unit: bleedrecto.bottom.unit,
+				value: bleedrecto.bottom.value
+			});
+
+			dimensionsRight.appendData({
+				type: "Function",
+				name: "calc",
+				children: widthCalculationsRight
+			});
+
+			dimensionsRight.appendData({
+				type: "WhiteSpace",
+				value: " "
+			});
+
+			dimensionsRight.appendData({
+				type: "Function",
+				name: "calc",
+				children: heightCalculationsRight
+			});
+
+			childrenRight.appendData({
+				type: "Declaration",
+				property: "size",
+				loc: null,
+				value: {
+					type: "Value",
+					children: dimensionsRight
+				}
+			});
+
+			let ruleRight = ast.children.createItem({
+				type: "Atrule",
+				prelude: null,
+				name: "page :right",
+				block: {
+					type: "Block",
+					loc: null,
+					children: childrenRight
+				}
+			});
+
+			ast.children.append(ruleRight);
+
+		}
 	}
 
 	getNth(nth) {

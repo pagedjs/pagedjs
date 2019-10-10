@@ -343,10 +343,8 @@ class Layout {
 
 		if (overflow) {
 			breakToken = this.createBreakToken(overflow, rendered, source);
-			if (breakToken["node"] && breakToken["offset"]) {
-				if (breakToken["node"].textContent) {
-					breakLetter = breakToken["node"].textContent.charAt(breakToken["offset"]);
-				}
+			if (breakToken["node"] && breakToken["offset"] && breakToken["node"].textContent) {
+				breakLetter = breakToken["node"].textContent.charAt(breakToken["offset"]);
 			} else {
 				breakLetter = undefined;
 			}

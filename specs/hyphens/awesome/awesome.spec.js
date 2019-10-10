@@ -28,6 +28,12 @@ describe('css is awesome', async () => {
 			expect(text).toContain('\u2010');
 		})
 
+		xit('page 5 should NOT have a hyphen', async () => {
+			let text = await page.$eval("[data-page-number='5']", (r) => r.textContent);
+
+			expect(text).not.toContain('\u2010');
+		})
+
 
 		if (!DEBUG) {
 			xit('should create a pdf', async () => {

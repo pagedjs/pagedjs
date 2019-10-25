@@ -1,4 +1,4 @@
-import { Chunker } from '../../src/index.js';
+import Chunker from './chunker.js';
 
 describe('Chunker', async () => {
 

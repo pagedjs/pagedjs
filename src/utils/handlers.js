@@ -3,9 +3,9 @@ import generatedContentHandlers from "../modules/generated-content/index";
 import EventEmitter from "event-emitter";
 import pipe from "event-emitter/pipe";
 
-let registeredHandlers = [...pagedMediaHandlers, ...generatedContentHandlers];
+export let registeredHandlers = [...pagedMediaHandlers, ...generatedContentHandlers];
 
-class Handlers {
+export class Handlers {
 	constructor(chunker, polisher, caller) {
 		let handlers = [];
 

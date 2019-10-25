@@ -332,7 +332,7 @@ class Layout {
 
 	findBreakToken(rendered, source, bounds=this.bounds, extract=true) {
 		let overflow = this.findOverflow(rendered, bounds);
-		let breakToken;
+		let breakToken, breakLetter;
 
 		let overflowHooks = this.hooks.onOverflow.triggerSync(overflow, rendered, bounds, this);
 		overflowHooks.forEach((newOverflow) => {
@@ -343,6 +343,11 @@ class Layout {
 
 		if (overflow) {
 			breakToken = this.createBreakToken(overflow, rendered, source);
+			if (breakToken["node"] && breakToken["offset"] && breakToken["node"].textContent) {
+				breakLetter = breakToken["node"].textContent.charAt(breakToken["offset"]);
+			} else {
+				breakLetter = undefined;
+			}
 
 			let breakHooks = this.hooks.onBreakToken.triggerSync(breakToken, overflow, rendered, this);
 			breakHooks.forEach((newToken) => {
@@ -353,7 +358,7 @@ class Layout {
 
 
 			if (breakToken && breakToken.node && extract) {
-				this.removeOverflow(overflow);
+				this.removeOverflow(overflow, breakLetter);
 			}
 
 		}
@@ -568,22 +573,25 @@ class Layout {
 		return offset;
 	}
 
-	removeOverflow(overflow) {
+	removeOverflow(overflow, breakLetter) {
 		let {startContainer} = overflow;
 		let extracted = overflow.extractContents();
 
-		this.hyphenateAtBreak(startContainer);
+		this.hyphenateAtBreak(startContainer, breakLetter);
 
 		return extracted;
 	}
 
-	hyphenateAtBreak(startContainer) {
+	hyphenateAtBreak(startContainer, breakLetter) {
 		if (isText(startContainer)) {
 			let startText = startContainer.textContent;
 			let prevLetter = startText[startText.length-1];
 
 			// Add a hyphen if previous character is a letter or soft hyphen
-			if (/^\w|\u00AD$/.test(prevLetter)) {
+			if (
+				  (breakLetter && /^\w|\u00AD$/.test(prevLetter) && /^\w|\u00AD$/.test(breakLetter)) || 
+				  (!breakLetter && /^\w|\u00AD$/.test(prevLetter))
+			) {
 				startContainer.parentNode.classList.add("pagedjs_hyphen");
 				startContainer.textContent += "\u2011";
 			}

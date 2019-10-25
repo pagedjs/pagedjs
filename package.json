@@ -12,8 +12,7 @@
     "@babel/polyfill": "^7.4.4",
     "@babel/runtime": "^7.4.4",
     "css-tree": "1.0.0-alpha.29",
-    "event-emitter": "^0.3.5",
-    "lodash": "^4.17.15"
+    "event-emitter": "^0.3.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",

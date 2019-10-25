@@ -557,6 +557,10 @@ img {
 	height: auto;
 }
 
+.last-item-justify {
+	text-align-last: justify;
+}
+
 @media print {
 	html {
 		width: 100%;

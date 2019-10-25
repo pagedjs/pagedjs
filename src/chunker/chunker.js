@@ -477,7 +477,7 @@ class Chunker {
 
 	loadFonts() {
 		let fontPromises = [];
-		document.fonts.forEach((fontFace) => {
+		(document.fonts || []).forEach((fontFace) => {
 			if (fontFace.status !== "loaded") {
 				let fontLoaded = fontFace.load().then((r) => {
 					return fontFace.family;

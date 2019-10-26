@@ -557,9 +557,10 @@ img {
 	height: auto;
 }
 
-.last-item-justify {
+p[data-align-last-split-element='justify'] {
 	text-align-last: justify;
 }
+
 
 @media print {
 	html {

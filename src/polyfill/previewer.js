@@ -18,8 +18,8 @@ class Previewer {
 
 		// Hooks
 		this.hooks = {};
-		this.hooks.beforeAll = new Hook(this);
-		this.hooks.afterAll = new Hook(this);
+		this.hooks.beforePreview = new Hook(this);
+		this.hooks.afterPreview = new Hook(this);
 
 		// default size
 		this.size = {

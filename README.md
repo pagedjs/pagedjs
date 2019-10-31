@@ -111,6 +111,10 @@ New handlers can be registered from `import { registerHandlers } from 'pagedjs'`
 Handlers have methods that correspond to the hooks for the parsing, layout and rendering of the Chunker and Polisher. Returning an promise or `async` function from a method in a handler will complete that task before continuing with the other registered methods for that hook.
 
 ```js
+// Previewer
+beforePreview(content, renderTo)
+afterPreview(pages)
+
 // Chunker
 beforeParsed(content)
 afterParsed(parsed)

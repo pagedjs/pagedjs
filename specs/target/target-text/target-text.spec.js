@@ -15,11 +15,24 @@ describe('target-text', async () => {
 		})
 
 		it('Table of content should include chapter titles', async () => {
-			let text = await page.$eval("nav li:first-of-type a" , (r) => window.getComputedStyle(r, '::after').content);
+			let text = await page.$eval("nav li:nth-of-type(1) a" , (r) => window.getComputedStyle(r, '::after').content);
 			expect(text).toContain("Lorem ipsum dolor sit amet");
 		})
 
+		it('Table of content should include first-letter of the chapter title', async () => {
+			let text = await page.$eval("nav li:nth-of-type(2) a" , (r) => window.getComputedStyle(r, '::after').content);
+			expect(text).toContain("P");
+        })
+        
+        it('Table of content should include the content of the before pseudo element', async () => {
+			let text = await page.$eval("nav li:nth-of-type(3) a" , (r) => window.getComputedStyle(r, '::after').content);
+			expect(text).toContain("before");
+        })
 
+        it('Table of content should include the content of the before pseudo element', async () => {
+			let text = await page.$eval("nav li:nth-of-type(4) a" , (r) => window.getComputedStyle(r, '::after').content);
+			expect(text).toContain("after");
+        })
 		// if (!DEBUG) {
 		// 	it('should create a pdf', async () => {
 		// 		let pdf = await page.pdf(PDF_SETTINGS);

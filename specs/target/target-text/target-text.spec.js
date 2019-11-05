@@ -26,19 +26,19 @@ describe('target-text', async () => {
         
         it('Table of content should include the content of the before pseudo element', async () => {
 			let text = await page.$eval("nav li:nth-of-type(3) a" , (r) => window.getComputedStyle(r, '::after').content);
-			expect(text).toContain("before");
+			expect(text).toContain("This is inside the before");
         })
 
         it('Table of content should include the content of the before pseudo element', async () => {
 			let text = await page.$eval("nav li:nth-of-type(4) a" , (r) => window.getComputedStyle(r, '::after').content);
-			expect(text).toContain("after");
+			expect(text).toContain("This is inside the after");
         })
-		// if (!DEBUG) {
-		// 	it('should create a pdf', async () => {
-		// 		let pdf = await page.pdf(PDF_SETTINGS);
+		if (!DEBUG) {
+			it('should create a pdf', async () => {
+				let pdf = await page.pdf(PDF_SETTINGS);
 
-		// 		expect(pdf).toMatchPDFSnapshot(1);
-		// 	})
-		// }
+				expect(pdf).toMatchPDFSnapshot(1);
+			})
+		}
 	}
 )

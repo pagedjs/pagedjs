@@ -26,6 +26,7 @@
     "chalk": "^2.4.2",
     "eslint": "^5.16.0",
     "express": "^4.16.4",
+    "ghostscript4js": "^3.1.1",
     "jest": "^24.7.1",
     "jest-image-snapshot": "^2.8.1",
     "puppeteer": "^1.15.0",

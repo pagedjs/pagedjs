@@ -1,5 +1,6 @@
 import EventEmitter from "event-emitter";
 
+import Hook from "../utils/hook";
 import Chunker from "../chunker/chunker";
 import Polisher from "../polisher/polisher";
 
@@ -17,6 +18,8 @@ class Previewer {
 
 		// Hooks
 		this.hooks = {};
+		this.hooks.beforePreview = new Hook(this);
+		this.hooks.afterPreview = new Hook(this);
 
 		// default size
 		this.size = {
@@ -116,6 +119,8 @@ class Previewer {
 
 	async preview(content, stylesheets, renderTo) {
 
+		await this.hooks.beforePreview.trigger(content, renderTo);
+
 		if (!content) {
 			content = this.wrapContent();
 		}
@@ -141,6 +146,8 @@ class Previewer {
 		flow.size = this.size;
 
 		this.emit("rendered", flow);
+
+		await this.hooks.afterPreview.trigger(flow.pages);
 
 		return flow;
 	}

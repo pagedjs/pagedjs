@@ -4,7 +4,7 @@ describe('issue', async () => {
 		let page;
 		let rendered;
 		beforeAll(async () => {
-			page = await loadPage('issues/template/template.html')
+			page = await loadPage('margin-boxes/text-align/text-align.html')
 			return page.rendered;
 		}, TIMEOUT)
 

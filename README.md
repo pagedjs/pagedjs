@@ -111,6 +111,10 @@ New handlers can be registered from `import { registerHandlers } from 'pagedjs'`
 Handlers have methods that correspond to the hooks for the parsing, layout and rendering of the Chunker and Polisher. Returning an promise or `async` function from a method in a handler will complete that task before continuing with the other registered methods for that hook.
 
 ```js
+// Previewer
+beforePreview(content, renderTo)
+afterPreview(pages)
+
 // Chunker
 beforeParsed(content)
 afterParsed(parsed)
@@ -150,7 +154,17 @@ $ npm start
 ## Deployment
 Build the `dist` output
 ```sh
-$ npm run prepare
+$ npm run build
+```
+
+Compile the `lib` output
+```sh
+$ npm run compile
+```
+
+Generate legacy builds with polyfills included
+```sh
+$ npm run legacy
 ```
 
 ## Testing
@@ -162,7 +176,7 @@ Testing for Paged.js uses [Jest](https://facebook.github.io/jest/en/) but is spl
 Unit tests for Chunker and Polisher methods are run in node using JSDOM.
 
 ```bash
-npm run tests
+npm test
 ```
 
 ### Specs
@@ -186,12 +200,6 @@ For Debian you can install it with
 ```bash
 sudo apt-get install ghostscript
 sudo apt-get install libgs-dev
-```
-
-Then you can install the node library
-
-```bash
-npm install ghostscript4js --no-save
 ```
 
 To test the pdf output of specs, you'll need to build the library locally.
@@ -225,7 +233,7 @@ A `pagedmedia/pagedjs` docker image contains all the dependencies needed to run 
 To build the image run
 
 ```bash
-docker build -t pagedmedia/pagedjs .  
+docker build -t pagedmedia/pagedjs .
 ```
 
 By default the container will run the development server with `npm start`

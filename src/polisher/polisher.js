@@ -15,6 +15,9 @@ class Polisher {
 		this.hooks.onRule = new Hook(this);
 		this.hooks.onDeclaration = new Hook(this);
 		this.hooks.onContent = new Hook(this);
+		this.hooks.onSelector = new Hook(this);
+		this.hooks.onPseudoSelector = new Hook(this);
+
 		this.hooks.onImport = new Hook(this);
 
 		this.hooks.beforeTreeParse = new Hook(this);

@@ -44,28 +44,34 @@
 
             a::after {
                 color: blueviolet;
+                display: block;
+                margin-bottom: 3em;
             }
-            
-            nav a[href]::after {
-                content: target-text(attr(href url), content);
+            nav li:nth-of-type(1) a[href]::after {
+                content: target-text(attr(href url));
             }
             nav li:nth-of-type(2) a[href]::after {
-                content: target-text(attr(href url), first-letter);
+                content: target-text(attr(href url), content);
             }
             nav li:nth-of-type(3) a[href]::after {
-                content: target-text(attr(href url), before);
+                content: target-text(attr(href url), first-letter);
             }
             nav li:nth-of-type(4) a[href]::after {
+                content: target-text(attr(href url), before);
+            }
+            nav li:nth-of-type(5) a[href]::after {
                 content: target-text(attr(href url), after);
             }
 
             /* before and after */
 
             #chap3::before {
-                content: "This is inside the before"
+                content: " This is inside the before: ";
+                color: orange;
             }
             #chap4::after {
-                content: "This is inside the after"
+                content: ": This is inside the after ";
+                color: orange;
             }
 
         </style>
@@ -100,12 +106,16 @@
             <nav>
                 <h1>Table of contents</h1>
                 <ul>
+                        <li><a href="#chap0">target-text: </a></li>
                     <li><a href="#chap1">target-text content: </a></li>
                     <li><a href="#chap2">target-text first-letter: </a></li>
                     <li><a href="#chap3">target-text:: before: </a></li>
                     <li><a href="#chap4">target-text:: after: </a></li>
                 </ul>
             </nav>
+        </section>
+        <section>
+            <h1 id="chap0">Lorem ipsum dolor sit amet</h1>
         </section>
         <section>
             <h1 id="chap1">Lorem ipsum dolor sit amet</h1>

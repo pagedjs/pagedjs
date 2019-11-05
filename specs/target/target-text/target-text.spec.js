@@ -19,19 +19,24 @@ describe('target-text', async () => {
 			expect(text).toContain("Lorem ipsum dolor sit amet");
 		})
 
-		it('Table of content should include first-letter of the chapter title', async () => {
+		it('Table of content should include chapter titles', async () => {
 			let text = await page.$eval("nav li:nth-of-type(2) a" , (r) => window.getComputedStyle(r, '::after').content);
+			expect(text).toContain("Lorem ipsum dolor sit amet");
+		})
+
+		it('Table of content should include first-letter of the chapter title', async () => {
+			let text = await page.$eval("nav li:nth-of-type(3) a" , (r) => window.getComputedStyle(r, '::after').content);
 			expect(text).toContain("P");
         })
         
         it('Table of content should include the content of the before pseudo element', async () => {
-			let text = await page.$eval("nav li:nth-of-type(3) a" , (r) => window.getComputedStyle(r, '::after').content);
-			expect(text).toContain("This is inside the before");
+			let text = await page.$eval("nav li:nth-of-type(4) a" , (r) => window.getComputedStyle(r, '::after').content);
+			expect(text).toContain("This is inside the before: ");
         })
 
         it('Table of content should include the content of the before pseudo element', async () => {
-			let text = await page.$eval("nav li:nth-of-type(4) a" , (r) => window.getComputedStyle(r, '::after').content);
-			expect(text).toContain("This is inside the after");
+			let text = await page.$eval("nav li:nth-of-type(5) a" , (r) => window.getComputedStyle(r, '::after').content);
+			expect(text).toContain(": This is inside the after");
         })
 		if (!DEBUG) {
 			it('should create a pdf', async () => {

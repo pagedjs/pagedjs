@@ -22,10 +22,11 @@ let config = window.PagedConfig || {
 	after: undefined,
 	content: undefined,
 	stylesheets: undefined,
-	renderTo: undefined
+	renderTo: undefined,
+	settings: undefined
 };
 
-let previewer = new Previewer();
+let previewer = new Previewer(config.settings);
 
 ready.then(async function () {
 	let done;

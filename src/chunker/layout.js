@@ -584,6 +584,7 @@ class Layout {
 
 	hyphenateAtBreak(startContainer, breakLetter) {
 		if (isText(startContainer)) {
+			
 			let startText = startContainer.textContent;
 			let prevLetter = startText[startText.length-1];
 
@@ -593,7 +594,7 @@ class Layout {
 				  (!breakLetter && /^\w|\u00AD$/.test(prevLetter))
 			) {
 				startContainer.parentNode.classList.add("pagedjs_hyphen");
-				startContainer.textContent += "\u2011";
+				startContainer.textContent += window.PagedConfig.hyphenGlyph;
 			}
 		}
 	}

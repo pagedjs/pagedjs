@@ -22,7 +22,8 @@ let config = window.PagedConfig || {
 	after: undefined,
 	content: undefined,
 	stylesheets: undefined,
-	renderTo: undefined
+	renderTo: undefined,
+	hyphenGlyph: "\u2011"
 };
 
 let previewer = new Previewer();

@@ -35,7 +35,7 @@ const MAX_CHARS_PER_BREAK = 1500;
  */
 class Layout {
 
-	constructor(element, hooks, maxChars) {
+	constructor(element, hooks, options) {
 		this.element = element;
 
 		this.bounds = this.element.getBoundingClientRect();
@@ -52,7 +52,9 @@ class Layout {
 			this.hooks.onBreakToken = new Hook();
 		}
 
-		this.maxChars = maxChars || MAX_CHARS_PER_BREAK;
+		this.settings = options || {};
+
+		this.maxChars = this.settings.maxChars || MAX_CHARS_PER_BREAK;
 	}
 
 	async renderTo(wrapper, source, breakToken, bounds=this.bounds) {
@@ -589,11 +591,11 @@ class Layout {
 
 			// Add a hyphen if previous character is a letter or soft hyphen
 			if (
-				  (breakLetter && /^\w|\u00AD$/.test(prevLetter) && /^\w|\u00AD$/.test(breakLetter)) || 
+				  (breakLetter && /^\w|\u00AD$/.test(prevLetter) && /^\w|\u00AD$/.test(breakLetter)) ||
 				  (!breakLetter && /^\w|\u00AD$/.test(prevLetter))
 			) {
 				startContainer.parentNode.classList.add("pagedjs_hyphen");
-				startContainer.textContent += "\u2011";
+				startContainer.textContent += this.settings.hyphenGlyph || "\u2011";
 			}
 		}
 	}

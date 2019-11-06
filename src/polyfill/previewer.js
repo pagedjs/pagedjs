@@ -7,14 +7,16 @@ import Polisher from "../polisher/polisher";
 import { registerHandlers, initializeHandlers } from "../utils/handlers";
 
 class Previewer {
-	constructor() {
+	constructor(options) {
 		// this.preview = this.getParams("preview") !== "false";
+
+		this.settings = options || {};
 
 		// Process styles
 		this.polisher = new Polisher(false);
 
 		// Chunk contents
-		this.chunker = new Chunker();
+		this.chunker = new Chunker(undefined, undefined, this.settings);
 
 		// Hooks
 		this.hooks = {};

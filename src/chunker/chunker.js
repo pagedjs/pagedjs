@@ -83,8 +83,10 @@ const TEMPLATE = `
  * @class
  */
 class Chunker {
-	constructor(content, renderTo) {
+	constructor(content, renderTo, options) {
 		// this.preview = preview;
+
+		this.settings = options || {};
 
 		this.hooks = {};
 		this.hooks.beforeParsed = new Hook(this);
@@ -197,7 +199,7 @@ class Chunker {
 	// }
 
 	async render(parsed, startAt) {
-		let renderer = this.layout(parsed, startAt);
+		let renderer = this.layout(parsed, startAt, this.settings);
 
 		let done = false;
 		let result;

@@ -14,6 +14,9 @@ class Sheet {
 			this.hooks.onAtMedia = new Hook(this);
 			this.hooks.onRule = new Hook(this);
 			this.hooks.onDeclaration = new Hook(this);
+			this.hooks.onSelector = new Hook(this);
+			this.hooks.onPseudoSelector = new Hook(this);
+			
 			this.hooks.onContent = new Hook(this);
 			this.hooks.onImport = new Hook(this);
 
@@ -65,6 +68,8 @@ class Sheet {
 		return this.ast;
 	}
 
+
+
 	insertRule(rule) {
 		let inserted = this.ast.children.appendData(rule);
 		inserted.forEach((item) => {
@@ -114,6 +119,8 @@ class Sheet {
 
 				this.hooks.onRule.trigger(ruleNode, ruleItem, rulelist);
 				this.declarations(ruleNode, ruleItem, rulelist);
+				this.onSelector(ruleNode, ruleItem, rulelist);
+				
 			}
 		});
 	}
@@ -134,6 +141,30 @@ class Sheet {
 						}
 					});
 				}
+
+			}
+		});
+	}
+
+	// add pseudo elements to parser
+	onSelector(ruleNode, ruleItem, rulelist) {
+		csstree.walk(ruleNode, {
+			visit: "Selector",
+			enter: (selectNode, selectItem, selectList) => {
+				// console.log(selectNode);
+				this.hooks.onSelector.trigger(selectNode, selectItem, selectList, {ruleNode, ruleItem, rulelist});
+				
+				if (selectNode.children.forEach(node => {if (node.type === "PseudoElementSelector") { 
+					csstree.walk(node, {
+						visit: "PseudoElementSelector",
+						enter: (pseudoNode, pItem, pList) => {
+							this.hooks.onPseudoSelector.trigger(pseudoNode, pItem, pList, {selectNode, selectItem, selectList}, {ruleNode, ruleItem, rulelist});
+						}
+					});
+				}}));
+				// else {
+				// 	console.log("dommage");
+				// }
 
 			}
 		});

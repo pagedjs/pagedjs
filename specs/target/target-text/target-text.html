@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en" lang="en">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <meta http-equiv="Content-Style-Type" content="text/css" />
+        <title>
+            targer-counter
+        </title>
+        <script src="../../../dist/paged.polyfill.js"></script>
+        <style>
+            :root {
+                font-size: 18px;
+            }
+
+            @page {
+                size: 6in 8in;
+                margin: 20mm 20mm;
+
+                /* border: solid 1px black; */
+                @bottom-left {
+                    content: counter(page);
+                }
+            }
+
+
+            section {
+                break-before: page;
+            }
+
+            p {
+                line-height: 22px;
+            }
+
+            h1 {
+                font-size: 24px;
+                margin-top: 0;
+            }
+
+            a {
+                text-decoration: none;
+                color: currentColor;
+            }
+
+            a::after {
+                color: blueviolet;
+                display: block;
+                margin-bottom: 3em;
+            }
+            nav li:nth-of-type(1) a[href]::after {
+                content: target-text(attr(href url));
+            }
+            nav li:nth-of-type(2) a[href]::after {
+                content: target-text(attr(href url), content);
+            }
+            nav li:nth-of-type(3) a[href]::after {
+                content: target-text(attr(href url), first-letter);
+            }
+            nav li:nth-of-type(4) a[href]::after {
+                content: target-text(attr(href url), before);
+            }
+            nav li:nth-of-type(5) a[href]::after {
+                content: target-text(attr(href url), after);
+            }
+
+            /* before and after */
+
+            #chap3::before {
+                content: " This is inside the before: ";
+                color: orange;
+            }
+            #chap4::after {
+                content: ": This is inside the after ";
+                color: orange;
+            }
+
+        </style>
+        <style>
+            /* interface */
+
+            @media screen {
+
+                body {
+                    background: whitesmoke;
+                }
+
+                .pagedjs_page {
+                    background: white;
+                    margin-bottom: 10px;
+                    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+                }
+
+                .pagedjs_pages {
+                    width: calc(var(--pagedjs-width) * 2);
+                    display: flex;
+                    flex-direction: column;
+                    margin: 0 auto;
+                }
+
+            }
+        </style>
+    </head>
+
+    <body>
+        <section>
+            <nav>
+                <h1>Table of contents</h1>
+                <ul>
+                        <li><a href="#chap0">target-text: </a></li>
+                    <li><a href="#chap1">target-text content: </a></li>
+                    <li><a href="#chap2">target-text first-letter: </a></li>
+                    <li><a href="#chap3">target-text:: before: </a></li>
+                    <li><a href="#chap4">target-text:: after: </a></li>
+                </ul>
+            </nav>
+        </section>
+        <section>
+            <h1 id="chap0">Lorem ipsum dolor sit amet</h1>
+        </section>
+        <section>
+            <h1 id="chap1">Lorem ipsum dolor sit amet</h1>
+            
+        </section>
+        <section>
+            <h1 id="chap2">Praesent placerat lectus</h1>
+          
+        </section>
+        <section>
+            <h1 id="chap3">Aliquam eget massa loborti</h1>
+          
+        </section>
+        <section>
+            <h1 id="chap4">Aliquam eget massa loborti</h1>
+          
+        </section>
+    </body>
+
+</html>

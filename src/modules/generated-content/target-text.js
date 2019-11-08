@@ -92,12 +92,13 @@ class TargetText extends Handler {
 			let split = target.selector.split("::");
 			let query = split[0];
 			let queried = fragment.querySelectorAll(query);
+			let textContent;
 			queried.forEach((selected, index) => {
 				let val = attr(selected, target.args);
 				let element = fragment.querySelector(querySelectorEscape(val));
 				if (element) {
-					// content & first-letter
-					if (target.style === "content" || target.style === "first-letter" ) {
+					// content & first-letter & before & after refactorized
+					if (target.style) {
 						this.selector = UUID();
 						selected.setAttribute("data-target-text", this.selector);
 
@@ -105,34 +106,16 @@ class TargetText extends Handler {
 						if (split.length > 1) {
 							psuedo += "::" + split[1];
 						}
-
-						let textContent = cleanPseudoContent(element.textContent, " ");
-
-						// this.styleSheet.insertRule(`[data-target-text="${selector}"]${psuedo} { content: "${element.textContent}" }`, this.styleSheet.cssRules.length);
+						
+						if (target.style === "before" || target.style === "after") {
+							const pseudoType = `${target.style}Content`;
+							textContent = cleanPseudoContent(this[pseudoType]);
+						} else {
+							textContent = cleanPseudoContent(element.textContent, " ");
+						}
 						textContent = target.style === "first-letter" ? textContent.charAt(0) : textContent;
 						this.styleSheet.insertRule(`[data-target-text="${this.selector}"]${psuedo} { ${target.variable}: "${textContent}" }`);
-					}
-
-				
-
-					//  before & after
-					else if (target.style === "before" || target.style === "after") {
-						selected.setAttribute("data-target-text", this.selector);
-
-						let psuedo = "";
-						if (split.length > 1) {
-							psuedo += "::" + split[1];
-						}
-
-						const pseudoType = `${target.style}Content`;
-						let textContent = cleanPseudoContent(this[pseudoType]); 
-						
-						this.styleSheet.insertRule(`[data-target-text="${this.selector}"]${psuedo} { ${target.variable}: "${textContent}" }`);
-					}
-
-					//  after
-					
-					else {
+					} else {
 						console.warn("missed target", val);
 					}
 				}
@@ -143,10 +126,9 @@ class TargetText extends Handler {
 
 export default TargetText;
 
-
-function cleanPseudoContent(el, trim = `"' `) {
-
-	return el.replace(new RegExp(`^[${trim}]+`), "")
+function cleanPseudoContent(el, trim = "\"' ") {
+	return el
+		.replace(new RegExp(`^[${trim}]+`), "")
 		.replace(new RegExp(`[${trim}]+$`), "")
 		.replace(/["']/g, match => {
 			return "\\" + match;

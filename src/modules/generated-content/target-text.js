@@ -151,10 +151,12 @@ class TargetText extends Handler {
 							psuedo += "::" + split[1];
 						}
 
-						let textContent = this.beforeContent.trim().replace(/["']/g, "");
+						let textContent = cleanPseudoContent(this.beforeContent); 
+						
 
 						this.styleSheet.insertRule(`[data-target-text="${this.selector}"]${psuedo} { ${target.variable}: "${textContent}" }`);
 					}
+
 					//  after
 					else if (target.style === "after") {
 						selected.setAttribute("data-target-text", this.selector);
@@ -163,7 +165,7 @@ class TargetText extends Handler {
 							psuedo += "::" + split[1];
 						}
 
-						let textContent = this.afterContent.trim().replace(/["']/g, "");
+						let textContent = cleanPseudoContent(this.afterContent);
 
 						this.styleSheet.insertRule(`[data-target-text="${this.selector}"]${psuedo} { ${target.variable}: "${textContent}" }`);
 					} else {
@@ -176,3 +178,16 @@ class TargetText extends Handler {
 }
 
 export default TargetText;
+
+function cleanPseudoContent(el) {
+	return el.replace(/^["']/, "")
+						.replace(/["']$/, "")
+						.trim()
+						.replace(/["']/g, match => {
+							return "\\" + match;
+						})
+						.replace(/[\n]/g, match => {
+							return "\\00000A";
+						});
+					
+					}

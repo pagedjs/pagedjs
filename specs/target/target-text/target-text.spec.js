@@ -16,34 +16,34 @@ describe('target-text', async () => {
 
 		it('Table of content should include chapter titles', async () => {
 			let text = await page.$eval("nav li:nth-of-type(1) a" , (r) => window.getComputedStyle(r, '::after').content);
-			expect(text).toContain("Lorem ipsum dolor sit amet");
+			expect(text).toContain(`"Lorem ipsum dolor sit amet"`);
 		})
 
 		it('Table of content should include chapter titles', async () => {
 			let text = await page.$eval("nav li:nth-of-type(2) a" , (r) => window.getComputedStyle(r, '::after').content);
-			expect(text).toContain("Lorem ipsum dolor sit amet");
+			expect(text).toEqual(`"Lorem ipsum dolor sit amet"`);
 		})
 
 		it('Table of content should include first-letter of the chapter title', async () => {
 			let text = await page.$eval("nav li:nth-of-type(3) a" , (r) => window.getComputedStyle(r, '::after').content);
-			expect(text).toContain("P");
+			expect(text).toEqual(`"P"`);
         })
         
         it('Table of content should include the content of the before pseudo element', async () => {
 			let text = await page.$eval("nav li:nth-of-type(4) a" , (r) => window.getComputedStyle(r, '::after').content);
-			expect(text).toContain("This is inside the before: ");
+			expect(text).toEqual(`"This is 'inside' the before:"`);
         })
 
         it('Table of content should include the content of the before pseudo element', async () => {
 			let text = await page.$eval("nav li:nth-of-type(5) a" , (r) => window.getComputedStyle(r, '::after').content);
-			expect(text).toContain(": This is inside the after");
+			expect(text).toEqual(`": This is inside the after"`);
         })
-		if (!DEBUG) {
-			it('should create a pdf', async () => {
-				let pdf = await page.pdf(PDF_SETTINGS);
-
-				expect(pdf).toMatchPDFSnapshot(1);
-			})
-		}
+		// if (!DEBUG) {
+		// 	it('should create a pdf', async () => {
+		// 		let pdf = await page.pdf(PDF_SETTINGS);
+		// 		// no need to check the pdf with those test
+		// 		// expect(pdf).toMatchPDFSnapshot(1);
+		// 	})
+		// }
 	}
 )

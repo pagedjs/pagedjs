@@ -1,7 +1,7 @@
 import Handler from "../handler";
 import { UUID, attr, querySelectorEscape } from "../../utils/utils";
 import csstree from "css-tree";
-import { nodeAfter } from "../../utils/dom";
+// import { nodeAfter } from "../../utils/dom";
 
 class TargetText extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -68,17 +68,16 @@ class TargetText extends Handler {
 
 		rule.ruleNode.block.children.forEach(properties => {
 			if (pseudoNode.name === "before" && properties.property === "content") {
-				let beforeVariable = "--pagedjs-" + UUID();
+				// let beforeVariable = "--pagedjs-" + UUID();
 
 				let contenu = properties.value.children;
-				console.log(contenu);
 				contenu.forEach(prop => {
 					if (prop.type === "String") {
 						this.beforeContent = prop.value;
 					}
 				});
 			} else if (pseudoNode.name === "after" && properties.property === "content") {
-				let content = properties.value.children.forEach(prop => {
+				properties.value.children.forEach(prop => {
 					if (prop.type === "String") {
 						this.afterContent = prop.value;
 					}
@@ -93,11 +92,13 @@ class TargetText extends Handler {
 			let split = target.selector.split("::");
 			let query = split[0];
 			let queried = fragment.querySelectorAll(query);
+			let textContent;
 			queried.forEach((selected, index) => {
 				let val = attr(selected, target.args);
 				let element = fragment.querySelector(querySelectorEscape(val));
 				if (element) {
-					if (target.style === "content") {
+					// content & first-letter & before & after refactorized
+					if (target.style) {
 						this.selector = UUID();
 						selected.setAttribute("data-target-text", this.selector);
 
@@ -105,66 +106,14 @@ class TargetText extends Handler {
 						if (split.length > 1) {
 							psuedo += "::" + split[1];
 						}
-
-						let textContent = element.textContent
-							.trim()
-							.replace(/["']/g, match => {
-								return "\\" + match;
-							})
-							.replace(/[\n]/g, match => {
-								return "\\00000A";
-							});
-
-						// this.styleSheet.insertRule(`[data-target-text="${selector}"]${psuedo} { content: "${element.textContent}" }`, this.styleSheet.cssRules.length);
-
-						this.styleSheet.insertRule(`[data-target-text="${this.selector}"]${psuedo} { ${target.variable}: "${textContent}" }`);
-					}
-
-					// first-letter
-					else if (target.style === "first-letter") {
-						this.selector = UUID();
-						selected.setAttribute("data-target-text", this.selector);
-
-						let psuedo = "";
-						if (split.length > 1) {
-							psuedo += "::" + split[1];
+						
+						if (target.style === "before" || target.style === "after") {
+							const pseudoType = `${target.style}Content`;
+							textContent = cleanPseudoContent(this[pseudoType]);
+						} else {
+							textContent = cleanPseudoContent(element.textContent, " ");
 						}
-
-						let textContent = element.textContent
-							.trim()
-							.replace(/["']/g, match => {
-								return "\\" + match;
-							})
-							.replace(/[\n]/g, match => {
-								return "\\00000A";
-							});
-
-						this.styleSheet.insertRule(`[data-target-text="${this.selector}"]${psuedo} { ${target.variable}: "${textContent.charAt(0)}" }`);
-					}
-
-					//  before
-					else if (target.style === "before") {
-						selected.setAttribute("data-target-text", this.selector);
-
-						let psuedo = "";
-						if (split.length > 1) {
-							psuedo += "::" + split[1];
-						}
-
-						let textContent = this.beforeContent.trim().replace(/["']/g, "");
-
-						this.styleSheet.insertRule(`[data-target-text="${this.selector}"]${psuedo} { ${target.variable}: "${textContent}" }`);
-					}
-					//  after
-					else if (target.style === "after") {
-						selected.setAttribute("data-target-text", this.selector);
-						let psuedo = "";
-						if (split.length > 1) {
-							psuedo += "::" + split[1];
-						}
-
-						let textContent = this.afterContent.trim().replace(/["']/g, "");
-
+						textContent = target.style === "first-letter" ? textContent.charAt(0) : textContent;
 						this.styleSheet.insertRule(`[data-target-text="${this.selector}"]${psuedo} { ${target.variable}: "${textContent}" }`);
 					} else {
 						console.warn("missed target", val);
@@ -176,3 +125,15 @@ class TargetText extends Handler {
 }
 
 export default TargetText;
+
+function cleanPseudoContent(el, trim = "\"' ") {
+	return el
+		.replace(new RegExp(`^[${trim}]+`), "")
+		.replace(new RegExp(`[${trim}]+$`), "")
+		.replace(/["']/g, match => {
+			return "\\" + match;
+		})
+		.replace(/[\n]/g, match => {
+			return "\\00000A";
+		});
+}

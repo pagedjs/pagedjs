@@ -557,7 +557,7 @@ img {
 	height: auto;
 }
 
-p[data-align-last-split-element='justify'] {
+[data-align-last-split-element='justify'] {
 	text-align-last: justify;
 }
 

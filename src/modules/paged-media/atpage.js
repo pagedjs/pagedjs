@@ -102,7 +102,7 @@ class AtPage extends Handler {
 						right: declarations.bleed[1],
 						bottom: declarations.bleed[2],
 						left: declarations.bleed[3]
-					}
+					};
 					break;
 				case 3: // top right bottom right
 					page.bleed = {
@@ -110,7 +110,7 @@ class AtPage extends Handler {
 						right: declarations.bleed[1],
 						bottom: declarations.bleed[2],
 						left: declarations.bleed[1]
-					}
+					};
 					break;
 				case 2: // top right top right
 					page.bleed = {
@@ -118,7 +118,7 @@ class AtPage extends Handler {
 						right: declarations.bleed[1],
 						bottom: declarations.bleed[0],
 						left: declarations.bleed[1]
-					}
+					};
 					break;
 				default:
 					page.bleed = {
@@ -126,7 +126,7 @@ class AtPage extends Handler {
 						right: declarations.bleed[0],
 						bottom: declarations.bleed[0],
 						left: declarations.bleed[0]
-					}
+					};
 			}
 		}
 
@@ -138,7 +138,7 @@ class AtPage extends Handler {
 					right: { value: 6, unit: "mm" },
 					bottom: { value: 6, unit: "mm" },
 					left: { value: 6, unit: "mm" }
-				}
+				};
 			}
 
 			page.marks = declarations.marks;
@@ -296,7 +296,7 @@ class AtPage extends Handler {
 			visit: "Declaration",
 			enter: (declaration, dItem, dList) => {
 				let prop = csstree.property(declaration.property).name;
-				let value = declaration.value;
+				// let value = declaration.value;
 
 				if (prop === "marks") {
 					parsed.marks = [];
@@ -321,8 +321,11 @@ class AtPage extends Handler {
 							bottom: {}
 						};
 					}
+					parsed.margin[m] = declaration.value.children.first();
+					dList.remove(dItem);
+
 				} else if (prop === "padding"){
-					console.log(parsed.padding = this.getPaddings(declaration.value));
+					parsed.padding = this.getPaddings(declaration.value);
 					dList.remove(dItem);
 
 				} else if (prop.indexOf("padding-") === 0) {
@@ -342,7 +345,7 @@ class AtPage extends Handler {
 					parsed.size = this.getSize(declaration);
 					dList.remove(dItem);
 				} else if (prop === "bleed") {
-					parsed.bleed = []
+					parsed.bleed = [];
 
 					csstree.walk(declaration, {
 						enter: (subNode) => {
@@ -450,7 +453,6 @@ class AtPage extends Handler {
 				margins.push(node);
 			}
 		});
-		console.log(margin.length);
 
 		if (margins.length === 1) {
 			for (let m in margin) {
@@ -905,7 +907,7 @@ class AtPage extends Handler {
 			marks.forEach((mark) => {
 				let markDisplay = this.createVariable("--pagedjs-mark-" + mark + "-display", "block");
 				rules.push(markDisplay);
-			})
+			});
 		}
 
 		// orientation variable

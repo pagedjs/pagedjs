@@ -33,6 +33,7 @@ class Counters extends Handler {
 
 	afterParsed(parsed) {
 		this.processCounters(parsed, this.counters);
+		this.scopeCounters(this.counters);
 	}
 
 	addCounter(name) {
@@ -104,6 +105,19 @@ class Counters extends Handler {
 		}
 	}
 
+	scopeCounters(counters) {
+		let countersArray = [];
+		for (let c in counters) {
+			countersArray.push(`${counters[c].name} 0`);
+		}
+		// Add to pages to allow cross page scope
+		this.insertRule(`.pagedjs_pages { counter-reset: ${countersArray.join(" ")}}`);
+	}
+
+	insertRule(rule) {
+		this.styleSheet.insertRule(rule, this.styleSheet.cssRules.length);
+	}
+
 	processCounterIncrements(parsed, counter) {
 		let increment;
 		for (let inc in counter.increments) {
@@ -113,6 +127,7 @@ class Counters extends Handler {
 			// Add counter data
 			for (var i = 0; i < incrementElements.length; i++) {
 				incrementElements[i].setAttribute("data-counter-"+ counter.name +"-increment", increment.number);
+				incrementElements[i].setAttribute("data-counter-increment", counter.name);
 			}
 		}
 	}
@@ -126,6 +141,7 @@ class Counters extends Handler {
 			// Add counter data
 			for (var i = 0; i < resetElements.length; i++) {
 				resetElements[i].setAttribute("data-counter-"+ counter.name +"-reset", reset.number);
+				resetElements[i].setAttribute("data-counter-reset", counter.name);
 			}
 		}
 	}
@@ -137,28 +153,64 @@ class Counters extends Handler {
 		let count = 0;
 		let element;
 		let increment, reset;
+		let resetValue, incrementValue, resetDelta;
+		let incrementArray;
 
 		for (var i = 0; i < elements.length; i++) {
 			element = elements[i];
+			resetDelta = 0;
+			incrementArray = [];
 
 			if (element.hasAttribute("data-counter-"+ counterName +"-reset")) {
 				reset = element.getAttribute("data-counter-"+ counterName +"-reset");
-				count = parseInt(reset);
+				resetValue = parseInt(reset);
+
+				// Use negative increment value inplace of reset
+				resetDelta = resetValue - count;
+				incrementArray.push(`${counterName} ${resetDelta}`);
+
+				count = resetValue;
 			}
 
 			if (element.hasAttribute("data-counter-"+ counterName +"-increment")) {
 
 				increment = element.getAttribute("data-counter-"+ counterName +"-increment");
+				incrementValue = parseInt(increment);
 
-				this.styleSheet.insertRule(`[data-ref="${element.dataset.ref}"] { counter-reset: ${counterName} ${count} }`, this.styleSheet.cssRules.length);
-				this.styleSheet.insertRule(`[data-ref="${element.dataset.ref}"] { counter-increment: ${counterName} ${increment}}`, this.styleSheet.cssRules.length);
-
-				count += parseInt(increment);
+				count += incrementValue;
 
 				element.setAttribute("data-counter-"+counterName+"-value", count);
+
+				incrementArray.push(`${counterName} ${incrementValue}`);
+			}
+
+			if (incrementArray.length > 0) {
+				this.incrementCounterForElement(element, incrementArray);
 			}
 
 		}
+	}
+
+	incrementCounterForElement(element, incrementArray) {
+		if (!element || !incrementArray || incrementArray.length === 0) return;
+
+		let ref = element.dataset.ref;
+		let prevIncrements = Array.from(this.styleSheet.cssRules).filter((rule) => {
+			return rule.selectorText === `[data-ref="${element.dataset.ref}"]:not([data-split-from])`
+						 && rule.style[0] === "counter-increment";
+		});
+
+		let increments = [];
+		for (let styleRule of prevIncrements) {
+			let values = styleRule.style.counterIncrement.split(" ");
+			for (var i = 0; i < values.length; i+=2) {
+				increments.push(values[i] + " " + values[i+1]);
+			}
+		}
+
+		Array.prototype.push.apply(increments, incrementArray);
+
+		this.insertRule(`[data-ref="${ref}"]:not([data-split-from]) { counter-increment: ${increments.join(" ")} }`);
 	}
 
 	afterPageLayout(pageElement, page) {

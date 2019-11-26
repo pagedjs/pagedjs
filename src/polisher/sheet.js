@@ -16,7 +16,7 @@ class Sheet {
 			this.hooks.onDeclaration = new Hook(this);
 			this.hooks.onSelector = new Hook(this);
 			this.hooks.onPseudoSelector = new Hook(this);
-			
+
 			this.hooks.onContent = new Hook(this);
 			this.hooks.onImport = new Hook(this);
 
@@ -120,7 +120,7 @@ class Sheet {
 				this.hooks.onRule.trigger(ruleNode, ruleItem, rulelist);
 				this.declarations(ruleNode, ruleItem, rulelist);
 				this.onSelector(ruleNode, ruleItem, rulelist);
-				
+
 			}
 		});
 	}
@@ -153,8 +153,8 @@ class Sheet {
 			enter: (selectNode, selectItem, selectList) => {
 				// console.log(selectNode);
 				this.hooks.onSelector.trigger(selectNode, selectItem, selectList, {ruleNode, ruleItem, rulelist});
-				
-				if (selectNode.children.forEach(node => {if (node.type === "PseudoElementSelector") { 
+
+				if (selectNode.children.forEach(node => {if (node.type === "PseudoElementSelector") {
 					csstree.walk(node, {
 						visit: "PseudoElementSelector",
 						enter: (pseudoNode, pItem, pList) => {
@@ -174,9 +174,14 @@ class Sheet {
 		csstree.walk(ast, {
 			visit: "Url",
 			enter: (node, item, list) => {
-				let href = node.value.value.replace(/["']/g, "");
-				let url = new URL(href, this.url);
-				node.value.value = url.toString();
+				let content = node.value.value;
+				if ((node.value.type === "Raw" && content.startsWith("data:")) || (node.value.type === "String" && (content.startsWith("\"data:") || content.startsWith("'data:")))) {
+					// data-uri should not be parsed using the URL interface.
+				} else {
+					let href = content.replace(/["']/g, "");
+					let url = new URL(href, this.url);
+					node.value.value = url.toString();
+				}
 			}
 		});
 	}

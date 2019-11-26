@@ -1,7 +1,27 @@
-before_script:
-  - docker info
+stages:
+  - build
+  - publish
 
-build_image:
-  script:
+npm-test:
+  stage: build
+  before_script:
     - docker build -t pagedmedia/pagedjs .
+  script:
     - docker run --security-opt 'seccomp=seccomp.json' pagedmedia/pagedjs npm test
+
+# This job requires to setup GitLab the following way:
+# 1. On https://www.npmjs.com/settings/tokens/create
+#     create a new read/write token (the logged in user must have write access for the `pagedjs` package)
+# 2. On https://gitlab.pagedmedia.org/tools/pagedjs/-/settings/ci_cd#js-cicd-variables-settings
+#     add a new variable named `NPM_TOKEN`, and toggle on _Protected_ and _Masked_
+npm-publish:
+  # same as in Dockerfile's FROM stanza
+  image: node:12-stretch
+  stage: publish
+  before_script:
+    - 'echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc'
+    - npm publish --public --dry-run
+  script:
+    - npm publish --public
+  only:
+    - tags

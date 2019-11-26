@@ -33,6 +33,12 @@ class AtPage extends Handler {
 				left: {},
 				bottom: {}
 			},
+			padding : {
+				top: {},
+				right: {},
+				left: {},
+				bottom: {}
+			},
 			block: {},
 			marks: undefined
 		};
@@ -96,7 +102,7 @@ class AtPage extends Handler {
 						right: declarations.bleed[1],
 						bottom: declarations.bleed[2],
 						left: declarations.bleed[3]
-					}
+					};
 					break;
 				case 3: // top right bottom right
 					page.bleed = {
@@ -104,7 +110,7 @@ class AtPage extends Handler {
 						right: declarations.bleed[1],
 						bottom: declarations.bleed[2],
 						left: declarations.bleed[1]
-					}
+					};
 					break;
 				case 2: // top right top right
 					page.bleed = {
@@ -112,7 +118,7 @@ class AtPage extends Handler {
 						right: declarations.bleed[1],
 						bottom: declarations.bleed[0],
 						left: declarations.bleed[1]
-					}
+					};
 					break;
 				default:
 					page.bleed = {
@@ -120,7 +126,7 @@ class AtPage extends Handler {
 						right: declarations.bleed[0],
 						bottom: declarations.bleed[0],
 						left: declarations.bleed[0]
-					}
+					};
 			}
 		}
 
@@ -132,7 +138,7 @@ class AtPage extends Handler {
 					right: { value: 6, unit: "mm" },
 					bottom: { value: 6, unit: "mm" },
 					left: { value: 6, unit: "mm" }
-				}
+				};
 			}
 
 			page.marks = declarations.marks;
@@ -140,6 +146,9 @@ class AtPage extends Handler {
 
 		if (declarations.margin) {
 			page.margin = declarations.margin;
+		}
+		if (declarations.padding) {
+			page.padding = declarations.padding;
 		}
 
 		if (declarations.marks) {
@@ -287,7 +296,7 @@ class AtPage extends Handler {
 			visit: "Declaration",
 			enter: (declaration, dItem, dList) => {
 				let prop = csstree.property(declaration.property).name;
-				let value = declaration.value;
+				// let value = declaration.value;
 
 				if (prop === "marks") {
 					parsed.marks = [];
@@ -301,6 +310,7 @@ class AtPage extends Handler {
 				} else if (prop === "margin") {
 					parsed.margin = this.getMargins(declaration);
 					dList.remove(dItem);
+
 				} else if (prop.indexOf("margin-") === 0) {
 					let m = prop.substring("margin-".length);
 					if (!parsed.margin) {
@@ -313,11 +323,29 @@ class AtPage extends Handler {
 					}
 					parsed.margin[m] = declaration.value.children.first();
 					dList.remove(dItem);
+
+				} else if (prop === "padding"){
+					parsed.padding = this.getPaddings(declaration.value);
+					dList.remove(dItem);
+
+				} else if (prop.indexOf("padding-") === 0) {
+					let p = prop.substring("padding-".length);
+					if (!parsed.padding) {
+						parsed.padding = {
+							top: {},
+							right: {},
+							left: {},
+							bottom: {}
+						};
+					}
+					parsed.padding[p] = declaration.value.children.first();
+					dList.remove(dItem);
+
 				} else if (prop === "size") {
 					parsed.size = this.getSize(declaration);
 					dList.remove(dItem);
 				} else if (prop === "bleed") {
-					parsed.bleed = []
+					parsed.bleed = [];
 
 					csstree.walk(declaration, {
 						enter: (subNode) => {
@@ -450,6 +478,46 @@ class AtPage extends Handler {
 		return margin;
 	}
 
+	getPaddings(declaration) {
+		let paddings = [];
+		let padding = {
+			top: {},
+			right: {},
+			left: {},
+			bottom: {}
+		};
+
+		csstree.walk(declaration, {
+			visit: "Dimension",
+			enter: (node, item, list) => {
+				paddings.push(node);
+			}
+		});
+		if (paddings.length === 1) {
+			for (let p in padding) {
+				padding[p] = paddings[0];
+			}
+		} else if (paddings.length === 2) {
+
+			padding.top = paddings[0];
+			padding.right = paddings[1];
+			padding.bottom = paddings[0];
+			padding.left = paddings[1];
+		} else if (paddings.length === 3) {
+
+			padding.top = paddings[0];
+			padding.right = paddings[1];
+			padding.bottom = paddings[2];
+			padding.left = paddings[1];
+		} else if (paddings.length === 4) {
+
+			padding.top = paddings[0];
+			padding.right = paddings[1];
+			padding.bottom = paddings[2];
+			padding.left = paddings[3];
+		}
+		return padding;
+	}
 	addPageClasses(pages, ast, sheet) {
 		// First add * page
 		if ("*" in pages && !pages["*"].added) {
@@ -512,6 +580,8 @@ class AtPage extends Handler {
 
 		this.addMarginVars(page.margin, children, children.first());
 
+		this.addPaddingVars(page.padding, children, children.first());
+
 		if (page.width) {
 			this.addDimensions(page.width, page.height, page.orientation, children, children.first());
 		}
@@ -539,6 +609,26 @@ class AtPage extends Handler {
 				});
 				list.append(mVar, item);
 			}
+		}
+	}
+
+	addPaddingVars(padding, list, item) {
+		// variables for padding
+		for (let p in padding) {
+			if (typeof padding[p].value !== "undefined") {
+				let value = padding[p].value + (padding[p].unit || "");
+				let pVar = list.createItem({
+					type: "Declaration",
+					property: "--pagedjs-padding-" + p,
+					value: {
+						type: "Raw",
+						value: value
+					}
+				});
+
+				list.append(pVar, item);
+			}
+
 		}
 	}
 
@@ -764,33 +854,33 @@ class AtPage extends Handler {
 			let bleedLeft = this.createVariable("--pagedjs-bleed-left", CSSValueToString(bleed.left));
 
 			let bleedTopRecto = this.createVariable("--pagedjs-bleed-right-top", CSSValueToString(bleed.top));
-      let bleedRightRecto = this.createVariable("--pagedjs-bleed-right-right", CSSValueToString(bleed.right));
-      let bleedBottomRecto = this.createVariable("--pagedjs-bleed-right-bottom", CSSValueToString(bleed.bottom));
-      let bleedLeftRecto = this.createVariable("--pagedjs-bleed-right-left", CSSValueToString(bleed.left));
+			let bleedRightRecto = this.createVariable("--pagedjs-bleed-right-right", CSSValueToString(bleed.right));
+			let bleedBottomRecto = this.createVariable("--pagedjs-bleed-right-bottom", CSSValueToString(bleed.bottom));
+			let bleedLeftRecto = this.createVariable("--pagedjs-bleed-right-left", CSSValueToString(bleed.left));
 
-      let bleedTopVerso = this.createVariable("--pagedjs-bleed-left-top", CSSValueToString(bleed.top));
-      let bleedRightVerso = this.createVariable("--pagedjs-bleed-left-right", CSSValueToString(bleed.right));
-      let bleedBottomVerso = this.createVariable("--pagedjs-bleed-left-bottom", CSSValueToString(bleed.bottom));
-      let bleedLeftVerso = this.createVariable("--pagedjs-bleed-left-left", CSSValueToString(bleed.left));
+			let bleedTopVerso = this.createVariable("--pagedjs-bleed-left-top", CSSValueToString(bleed.top));
+			let bleedRightVerso = this.createVariable("--pagedjs-bleed-left-right", CSSValueToString(bleed.right));
+			let bleedBottomVerso = this.createVariable("--pagedjs-bleed-left-bottom", CSSValueToString(bleed.bottom));
+			let bleedLeftVerso = this.createVariable("--pagedjs-bleed-left-left", CSSValueToString(bleed.left));
 
 			if (bleedrecto) {
-        bleedTopRecto = this.createVariable("--pagedjs-bleed-right-top", CSSValueToString(bleedrecto.top));
-        bleedRightRecto = this.createVariable("--pagedjs-bleed-right-right", CSSValueToString(bleedrecto.right));
-        bleedBottomRecto = this.createVariable("--pagedjs-bleed-right-bottom", CSSValueToString(bleedrecto.bottom));
-        bleedLeftRecto = this.createVariable("--pagedjs-bleed-right-left", CSSValueToString(bleedrecto.left));
+				bleedTopRecto = this.createVariable("--pagedjs-bleed-right-top", CSSValueToString(bleedrecto.top));
+				bleedRightRecto = this.createVariable("--pagedjs-bleed-right-right", CSSValueToString(bleedrecto.right));
+				bleedBottomRecto = this.createVariable("--pagedjs-bleed-right-bottom", CSSValueToString(bleedrecto.bottom));
+				bleedLeftRecto = this.createVariable("--pagedjs-bleed-right-left", CSSValueToString(bleedrecto.left));
 
-        widthStringRight = `calc( ${CSSValueToString(width)} + ${CSSValueToString(bleedrecto.left)} + ${CSSValueToString(bleedrecto.right)} )`;
+				widthStringRight = `calc( ${CSSValueToString(width)} + ${CSSValueToString(bleedrecto.left)} + ${CSSValueToString(bleedrecto.right)} )`;
 			  heightStringRight = `calc( ${CSSValueToString(height)} + ${CSSValueToString(bleedrecto.top)} + ${CSSValueToString(bleedrecto.bottom)} )`;
-      }
-      if (bleedverso) {
-        bleedTopVerso = this.createVariable("--pagedjs-bleed-left-top", CSSValueToString(bleedverso.top));
-        bleedRightVerso = this.createVariable("--pagedjs-bleed-left-right", CSSValueToString(bleedverso.right));
-        bleedBottomVerso = this.createVariable("--pagedjs-bleed-left-bottom", CSSValueToString(bleedverso.bottom));
-        bleedLeftVerso = this.createVariable("--pagedjs-bleed-left-left", CSSValueToString(bleedverso.left));
+			}
+			if (bleedverso) {
+				bleedTopVerso = this.createVariable("--pagedjs-bleed-left-top", CSSValueToString(bleedverso.top));
+				bleedRightVerso = this.createVariable("--pagedjs-bleed-left-right", CSSValueToString(bleedverso.right));
+				bleedBottomVerso = this.createVariable("--pagedjs-bleed-left-bottom", CSSValueToString(bleedverso.bottom));
+				bleedLeftVerso = this.createVariable("--pagedjs-bleed-left-left", CSSValueToString(bleedverso.left));
 
-        widthStringLeft = `calc( ${CSSValueToString(width)} + ${CSSValueToString(bleedverso.left)} + ${CSSValueToString(bleedverso.right)} )`;
+				widthStringLeft = `calc( ${CSSValueToString(width)} + ${CSSValueToString(bleedverso.left)} + ${CSSValueToString(bleedverso.right)} )`;
 			  heightStringLeft = `calc( ${CSSValueToString(height)} + ${CSSValueToString(bleedverso.top)} + ${CSSValueToString(bleedverso.bottom)} )`;
-      }
+			}
 
 			let pageWidthVar = this.createVariable("--pagedjs-width", CSSValueToString(width));
 			let pageHeightVar = this.createVariable("--pagedjs-height", CSSValueToString(height));
@@ -817,7 +907,7 @@ class AtPage extends Handler {
 			marks.forEach((mark) => {
 				let markDisplay = this.createVariable("--pagedjs-mark-" + mark + "-display", "block");
 				rules.push(markDisplay);
-			})
+			});
 		}
 
 		// orientation variable
@@ -1033,6 +1123,20 @@ class AtPage extends Handler {
 		children.appendData({
 			type: "Declaration",
 			property: "margin",
+			loc: null,
+			value: {
+				type: "Value",
+				children: [{
+					type: "Dimension",
+					unit: "px",
+					value: 0
+				}]
+			}
+		});
+
+		children.appendData({
+			type: "Declaration",
+			property: "padding",
 			loc: null,
 			value: {
 				type: "Value",

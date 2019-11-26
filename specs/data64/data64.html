@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<title>Data-64 for paged.js</title>
+		<script src="../../dist/paged.polyfill.js"></script>
+		<style>
+			body {
+				width: 100%;
+				column-count: 2;
+			}
+			.block {
+				font-family: "Fira code", monospace;
+				margin: 0 auto;
+				width: 80%;
+				max-height: 80%;
+				box-shadow: 0 20px 68px rgba(0, 0, 0, .55);
+				background-color: #282c34;
+				border-radius: 5px;
+				color: #d7d3cb;
+			}
+
+			.block>.title {
+				display: block;
+				flex-direction: row;
+				line-height: 1.5em;
+				padding: 0 20px;
+				z-index: 10;
+				height: 1.5em;
+				min-height: 1.5em;
+				text-align: center;
+				position: relative;
+			}
+
+			.raw-base64 .block>.title::before {
+				content: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA1NCAxNCc+PGcgZmlsbD0nbm9uZScgZmlsbC1ydWxlPSdldmVub2RkJyB0cmFuc2Zvcm09J3RyYW5zbGF0ZSgxIDEpJyBzdHJva2Utd2lkdGg9Jy41Jz48Y2lyY2xlIGN4PSc2JyBjeT0nNicgcj0nNicgZmlsbD0nI0ZGNUY1Nicgc3Ryb2tlPScjRTA0NDNFJz48L2NpcmNsZT48Y2lyY2xlIGN4PScyNicgY3k9JzYnIHI9JzYnIGZpbGw9JyNGRkJEMkUnIHN0cm9rZT0nI0RFQTEyMyc+PC9jaXJjbGU+PGNpcmNsZSBjeD0nNDYnIGN5PSc2JyByPSc2JyBmaWxsPScjMjdDOTNGJyBzdHJva2U9JyMxQUFCMjknPjwvY2lyY2xlPjwvZz48L3N2Zz4=);
+				height: 1.5em;
+				width: 36px;
+				display: block;
+				align-items: center;
+				margin-right: 1rem;
+				position: absolute;
+			}
+
+			.block>.content {
+				padding: 1rem;
+			}
+
+			.string-double-quotes-svg .block>.title::before {
+				content: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 54 14'><g fill='none' fill-rule='evenodd' transform='translate(1 1)' stroke-width='.5'><circle cx='6' cy='6' r='6' fill='%23FF5F56' stroke='%23E0443E'></circle><circle cx='26' cy='6' r='6' fill='%23FFBD2E' stroke='%23DEA123'></circle><circle cx='46' cy='6' r='6' fill='%2327C93F' stroke='%231AAB29'></circle></g></svg>");
+				height: 1.5em;
+				width: 36px;
+				display: block;
+				align-items: center;
+				margin-right: 1rem;
+				position: absolute;
+			}
+
+			.string-single-quotes-svg .block>.title::before {
+				content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54 14"><g fill="none" fill-rule="evenodd" transform="translate(1 1)" stroke-width=".5"><circle cx="6" cy="6" r="6" fill="%23FF5F56" stroke="%23E0443E"></circle><circle cx="26" cy="6" r="6" fill="%23FFBD2E" stroke="%23DEA123"></circle><circle cx="46" cy="6" r="6" fill="%2327C93F" stroke="%231AAB29"></circle></g></svg>');
+				height: 1.5em;
+				width: 36px;
+				display: block;
+				align-items: center;
+				margin-right: 1rem;
+				position: absolute;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="raw-base64">
+			<div class="block">
+				<div id="rawBase64" class="title">Title</div>
+				<div class="content">
+					console.log('hello')
+				</div>
+			</div>
+		</div>
+		<div class="string-double-quotes-svg">
+			<div class="block">
+				<div id="stringSVGDoubleQuotes" class="title">Title</div>
+				<div class="content">
+					console.log('hello')
+				</div>
+			</div>
+		</div>
+		<div class="string-single-quotes-svg">
+			<div class="block">
+				<div id="stringSVGSingleQuotes" class="title">Title</div>
+				<div class="content">
+					console.log('hello')
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

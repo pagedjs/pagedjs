@@ -7,9 +7,10 @@ class StringSets extends Handler {
 
 		this.stringSetSelectors = {};
 		this.type;
-		this.lastString = "";
-	}
+		this.lastString;
 
+	}
+	
 	onDeclaration(declaration, dItem, dList, rule) {
 		if (declaration.property === "string-set") {
 			let selector = csstree.generate(rule.ruleNode.prelude);
@@ -33,6 +34,7 @@ class StringSets extends Handler {
 	}
 
 	onContent(funcNode, fItem, fList, declaration, rule) {
+
 		if (funcNode.name === "string") {
 			let identifier = funcNode.children && funcNode.children.first().name;
 			this.type = funcNode.children.last().name;
@@ -50,51 +52,73 @@ class StringSets extends Handler {
 	}
 
 	afterPageLayout(fragment) {
-		
-		
-		
+		// get the value of the previous last string
+		let previousLastString = this.lastString;
 		for (let name of Object.keys(this.stringSetSelectors)) {
 			let set = this.stringSetSelectors[name];
 			let selected = fragment.querySelectorAll(set.selector);
 			let selArray = [];
 
-			let cssVar;
+			let cssVar  = previousLastString;
 
-			selected.forEach((sel, index) => {
+			selected.forEach((sel) => {
 				if (sel) {
 					// push each content into the array to define in the variable the first and the last element of the page.
 					selArray.push(sel.textContent);
+				
+					this.lastString = selArray[selArray.length - 1];
 				}
+
 				
-				
-				if (!this.lastString === "") {
-					 cssVar = this.lastString;
+				if (this.type === "first" ||
+					!this.type) {
+					cssVar = selArray[0];
 				} 
 				
-
-				if (this.type === "first" ||
-					this.type === "start" ||
-					this.type === "first-except" ||
-					!this.type) {
-					cssVar = selArray[0].replace(/\\([\s\S])|(["|'])/g, "\\$1$2");
-				} else if (this.type === "last") {
-					cssVar = selArray[selArray.length - 1].replace(/\\([\s\S])|(["|'])/g, "\\$1$2");
+				else if (this.type === "last") {
+					cssVar = selArray[selArray.length - 1];
+				} 
+				
+				else if (this.type === "start") {
+				
+					if (sel.parentElement.firstChild === sel) {
+						cssVar = sel.textContent;
+					}
+					
 				}
-				
-				this.lastString = selArray[selArray.length - 1].replace(/\\([\s\S])|(["|'])/g, "\\$1$2");;
-				
-				fragment.setAttribute("data-string", `string-type-${this.type}-${name}`);
-				fragment.setAttribute(`data-pagedjs-string-${name}`, `"${cssVar}"`);
-				fragment.style.setProperty(`--pagedjs-string-${name}`, `"${cssVar}"`);
-			
 
-			});
+				else if (this.type === "first-except") {
+					cssVar = selArray[0];
+					if (cssVar === selArray[0]) {
+						cssVar = "";
+					}
+				}	
+			});	
+
+			fragment.setAttribute("data-string", `string-type-${this.type}-${name}`);
+
+
+			fragment.style.setProperty(`--pagedjs-string-${name}`, `"${cssVar.replace(/\\([\s\S])|(["|'])/g, "\\$1$2")}"`);
+				
+			//if there is an element with the string-set property on the page
+			if (selArray.length != 0) {
+				this.lastString = selArray[selArray.length - 1];
+			}
+		
+				
+			
+		
+			// if there is no new string on the page
 			if (!fragment.hasAttribute("data-string")) {
 				fragment.style.setProperty(`--pagedjs-string-${name}`, `"${this.lastString}"`);
+			}	
 
-			}
 		}
 	}
+
+
 }
+
+
 
 export default StringSets;

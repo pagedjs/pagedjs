@@ -6,6 +6,8 @@ class StringSets extends Handler {
 		super(chunker, polisher, caller);
 
 		this.stringSetSelectors = {};
+		this.type;
+		this.lastString = "";
 	}
 
 	onDeclaration(declaration, dItem, dList, rule) {
@@ -33,37 +35,63 @@ class StringSets extends Handler {
 	onContent(funcNode, fItem, fList, declaration, rule) {
 		if (funcNode.name === "string") {
 			let identifier = funcNode.children && funcNode.children.first().name;
+			this.type = funcNode.children.last().name;
 			funcNode.name = "var";
 			funcNode.children = new csstree.List();
 
-			funcNode.children.append(funcNode.children.createItem({
-				type: "Identifier",
-				loc: null,
-				name: "--pagedjs-string-" + identifier
-			}));
+			funcNode.children.append(
+				funcNode.children.createItem({
+					type: "Identifier",
+					loc: null,
+					name: "--pagedjs-string-" + identifier
+				})
+			);
 		}
 	}
 
 	afterPageLayout(fragment) {
+		
+		
+		
 		for (let name of Object.keys(this.stringSetSelectors)) {
 			let set = this.stringSetSelectors[name];
-			let selected = fragment.querySelector(set.selector);
-			if (selected) {
-				let cssVar;
-				if (set.value === "content" || set.value === "content()" || set.value === "content(text)") {
-					cssVar = selected.textContent.replace(/\\([\s\S])|(["|'])/g,"\\$1$2");
-					// this.styleSheet.insertRule(`:root { --pagedjs-string-${name}: "${cssVar}"; }`, this.styleSheet.cssRules.length);
-					// fragment.style.setProperty(`--pagedjs-string-${name}`, `"${cssVar}"`);
-					set.first = cssVar;
-					fragment.style.setProperty(`--pagedjs-string-${name}`, `"${set.first}"`);
-				} else {
-					console.warn(set.value + "needs css replacement");
+			let selected = fragment.querySelectorAll(set.selector);
+			let selArray = [];
+
+			let cssVar;
+
+			selected.forEach((sel, index) => {
+				if (sel) {
+					// push each content into the array to define in the variable the first and the last element of the page.
+					selArray.push(sel.textContent);
 				}
-			} else {
-				// Use the previous values
-				if (set.first) {
-					fragment.style.setProperty(`--pagedjs-string-${name}`, `"${set.first}"`);
+				
+				
+				if (!this.lastString === "") {
+					 cssVar = this.lastString;
+				} 
+				
+
+				if (this.type === "first" ||
+					this.type === "start" ||
+					this.type === "first-except" ||
+					!this.type) {
+					cssVar = selArray[0].replace(/\\([\s\S])|(["|'])/g, "\\$1$2");
+				} else if (this.type === "last") {
+					cssVar = selArray[selArray.length - 1].replace(/\\([\s\S])|(["|'])/g, "\\$1$2");
 				}
+				
+				this.lastString = selArray[selArray.length - 1].replace(/\\([\s\S])|(["|'])/g, "\\$1$2");;
+				
+				fragment.setAttribute("data-string", `string-type-${this.type}-${name}`);
+				fragment.setAttribute(`data-pagedjs-string-${name}`, `"${cssVar}"`);
+				fragment.style.setProperty(`--pagedjs-string-${name}`, `"${cssVar}"`);
+			
+
+			});
+			if (!fragment.hasAttribute("data-string")) {
+				fragment.style.setProperty(`--pagedjs-string-${name}`, `"${this.lastString}"`);
+
 			}
 		}
 	}

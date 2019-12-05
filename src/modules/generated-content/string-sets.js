@@ -8,7 +8,8 @@ class StringSets extends Handler {
 
 		this.stringSetSelectors = {};
 		this.type;
-		this.lastString;
+		// pageLastString = last string variable defined on the page 
+		this.pageLastString;
 
 	}
 	
@@ -27,9 +28,9 @@ class StringSets extends Handler {
 			});
 
 			this.stringSetSelectors[identifier] = {
-				identifier: identifier,
-				value: value,
-				selector: selector
+				identifier,
+				value,
+				selector
 			};
 		}
 	}
@@ -53,31 +54,27 @@ class StringSets extends Handler {
 	}
 
 	afterPageLayout(fragment) {
+
 		// get the value of the previous last string
-		let previousLastString = this.lastString;
+		let previousPageLastString = this.pageLastString;
+		
 		for (let name of Object.keys(this.stringSetSelectors)) {
 			let set = this.stringSetSelectors[name];
 			let selected = fragment.querySelectorAll(set.selector);
-			let selArray = [];
 
-			let cssVar  = previousLastString;
-
+			let cssVar = previousPageLastString;
 			selected.forEach((sel) => {
-				if (sel) {
-					// push each content into the array to define in the variable the first and the last element of the page.
-					selArray.push(sel.textContent);
+				// push each content into the array to define in the variable the first and the last element of the page.
 				
-					this.lastString = selArray[selArray.length - 1];
-				}
+				this.pageLastString = selected[selected.length - 1].textContent;
 
 				
-				if (this.type === "first" ||
-					!this.type) {
-					cssVar = selArray[0];
+				if (this.type === "first") {
+					cssVar = selected[0].textContent;
 				} 
 				
 				else if (this.type === "last") {
-					cssVar = selArray[selArray.length - 1];
+					cssVar = selected[selected.length - 1].textContent;
 				} 
 				
 				else if (this.type === "start") {
@@ -85,15 +82,15 @@ class StringSets extends Handler {
 					if (sel.parentElement.firstChild === sel) {
 						cssVar = sel.textContent;
 					}
-					
 				}
 
 				else if (this.type === "first-except") {
-					cssVar = selArray[0];
-					if (cssVar === selArray[0]) {
-						cssVar = "";
-					}
-				}	
+					cssVar = "";
+				}
+
+				else {
+					cssVar = selected[0].textContent;
+				} 
 			});	
 
 			fragment.setAttribute("data-string", `string-type-${this.type}-${name}`);
@@ -104,7 +101,7 @@ class StringSets extends Handler {
 		
 			// if there is no new string on the page
 			if (!fragment.hasAttribute("data-string")) {
-				fragment.style.setProperty(`--pagedjs-string-${name}`, `"${this.lastString}"`);
+				fragment.style.setProperty(`--pagedjs-string-${name}`, `"${this.pageLastString}"`);
 			}	
 
 		}

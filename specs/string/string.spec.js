@@ -1,5 +1,36 @@
 const TIMEOUT = 10000; // Some book might take longer than this to renderer
 
+
+
+describe("default", async () => {
+	let page;
+	let rendered;
+	beforeAll(async () => {
+		page = await loadPage("string/string-default.html");
+		return page.rendered;
+	}, TIMEOUT);
+
+	afterAll(async () => {
+		if (!DEBUG) {
+			await page.close();
+		}
+	});
+
+	it(`should set the running header as "a '' this " ' aa" on the first page`, async () => {
+		let text = await page.$eval(".pagedjs_first_page", (r) => 
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));		
+		expect(text).toEqual(`"a ' this \\" ' aa"`);
+	});
+
+	it("should set the running header as \"fff\" on the second page", async () => {
+		let text = await page.$eval("#page-2", (r) => 
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));		
+		expect(text).toEqual("\"fff\"");
+	});
+
+		
+});
+
 describe("first", async () => {
 	let page;
 	let rendered;

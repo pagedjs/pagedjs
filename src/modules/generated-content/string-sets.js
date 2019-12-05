@@ -1,5 +1,6 @@
 import Handler from "../handler";
 import csstree from "css-tree";
+import { cleanPseudoContent } from "../../utils/css";
 
 class StringSets extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -98,15 +99,8 @@ class StringSets extends Handler {
 			fragment.setAttribute("data-string", `string-type-${this.type}-${name}`);
 
 
-			fragment.style.setProperty(`--pagedjs-string-${name}`, `"${cssVar.replace(/\\([\s\S])|(["|'])/g, "\\$1$2")}"`);
-				
-			//if there is an element with the string-set property on the page
-			if (selArray.length != 0) {
-				this.lastString = selArray[selArray.length - 1];
-			}
-		
-				
-			
+			// fragment.style.setProperty(`--pagedjs-string-${name}`, `"${cssVar.replace(/\\([\s\S])|(["|'])/g, "\\$1$2")}"`);
+			fragment.style.setProperty(`--pagedjs-string-${name}`, `"${cleanPseudoContent(cssVar)}`);
 		
 			// if there is no new string on the page
 			if (!fragment.hasAttribute("data-string")) {

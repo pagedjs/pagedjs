@@ -25,6 +25,7 @@
     "chalk": "^2.4.2",
     "eslint": "^6.5.1",
     "express": "^4.17.1",
+    "ghostscript4js": "^3.1.1",
     "jest": "^24.9.0",
     "jest-image-snapshot": "^2.11.0",
     "puppeteer": "^2.0.0",
@@ -58,8 +59,5 @@
   "files": [
     "dist",
     "lib"
-  ],
-  "optionalDependencies": {
-    "ghostscript4js": "^3.1.1"
-  }
+  ]
 }

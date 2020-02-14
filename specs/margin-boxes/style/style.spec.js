@@ -1,6 +1,6 @@
 const TIMEOUT = 10000;
 
-describe('text-align', async () => {
+describe('text-align', () => {
 		let page;
 		let rendered;
 		beforeAll(async () => {

@@ -1,6 +1,6 @@
 const TIMEOUT = 10000; // Some book might take longer than this to renderer
 
-describe('spread-of-page-group', async () => {
+describe('spread-of-page-group', () => {
 		let page;
 		let rendered;
 		beforeAll(async () => {

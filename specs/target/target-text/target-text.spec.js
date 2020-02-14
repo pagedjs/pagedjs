@@ -1,6 +1,6 @@
 const TIMEOUT = 10000; // Some book might take longer than this to renderer
 
-describe("target-text", async () => {
+describe("target-text", () => {
 	let page;
 	let rendered;
 	beforeAll(async () => {
@@ -28,7 +28,7 @@ describe("target-text", async () => {
 		let text = await page.$eval("nav li:nth-of-type(3) a" , (r) => window.getComputedStyle(r, "::after").content);
 		expect(text).toEqual("\"P\"");
 	});
-        
+
 	it("Table of content should include the content of the before pseudo element", async () => {
 		let text = await page.$eval("nav li:nth-of-type(4) a" , (r) => window.getComputedStyle(r, "::after").content);
 		expect(text).toEqual("\"This is 'inside' the before:\"");

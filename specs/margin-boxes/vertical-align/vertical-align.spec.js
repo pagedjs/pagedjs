@@ -1,6 +1,6 @@
 const TIMEOUT = 10000;
 
-describe('vertical-align', async () => {
+describe('vertical-align', () => {
 		let page;
 		let rendered;
 		beforeAll(async () => {

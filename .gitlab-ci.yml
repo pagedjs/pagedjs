@@ -15,11 +15,10 @@ npm-test:
 # 2. On https://gitlab.pagedmedia.org/tools/pagedjs/-/settings/ci_cd#js-cicd-variables-settings
 #     add a new variable named `NPM_TOKEN`, and toggle on _Protected_ and _Masked_
 npm-publish:
-  # same as in Dockerfile's FROM stanza
-  image: node:12-stretch
   stage: publish
   before_script:
     - 'echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc'
+    - npm install
     - npm publish --public --dry-run
   script:
     - npm publish --public

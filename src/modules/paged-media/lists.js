@@ -16,7 +16,7 @@ class Lists extends Handler {
 		var orderedLists = pageElement.getElementsByTagName("ol");
 		for (var list of orderedLists) {
 			if (list.hasChildNodes()) {
-			list.start = list.firstElementChild.dataset.itemNum;
+				list.start = list.firstElementChild.dataset.itemNum;
 			}
 			else {
 				list.parentNode.removeChild(list);

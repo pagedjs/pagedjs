@@ -92,6 +92,10 @@ class TargetCounters extends Handler {
 					let selector = UUID();
 					selected.setAttribute("data-" + target.variable, selector);
 					// TODO: handle other counter types (by query)
+					let pseudo = "";
+					if (split.length > 1) {
+						pseudo += "::" + split[1];
+					}
 					if (target.counter === "page") {
 						let pages = chunker.pagesArea.querySelectorAll(".pagedjs_page");
 						let pg = 0;
@@ -109,15 +113,11 @@ class TargetCounters extends Handler {
 							}
 						}
 
-						let psuedo = "";
-						if (split.length > 1) {
-							psuedo += "::" + split[1];
-						}
-						this.styleSheet.insertRule(`[data-${target.variable}="${selector}"]${psuedo} { counter-reset: ${target.variable} ${pg}; }`, this.styleSheet.cssRules.length);
+						this.styleSheet.insertRule(`[data-${target.variable}="${selector}"]${pseudo} { counter-reset: ${target.variable} ${pg}; }`, this.styleSheet.cssRules.length);
 					} else {
 						let value = element.getAttribute(`data-counter-${target.counter}-value`);
 						if (value) {
-							this.styleSheet.insertRule(`[data-${target.variable}="${selector}"]${psuedo} { counter-reset: ${target.variable} ${target.variable} ${parseInt(value)}; }`, this.styleSheet.cssRules.length);
+							this.styleSheet.insertRule(`[data-${target.variable}="${selector}"]${pseudo} { counter-reset: ${target.variable} ${target.variable} ${parseInt(value)}; }`, this.styleSheet.cssRules.length);
 						}
 					}
 				}

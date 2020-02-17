@@ -1,6 +1,6 @@
 const TIMEOUT = 10000;
 
-describe('imports', async () => {
+describe('imports', () => {
 		let page;
 		let rendered;
 		beforeAll(async () => {

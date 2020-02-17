@@ -1,6 +1,6 @@
 const TIMEOUT = 10000;
 
-describe('lists', async () => {
+describe('lists', () => {
 		let page;
 		let rendered;
 		beforeAll(async () => {

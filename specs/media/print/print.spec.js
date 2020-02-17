@@ -1,6 +1,6 @@
 const TIMEOUT = 10000; // Some book might take longer than this to renderer
 
-describe('print-media', async () => {
+describe('print-media', () => {
 		let page;
 		let rendered;
 		beforeAll(async () => {

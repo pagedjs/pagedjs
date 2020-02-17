@@ -1,6 +1,6 @@
 const TIMEOUT = 10000;
 
-describe('roman-numerals', async () => {
+describe('roman-numerals', () => {
 		let page;
 		let rendered;
 		beforeAll(async () => {

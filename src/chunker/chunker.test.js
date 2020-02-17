@@ -1,7 +1,7 @@
 /* global describe, it, expect */
 import Chunker from "./chunker.js";
 
-describe("Chunker", async () => {
+describe("Chunker", () => {
 
 	it("should create a page area", async () => {
 		let chunker = new Chunker();

@@ -1,5 +1,6 @@
 import Handler from "../handler";
 import { UUID, attr, querySelectorEscape } from "../../utils/utils";
+import { cleanPseudoContent } from "../../utils/css";
 import csstree from "css-tree";
 // import { nodeAfter } from "../../utils/dom";
 
@@ -126,14 +127,3 @@ class TargetText extends Handler {
 
 export default TargetText;
 
-function cleanPseudoContent(el, trim = "\"' ") {
-	return el
-		.replace(new RegExp(`^[${trim}]+`), "")
-		.replace(new RegExp(`[${trim}]+$`), "")
-		.replace(/["']/g, match => {
-			return "\\" + match;
-		})
-		.replace(/[\n]/g, match => {
-			return "\\00000A";
-		});
-}

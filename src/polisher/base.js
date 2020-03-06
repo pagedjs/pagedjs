@@ -12,6 +12,10 @@ export default `
 	--pagedjs-margin-right: 1in;
 	--pagedjs-margin-bottom: 1in;
 	--pagedjs-margin-left: 1in;
+	--pagedjs-padding-top: 0mm;
+	--pagedjs-padding-right: 0mm;
+	--pagedjs-padding-bottom: 0mm;
+	--pagedjs-padding-left: 0mm;
 	--pagedjs-bleed-top: 0mm;
 	--pagedjs-bleed-right: 0mm;
 	--pagedjs-bleed-bottom: 0mm;
@@ -354,6 +358,8 @@ export default `
 	grid-row: page;
 	width: 100%;
 	height: 100%;
+	padding: var(--pagedjs-padding-top) var(--pagedjs-padding-right) var(--pagedjs-padding-bottom) var(--pagedjs-padding-left) 
+
 }
 
 .pagedjs_pagebox > .pagedjs_area > .pagedjs_page_content {
@@ -557,7 +563,7 @@ img {
 	height: auto;
 }
 
-p[data-align-last-split-element='justify'] {
+[data-align-last-split-element='justify'] {
 	text-align-last: justify;
 }
 

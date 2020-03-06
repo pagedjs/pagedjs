@@ -1,6 +1,6 @@
 const TIMEOUT = 10000;
 
-describe('css is awesome', async () => {
+describe('css is awesome', () => {
 		let page;
 		let rendered;
 		beforeAll(async () => {

@@ -57,25 +57,25 @@ class Hook {
 		return Promise.all(promises);
 	}
 
-  /**
+	/**
    * Triggers a hook to run all functions synchronously
    * @example this.content.trigger(args).then(function(){...});
    * @return {Array} results
    */
-  triggerSync(){
-    var args = arguments;
-    var context = this.context;
-    var results = [];
+	triggerSync(){
+		var args = arguments;
+		var context = this.context;
+		var results = [];
 
-    this.hooks.forEach(function(task) {
-      var executing = task.apply(context, args);
+		this.hooks.forEach(function(task) {
+			var executing = task.apply(context, args);
 
-      results.push(executing);
-    });
+			results.push(executing);
+		});
 
 
-    return results;
-  }
+		return results;
+	}
 
 	// Adds a function to be run before a hook completes
 	list(){

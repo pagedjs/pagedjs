@@ -1,6 +1,6 @@
 const TIMEOUT = 10000; // Some book might take longer than this to renderer
 
-describe('breaks', async () => {
+describe('breaks', () => {
 		let page;
 		let rendered;
 		beforeAll(async () => {

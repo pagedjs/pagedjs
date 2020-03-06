@@ -1,6 +1,6 @@
 const TIMEOUT = 10000;
 
-describe('page-group', async () => {
+describe('page-group', () => {
 		let page;
 		let rendered;
 		beforeAll(async () => {

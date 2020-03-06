@@ -1,6 +1,6 @@
 {
   "name": "pagedjs",
-  "version": "0.1.34",
+  "version": "0.1.39",
   "description": "Chunks up a document into paged media flows and applies print styles",
   "author": "Fred Chasen",
   "license": "MIT",
@@ -9,27 +9,28 @@
   "module": "src/index.js",
   "browser": "dist/paged.js",
   "dependencies": {
-    "@babel/polyfill": "^7.6.0",
-    "@babel/runtime": "^7.6.3",
-    "css-tree": "1.0.0-alpha.29",
+    "@babel/polyfill": "^7.8.3",
+    "@babel/runtime": "^7.8.4",
+    "css-tree": "1.0.0-alpha.39",
     "event-emitter": "^0.3.5"
   },
   "devDependencies": {
-    "@babel/cli": "^7.6.4",
-    "@babel/core": "^7.6.4",
-    "@babel/plugin-proposal-async-generator-functions": "^7.2.0",
-    "@babel/plugin-transform-runtime": "^7.6.2",
-    "@babel/preset-env": "^7.6.3",
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.4",
+    "@babel/plugin-proposal-async-generator-functions": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.8.3",
+    "@babel/preset-env": "^7.8.4",
     "babel-core": "^7.0.0-bridge.0",
-    "babel-jest": "^24.9.0",
-    "chalk": "^2.4.2",
-    "eslint": "^6.5.1",
+    "babel-jest": "^25.1.0",
+    "chalk": "^3.0.0",
+    "eslint": "^6.8.0",
     "express": "^4.17.1",
-    "jest": "^24.9.0",
-    "jest-image-snapshot": "^2.11.0",
-    "puppeteer": "^2.0.0",
-    "rimraf": "^3.0.0",
-    "rollup": "^1.25.2",
+    "ghostscript4js": "^3.1.1",
+    "jest": "^25.1.0",
+    "jest-image-snapshot": "^2.12.0",
+    "puppeteer": "^2.1.1",
+    "rimraf": "^3.0.2",
+    "rollup": "^1.31.1",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-json": "^4.0.0",
     "rollup-plugin-livereload": "^1.0.4",
@@ -48,7 +49,7 @@
     "pretest": "npm run build",
     "prepublishOnly": "npm run build && npm run compile && npm run legacy",
     "watch": "./node_modules/.bin/rollup -w -c",
-    "lint": "./node_modules/.bin/eslint -c .eslintrc.js src; exit 0",
+    "lint": "./node_modules/.bin/eslint -c .eslintrc.js src",
     "docker": "docker build -t pagedmedia/pagedjs . && docker run -it --security-opt 'seccomp=seccomp.json' -v $(pwd)/specs:/home/node/pagedjs/specs pagedmedia/pagedjs npm test"
   },
   "repository": {
@@ -58,8 +59,5 @@
   "files": [
     "dist",
     "lib"
-  ],
-  "optionalDependencies": {
-    "ghostscript4js": "^3.1.1"
-  }
+  ]
 }

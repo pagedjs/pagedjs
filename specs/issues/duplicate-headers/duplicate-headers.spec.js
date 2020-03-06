@@ -1,6 +1,6 @@
 const TIMEOUT = 10000;
 
-describe('duplicate-headers', async () => {
+describe('duplicate-headers', () => {
 		let page;
 		let rendered;
 		beforeAll(async () => {

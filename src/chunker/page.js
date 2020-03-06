@@ -80,7 +80,7 @@ class Page {
 		// page.dataset.pageNumber = index;
 
 		page.dataset.pageNumber = index;
-		page.setAttribute('id', id);
+		page.setAttribute("id", id);
 
 		if (this.name) {
 			page.classList.add("pagedjs_" + this.name + "_page");

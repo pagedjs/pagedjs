@@ -101,7 +101,7 @@ class Chunker {
 		this.hooks.afterRendered = new Hook(this);
 
 		this.pages = [];
-		this._total = 0;
+		this.total = 0;
 
 		this.q = new Queue(this);
 		this.stopped = false;
@@ -162,10 +162,13 @@ class Chunker {
 		}
 
 		this.rendered = true;
+		this.pagesArea.style.setProperty("--pagedjs-page-count", this.total);		
 
 		await this.hooks.afterRendered.trigger(this.pages, this);
 
 		this.emit("rendered", this.pages);
+
+
 
 		return this;
 	}
@@ -330,6 +333,8 @@ class Chunker {
 
 			// Stop if we get undefined, showing we have reached the end of the content
 		}
+
+
 	}
 
 	recoredCharLength(length) {
@@ -468,14 +473,7 @@ class Chunker {
 	}
 	*/
 
-	get total() {
-		return this._total;
-	}
 
-	set total(num) {
-		this.pagesArea.style.setProperty("--pagedjs-page-count", num);
-		this._total = num;
-	}
 
 	loadFonts() {
 		let fontPromises = [];

@@ -285,11 +285,14 @@ class Layout {
 				if (!renderedNode) {
 					// Find closest element with data-ref
 					renderedNode = findElement(prevValidNode(temp), rendered);
-					return;
-				}
-
-				node = findElement(renderedNode, source);
-				offset = 0;
+					// renderedNode is actually the last unbroken box of rendered node
+					// We just need to return node as the next sibling of renderedNode within source node.
+					node = findElement(renderedNode, source).nextSibling;
+					offset = 0;
+				} else {
+					node = findElement(renderedNode, source);
+					offset = 0;
+				}				
 			} else {
 				renderedNode = findElement(container, rendered);
 
@@ -345,7 +348,8 @@ class Layout {
 
 		if (overflow) {
 			breakToken = this.createBreakToken(overflow, rendered, source);
-			if (breakToken["node"] && breakToken["offset"] && breakToken["node"].textContent) {
+			// breakToken is nullable
+			if (breakToken && breakToken["node"] && breakToken["offset"] && breakToken["node"].textContent) {
 				breakLetter = breakToken["node"].textContent.charAt(breakToken["offset"]);
 			} else {
 				breakLetter = undefined;

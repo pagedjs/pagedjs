@@ -14,6 +14,7 @@ class TargetCounters extends Handler {
 	onContent(funcNode, fItem, fList, declaration, rule) {
 		if (funcNode.name === "target-counter") {
 			let selector = csstree.generate(rule.ruleNode.prelude);
+
 			let first = funcNode.children.first();
 			let func = first.name;
 
@@ -23,6 +24,7 @@ class TargetCounters extends Handler {
 
 			first.children.forEach((child) => {
 				if (child.type === "Identifier") {
+
 					args.push(child.name);
 				}
 			});
@@ -56,7 +58,7 @@ class TargetCounters extends Handler {
 					variable: variable
 				};
 			});
-
+			
 			// Replace with counter
 			funcNode.name = "counter";
 			funcNode.children = new csstree.List();
@@ -65,6 +67,7 @@ class TargetCounters extends Handler {
 				loc: 0,
 				name: variable
 			});
+
 			if (styleIdentifier) {
 				funcNode.children.appendData({type: "Operator", loc: null, value: ","});
 				funcNode.children.appendData(styleIdentifier);
@@ -77,7 +80,7 @@ class TargetCounters extends Handler {
 			let target = this.counterTargets[name];
 			let split = target.selector.split("::");
 			let query = split[0];
-
+			
 			let queried = chunker.pagesArea.querySelectorAll(query + ":not([data-" + target.variable + "])");
 
 			queried.forEach((selected, index) => {

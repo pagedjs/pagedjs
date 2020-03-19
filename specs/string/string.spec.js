@@ -158,3 +158,40 @@ describe("string-start", async () => {
 	});
 		
 });
+
+
+describe("string-multiple", async () => {
+	let page;
+	let rendered;
+	beforeAll(async () => {
+		page = await loadPage("string/string-multiple.html");
+		return page.rendered;
+	}, TIMEOUT);
+
+	afterAll(async () => {
+		if (!DEBUG) {
+			await page.close();
+		}
+	});
+
+	it("should set the running header as nothing on the first page", async () => {
+		let text = await page.$eval("#page-2", (r) => 
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));		
+		expect(text).toEqual("\"aaa\"");
+	});
+	it("should set the running header as nothing on the first page", async () => {
+		let text = await page.$eval("#page-2", (r) => 
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabetbis"));		
+		expect(text).toEqual("\"1111\"");
+	});
+	it("should set the running header as \"fff\" on the third page", async () => {
+		let text = await page.$eval("#page-9", (r) => 
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));		
+		expect(text).toEqual("\"bbb\"");
+	});
+	it("should set the running header as \"fff\" on the third page", async () => {
+		let text = await page.$eval("#page-9", (r) => 
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabetbis"));		
+		expect(text).toEqual("\"2222\"");
+	});
+});

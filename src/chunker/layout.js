@@ -285,14 +285,28 @@ class Layout {
 				if (!renderedNode) {
 					// Find closest element with data-ref
 					renderedNode = findElement(prevValidNode(temp), rendered);
-					// renderedNode is actually the last unbroken box of rendered node
-					// We just need to return node as the next sibling of renderedNode within source node.
+					// Check if temp is the last rendered node at its level.
+					if (!temp.nextSibling) {
+						// We need to ensure that the previous sibling of temp is fully rendered.
+						const renderedNodeFromSource = findElement(renderedNode, source)
+						const walker = document.createTreeWalker(renderedNodeFromSource, NodeFilter.SHOW_ELEMENT)
+						const lastChildOfRenderedNodeFromSource = walker.lastChild()
+						const lastChildOfRenderedNodeMatchingFromRendered = findElement(lastChildOfRenderedNodeFromSource, rendered)
+						// Check if we found that the last child in source 
+						if (!lastChildOfRenderedNodeMatchingFromRendered) {
+							// Pending content to be rendered before virtual break token
+							return;
+						}
+						// Otherwise we will return a break token as per below
+					}
+					// renderedNode is actually the last unbroken box that does not overflow.
+					// Break Token is therefore the next sibling of renderedNode within source node.
 					node = findElement(renderedNode, source).nextSibling;
 					offset = 0;
 				} else {
 					node = findElement(renderedNode, source);
 					offset = 0;
-				}				
+				}
 			} else {
 				renderedNode = findElement(container, rendered);
 
@@ -400,7 +414,7 @@ class Layout {
 
 			if (node) {
 				let pos = getBoundingClientRect(node);
-				let left = Math.floor(pos.left);
+				let left = Math.round(pos.left);
 				let right = Math.floor(pos.right);
 
 				if (!range && left >= end) {
@@ -463,7 +477,7 @@ class Layout {
 				}
 
 				// Skip children
-				if (skip || right < end) {
+				if (skip || right <= end) {
 					next = nodeAfter(node, rendered);
 					if (next) {
 						walker = walk(next, rendered);

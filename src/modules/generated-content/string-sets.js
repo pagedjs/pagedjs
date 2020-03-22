@@ -69,9 +69,9 @@ class StringSets extends Handler {
 	
 			// let cssVar = previousPageLastString;
 			// Get the last found string for the current identifier
-			let cssVar = ( name in this.pageLastString ) ? this.pageLastString[name] : '';
+			let cssVar = ( name in this.pageLastString ) ? this.pageLastString[name] : "";
 	
-				selected.forEach((sel) => {
+			selected.forEach((sel) => {
 				// push each content into the array to define in the variable the first and the last element of the page.
 	
 	

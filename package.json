@@ -47,7 +47,7 @@
     "pretest": "npm run build",
     "prepublishOnly": "npm run build && npm run compile && npm run legacy",
     "watch": "rollup -w -c",
-    "lint": "eslint -c .eslintrc.js src",
+    "lint": "eslint -c .eslintrc.js src specs",
     "docker": "docker build -t pagedmedia/pagedjs . && docker run -it --security-opt 'seccomp=seccomp.json' -v $(pwd)/specs:/home/node/pagedjs/specs pagedmedia/pagedjs npm test"
   },
   "repository": {

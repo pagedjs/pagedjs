@@ -2,7 +2,6 @@ const TIMEOUT = 10000; // Some book might take longer than this to renderer
 
 describe("target-text", () => {
 	let page;
-	let rendered;
 	beforeAll(async () => {
 		page = await loadPage("target/target-text/target-text.html");
 		return page.rendered;
@@ -16,12 +15,12 @@ describe("target-text", () => {
 
 	it("Table of content should include chapter titles", async () => {
 		let text = await page.$eval("nav li:nth-of-type(1) a" , (r) => window.getComputedStyle(r, "::after").content);
-		expect(text).toEqual(`"'Lorem \\"ipsum\\" dolor sit amet'"`);
+		expect(text).toEqual("\"'Lorem \\\"ipsum\\\" dolor sit amet'\"");
 	});
 
 	it("Table of content should include chapter titles", async () => {
 		let text = await page.$eval("nav li:nth-of-type(2) a" , (r) => window.getComputedStyle(r, "::after").content);
-		expect(text).toEqual(`"'Lorem ipsum dolor sit amet'"`);
+		expect(text).toEqual("\"'Lorem ipsum dolor sit amet'\"");
 	});
 
 	it("Table of content should include first-letter of the chapter title", async () => {

@@ -2,7 +2,7 @@ const TIMEOUT = 10000; // Some book might take longer than this to renderer
 
 
 
-describe("default", async () => {
+describe("default", () => {
 	let page;
 	let rendered;
 	beforeAll(async () => {
@@ -17,21 +17,21 @@ describe("default", async () => {
 	});
 
 	it(`should set the running header as "a '' this " ' aa" on the first page`, async () => {
-		let text = await page.$eval(".pagedjs_first_page", (r) => 
-			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));		
+		let text = await page.$eval(".pagedjs_first_page", (r) =>
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual(`"a ' this \\" ' aa"`);
 	});
 
 	it("should set the running header as \"fff\" on the second page", async () => {
-		let text = await page.$eval("#page-2", (r) => 
-			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));		
+		let text = await page.$eval("#page-2", (r) =>
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual("\"fff\"");
 	});
 
-		
+
 });
 
-describe("first", async () => {
+describe("first", () => {
 	let page;
 	let rendered;
 	beforeAll(async () => {
@@ -46,23 +46,23 @@ describe("first", async () => {
 	});
 
 	it("should set the running header as \"aaa\" on the first page", async () => {
-		let text = await page.$eval(".pagedjs_first_page", (r) => 
-			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));		
+		let text = await page.$eval(".pagedjs_first_page", (r) =>
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual("\"aaa\"");
 	});
 
 	it("should set the running header as \"fff\" on the second page", async () => {
-		let text = await page.$eval("#page-2", (r) => 
-			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));		
+		let text = await page.$eval("#page-2", (r) =>
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual("\"fff\"");
 	});
 
-		
+
 });
 
 
 
-describe("last", async () => {
+describe("last", () => {
 	let page;
 	let rendered;
 	beforeAll(async () => {
@@ -77,25 +77,25 @@ describe("last", async () => {
 	});
 
 	it("should set the running header as \"fff\" on the first page", async () => {
-		let text = await page.$eval(".pagedjs_first_page", (r) => 
-			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));		
+		let text = await page.$eval(".pagedjs_first_page", (r) =>
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual("\"fff\"");
 	});
 
 	it("should set the running header as \"fff\" on the second page", async () => {
-		let text = await page.$eval("#page-2", (r) => 
-			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));		
+		let text = await page.$eval("#page-2", (r) =>
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual("\"fff\"");
 	});
 
-		
+
 });
 
 
 
 
 
-describe("first-except", async () => {
+describe("first-except", () => {
 	let page;
 	let rendered;
 	beforeAll(async () => {
@@ -110,23 +110,23 @@ describe("first-except", async () => {
 	});
 
 	it("should set the running header as nothing on the first page", async () => {
-		let text = await page.$eval(".pagedjs_first_page", (r) => 
-			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));		
+		let text = await page.$eval(".pagedjs_first_page", (r) =>
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual("\"\"");
 	});
 
 	it("should set the running header as \"aaa\" on the second page", async () => {
-		let text = await page.$eval("#page-2", (r) => 
-			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));		
+		let text = await page.$eval("#page-2", (r) =>
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual("\"aaa\"");
 	});
 
-		
+
 });
 
 
 
-describe("string-start", async () => {
+describe("string-start", () => {
 	let page;
 	let rendered;
 	beforeAll(async () => {
@@ -141,26 +141,26 @@ describe("string-start", async () => {
 	});
 
 	it("should set the running header as nothing on the first page", async () => {
-		let text = await page.$eval(".pagedjs_first_page", (r) => 
-			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));		
+		let text = await page.$eval(".pagedjs_first_page", (r) =>
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual("\"aaa\"");
 	});
 
 	it("should set the running header as \"fff\" on the third page", async () => {
-		let text = await page.$eval("#page-3", (r) => 
-			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));		
+		let text = await page.$eval("#page-3", (r) =>
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual("\"fff\"");
 	});
 	it("should set the running header as \"ggg\" on page 4", async () => {
-		let text = await page.$eval("#page-4", (r) => 
-			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));		
+		let text = await page.$eval("#page-4", (r) =>
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual("\"ggg\"");
 	});
-		
+
 });
 
 
-describe("string-multiple", async () => {
+describe("string-multiple", () => {
 	let page;
 	let rendered;
 	beforeAll(async () => {
@@ -175,23 +175,23 @@ describe("string-multiple", async () => {
 	});
 
 	it("should set the running header as nothing on the first page", async () => {
-		let text = await page.$eval("#page-2", (r) => 
-			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));		
+		let text = await page.$eval("#page-2", (r) =>
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual("\"aaa\"");
 	});
 	it("should set the running header as nothing on the first page", async () => {
-		let text = await page.$eval("#page-2", (r) => 
-			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabetbis"));		
+		let text = await page.$eval("#page-2", (r) =>
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabetbis"));
 		expect(text).toEqual("\"1111\"");
 	});
 	it("should set the running header as \"fff\" on the third page", async () => {
-		let text = await page.$eval("#page-9", (r) => 
-			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));		
+		let text = await page.$eval("#page-9", (r) =>
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual("\"bbb\"");
 	});
 	it("should set the running header as \"fff\" on the third page", async () => {
-		let text = await page.$eval("#page-9", (r) => 
-			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabetbis"));		
+		let text = await page.$eval("#page-9", (r) =>
+			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabetbis"));
 		expect(text).toEqual("\"2222\"");
 	});
 });

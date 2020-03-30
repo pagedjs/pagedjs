@@ -1,10 +1,7 @@
 const TIMEOUT = 10000; // Some book might take longer than this to renderer
 
-
-
 describe("default", () => {
 	let page;
-	let rendered;
 	beforeAll(async () => {
 		page = await loadPage("string/string-default.html");
 		return page.rendered;
@@ -16,10 +13,10 @@ describe("default", () => {
 		}
 	});
 
-	it(`should set the running header as "a '' this " ' aa" on the first page`, async () => {
+	it("should set the running header as \"a '' this \" ' aa\" on the first page", async () => {
 		let text = await page.$eval(".pagedjs_first_page", (r) =>
 			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
-		expect(text).toEqual(`"a ' this \\" ' aa"`);
+		expect(text).toEqual("\"a ' this \\\" ' aa\"");
 	});
 
 	it("should set the running header as \"fff\" on the second page", async () => {
@@ -27,13 +24,10 @@ describe("default", () => {
 			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual("\"fff\"");
 	});
-
-
 });
 
 describe("first", () => {
 	let page;
-	let rendered;
 	beforeAll(async () => {
 		page = await loadPage("string/string-first.html");
 		return page.rendered;
@@ -56,15 +50,10 @@ describe("first", () => {
 			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual("\"fff\"");
 	});
-
-
 });
-
-
 
 describe("last", () => {
 	let page;
-	let rendered;
 	beforeAll(async () => {
 		page = await loadPage("string/string-last.html");
 		return page.rendered;
@@ -87,17 +76,10 @@ describe("last", () => {
 			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual("\"fff\"");
 	});
-
-
 });
-
-
-
-
 
 describe("first-except", () => {
 	let page;
-	let rendered;
 	beforeAll(async () => {
 		page = await loadPage("string/string-first-except.html");
 		return page.rendered;
@@ -120,15 +102,10 @@ describe("first-except", () => {
 			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual("\"aaa\"");
 	});
-
-
 });
-
-
 
 describe("string-start", () => {
 	let page;
-	let rendered;
 	beforeAll(async () => {
 		page = await loadPage("string/string-start.html");
 		return page.rendered;
@@ -156,13 +133,10 @@ describe("string-start", () => {
 			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual("\"ggg\"");
 	});
-
 });
-
 
 describe("string-multiple", () => {
 	let page;
-	let rendered;
 	beforeAll(async () => {
 		page = await loadPage("string/string-multiple.html");
 		return page.rendered;

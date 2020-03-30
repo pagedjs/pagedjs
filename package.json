@@ -40,7 +40,7 @@
     "build": "rollup -c",
     "legacy": "rollup -c rollup.legacy.config.js",
     "start": "rollup -w -c rollup.server.config.js",
-    "test": "npm run tests && npm run specs",
+    "test": "npm run lint && npm run tests && npm run specs",
     "tests": "jest",
     "specs": "jest --config=specs/jest.config.js",
     "compile": "babel src/ -d lib/",

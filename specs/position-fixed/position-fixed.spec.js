@@ -53,12 +53,12 @@ describe("element with position: fixed", async () => {
 			window.getComputedStyle(r).getPropertyValue("position"));
 		expect(text).toEqual("absolute");
 	});
-		if (!DEBUG) {
-			it('should create a pdf', async () => {
-				let pdf = await page.pdf(PDF_SETTINGS);
+	if (!DEBUG) {
+		it("should create a pdf", async () => {
+			let pdf = await page.pdf(PDF_SETTINGS);
 
-				expect(pdf).toMatchPDFSnapshot(2);
-			})
-		}
+			expect(pdf).toMatchPDFSnapshot(2);
+		});
+	}
 }
 );

@@ -1,5 +1,5 @@
 import Handler from "../handler";
-import csstree from "css-tree";
+import csstree, { parse } from "css-tree";
 import pageSizes from "../../polisher/sizes";
 import { rebuildAncestors } from "../../utils/dom";
 import { CSSValueToString } from "../../utils/utils";
@@ -13,7 +13,6 @@ class AtPage extends Handler {
 		this.width = undefined;
 		this.height = undefined;
 		this.orientation = undefined;
-
 		this.marginalia = {};
 	}
 
@@ -27,18 +26,25 @@ class AtPage extends Handler {
 			width: undefined,
 			height: undefined,
 			orientation: undefined,
-			margin : {
+			margin: {
 				top: {},
 				right: {},
 				left: {},
 				bottom: {}
 			},
-			padding : {
+			padding: {
 				top: {},
 				right: {},
 				left: {},
 				bottom: {}
 			},
+			border: {
+				top: {},
+				right: {},
+				left: {},
+				bottom: {}
+			},
+			backgroundOrigin: undefined,
 			block: {},
 			marks: undefined
 		};
@@ -85,7 +91,7 @@ class AtPage extends Handler {
 		}
 
 		let declarations = this.replaceDeclartations(node);
-
+		// console.log(declarations);
 		if (declarations.size) {
 			page.size = declarations.size;
 			page.width = declarations.size.width;
@@ -151,6 +157,10 @@ class AtPage extends Handler {
 			page.padding = declarations.padding;
 		}
 
+		if (declarations.border) {
+			page.border = declarations.border;
+		}
+
 		if (declarations.marks) {
 			page.marks = declarations.marks;
 		}
@@ -193,15 +203,15 @@ class AtPage extends Handler {
 			let bleedrecto = undefined;
 
 			if (":left" in this.pages) {
-	      bleedverso = this.pages[":left"].bleed;
-	    }
+				bleedverso = this.pages[":left"].bleed;
+			}
 
-	    if (":right" in this.pages) {
-	      bleedrecto = this.pages[":right"].bleed;
-	    }
+			if (":right" in this.pages) {
+				bleedrecto = this.pages[":right"].bleed;
+			}
 
 			if ((width && height) &&
-					(this.width !== width || this.height !== height)) {
+				(this.width !== width || this.height !== height)) {
 				this.width = width;
 				this.height = height;
 				this.format = format;
@@ -324,7 +334,7 @@ class AtPage extends Handler {
 					parsed.margin[m] = declaration.value.children.first();
 					dList.remove(dItem);
 
-				} else if (prop === "padding"){
+				} else if (prop === "padding") {
 					parsed.padding = this.getPaddings(declaration.value);
 					dList.remove(dItem);
 
@@ -340,8 +350,44 @@ class AtPage extends Handler {
 					}
 					parsed.padding[p] = declaration.value.children.first();
 					dList.remove(dItem);
+				}
 
-				} else if (prop === "size") {
+				else if (prop === "border") {
+					if (!parsed.border) {
+						parsed.border = {
+							top: {},
+							right: {},
+							left: {},
+							bottom: {}
+						};
+					}
+					console.log(declaration);
+					parsed.border.top = csstree.generate(declaration.value);
+					parsed.border.right = csstree.generate(declaration.value);
+					parsed.border.left = csstree.generate(declaration.value);
+					parsed.border.bottom = csstree.generate(declaration.value);
+
+					dList.remove(dItem);
+
+				}
+
+				else if (prop.indexOf("border-") === 0) {
+					if (!parsed.border) {
+						parsed.border = {
+							top: {},
+							right: {},
+							left: {},
+							bottom: {}
+						};
+					}
+					let p = prop.substring("border-".length);
+
+					parsed.border[p] = csstree.generate(declaration.value);
+					dList.remove(dItem);
+
+				}
+
+				else if (prop === "size") {
 					parsed.size = this.getSize(declaration);
 					dList.remove(dItem);
 				} else if (prop === "bleed") {
@@ -368,7 +414,7 @@ class AtPage extends Handler {
 									});
 									break;
 								default:
-									// ignore
+								// ignore
 							}
 
 						}
@@ -381,8 +427,8 @@ class AtPage extends Handler {
 		});
 
 		return parsed;
-	}
 
+	}
 	getSize(declaration) {
 		let width, height, orientation, format;
 
@@ -390,7 +436,7 @@ class AtPage extends Handler {
 		csstree.walk(declaration, {
 			visit: "Dimension",
 			enter: (node, item, list) => {
-				let {value, unit} = node;
+				let { value, unit } = node;
 				if (typeof width === "undefined") {
 					width = { value, unit };
 				} else if (typeof height === "undefined") {
@@ -518,6 +564,42 @@ class AtPage extends Handler {
 		}
 		return padding;
 	}
+
+	// get values for the border on the @page to pass them to the element with the .pagedjs_area class
+	getBorders(declaration) {
+		let border = {
+			top: {},
+			right: {},
+			left: {},
+			bottom: {}
+		};
+
+		if (declaration.prop == "border") {
+			border.top = csstree.generate(declaration.value);
+			border.right = csstree.generate(declaration.value);
+			border.bottom = csstree.generate(declaration.value);
+			border.left = csstree.generate(declaration.value);
+
+		}
+		else if (declaration.prop == "border-top") {
+			border.top = csstree.generate(declaration.value);
+		}
+		else if (declaration.prop == "border-right") {
+			border.right = csstree.generate(declaration.value);
+
+		}
+		else if (declaration.prop == "border-bottom") {
+			border.bottom = csstree.generate(declaration.value);
+
+		}
+		else if (declaration.prop == "border-left") {
+			border.left = csstree.generate(declaration.value);
+		}
+
+		return border;
+	}
+
+
 	addPageClasses(pages, ast, sheet) {
 		// First add * page
 		if ("*" in pages && !pages["*"].added) {
@@ -576,11 +658,15 @@ class AtPage extends Handler {
 			loc: 0,
 			children: children
 		};
+
+		console.log('page.border :', page.border);
+
 		let rule = this.createRule(selectors, block);
 
 		this.addMarginVars(page.margin, children, children.first());
-
 		this.addPaddingVars(page.padding, children, children.first());
+		this.addBorderVars(page.border, children, children.first());
+
 
 		if (page.width) {
 			this.addDimensions(page.width, page.height, page.orientation, children, children.first());
@@ -590,7 +676,6 @@ class AtPage extends Handler {
 			this.addMarginaliaStyles(page, ruleList, rule, sheet);
 			this.addMarginaliaContent(page, ruleList, rule, sheet);
 		}
-
 		return rule;
 	}
 
@@ -608,6 +693,7 @@ class AtPage extends Handler {
 					}
 				});
 				list.append(mVar, item);
+
 			}
 		}
 	}
@@ -615,6 +701,7 @@ class AtPage extends Handler {
 	addPaddingVars(padding, list, item) {
 		// variables for padding
 		for (let p in padding) {
+
 			if (typeof padding[p].value !== "undefined") {
 				let value = padding[p].value + (padding[p].unit || "");
 				let pVar = list.createItem({
@@ -628,6 +715,25 @@ class AtPage extends Handler {
 
 				list.append(pVar, item);
 			}
+
+		}
+	}
+
+	addBorderVars(border, list, item) {
+		// variables for borders
+		for (let b in border) {
+			if (typeof border[b] !== "undefined") {
+				let value = border[b];
+				let bVar = list.createItem({
+					type: "Declaration",
+					property: "--pagedjs-border-" + b,
+					value: {
+						type: "Raw",
+						value: value
+					}
+				});
+				list.append(bVar, item);
+			}	
 
 		}
 	}
@@ -662,7 +768,7 @@ class AtPage extends Handler {
 			let block = csstree.clone(page.marginalia[loc]);
 			let hasContent = false;
 
-			if(block.children.isEmpty()) {
+			if (block.children.isEmpty()) {
 				continue;
 			}
 
@@ -696,11 +802,11 @@ class AtPage extends Handler {
 
 					if (node.property === "width" &&
 						(loc === "top-left" ||
-						 loc === "top-center" ||
-						 loc === "top-right" ||
-						 loc === "bottom-left" ||
-						 loc === "bottom-center" ||
-						 loc === "bottom-right")) {
+							loc === "top-center" ||
+							loc === "top-right" ||
+							loc === "bottom-left" ||
+							loc === "bottom-center" ||
+							loc === "bottom-right")) {
 						let c = csstree.clone(node);
 						c.property = "max-width";
 						list.appendData(c);
@@ -708,11 +814,11 @@ class AtPage extends Handler {
 
 					if (node.property === "height" &&
 						(loc === "left-top" ||
-						 loc === "left-middle" ||
-						 loc === "left-bottom" ||
-						 loc === "right-top" ||
-						 loc === "right-middle" ||
-						 loc === "right-bottom")) {
+							loc === "left-middle" ||
+							loc === "left-bottom" ||
+							loc === "right-top" ||
+							loc === "right-middle" ||
+							loc === "right-bottom")) {
 						let c = csstree.clone(node);
 						c.property = "max-height";
 						list.appendData(c);
@@ -758,7 +864,7 @@ class AtPage extends Handler {
 				}
 			});
 
-			if(content.children.isEmpty()) {
+			if (content.children.isEmpty()) {
 				continue;
 			}
 
@@ -870,7 +976,7 @@ class AtPage extends Handler {
 				bleedLeftRecto = this.createVariable("--pagedjs-bleed-right-left", CSSValueToString(bleedrecto.left));
 
 				widthStringRight = `calc( ${CSSValueToString(width)} + ${CSSValueToString(bleedrecto.left)} + ${CSSValueToString(bleedrecto.right)} )`;
-			  heightStringRight = `calc( ${CSSValueToString(height)} + ${CSSValueToString(bleedrecto.top)} + ${CSSValueToString(bleedrecto.bottom)} )`;
+				heightStringRight = `calc( ${CSSValueToString(height)} + ${CSSValueToString(bleedrecto.top)} + ${CSSValueToString(bleedrecto.bottom)} )`;
 			}
 			if (bleedverso) {
 				bleedTopVerso = this.createVariable("--pagedjs-bleed-left-top", CSSValueToString(bleedverso.top));
@@ -879,18 +985,18 @@ class AtPage extends Handler {
 				bleedLeftVerso = this.createVariable("--pagedjs-bleed-left-left", CSSValueToString(bleedverso.left));
 
 				widthStringLeft = `calc( ${CSSValueToString(width)} + ${CSSValueToString(bleedverso.left)} + ${CSSValueToString(bleedverso.right)} )`;
-			  heightStringLeft = `calc( ${CSSValueToString(height)} + ${CSSValueToString(bleedverso.top)} + ${CSSValueToString(bleedverso.bottom)} )`;
+				heightStringLeft = `calc( ${CSSValueToString(height)} + ${CSSValueToString(bleedverso.top)} + ${CSSValueToString(bleedverso.bottom)} )`;
 			}
 
 			let pageWidthVar = this.createVariable("--pagedjs-width", CSSValueToString(width));
 			let pageHeightVar = this.createVariable("--pagedjs-height", CSSValueToString(height));
 
 			rules.push(
-				bleedTop, 
-				bleedRight, 
-				bleedBottom, 
-				bleedLeft, 
-				bleedTopRecto, 
+				bleedTop,
+				bleedRight,
+				bleedBottom,
+				bleedLeft,
+				bleedTopRecto,
 				bleedRightRecto,
 				bleedBottomRecto,
 				bleedLeftRecto,
@@ -898,7 +1004,7 @@ class AtPage extends Handler {
 				bleedRightVerso,
 				bleedBottomVerso,
 				bleedLeftVerso,
-				pageWidthVar, 
+				pageWidthVar,
 				pageHeightVar
 			);
 		}
@@ -1545,6 +1651,7 @@ class AtPage extends Handler {
 		if (start) {
 			this.addPageAttributes(page, start, chunker.pages);
 		}
+		// page.element.querySelector('.paged_area').style.color = red;
 	}
 
 	afterPageLayout(fragment, page, breakToken, chunker) {
@@ -1583,14 +1690,14 @@ class AtPage extends Handler {
 			if (centerContent) {
 				centerWidth = window.getComputedStyle(center)["max-width"];
 
-				if(centerWidth === "none" || centerWidth === "auto") {
-					if(!leftContent && !rightContent){
+				if (centerWidth === "none" || centerWidth === "auto") {
+					if (!leftContent && !rightContent) {
 						marginGroup.style["grid-template-columns"] = "0 1fr 0";
-					}else if(leftContent){
-						if(!rightContent){
-							if(leftWidth !== "none" && leftWidth !== "auto"){
+					} else if (leftContent) {
+						if (!rightContent) {
+							if (leftWidth !== "none" && leftWidth !== "auto") {
 								marginGroup.style["grid-template-columns"] = leftWidth + " 1fr " + leftWidth;
-							}else{
+							} else {
 								marginGroup.style["grid-template-columns"] = "auto auto 1fr";
 								left.style["white-space"] = "nowrap";
 								center.style["white-space"] = "nowrap";
@@ -1602,17 +1709,17 @@ class AtPage extends Handler {
 								left.style["white-space"] = "normal";
 								center.style["white-space"] = "normal";
 							}
-						}else{
-							if(leftWidth !== "none" && leftWidth !== "auto"){
-								if(rightWidth !== "none" && rightWidth !== "auto"){
+						} else {
+							if (leftWidth !== "none" && leftWidth !== "auto") {
+								if (rightWidth !== "none" && rightWidth !== "auto") {
 									marginGroup.style["grid-template-columns"] = leftWidth + " 1fr " + rightWidth;
-								}else{
+								} else {
 									marginGroup.style["grid-template-columns"] = leftWidth + " 1fr " + leftWidth;
 								}
-							}else{
-								if(rightWidth !== "none" && rightWidth !== "auto"){
+							} else {
+								if (rightWidth !== "none" && rightWidth !== "auto") {
 									marginGroup.style["grid-template-columns"] = rightWidth + " 1fr " + rightWidth;
-								}else{
+								} else {
 									marginGroup.style["grid-template-columns"] = "auto auto 1fr";
 									left.style["white-space"] = "nowrap";
 									center.style["white-space"] = "nowrap";
@@ -1622,9 +1729,9 @@ class AtPage extends Handler {
 									let rightOuterWidth = right.offsetWidth;
 									let outerwidths = leftOuterWidth + centerOuterWidth + rightOuterWidth;
 									let newcenterWidth = centerOuterWidth * 100 / outerwidths;
-									if(newcenterWidth > 40){
+									if (newcenterWidth > 40) {
 										marginGroup.style["grid-template-columns"] = "minmax(16.66%, 1fr) minmax(33%, " + newcenterWidth + "%) minmax(16.66%, 1fr)";
-									}else{
+									} else {
 										marginGroup.style["grid-template-columns"] = "repeat(3, 1fr)";
 									}
 									left.style["white-space"] = "normal";
@@ -1633,10 +1740,10 @@ class AtPage extends Handler {
 								}
 							}
 						}
-					}else{
-						if(rightWidth !== "none" && rightWidth !== "auto"){
+					} else {
+						if (rightWidth !== "none" && rightWidth !== "auto") {
 							marginGroup.style["grid-template-columns"] = rightWidth + " 1fr " + rightWidth;
-						}else{
+						} else {
 							marginGroup.style["grid-template-columns"] = "auto auto 1fr";
 							right.style["white-space"] = "nowrap";
 							center.style["white-space"] = "nowrap";
@@ -1649,32 +1756,32 @@ class AtPage extends Handler {
 							center.style["white-space"] = "normal";
 						}
 					}
-				}else if(centerWidth !== "none" && centerWidth !== "auto"){
-					if(leftContent && leftWidth !== "none" && leftWidth !== "auto"){
+				} else if (centerWidth !== "none" && centerWidth !== "auto") {
+					if (leftContent && leftWidth !== "none" && leftWidth !== "auto") {
 						marginGroup.style["grid-template-columns"] = leftWidth + " " + centerWidth + " 1fr";
-					}else if(rightContent && rightWidth !== "none" && rightWidth !== "auto"){
+					} else if (rightContent && rightWidth !== "none" && rightWidth !== "auto") {
 						marginGroup.style["grid-template-columns"] = "1fr " + centerWidth + " " + rightWidth;
-					}else{
+					} else {
 						marginGroup.style["grid-template-columns"] = "1fr " + centerWidth + " 1fr";
 					}
 
 				}
 
-			}else{
-				if(leftContent){
-					if(!rightContent){
+			} else {
+				if (leftContent) {
+					if (!rightContent) {
 						marginGroup.style["grid-template-columns"] = "1fr 0 0";
-					}else{
-						if(leftWidth !== "none" && leftWidth !== "auto"){
-							if(rightWidth !== "none" && rightWidth !== "auto"){
+					} else {
+						if (leftWidth !== "none" && leftWidth !== "auto") {
+							if (rightWidth !== "none" && rightWidth !== "auto") {
 								marginGroup.style["grid-template-columns"] = leftWidth + " 1fr " + rightWidth;
-							}else{
+							} else {
 								marginGroup.style["grid-template-columns"] = leftWidth + " 0 1fr";
 							}
-						}else{
-							if(rightWidth !== "none" && rightWidth !== "auto"){
+						} else {
+							if (rightWidth !== "none" && rightWidth !== "auto") {
 								marginGroup.style["grid-template-columns"] = "1fr 0 " + rightWidth;
-							}else{
+							} else {
 								marginGroup.style["grid-template-columns"] = "auto 1fr auto";
 								left.style["white-space"] = "nowrap";
 								right.style["white-space"] = "nowrap";
@@ -1682,16 +1789,16 @@ class AtPage extends Handler {
 								let rightOuterWidth = right.offsetWidth;
 								let outerwidths = leftOuterWidth + rightOuterWidth;
 								let newLeftWidth = leftOuterWidth * 100 / outerwidths;
-								marginGroup.style["grid-template-columns"] = "minmax(16.66%, " + newLeftWidth  + "%) 0 1fr";
+								marginGroup.style["grid-template-columns"] = "minmax(16.66%, " + newLeftWidth + "%) 0 1fr";
 								left.style["white-space"] = "normal";
 								right.style["white-space"] = "normal";
 							}
 						}
 					}
-				}else{
-					if(rightWidth !== "none" && rightWidth !== "auto"){
+				} else {
+					if (rightWidth !== "none" && rightWidth !== "auto") {
 						marginGroup.style["grid-template-columns"] = "1fr 0 " + rightWidth;
-					}else{
+					} else {
 						marginGroup.style["grid-template-columns"] = "0 0 1fr";
 					}
 				}
@@ -1719,66 +1826,66 @@ class AtPage extends Handler {
 			if (middle) {
 				middleHeight = window.getComputedStyle(middle)["max-height"];
 
-				if(middleHeight === "none" || middleHeight === "auto") {
-					if(!topContent && !bottomContent){
+				if (middleHeight === "none" || middleHeight === "auto") {
+					if (!topContent && !bottomContent) {
 						marginGroup.style["grid-template-rows"] = "0 1fr 0";
-					}else if(topContent){
-						if(!bottomContent){
-							if(topHeight !== "none" && topHeight !== "auto"){
+					} else if (topContent) {
+						if (!bottomContent) {
+							if (topHeight !== "none" && topHeight !== "auto") {
 								marginGroup.style["grid-template-rows"] = topHeight + " calc(100% - " + topHeight + "*2) " + topHeight;
 							}
-						}else{
-							if(topHeight !== "none" && topHeight !== "auto"){
-								if(bottomHeight !== "none" && bottomHeight !== "auto"){
+						} else {
+							if (topHeight !== "none" && topHeight !== "auto") {
+								if (bottomHeight !== "none" && bottomHeight !== "auto") {
 									marginGroup.style["grid-template-rows"] = topHeight + " calc(100% - " + topHeight + " - " + bottomHeight + ") " + bottomHeight;
-								}else{
+								} else {
 									marginGroup.style["grid-template-rows"] = topHeight + " calc(100% - " + topHeight + "*2) " + topHeight;
 								}
-							}else{
-								if(bottomHeight !== "none" && bottomHeight !== "auto"){
+							} else {
+								if (bottomHeight !== "none" && bottomHeight !== "auto") {
 									marginGroup.style["grid-template-rows"] = bottomHeight + " calc(100% - " + bottomHeight + "*2) " + bottomHeight;
 								}
 							}
 						}
-					}else{
-						if(bottomHeight !== "none" && bottomHeight !== "auto"){
+					} else {
+						if (bottomHeight !== "none" && bottomHeight !== "auto") {
 							marginGroup.style["grid-template-rows"] = bottomHeight + " calc(100% - " + bottomHeight + "*2) " + bottomHeight;
 						}
 					}
-				}else{
-					if(topContent && topHeight !== "none" && topHeight !== "auto"){
-						marginGroup.style["grid-template-rows"] = topHeight +" " + middleHeight + " calc(100% - (" + topHeight + " + " + middleHeight + "))";
-					}else if(bottomContent && bottomHeight !== "none" && bottomHeight !== "auto"){
+				} else {
+					if (topContent && topHeight !== "none" && topHeight !== "auto") {
+						marginGroup.style["grid-template-rows"] = topHeight + " " + middleHeight + " calc(100% - (" + topHeight + " + " + middleHeight + "))";
+					} else if (bottomContent && bottomHeight !== "none" && bottomHeight !== "auto") {
 						marginGroup.style["grid-template-rows"] = "1fr " + middleHeight + " " + bottomHeight;
-					}else{
+					} else {
 						marginGroup.style["grid-template-rows"] = "calc((100% - " + middleHeight + ")/2) " + middleHeight + " calc((100% - " + middleHeight + ")/2)";
 					}
 
 				}
 
-			}else{
-				if(topContent){
-					if(!bottomContent){
+			} else {
+				if (topContent) {
+					if (!bottomContent) {
 						marginGroup.style["grid-template-rows"] = "1fr 0 0";
-					}else{
-						if(topHeight !== "none" && topHeight !== "auto"){
-							if(bottomHeight !== "none" && bottomHeight !== "auto"){
+					} else {
+						if (topHeight !== "none" && topHeight !== "auto") {
+							if (bottomHeight !== "none" && bottomHeight !== "auto") {
 								marginGroup.style["grid-template-rows"] = topHeight + " 1fr " + bottomHeight;
-							}else{
+							} else {
 								marginGroup.style["grid-template-rows"] = topHeight + " 0 1fr";
 							}
-						}else{
-							if(bottomHeight !== "none" && bottomHeight !== "auto"){
+						} else {
+							if (bottomHeight !== "none" && bottomHeight !== "auto") {
 								marginGroup.style["grid-template-rows"] = "1fr 0 " + bottomHeight;
-							}else{
+							} else {
 								marginGroup.style["grid-template-rows"] = "1fr 0 1fr";
 							}
 						}
 					}
-				}else{
-					if(bottomHeight !== "none" && bottomHeight !== "auto"){
+				} else {
+					if (bottomHeight !== "none" && bottomHeight !== "auto") {
 						marginGroup.style["grid-template-rows"] = "1fr 0 " + bottomHeight;
-					}else{
+					} else {
 						marginGroup.style["grid-template-rows"] = "0 0 1fr";
 					}
 				}
@@ -1898,7 +2005,7 @@ class AtPage extends Handler {
 		};
 	}
 
-	createCalculatedDimension(property, items, important, operator="+") {
+	createCalculatedDimension(property, items, important, operator = "+") {
 		let children = new csstree.List();
 		let calculations = new csstree.List();
 

@@ -340,7 +340,7 @@ export function isContainer(node) {
 		return true;
 	}
 
-	if (node.style.display === "none") {
+	if (node.style && node.style.display === "none") {
 		return false;
 	}
 

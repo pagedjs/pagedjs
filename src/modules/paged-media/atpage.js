@@ -84,7 +84,7 @@ class AtPage extends Handler {
 			page.marginalia = marginalia;
 		}
 
-		let declarations = this.replaceDeclartations(node);
+		let declarations = this.replaceDeclarations(node);
 
 		if (declarations.size) {
 			page.size = declarations.size;
@@ -289,7 +289,7 @@ class AtPage extends Handler {
 		return parsed;
 	}
 
-	replaceDeclartations(ast) {
+	replaceDeclarations(ast) {
 		let parsed = {};
 
 		csstree.walk(ast.block, {
@@ -448,9 +448,17 @@ class AtPage extends Handler {
 		};
 
 		csstree.walk(declaration, {
-			visit: "Dimension",
-			enter: (node, item, list) => {
-				margins.push(node);
+			enter: (node) => {
+				switch (node.type) {
+					case "Dimension": // margin: 1in 2in, margin: 20px, etc...
+						margins.push(node);
+						break;
+					case "Number": // margin: 0
+						margins.push({value: node.value, unit: "px"});
+						break;
+					default:
+					// ignore
+				}
 			}
 		});
 
@@ -488,9 +496,17 @@ class AtPage extends Handler {
 		};
 
 		csstree.walk(declaration, {
-			visit: "Dimension",
-			enter: (node, item, list) => {
-				paddings.push(node);
+			enter: (node) => {
+				switch (node.type) {
+					case "Dimension": // padding: 1in 2in, padding: 20px, etc...
+						paddings.push(node);
+						break;
+					case "Number": // padding: 0
+						paddings.push({value: node.value, unit: "px"});
+						break;
+					default:
+					// ignore
+				}
 			}
 		});
 		if (paddings.length === 1) {
@@ -886,11 +902,11 @@ class AtPage extends Handler {
 			let pageHeightVar = this.createVariable("--pagedjs-height", CSSValueToString(height));
 
 			rules.push(
-				bleedTop, 
-				bleedRight, 
-				bleedBottom, 
-				bleedLeft, 
-				bleedTopRecto, 
+				bleedTop,
+				bleedRight,
+				bleedBottom,
+				bleedLeft,
+				bleedTopRecto,
 				bleedRightRecto,
 				bleedBottomRecto,
 				bleedLeftRecto,
@@ -898,7 +914,7 @@ class AtPage extends Handler {
 				bleedRightVerso,
 				bleedBottomVerso,
 				bleedLeftVerso,
-				pageWidthVar, 
+				pageWidthVar,
 				pageHeightVar
 			);
 		}

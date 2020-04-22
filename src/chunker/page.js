@@ -217,18 +217,19 @@ class Page {
 			if (!this.listening) {
 				return;
 			}
-
-			for (let entry of entries) {
-				const cr = entry.contentRect;
-
-				if (cr.height > prevHeight) {
-					this.checkOverflowAfterResize(contents);
-					prevHeight = wrapper.getBoundingClientRect().height;
-				} else if (cr.height < prevHeight ) { // TODO: calc line height && (prevHeight - cr.height) >= 22
-					this.checkUnderflowAfterResize(contents);
-					prevHeight = cr.height;
-				}
-			}
+            requestAnimationFrame(() => {
+    			for (let entry of entries) {
+    				const cr = entry.contentRect;
+    
+    				if (cr.height > prevHeight) {
+    					this.checkOverflowAfterResize(contents);
+    					prevHeight = wrapper.getBoundingClientRect().height;
+    				} else if (cr.height < prevHeight ) { // TODO: calc line height && (prevHeight - cr.height) >= 22
+    					this.checkUnderflowAfterResize(contents);
+    					prevHeight = cr.height;
+    				}
+    			}
+            });
 		});
 
 		this.ro.observe(wrapper);

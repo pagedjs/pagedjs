@@ -1,5 +1,5 @@
 import {UUID} from "../utils/utils";
-import {isElement} from "../utils/dom";
+import {isElement, isIgnorable, nextSignificantNode, previousSignificantNode} from "../utils/dom";
 
 /**
  * Render a flow of text offscreen
@@ -71,22 +71,39 @@ class ContentParser {
 	}
 
 	removeEmpty(content) {
-		const self = this;
 		const treeWalker = document.createTreeWalker(
 			content,
 			NodeFilter.SHOW_TEXT,
 			{ acceptNode: function(node) {
-				// Only remove more than a single space
-				if (self.isIgnorable(node)) {
+				if (node.textContent.length > 1 && isIgnorable(node)) {
 
-					// Don't touch whitespace if text is pre-formatted
+					// Do not touch the content if text is pre-formatted
 					let parent = node.parentNode;
 					let pre = isElement(parent) && parent.closest("pre");
 					if (pre) {
 						return NodeFilter.FILTER_REJECT;
 					}
 
-					// TODO: we also need to ignore spaces when the parent has white-space rule:
+					const nextSibling = previousSignificantNode(node);
+					const previousSibling = nextSignificantNode(node);
+					if (nextSibling === null && previousSibling === null) {
+						// we should not remove a Node that does not have any siblings.
+						node.textContent = " ";
+						return NodeFilter.FILTER_REJECT;
+					}
+					if (nextSibling === null) {
+						// we can safely remove this node
+						return NodeFilter.FILTER_ACCEPT;
+					}
+					if (previousSibling === null) {
+						// we can safely remove this node
+						return NodeFilter.FILTER_ACCEPT;
+					}
+
+					// replace the content with a single space
+					node.textContent = " ";
+
+					// TODO: we also need to preserve sequences of white spaces when the parent has "white-space" rule:
 					// pre
 					// Sequences of white space are preserved. Lines are only broken at newline characters in the source and at <br> elements.
 					//
@@ -104,7 +121,7 @@ class ContentParser {
 					//
 					// See: https://developer.mozilla.org/en-US/docs/Web/CSS/white-space#Values
 
-					return NodeFilter.FILTER_ACCEPT;
+					return NodeFilter.FILTER_REJECT;
 				} else {
 					return NodeFilter.FILTER_REJECT;
 				}
@@ -120,42 +137,6 @@ class ContentParser {
 			node = treeWalker.nextNode();
 			current.parentNode.removeChild(current);
 		}
-	}
-
-	/**
-	 * Throughout, whitespace is defined as one of the characters
-	 *  "\t" TAB \u0009
-	 *  "\n" LF  \u000A
-	 *  "\r" CR  \u000D
-	 *  " "  SPC \u0020
-	 *
-	 * This does not use Javascript's "\s" because that includes non-breaking
-	 * spaces (and also some other characters).
-	 */
-
-	/**
-	 * Determine if a node should be ignored by the iterator functions.
-	 * taken from https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Whitespace#Whitespace_helper_functions
-	 *
-	 * @param {Node} node An object implementing the DOM1 |Node| interface.
-	 * @return {boolean} true if the node is:
-	 *  1) A |Text| node that is all whitespace
-	 *  2) A |Comment| node
-	 *  and otherwise false.
-	 */
-	isIgnorable(node) {
-		return (node.nodeType === 8) || // A comment node
-			((node.nodeType === 3) && this.isAllWhitespace(node)); // a text node, all whitespace
-	}
-
-	/**
-	 * Determine whether a node's text content is entirely whitespace.
-	 *
-	 * @param {Node} node  A node implementing the |CharacterData| interface (i.e., a |Text|, |Comment|, or |CDATASection| node
-	 * @return {boolean} true if all of the text content of |nod| is whitespace, otherwise false.
-	 */
-	isAllWhitespace(node) {
-		return !(/[^\t\n\r ]/.test(node.textContent));
 	}
 
 	find(ref) {

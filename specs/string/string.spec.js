@@ -117,10 +117,12 @@ describe("string-start", () => {
 		}
 	});
 
+	// The start value is empty, as the string had not yet been set at the start of the page.
+	// See https://www.w3.org/TR/css-gcpm-3/#string-start
 	it("should set the running header as nothing on the first page", async () => {
 		let text = await page.$eval(".pagedjs_first_page", (r) =>
 			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
-		expect(text).toEqual("\"aaa\"");
+		expect(text).toEqual("\"\"");
 	});
 
 	it("should set the running header as \"fff\" on the third page", async () => {

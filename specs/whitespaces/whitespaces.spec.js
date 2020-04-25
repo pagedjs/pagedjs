@@ -36,22 +36,22 @@ describe("whitespaces", () => {
 		expect(emptyCharCodes).toEqual([]);
 
 		const oneSpaceCharCodes = await getCharCodes(page, ".whitespaces-f");
-		expect(oneSpaceCharCodes).toEqual([]);
+		expect(oneSpaceCharCodes).toEqual([32]);
 
 		const twoSpacesCharCodes = await getCharCodes(page, ".whitespaces-g");
-		expect(twoSpacesCharCodes).toEqual([]);
+		expect(twoSpacesCharCodes).toEqual([32]);
 
 		const twoThinSpacesCharCodes = await getCharCodes(page, ".whitespaces-h");
 		expect(twoThinSpacesCharCodes).toEqual([8201, 8201]);
 
 		const twoTabsCharCodes = await getCharCodes(page, ".whitespaces-i");
-		expect(twoTabsCharCodes).toEqual([]);
+		expect(twoTabsCharCodes).toEqual([32]);
 
 		const twoTabsAndNewLineCharCodes = await getCharCodes(page, ".whitespaces-j");
-		expect(twoTabsAndNewLineCharCodes).toEqual([]);
+		expect(twoTabsAndNewLineCharCodes).toEqual([32]);
 
 		const spacesTabAndNewLineCharCodes = await getCharCodes(page, ".whitespaces-k");
-		expect(spacesTabAndNewLineCharCodes).toEqual([]);
+		expect(spacesTabAndNewLineCharCodes).toEqual([32]);
 
 		const NonBreakingSpaceAndSpacesCharCodes = await getCharCodes(page, ".whitespaces-l");
 		expect(NonBreakingSpaceAndSpacesCharCodes).toEqual([160, 32, 32, 32, 32]);

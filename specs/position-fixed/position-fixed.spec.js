@@ -1,6 +1,6 @@
 const TIMEOUT = 10000; // Some book might take longer than this to renderer
 
-describe("element with position: fixed", async () => {
+describe("element with position: fixed", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("position-fixed/position-fixed.html");

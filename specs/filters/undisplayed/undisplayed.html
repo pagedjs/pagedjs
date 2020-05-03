@@ -4,6 +4,45 @@
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
     <title>display: none elements should be ignored</title>
     <style>
+        /* interface */
+        @media screen {
+
+          body {
+            background: whitesmoke;
+          }
+
+          .pagedjs_page {
+            background: white;
+            margin-bottom: 10px;
+            box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
+          }
+
+          .pagedjs_pages {
+            width: calc(var(--pagedjs-width) * 2);
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            margin: 0 auto;
+          }
+
+          .pagedjs_first_page {
+            margin-left: 50%;
+          }
+        }
+
+        @page {
+          size: A5;
+          margin: 20mm 20mm;
+
+          @bottom-left{
+            content: counter(page);
+          }
+          @top-left {
+            content: element(chapter-title);
+          }
+        }
+
         #cover {
             display: flex;
             flex-direction: column;
@@ -18,8 +57,7 @@
         div#displayNoneStyle {
             display: none;
         }
-        #displayNoneWithPageBreak {
-            display: none;
+        #content {
             break-after: page;
         }
     </style>
@@ -29,9 +67,8 @@
     <h1>Title</h1>
 </div>
 <div id="displayNoneInlineStyle" style="display: none;"></div>
+<div id="content">Content</div>
 <div id="displayNoneStyle"></div>
-<div id="displayNoneWithPageBreak"></div>
-<div>Content</div>
 <script src="../../../dist/paged.polyfill.js"></script>
 </body>
 </html>

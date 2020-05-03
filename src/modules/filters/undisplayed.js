@@ -2,14 +2,6 @@ import Handler from "../handler";
 import csstree from "css-tree";
 import { calculateSpecificity } from "clear-cut";
 
-const pageBreakValuesWithNoEffectOnLayout = [
-	"auto",
-	"avoid",
-	"avoid-page",
-	"avoid-column",
-	"avoid-region"
-];
-
 class UndisplayedFilter extends Handler {
 	constructor(chunker, polisher, caller) {
 		super(chunker, polisher, caller);
@@ -25,8 +17,7 @@ class UndisplayedFilter extends Handler {
 				value: value,
 				selector: selector,
 				specificity: calculateSpecificity(selector),
-				important: declaration.important,
-				matches: []
+				important: declaration.important
 			};
 
 			selector.split(",").forEach((s) => {
@@ -35,7 +26,7 @@ class UndisplayedFilter extends Handler {
 		}
 	}
 
-	afterParsed(content) {
+	filter(content) {
 		let { matches, selectors } = this.sortDisplayedSelectors(content, this.displayRules);
 
 		// Find matching elements that have display styles
@@ -44,7 +35,7 @@ class UndisplayedFilter extends Handler {
 			let selector = selectors[i];
 			let displayValue = selector[selector.length-1].value;
 			if(this.removable(element) && displayValue === "none") {
-				element.remove();
+				element.dataset.undisplayed = "undisplayed";
 			}
 		}
 
@@ -53,7 +44,7 @@ class UndisplayedFilter extends Handler {
 		for (let i = 0; i < styledElements.length; i++) {
 			let element = styledElements[i];
 			if (this.removable(element)) {
-				element.remove();
+				element.dataset.undisplayed = "undisplayed";
 			}
 		}
 	}
@@ -92,16 +83,6 @@ class UndisplayedFilter extends Handler {
 	}
 
 	removable(element) {
-		let breakBefore = element.getAttribute("data-break-before");
-		let breakAfter = element.getAttribute("data-break-after");
-
-		if(breakBefore && !pageBreakValuesWithNoEffectOnLayout.includes(breakBefore)) {
-			return false;
-		}
-
-		if (breakAfter && !pageBreakValuesWithNoEffectOnLayout.includes(breakAfter)) {
-			return false;
-		}
 		if (element.style &&
 				element.style.display !== "" &&
 				element.style.display !== "none") {

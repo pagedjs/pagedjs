@@ -14,12 +14,12 @@ describe("undisplayed", () => {
 		}
 	});
 
-	it("display: none elements should not be appended in the layout", async () => {
-		let el = await page.$("#displayNoneInlineStyle");
-		expect(el).toBe(null);
-		el = await page.$("#displayNoneStyle");
-		expect(el).toBe(null);
-		el = await page.$("#displayNoneWithPageBreak");
+	it("should not break display: none elements to new page", async () => {
+		let pages = await page.$$eval(".pagedjs_page", (r) => r.length);
+		expect(pages).toBe(2);
+
+		let el = await page.$("#displayNoneStyle");
 		expect(el).not.toBe(null);
 	});
+
 });

@@ -88,7 +88,6 @@ class Layout {
 
 			// Check if the rendered element has a break set
 			if (hasRenderedContent && this.shouldBreak(node)) {
-
 				this.hooks && this.hooks.layout.trigger(wrapper, this);
 
 				let imgs = wrapper.querySelectorAll("img");

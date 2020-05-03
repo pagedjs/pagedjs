@@ -100,6 +100,16 @@ export function elementBefore(node, limiter) {
 	return before;
 }
 
+export function displayedElementAfter(node, limiter) {
+	let after = elementAfter(node);
+
+	while (after && after.dataset.undisplayed) {
+		after = elementAfter(after);
+	}
+
+	return after;
+}
+
 export function stackChildren(currentNode, stacked) {
 	let stack = stacked || [];
 

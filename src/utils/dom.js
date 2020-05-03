@@ -593,3 +593,21 @@ export function nextSignificantNode(sib) {
 		if (!isIgnorable(sib)) return sib;
 	}
 }
+
+export function filterTree(content, func, what) {
+	const treeWalker = document.createTreeWalker(
+		content || this.dom,
+		what || NodeFilter.SHOW_ALL,
+		func ? { acceptNode: func } : null,
+		false
+	);
+
+	let node;
+	let current;
+	node = treeWalker.nextNode();
+	while(node) {
+		current = node;
+		node = treeWalker.nextNode();
+		current.parentNode.removeChild(current);
+	}
+}

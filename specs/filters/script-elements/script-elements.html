@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>Script elements should be ignored</title>
+    <style>
+        #cover {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+            break-after: page;
+            align-items: flex-end;
+        }
+    </style>
+</head>
+<body>
+<div id="cover" class="title-page">
+    <h1>Title</h1>
+</div>
+<script id="pagedScript" src="../../../dist/paged.polyfill.js"></script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>display: none elements should be ignored</title>
+    <style>
+        #cover {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+            break-after: page;
+            align-items: flex-end;
+        }
+        #displayNoneStyle {
+            display: flex;
+        }
+        div#displayNoneStyle {
+            display: none;
+        }
+        #displayNoneWithPageBreak {
+            display: none;
+            break-after: page;
+        }
+    </style>
+</head>
+<body>
+<div id="cover" class="title-page">
+    <h1>Title</h1>
+</div>
+<div id="displayNoneInlineStyle" style="display: none;"></div>
+<div id="displayNoneStyle"></div>
+<div id="displayNoneWithPageBreak"></div>
+<div>Content</div>
+<script src="../../../dist/paged.polyfill.js"></script>
+</body>
+</html>

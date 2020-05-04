@@ -1,0 +1,10 @@
+{
+  "env": {
+    "jest": true
+  },
+  "globals": {
+    "DEBUG": "readonly",
+    "PDF_SETTINGS": "readonly",
+    "loadPage": "readonly"
+  }
+}

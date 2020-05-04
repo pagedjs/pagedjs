@@ -78,7 +78,7 @@ USER node
 
 WORKDIR $DIRECTORY
 
-COPY --chown=node:node package.json $DIRECTORY
+COPY --chown=node:node package.json package-lock.json $DIRECTORY/
 RUN npm install
 RUN npm install ghostscript4js
 

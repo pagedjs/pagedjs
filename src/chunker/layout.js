@@ -1,28 +1,25 @@
+import {getBoundingClientRect, getClientRects} from "../utils/utils";
 import {
-	getBoundingClientRect,
-	getClientRects
-} from "../utils/utils";
-import {
-	walk,
-	nodeAfter,
-	nodeBefore,
-	rebuildAncestors,
-	needsBreakBefore,
-	needsPreviousBreakAfter,
-	needsPageBreak,
-	isElement,
-	isText,
-	indexOf,
-	indexOfTextNode,
+	child,
 	cloneNode,
 	findElement,
-	child,
-	isContainer,
 	hasContent,
-	validNode,
+	indexOf,
+	indexOfTextNode,
+	isContainer,
+	isElement,
+	isText,
+	letters,
+	needsBreakBefore,
+	needsPageBreak,
+	needsPreviousBreakAfter,
+	nodeAfter,
+	nodeBefore, previousSignificantNode,
 	prevValidNode,
-	words,
-	letters
+	rebuildAncestors,
+	validNode,
+	walk,
+	words
 } from "../utils/dom";
 import EventEmitter from "event-emitter";
 import Hook from "../utils/hook";
@@ -57,7 +54,7 @@ class Layout {
 		this.maxChars = this.settings.maxChars || MAX_CHARS_PER_BREAK;
 	}
 
-	async renderTo(wrapper, source, breakToken, bounds=this.bounds) {
+	async renderTo(wrapper, source, breakToken, bounds = this.bounds) {
 		let start = this.getStart(source, breakToken);
 		let walker = walk(start, source);
 
@@ -149,7 +146,7 @@ class Layout {
 		return newBreakToken;
 	}
 
-	breakAt(node, offset=0) {
+	breakAt(node, offset = 0) {
 		return {
 			node,
 			offset
@@ -157,7 +154,7 @@ class Layout {
 	}
 
 	shouldBreak(node) {
-		let previousSibling = node.previousSibling;
+		let previousSibling = previousSignificantNode(node);
 		let parentNode = node.parentNode;
 		let parentBreakBefore = needsBreakBefore(node) && parentNode && !previousSibling && needsBreakBefore(parentNode);
 		let doubleBreakBefore;
@@ -182,7 +179,7 @@ class Layout {
 		return start;
 	}
 
-	append(node, dest, breakToken, shallow=true, rebuild=true) {
+	append(node, dest, breakToken, shallow = true, rebuild = true) {
 
 		let clone = cloneNode(node, !shallow);
 
@@ -233,16 +230,16 @@ class Layout {
 	async awaitImageLoaded(image) {
 		return new Promise(resolve => {
 			if (image.complete !== true) {
-				image.onload = function() {
-					let { width, height } = window.getComputedStyle(image);
+				image.onload = function () {
+					let {width, height} = window.getComputedStyle(image);
 					resolve(width, height);
 				};
-				image.onerror = function(e) {
-					let { width, height } = window.getComputedStyle(image);
+				image.onerror = function (e) {
+					let {width, height} = window.getComputedStyle(image);
 					resolve(width, height, e);
 				};
 			} else {
-				let { width, height } = window.getComputedStyle(image);
+				let {width, height} = window.getComputedStyle(image);
 				resolve(width, height);
 			}
 		});
@@ -262,7 +259,7 @@ class Layout {
 				break;
 			}
 
-			if(window.getComputedStyle(node)["break-inside"] === "avoid") {
+			if (window.getComputedStyle(node)["break-inside"] === "avoid") {
 				breakNode = node;
 				break;
 			}
@@ -285,11 +282,28 @@ class Layout {
 				if (!renderedNode) {
 					// Find closest element with data-ref
 					renderedNode = findElement(prevValidNode(temp), rendered);
-					return;
+					// Check if temp is the last rendered node at its level.
+					if (!temp.nextSibling) {
+						// We need to ensure that the previous sibling of temp is fully rendered.
+						const renderedNodeFromSource = findElement(renderedNode, source);
+						const walker = document.createTreeWalker(renderedNodeFromSource, NodeFilter.SHOW_ELEMENT);
+						const lastChildOfRenderedNodeFromSource = walker.lastChild();
+						const lastChildOfRenderedNodeMatchingFromRendered = findElement(lastChildOfRenderedNodeFromSource, rendered);
+						// Check if we found that the last child in source
+						if (!lastChildOfRenderedNodeMatchingFromRendered) {
+							// Pending content to be rendered before virtual break token
+							return;
+						}
+						// Otherwise we will return a break token as per below
+					}
+					// renderedNode is actually the last unbroken box that does not overflow.
+					// Break Token is therefore the next sibling of renderedNode within source node.
+					node = findElement(renderedNode, source).nextSibling;
+					offset = 0;
+				} else {
+					node = findElement(renderedNode, source);
+					offset = 0;
 				}
-
-				node = findElement(renderedNode, source);
-				offset = 0;
 			} else {
 				renderedNode = findElement(container, rendered);
 
@@ -332,7 +346,7 @@ class Layout {
 
 	}
 
-	findBreakToken(rendered, source, bounds=this.bounds, extract=true) {
+	findBreakToken(rendered, source, bounds = this.bounds, extract = true) {
 		let overflow = this.findOverflow(rendered, bounds);
 		let breakToken, breakLetter;
 
@@ -345,7 +359,8 @@ class Layout {
 
 		if (overflow) {
 			breakToken = this.createBreakToken(overflow, rendered, source);
-			if (breakToken["node"] && breakToken["offset"] && breakToken["node"].textContent) {
+			// breakToken is nullable
+			if (breakToken && breakToken["node"] && breakToken["offset"] && breakToken["node"].textContent) {
 				breakLetter = breakToken["node"].textContent.charAt(breakToken["offset"]);
 			} else {
 				breakLetter = undefined;
@@ -367,18 +382,18 @@ class Layout {
 		return breakToken;
 	}
 
-	hasOverflow(element, bounds=this.bounds) {
+	hasOverflow(element, bounds = this.bounds) {
 		let constrainingElement = element && element.parentNode; // this gets the element, instead of the wrapper for the width workaround
-		let { width } = element.getBoundingClientRect();
+		let {width} = element.getBoundingClientRect();
 		let scrollWidth = constrainingElement ? constrainingElement.scrollWidth : 0;
 		return Math.max(Math.floor(width), scrollWidth) > Math.round(bounds.width);
 	}
 
-	findOverflow(rendered, bounds=this.bounds) {
+	findOverflow(rendered, bounds = this.bounds) {
 		if (!this.hasOverflow(rendered, bounds)) return;
 
 		let start = Math.round(bounds.left);
-		let end =  Math.round(bounds.right);
+		let end = Math.round(bounds.right);
 		let range;
 
 		let walker = walk(rendered.firstChild, rendered);
@@ -396,14 +411,14 @@ class Layout {
 
 			if (node) {
 				let pos = getBoundingClientRect(node);
-				let left = Math.floor(pos.left);
+				let left = Math.round(pos.left);
 				let right = Math.floor(pos.right);
 
 				if (!range && left >= end) {
 					// Check if it is a float
 					let isFloat = false;
 
-					if (isElement(node) ) {
+					if (isElement(node)) {
 						let styles = window.getComputedStyle(node);
 						isFloat = styles.getPropertyValue("float") !== "none";
 						skip = styles.getPropertyValue("break-inside") === "avoid";
@@ -433,8 +448,8 @@ class Layout {
 				}
 
 				if (!range && isText(node) &&
-						node.textContent.trim().length &&
-						window.getComputedStyle(node.parentNode)["break-inside"] !== "avoid") {
+					node.textContent.trim().length &&
+					window.getComputedStyle(node.parentNode)["break-inside"] !== "avoid") {
 
 					let rects = getClientRects(node);
 					let rect;
@@ -446,7 +461,7 @@ class Layout {
 						}
 					}
 
-					if(left >= end) {
+					if (left >= end) {
 						range = document.createRange();
 						offset = this.textBreak(node, start, end);
 						if (!offset) {
@@ -459,7 +474,7 @@ class Layout {
 				}
 
 				// Skip children
-				if (skip || right < end) {
+				if (skip || right <= end) {
 					next = nodeAfter(node, rendered);
 					if (next) {
 						walker = walk(next, rendered);
@@ -478,7 +493,7 @@ class Layout {
 
 	}
 
-	findEndToken(rendered, source, bounds=this.bounds) {
+	findEndToken(rendered, source, bounds = this.bounds) {
 		if (rendered.childNodes.length === 0) {
 			return;
 		}
@@ -490,7 +505,7 @@ class Layout {
 			if (!validNode(lastChild)) {
 				// Only get elements with refs
 				lastChild = lastChild.previousSibling;
-			} else if(!validNode(lastChild.lastChild)) {
+			} else if (!validNode(lastChild.lastChild)) {
 				// Deal with invalid dom items
 				lastChild = prevValidNode(lastChild.lastChild);
 				break;
@@ -587,12 +602,12 @@ class Layout {
 	hyphenateAtBreak(startContainer, breakLetter) {
 		if (isText(startContainer)) {
 			let startText = startContainer.textContent;
-			let prevLetter = startText[startText.length-1];
+			let prevLetter = startText[startText.length - 1];
 
 			// Add a hyphen if previous character is a letter or soft hyphen
 			if (
-				  (breakLetter && /^\w|\u00AD$/.test(prevLetter) && /^\w|\u00AD$/.test(breakLetter)) ||
-				  (!breakLetter && /^\w|\u00AD$/.test(prevLetter))
+				(breakLetter && /^\w|\u00AD$/.test(prevLetter) && /^\w|\u00AD$/.test(breakLetter)) ||
+				(!breakLetter && /^\w|\u00AD$/.test(prevLetter))
 			) {
 				startContainer.parentNode.classList.add("pagedjs_hyphen");
 				startContainer.textContent += this.settings.hyphenGlyph || "\u2011";

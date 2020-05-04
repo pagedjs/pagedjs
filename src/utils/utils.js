@@ -35,7 +35,7 @@ export function getClientRects(element) {
  */
 export function UUID() {
 	var d = new Date().getTime();
-	if (typeof performance !== "undefined" && typeof performance.now === "function"){
+	if (typeof performance !== "undefined" && typeof performance.now === "function") {
 		d += performance.now(); //use high-precision timer if available
 	}
 	return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
@@ -79,7 +79,7 @@ export function findCssSelector(ele) {
 
 	// document.querySelectorAll("#id") returns multiple if elements share an ID
 	if (ele.id &&
-			document.querySelectorAll("#" + cssEscape(ele.id)).length === 1) {
+		document.querySelectorAll("#" + cssEscape(ele.id)).length === 1) {
 		return "#" + cssEscape(ele.id);
 	}
 
@@ -134,7 +134,7 @@ export function findCssSelector(ele) {
 
 export function attr(element, attributes) {
 	for (var i = 0; i < attributes.length; i++) {
-		if(element.hasAttribute(attributes[i])) {
+		if (element.hasAttribute(attributes[i])) {
 			return element.getAttribute(attributes[i]);
 		}
 	}
@@ -148,6 +148,7 @@ export function querySelectorEscape(value) {
 		throw new TypeError("`CSS.escape` requires an argument.");
 	}
 	var string = String(value);
+
 	var length = string.length;
 	var index = -1;
 	var codeUnit;
@@ -155,6 +156,9 @@ export function querySelectorEscape(value) {
 	var firstCodeUnit = string.charCodeAt(0);
 	while (++index < length) {
 		codeUnit = string.charCodeAt(index);
+
+
+
 		// Note: there’s no need to special-case astral symbols, surrogate
 		// pairs, or lone surrogates.
 
@@ -195,6 +199,15 @@ export function querySelectorEscape(value) {
 			result += "\\" + string.charAt(index);
 			continue;
 		}
+
+		// support for period character in id
+		if (codeUnit == 0x002E) {
+			if (string.charAt(0) == "#") {
+				result += "\\.";
+				continue;
+			}
+		}
+
 
 		// If the character is not handled by one of the above rules and is
 		// greater than or equal to U+0080, is `-` (U+002D) or `_` (U+005F), or

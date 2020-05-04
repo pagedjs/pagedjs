@@ -1,35 +1,34 @@
 const TIMEOUT = 10000; // Some book might take longer than this to renderer
 
-describe('marks', async () => {
-		let page;
-		let rendered;
-		beforeAll(async () => {
-			page = await loadPage('marks/marks.html')
-			return page.rendered;
-		}, TIMEOUT)
+describe("marks", () => {
+	let page;
+	beforeAll(async () => {
+		page = await loadPage("marks/marks.html");
+		return page.rendered;
+	}, TIMEOUT);
 
-		afterAll(async () => {
-			if (!DEBUG) {
-				await page.close();
-			}
-		})
-
-		it('should render text', async () => {
-			let text = await page.evaluate(() => document.body.textContent);
-			expect(text).toContain('Chapter 1. Loomings.');
-		})
-
-		it('should render 1 page', async () => {
-			let pages = await page.$$eval(".pagedjs_page", (r) => r.length);
-			expect(pages).toBe(1);
-		})
-
+	afterAll(async () => {
 		if (!DEBUG) {
-			it('should create a pdf', async () => {
-				let pdf = await page.pdf(PDF_SETTINGS);
-
-				expect(pdf).toMatchPDFSnapshot(1);
-			})
+			await page.close();
 		}
+	});
+
+	it("should render text", async () => {
+		let text = await page.evaluate(() => document.body.textContent);
+		expect(text).toContain("Chapter 1. Loomings.");
+	});
+
+	it("should render 1 page", async () => {
+		let pages = await page.$$eval(".pagedjs_page", (r) => r.length);
+		expect(pages).toBe(1);
+	});
+
+	if (!DEBUG) {
+		it("should create a pdf", async () => {
+			let pdf = await page.pdf(PDF_SETTINGS);
+
+			expect(pdf).toMatchPDFSnapshot(1);
+		});
 	}
-)
+}
+);

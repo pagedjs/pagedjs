@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Whitespaces</title>
+</head>
+<script src="../../dist/paged.polyfill.js"></script>
+<body>
+<main>
+	<section>
+		<h2>Section 1</h2>
+		<p class="whitespaces-a">&nbsp;</p>
+		<p class="whitespaces-b">&nbsp;&nbsp;</p>
+		<p class="whitespaces-c">&nbsp;&nbsp;c</p>
+		<p class="whitespaces-d">&nbsp;&nbsp;&nbsp;</p>
+		<p class="whitespaces-e"></p><!-- empty -->
+		<p class="whitespaces-f"> </p><!-- one space -->
+		<p class="whitespaces-g">  </p><!-- two spaces -->
+		<p class="whitespaces-h">&thinsp;&thinsp;</p><!-- thin spaces! -->
+		<p class="whitespaces-i">		</p><!-- two tabs -->
+		<p class="whitespaces-j">
+		</p><!-- two tabs and new line -->
+		<p class="whitespaces-k">
+		</p><!-- spaces, tab and new line -->
+		<p class="whitespaces-l">&nbsp;    </p><!-- non breaking space and spaces -->
+		<p class="whitespaces-m">   &nbsp;</p><!-- spaces and non breaking space -->
+	</section>
+</main>
+</body>
+</html>

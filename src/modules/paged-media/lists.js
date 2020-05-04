@@ -16,7 +16,7 @@ class Lists extends Handler {
 		var orderedLists = pageElement.getElementsByTagName("ol");
 		for (var list of orderedLists) {
 			if (list.hasChildNodes()) {
-			list.start = list.firstElementChild.dataset.itemNum;
+				list.start = list.firstElementChild.dataset.itemNum;
 			}
 			else {
 				list.parentNode.removeChild(list);
@@ -25,9 +25,16 @@ class Lists extends Handler {
 	}
 
 	addDataNumbers(list) {
+		let start = 1;
+		if (list.hasAttribute("start")) {
+			start = parseInt(list.getAttribute("start"), 10);
+			if (isNaN(start)) {
+				start = 1;
+			}
+		}
 		let items = list.children;
 		for (var i = 0; i < items.length; i++) {
-			items[i].setAttribute("data-item-num", i + 1);
+			items[i].setAttribute("data-item-num", i + start);
 		}
 	}
 

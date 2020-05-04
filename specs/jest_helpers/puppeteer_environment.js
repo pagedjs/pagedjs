@@ -11,6 +11,7 @@ class PuppeteerEnvironment extends NodeEnvironment {
 	}
 
 	async setup() {
+		// eslint-disable-next-line no-console
 		DEBUG && console.log(chalk.yellow("Setup Test Environment."));
 		await super.setup();
 		const wsEndpoint = fs.readFileSync(WS_ENDPOINT_PATH, "utf8");
@@ -29,6 +30,7 @@ class PuppeteerEnvironment extends NodeEnvironment {
 	}
 
 	async teardown() {
+		// eslint-disable-next-line no-console
 		DEBUG && console.log(chalk.yellow("Teardown Test Environment."));
 		await super.teardown();
 	}
@@ -78,6 +80,7 @@ class PuppeteerEnvironment extends NodeEnvironment {
 			if (type === "warning") {
 				log = console.warn;
 			} else {
+				// eslint-disable-next-line no-console
 				log = console[msg.type()];
 			}
 			log.apply(this, args);

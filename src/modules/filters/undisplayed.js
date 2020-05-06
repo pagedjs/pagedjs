@@ -1,6 +1,7 @@
 import Handler from "../handler";
 import csstree from "css-tree";
 import { calculateSpecificity } from "clear-cut";
+import { cleanSelector } from "../../utils/css";
 
 class UndisplayedFilter extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -13,15 +14,13 @@ class UndisplayedFilter extends Handler {
 			let selector = csstree.generate(rule.ruleNode.prelude);
 			let value = declaration.value.children.first().name;
 
-			let display = {
-				value: value,
-				selector: selector,
-				specificity: calculateSpecificity(selector),
-				important: declaration.important
-			};
-
 			selector.split(",").forEach((s) => {
-				this.displayRules[s] = display;
+				this.displayRules[s] = {
+					value: value,
+					selector: s,
+					specificity: calculateSpecificity(s),
+					important: declaration.important
+				};
 			});
 		}
 	}
@@ -66,7 +65,18 @@ class UndisplayedFilter extends Handler {
 		let selectors = [];
 		for (let d in displayRules) {
 			let displayItem = displayRules[d];
-			let elements = Array.from(content.querySelectorAll(displayItem.selector));
+			let selector = displayItem.selector;
+			let query = [];
+			try {
+				try {
+					query = content.querySelectorAll(selector);
+				} catch (e) {
+					query = content.querySelectorAll(cleanSelector(selector));
+				}
+			} catch (e) {
+				query = [];
+			}
+			let elements = Array.from(query);
 			for (let e of elements) {
 				if (matches.includes(e)) {
 					let index = matches.indexOf(e);

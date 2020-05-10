@@ -24,8 +24,9 @@ class WhiteSpaceFilter extends Handler {
 				return NodeFilter.FILTER_REJECT;
 			}
 
-			const nextSibling = previousSignificantNode(node);
-			const previousSibling = nextSignificantNode(node);
+			const previousSibling = previousSignificantNode(node);
+			const nextSibling = nextSignificantNode(node);
+
 			if (nextSibling === null && previousSibling === null) {
 				// we should not remove a Node that does not have any siblings.
 				node.textContent = " ";

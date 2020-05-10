@@ -587,6 +587,7 @@ export function previousSignificantNode(sib) {
 	while ((sib = sib.previousSibling)) {
 		if (!isIgnorable(sib)) return sib;
 	}
+	return null;
 }
 
 /**
@@ -602,6 +603,7 @@ export function nextSignificantNode(sib) {
 	while ((sib = sib.nextSibling)) {
 		if (!isIgnorable(sib)) return sib;
 	}
+	return null;
 }
 
 export function filterTree(content, func, what) {

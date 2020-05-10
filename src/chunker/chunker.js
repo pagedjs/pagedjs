@@ -90,6 +90,7 @@ class Chunker {
 
 		this.hooks = {};
 		this.hooks.beforeParsed = new Hook(this);
+		this.hooks.filter = new Hook(this);
 		this.hooks.afterParsed = new Hook(this);
 		this.hooks.beforePageLayout = new Hook(this);
 		this.hooks.layout = new Hook(this);
@@ -139,6 +140,8 @@ class Chunker {
 
 		parsed = new ContentParser(content);
 
+		this.hooks.filter.triggerSync(content);
+
 		this.source = parsed;
 		this.breakToken = undefined;
 
@@ -162,7 +165,7 @@ class Chunker {
 		}
 
 		this.rendered = true;
-		this.pagesArea.style.setProperty("--pagedjs-page-count", this.total);		
+		this.pagesArea.style.setProperty("--pagedjs-page-count", this.total);
 
 		await this.hooks.afterRendered.trigger(this.pages, this);
 

@@ -117,6 +117,7 @@ afterPreview(pages)
 
 // Chunker
 beforeParsed(content)
+filter(content)
 afterParsed(parsed)
 beforePageLayout(page)
 afterPageLayout(pageElement, page, breakToken)

@@ -150,12 +150,12 @@ describe("string-multiple", () => {
 		}
 	});
 
-	it("should set the running header as nothing on the first page", async () => {
+	it("should set the running header as \"aaa\" on the second page", async () => {
 		let text = await page.$eval("#page-2", (r) =>
 			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabet"));
 		expect(text).toEqual("\"aaa\"");
 	});
-	it("should set the running header as nothing on the first page", async () => {
+	it("should set the running header as \"1111\" on the second page", async () => {
 		let text = await page.$eval("#page-2", (r) =>
 			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-alphabetbis"));
 		expect(text).toEqual("\"1111\"");

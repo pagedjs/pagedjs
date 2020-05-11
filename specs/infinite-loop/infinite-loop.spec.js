@@ -1,6 +1,6 @@
 const TIMEOUT = 10000; // Some book might take longer than this to renderer
 
-describe("infinite-loop", () => {
+describe.skip("infinite-loop", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("infinite-loop/infinite-loop.html");

@@ -67,11 +67,13 @@ class Layout {
 
 		let length = 0;
 
+		let prevBreakToken = breakToken || { node: start, offset: 0 };
+
 		while (!done && !newBreakToken) {
 			next = walker.next();
 			node = next.value;
 			done = next.done;
-
+			
 			if (!node) {
 				this.hooks && this.hooks.layout.trigger(wrapper, this);
 
@@ -79,8 +81,12 @@ class Layout {
 				if (imgs.length) {
 					await this.waitForImages(imgs);
 				}
+				
+				newBreakToken = this.findBreakToken(wrapper, source, bounds, prevBreakToken);
 
-				newBreakToken = this.findBreakToken(wrapper, source, bounds);
+				if(this.equalTokens(newBreakToken, prevBreakToken)) {
+					return undefined;
+				}
 				return newBreakToken;
 			}
 
@@ -95,7 +101,11 @@ class Layout {
 					await this.waitForImages(imgs);
 				}
 
-				newBreakToken = this.findBreakToken(wrapper, source, bounds);
+				newBreakToken = this.findBreakToken(wrapper, source, bounds, prevBreakToken);
+
+				if(this.equalTokens(newBreakToken, prevBreakToken)) {
+					return undefined;
+				}
 
 				if (!newBreakToken) {
 					newBreakToken = this.breakAt(node);
@@ -133,7 +143,11 @@ class Layout {
 					await this.waitForImages(imgs);
 				}
 
-				newBreakToken = this.findBreakToken(wrapper, source, bounds);
+				newBreakToken = this.findBreakToken(wrapper, source, bounds, prevBreakToken);
+
+				if(this.equalTokens(newBreakToken, prevBreakToken)) {
+					return undefined;
+				}
 
 				if (newBreakToken) {
 					length = 0;
@@ -345,7 +359,7 @@ class Layout {
 
 	}
 
-	findBreakToken(rendered, source, bounds = this.bounds, extract = true) {
+	findBreakToken(rendered, source, bounds = this.bounds, prevBreakToken, extract = true) {
 		let overflow = this.findOverflow(rendered, bounds);
 		let breakToken, breakLetter;
 
@@ -358,13 +372,8 @@ class Layout {
 
 		if (overflow) {
 			breakToken = this.createBreakToken(overflow, rendered, source);
-			// breakToken is nullable
-			if (breakToken && breakToken["node"] && breakToken["offset"] && breakToken["node"].textContent) {
-				breakLetter = breakToken["node"].textContent.charAt(breakToken["offset"]);
-			} else {
-				breakLetter = undefined;
-			}
 
+			// breakToken is nullable
 			let breakHooks = this.hooks.onBreakToken.triggerSync(breakToken, overflow, rendered, this);
 			breakHooks.forEach((newToken) => {
 				if (typeof newToken != "undefined") {
@@ -372,6 +381,16 @@ class Layout {
 				}
 			});
 
+			// Stop removal if we are in a loop
+			if (this.equalTokens(breakToken, prevBreakToken)) {
+				return breakToken;
+			}
+
+			if (breakToken && breakToken["node"] && breakToken["offset"] && breakToken["node"].textContent) {
+				breakLetter = breakToken["node"].textContent.charAt(breakToken["offset"]);
+			} else {
+				breakLetter = undefined;
+			}
 
 			if (breakToken && breakToken.node && extract) {
 				this.removeOverflow(overflow, breakLetter);
@@ -612,6 +631,19 @@ class Layout {
 				startContainer.textContent += this.settings.hyphenGlyph || "\u2011";
 			}
 		}
+	}
+
+	equalTokens(a, b) {
+		if (!a || !b) {
+			return false;
+		}
+		if (a["node"] && b["node"] && a["node"] !== b["node"]) {
+			return false;
+		}
+		if (a["offset"] && b["offset"] && a["offset"] !== b["offset"]) {
+			return false;
+		}
+		return true;
 	}
 }
 

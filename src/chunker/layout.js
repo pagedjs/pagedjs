@@ -14,13 +14,14 @@ import {
 	needsPageBreak,
 	needsPreviousBreakAfter,
 	nodeAfter,
-	nodeBefore, previousSignificantNode,
+	displayedElementBefore, previousSignificantNode,
 	prevValidNode,
 	rebuildAncestors,
 	validNode,
 	walk,
 	words
 } from "../utils/dom";
+import BreakToken  from "./breaktoken";
 import EventEmitter from "event-emitter";
 import Hook from "../utils/hook";
 
@@ -59,6 +60,7 @@ class Layout {
 		let walker = walk(start, source);
 
 		let node;
+		let prevNode;
 		let done;
 		let next;
 
@@ -67,10 +69,11 @@ class Layout {
 
 		let length = 0;
 
-		let prevBreakToken = breakToken || { node: start, offset: 0 };
+		let prevBreakToken = breakToken || new BreakToken(start);
 
 		while (!done && !newBreakToken) {
 			next = walker.next();
+			prevNode = node;
 			node = next.value;
 			done = next.done;
 			
@@ -84,7 +87,8 @@ class Layout {
 				
 				newBreakToken = this.findBreakToken(wrapper, source, bounds, prevBreakToken);
 
-				if(this.equalTokens(newBreakToken, prevBreakToken)) {
+				if (newBreakToken && newBreakToken.equals(prevBreakToken)) {
+					console.warn("Unable to layout item: ", prevNode);
 					return undefined;
 				}
 				return newBreakToken;
@@ -103,12 +107,13 @@ class Layout {
 
 				newBreakToken = this.findBreakToken(wrapper, source, bounds, prevBreakToken);
 
-				if(this.equalTokens(newBreakToken, prevBreakToken)) {
-					return undefined;
-				}
-
 				if (!newBreakToken) {
 					newBreakToken = this.breakAt(node);
+				}
+
+				if (newBreakToken.equals(prevBreakToken)) {
+					console.warn("Unable to layout item: ", node);
+					return undefined;
 				}
 
 				length = 0;
@@ -145,7 +150,8 @@ class Layout {
 
 				newBreakToken = this.findBreakToken(wrapper, source, bounds, prevBreakToken);
 
-				if(this.equalTokens(newBreakToken, prevBreakToken)) {
+				if (newBreakToken && newBreakToken.equals(prevBreakToken)) {
+					console.warn("Unable to layout item: ", node);
 					return undefined;
 				}
 
@@ -160,10 +166,10 @@ class Layout {
 	}
 
 	breakAt(node, offset = 0) {
-		return {
+		return new BreakToken(
 			node,
 			offset
-		};
+		);
 	}
 
 	shouldBreak(node) {
@@ -326,8 +332,14 @@ class Layout {
 
 				parent = findElement(renderedNode, source);
 				index = indexOfTextNode(temp, parent);
-				node = child(parent, index);
-				offset = 0;
+				// No seperatation for the first textNode of an element
+				if(index === 0) {
+					node = parent;
+					offset = 0;
+				} else {
+					node = child(parent, index);
+					offset = 0;
+				}
 			}
 		} else {
 			renderedNode = findElement(container.parentNode, rendered);
@@ -352,10 +364,10 @@ class Layout {
 			return;
 		}
 
-		return {
+		return new BreakToken(
 			node,
 			offset
-		};
+		);
 
 	}
 
@@ -372,7 +384,6 @@ class Layout {
 
 		if (overflow) {
 			breakToken = this.createBreakToken(overflow, rendered, source);
-
 			// breakToken is nullable
 			let breakHooks = this.hooks.onBreakToken.triggerSync(breakToken, overflow, rendered, this);
 			breakHooks.forEach((newToken) => {
@@ -382,7 +393,7 @@ class Layout {
 			});
 
 			// Stop removal if we are in a loop
-			if (this.equalTokens(breakToken, prevBreakToken)) {
+			if (breakToken.equals(prevBreakToken)) {
 				return breakToken;
 			}
 
@@ -441,25 +452,25 @@ class Layout {
 						isFloat = styles.getPropertyValue("float") !== "none";
 						skip = styles.getPropertyValue("break-inside") === "avoid";
 						breakAvoid = node.dataset.breakBefore === "avoid" || node.dataset.previousBreakAfter === "avoid";
-						prev = breakAvoid && nodeBefore(node, rendered);
+						prev = breakAvoid && displayedElementBefore(node, rendered);
 						br = node.tagName === "BR" || node.tagName === "WBR";
 					}
 
 					if (prev) {
 						range = document.createRange();
-						range.setStartBefore(prev);
+						range.selectNode(prev);
 						break;
 					}
 
 					if (!br && !isFloat && isElement(node)) {
 						range = document.createRange();
-						range.setStartBefore(node);
+						range.selectNode(node);
 						break;
 					}
 
 					if (isText(node) && node.textContent.trim().length) {
 						range = document.createRange();
-						range.setStartBefore(node);
+						range.selectNode(node);
 						break;
 					}
 

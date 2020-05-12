@@ -31,16 +31,6 @@ const plugins = [
 
 export default [
 	{
-		input: pkg.module,
-		output: {
-			name: 'Paged',
-			file: pkg.browser,
-			format: 'umd'
-		},
-		plugins: plugins
-	},
-
-	{
 		input: "./src/polyfill/polyfill.js",
 		output: {
 			name: 'PagedPolyfill',

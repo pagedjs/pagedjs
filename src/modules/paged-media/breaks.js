@@ -1,6 +1,6 @@
 import Handler from "../handler";
 import csstree from "css-tree";
-import { displayedElementAfter } from "../../utils/dom";
+import { displayedElementAfter, displayedElementBefore } from "../../utils/dom";
 
 class Breaks extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -89,6 +89,14 @@ class Breaks extends Handler {
 
 						if (nodeAfter) {
 							nodeAfter.setAttribute("data-previous-break-after", prop.value);
+						}
+					} else if (prop.property === "break-before") {
+						let nodeBefore = displayedElementBefore(elements[i], parsed);
+
+						elements[i].setAttribute("data-break-before", prop.value);
+
+						if (nodeBefore) {
+							nodeBefore.setAttribute("data-next-break-before", prop.value);
 						}
 					} else if (prop.property === "page") {
 						elements[i].setAttribute("data-page", prop.value);

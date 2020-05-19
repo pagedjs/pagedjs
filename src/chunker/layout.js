@@ -14,13 +14,14 @@ import {
 	needsPageBreak,
 	needsPreviousBreakAfter,
 	nodeAfter,
-	nodeBefore, previousSignificantNode,
+	displayedElementBefore, previousSignificantNode,
 	prevValidNode,
 	rebuildAncestors,
 	validNode,
 	walk,
 	words
 } from "../utils/dom";
+import BreakToken  from "./breaktoken";
 import EventEmitter from "event-emitter";
 import Hook from "../utils/hook";
 
@@ -59,6 +60,7 @@ class Layout {
 		let walker = walk(start, source);
 
 		let node;
+		let prevNode;
 		let done;
 		let next;
 
@@ -67,11 +69,14 @@ class Layout {
 
 		let length = 0;
 
+		let prevBreakToken = breakToken || new BreakToken(start);
+
 		while (!done && !newBreakToken) {
 			next = walker.next();
+			prevNode = node;
 			node = next.value;
 			done = next.done;
-
+			
 			if (!node) {
 				this.hooks && this.hooks.layout.trigger(wrapper, this);
 
@@ -79,8 +84,13 @@ class Layout {
 				if (imgs.length) {
 					await this.waitForImages(imgs);
 				}
+				
+				newBreakToken = this.findBreakToken(wrapper, source, bounds, prevBreakToken);
 
-				newBreakToken = this.findBreakToken(wrapper, source, bounds);
+				if (newBreakToken && newBreakToken.equals(prevBreakToken)) {
+					console.warn("Unable to layout item: ", prevNode);
+					return undefined;
+				}
 				return newBreakToken;
 			}
 
@@ -95,10 +105,15 @@ class Layout {
 					await this.waitForImages(imgs);
 				}
 
-				newBreakToken = this.findBreakToken(wrapper, source, bounds);
+				newBreakToken = this.findBreakToken(wrapper, source, bounds, prevBreakToken);
 
 				if (!newBreakToken) {
 					newBreakToken = this.breakAt(node);
+				}
+
+				if (newBreakToken.equals(prevBreakToken)) {
+					console.warn("Unable to layout item: ", node);
+					return undefined;
 				}
 
 				length = 0;
@@ -133,7 +148,12 @@ class Layout {
 					await this.waitForImages(imgs);
 				}
 
-				newBreakToken = this.findBreakToken(wrapper, source, bounds);
+				newBreakToken = this.findBreakToken(wrapper, source, bounds, prevBreakToken);
+
+				if (newBreakToken && newBreakToken.equals(prevBreakToken)) {
+					console.warn("Unable to layout item: ", node);
+					return undefined;
+				}
 
 				if (newBreakToken) {
 					length = 0;
@@ -146,10 +166,10 @@ class Layout {
 	}
 
 	breakAt(node, offset = 0) {
-		return {
+		return new BreakToken(
 			node,
 			offset
-		};
+		);
 	}
 
 	shouldBreak(node) {
@@ -312,8 +332,14 @@ class Layout {
 
 				parent = findElement(renderedNode, source);
 				index = indexOfTextNode(temp, parent);
-				node = child(parent, index);
-				offset = 0;
+				// No seperatation for the first textNode of an element
+				if(index === 0) {
+					node = parent;
+					offset = 0;
+				} else {
+					node = child(parent, index);
+					offset = 0;
+				}
 			}
 		} else {
 			renderedNode = findElement(container.parentNode, rendered);
@@ -338,14 +364,14 @@ class Layout {
 			return;
 		}
 
-		return {
+		return new BreakToken(
 			node,
 			offset
-		};
+		);
 
 	}
 
-	findBreakToken(rendered, source, bounds = this.bounds, extract = true) {
+	findBreakToken(rendered, source, bounds = this.bounds, prevBreakToken, extract = true) {
 		let overflow = this.findOverflow(rendered, bounds);
 		let breakToken, breakLetter;
 
@@ -359,12 +385,6 @@ class Layout {
 		if (overflow) {
 			breakToken = this.createBreakToken(overflow, rendered, source);
 			// breakToken is nullable
-			if (breakToken && breakToken["node"] && breakToken["offset"] && breakToken["node"].textContent) {
-				breakLetter = breakToken["node"].textContent.charAt(breakToken["offset"]);
-			} else {
-				breakLetter = undefined;
-			}
-
 			let breakHooks = this.hooks.onBreakToken.triggerSync(breakToken, overflow, rendered, this);
 			breakHooks.forEach((newToken) => {
 				if (typeof newToken != "undefined") {
@@ -372,6 +392,16 @@ class Layout {
 				}
 			});
 
+			// Stop removal if we are in a loop
+			if (breakToken.equals(prevBreakToken)) {
+				return breakToken;
+			}
+
+			if (breakToken && breakToken["node"] && breakToken["offset"] && breakToken["node"].textContent) {
+				breakLetter = breakToken["node"].textContent.charAt(breakToken["offset"]);
+			} else {
+				breakLetter = undefined;
+			}
 
 			if (breakToken && breakToken.node && extract) {
 				this.removeOverflow(overflow, breakLetter);
@@ -422,25 +452,25 @@ class Layout {
 						isFloat = styles.getPropertyValue("float") !== "none";
 						skip = styles.getPropertyValue("break-inside") === "avoid";
 						breakAvoid = node.dataset.breakBefore === "avoid" || node.dataset.previousBreakAfter === "avoid";
-						prev = breakAvoid && nodeBefore(node, rendered);
+						prev = breakAvoid && displayedElementBefore(node, rendered);
 						br = node.tagName === "BR" || node.tagName === "WBR";
 					}
 
 					if (prev) {
 						range = document.createRange();
-						range.setStartBefore(prev);
+						range.selectNode(prev);
 						break;
 					}
 
 					if (!br && !isFloat && isElement(node)) {
 						range = document.createRange();
-						range.setStartBefore(node);
+						range.selectNode(node);
 						break;
 					}
 
 					if (isText(node) && node.textContent.trim().length) {
 						range = document.createRange();
-						range.setStartBefore(node);
+						range.selectNode(node);
 						break;
 					}
 
@@ -612,6 +642,19 @@ class Layout {
 				startContainer.textContent += this.settings.hyphenGlyph || "\u2011";
 			}
 		}
+	}
+
+	equalTokens(a, b) {
+		if (!a || !b) {
+			return false;
+		}
+		if (a["node"] && b["node"] && a["node"] !== b["node"]) {
+			return false;
+		}
+		if (a["offset"] && b["offset"] && a["offset"] !== b["offset"]) {
+			return false;
+		}
+		return true;
 	}
 }
 

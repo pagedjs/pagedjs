@@ -126,7 +126,7 @@ class Page {
 		this.layoutMethod = new Layout(this.area, this.hooks, maxChars);
 
 		let newBreakToken = await this.layoutMethod.renderTo(this.wrapper, contents, breakToken);
-
+		
 		this.addListeners(contents);
 
 		this.endToken = newBreakToken;
@@ -240,7 +240,7 @@ class Page {
 			return;
 		}
 
-		let newBreakToken = this.layoutMethod.findBreakToken(this.wrapper, contents);
+		let newBreakToken = this.layoutMethod.findBreakToken(this.wrapper, contents, this.startToken);
 
 		if (newBreakToken) {
 			this.endToken = newBreakToken;
@@ -254,8 +254,6 @@ class Page {
 		}
 
 		let endToken = this.layoutMethod.findEndToken(this.wrapper, contents);
-
-		// let newBreakToken = this.layoutMethod.findBreakToken(this.wrapper, contents);
 
 		if (endToken) {
 			this._onUnderflow && this._onUnderflow(endToken);

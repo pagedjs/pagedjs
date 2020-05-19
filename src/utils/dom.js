@@ -81,33 +81,43 @@ export function nodeBefore(node, limiter) {
 }
 
 export function elementAfter(node, limiter) {
-	let after = nodeAfter(node);
+	let after = nodeAfter(node, limiter);
 
 	while (after && after.nodeType !== 1) {
-		after = nodeAfter(after);
+		after = nodeAfter(after, limiter);
 	}
 
 	return after;
 }
 
 export function elementBefore(node, limiter) {
-	let before = nodeAfter(node);
+	let before = nodeBefore(node, limiter);
 
 	while (before && before.nodeType !== 1) {
-		before = nodeAfter(before);
+		before = nodeBefore(before, limiter);
 	}
 
 	return before;
 }
 
 export function displayedElementAfter(node, limiter) {
-	let after = elementAfter(node);
+	let after = elementAfter(node, limiter);
 
 	while (after && after.dataset.undisplayed) {
 		after = elementAfter(after);
 	}
 
 	return after;
+}
+
+export function displayedElementBefore(node, limiter) {
+	let before = elementBefore(node, limiter);
+
+	while (before && before.dataset.undisplayed) {
+		before = elementBefore(before);
+	}
+
+	return before;
 }
 
 export function stackChildren(currentNode, stacked) {

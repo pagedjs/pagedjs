@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en" lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>
+        Footnotes
+    </title>
+
+    <!-- Paged js-->
+    <script src="../../../dist/paged.polyfill.js"></script>
+    <style>
+        body {
+            widows: 1;
+            orphans: 1;
+        }
+
+        @media screen {
+            .pagedjs_page {
+                box-shadow: 0 0 0 1px #666;
+            }
+        
+            .pagedjs_area {
+                box-shadow: 0 0 0 1px teal;
+            }
+        }
+
+        @page {
+            size: 160mm 210mm;
+            margin-top: 83px;
+            margin-bottom: 86px;
+            margin-left: 35mm;
+            margin-right: 35mm;
+    
+            @bottom-center {
+                content: counter(page);
+            }
+    
+            @footnote {
+                border-top: 2px dotted black;
+            }
+        }
+    
+        .chapter {
+            break-before: page;
+            counter-reset: page 1 footnote;
+        }
+    
+        p {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            margin-top: 0;
+            margin-bottom: 0;
+            text-align: justify;
+            font-size: 14px;
+            line-height: 16px;
+        }
+    
+        .afnanch {
+            display: none;
+        }
+    
+        hr {
+            border: none;
+        }
+    
+        .pfirst {
+            padding-top: 50mm;
+        }
+    
+        .footnote {
+            float: footnote;
+            display: inline;
+        }
+
+        ::footnote-marker {
+            color: blue !important;
+            font-weight: bold;
+
+        }
+
+        ::footnote-call {
+            color: orange;
+            font-weight: bold;
+        }
+    </style>
+    </head>
+    
+    <body>
+    
+    
+        <section class="chapter">
+    
+            <h1>Chapitre 1</h1>
+    
+            <p>For four centuries the noise of controversy has raged round
+                the cradle of Typography. Volumes have been written,
+                lives have been spent, fortunes have been wasted, communities
+                have been stirred, societies have been organised,
+                a literature has been developed, to find an answer to the
+                famous triple question: “When, where, and by whom
+                was found out the unspeakably useful art of printing
+                books?” And yet the world to-day is little nearer a
+                finite answer to the question than it was when Ulric Zel indited his memorable
+                narrative to the <em>Cologne Chronicle</em> in 1499. Indeed, the dust of battle has added
+                to, rather than diminished, the mysterious clouds which envelope the problem,
+                and we are tempted to seek refuge in an agnosticism which almost refuses to
+                believe that printing ever had an inventor.</p>
+    
+            <p>It would be neither suitable nor profitable to encumber an investigation of
+                that part of the History of Typography which relates to the types and type-making
+                of the fifteenth century by any attempt to discuss the vexed question of
+                the Invention of the Art. The man who invented Typography was doubtless
+                the man who invented movable types. Where the one is discovered, we have
+                also found the other. But, meanwhile, it is possible to avail ourselves of
+                whatever evidence exists as to the nature of the types he and his successors used,
+                and as to the methods by which those types were produced,
+                and possibly to arrive at some conclusions respecting the earliest practices of the
+                Art of Typefounding
+                in the land and in the age in which it first saw the light.</p>
+    
+            <p>No one has done more to clear the way for a free
+                investigation of all questions relating to the origin
+                of printing than Dr. Van der Linde, in his able essay,
+                <em>The Haarlem Legend</em>,
+                <span class="footnote" data-note="01" id="note-01"><em>The Haarlem Legend of the Invention of Printing by
+                        Lourens Janszoon Coster, critically examined.</em> From the Dutch by J.
+                    H. Hessels, with an introduction and classified list of the Costerian
+                    Incunabula. London, 1871. 8vo.</span> which, while disposing ruthlessly of
+                the fiction of Coster’s invention, lays down the important
+                principle, too often neglected by writers on the subject,
+                that the essence of Typography consists in the mobility of
+                the types, and that, therefore, it is not a development of
+                the long practised art of printing from fixed blocks, but
+                an entirely distinct invention.
+            </p>
+    
+            <p>The principle is so important, and Dr. Van der Linde’s words are so
+                emphatic, that we make no apology for quoting them:―</p>
+    
+            <p>“I cannot repeat often enough that, when we speak of Typography and its
+                invention, nothing is meant, or rather nothing must be meant, but printing with
+                <em>loose</em> (separate, moveable) types (be they letters, musical notes, or other figures),
+                which therefore, in distinction from letters cut on wooden or metal plates, may be
+                put together or separated according to inclination. One thing therefore is certain:
+                he who did not invent printing with moveable types, did, as far as Typography
+                goes, invent nothing. What material was used first of all in this invention; of
+                what metal the first letters, the patrices (engraved punches) and matrices were
+                made; by whom and when the leaden matrices and brass patrices were replaced
+                by brass matrices and steel patrices; .&#160;.&#160;.&#160;.&#160;. all this belongs to the secondary
+                question of the technical execution of the principal idea: multiplication of
+                books by means of multiplication of letters, multiplication of letters by means
+                of their durability, and repeated use of the same letters, <em>i.e.</em>, by means of the
+                independence (looseness) of each individual letter (moveableness).”—P. 19.
+            </p>
+    
+            <p>If this principle be adopted—and we can hardly imagine it questioned—it
+                will be obvious that a large class of works which usually occupy a prominent
+                place in inquiries into the origin of Printing, have but slight bearing on the
+                history of Typography. The block books of the fifteenth century had little
+                direct connection with the art that followed and eclipsed them.<span class="footnote" data-note="02"
+                    id="note-02">Xylography did not become extinct
+                    for more than half a
+                    century after the invention of Typography. The last block book known
+                    was printed in Venice in 1510.</span>
+                In the one respect of marking the early use of printing for the instruction of mankind, the
+                block books and the first works of Typography proper claim an equal interest;
+                but, as regards their mechanical production, the one feature they possess in
+                common is a quality shared also by the playing-cards,
+                pictures, seals, stamps, brands, and all the other applications of the principle of impression which had
+                existed in one form or another from time immemorial.</p>
+        </section>
+    
+        <section class="chapter">
+            <h1>Chapter 2</h1>
+    
+            <p>This testimony proves nothing beyond the fact that at Strasburg, Venice,
+                and Mentz there existed at some time or other certain perforated wooden types
+                which tradition ascribed to the first printers. But on the question whether any
+                book was ever printed with such type, it is wholly inconclusive. It is possible
+                to believe that certain early printers, uninitiated into the mystery of the punch and
+                matrix, may have attempted to cut themselves wooden types, which, when they
+                proved untractable under the press, they perforated and
+                strung together in lines; but it is beyond credit that any such rude experiment ever resulted in the
+                production
+                of a work like the <em>Speculum</em>.</p>
+    
+            <p>It is true that many writers have asserted it was so. Fournier, a practical
+                typographer, insists upon it from the fact that the letters vary among themselves
+                in a manner which would not be the case had they been cast from a matrix in a
+                mould. But, to be consistent, Fournier is compelled (as Bernard points out)
+                to postpone the use of cast type till after the Gutenberg <em>Bible</em> and Mentz <em>Psalter</em>,
+                both of which works display the same irregularities. And as the latest edition
+                of the <em>Psalter</em>, printed in the old types, appeared in 1516, it would be necessary
+                to suppose that movable wood type was in vogue up to that date. No one has
+                yet demonstrated, or attempted seriously to demonstrate, the possibility of
+                printing a book like the <em>Speculum</em> in movable wooden type. All the experiments
+                hitherto made, even by the most ardent supporters of the theory, have
+                been woful failures. Laborde<span class="footnote" data-note="09" id="note-09"><em>Débuts de l’ Imprimerie à
+                        Strasbourg.</em> Paris, 1840, p.
+                    72.</span>
+                admits that to cut the 3,000 separate letters
+                required for the <em>Letters of Indulgence</em>, engraved by him, would cost 450 francs;
+                and even he, with the aid of modern tools to cut up his wooden cubes, can only
+                show four widely spaced lines. Wetter<span class="footnote" data-note="10" id="note-10"><em>Erfindung der
+                        Buchdruckerkunst.</em> Mainz, 1836. Album, tab.
+                    ii.</span>
+                shows a page printed from perforated
+                and threaded wooden types<span class="footnote" data-note="11" id="note-11">The history of these “fatal,
+                    unhistorical wooden types”
+                    is worth recording for the warning of the over-credulous typographical
+                    antiquary. Wetter, writing his book in 1836, and desirous to illustrate
+                    the feasibility of the theory, “spent,” so Dr. Van der Linde writes,
+                    “really the amount of ten shillings on having a number of letters made
+                    of the wood of a pear-tree, only to please Trithemius, Bergellanus,
+                    and Faust of Aschaffenburg. </span>; but these, though of large
+                size, only prove by their “naughty caprioles” the absurdity of supposing that the “unleaded”
+                <em>Speculum</em>,
+                a quarternion of which would require 40,000 distinct letters, could have been
+                produced in 1440 by a method which even the modern cutting and modern
+                presswork of 1836 failed to adapt to a single page of large-sized print.
+            </p>
+        </section>
+    
+    </body>
+
+</html>

@@ -46,7 +46,8 @@ class AtPage extends Handler {
 			},
 			backgroundOrigin: undefined,
 			block: {},
-			marks: undefined
+			marks: undefined,
+			notes: undefined
 		};
 	}
 
@@ -89,6 +90,9 @@ class AtPage extends Handler {
 		} else {
 			page.marginalia = marginalia;
 		}
+
+		let notes = this.replaceNotes(node);
+		page.notes = notes;
 
 		let declarations = this.replaceDeclarations(node);
 
@@ -274,25 +278,49 @@ class AtPage extends Handler {
 
 	replaceMarginalia(ast) {
 		let parsed = {};
+		const MARGINS = [
+			"top-left-corner", "top-left", "top", "top-center", "top-right", "top-right-corner",
+			"bottom-left-corner", "bottom-left", "bottom", "bottom-center", "bottom-right", "bottom-right-corner",
+			"left-top", "left-middle", "left", "left-bottom", "top-right-corner",
+			"right-top", "right-middle", "right", "right-bottom", "right-right-corner"
+		];
+		csstree.walk(ast.block, {
+			visit: "Atrule",
+			enter: (node, item, list) => {
+				let name = node.name;
+				if (MARGINS.includes(name)) {
+					if (name === "top") {
+						name = "top-center";
+					}
+					if (name === "right") {
+						name = "right-middle";
+					}
+					if (name === "left") {
+						name = "left-middle";
+					}
+					if (name === "bottom") {
+						name = "bottom-center";
+					}
+					parsed[name] = node.block;
+					list.remove(item);
+				}
+			}
+		});
+
+		return parsed;
+	}
+
+	replaceNotes(ast) {
+		let parsed = {};
 
 		csstree.walk(ast.block, {
 			visit: "Atrule",
 			enter: (node, item, list) => {
 				let name = node.name;
-				if (name === "top") {
-					name = "top-center";
+				if (name === "footnote") {
+					parsed[name] = node.block;
+					list.remove(item);
 				}
-				if (name === "right") {
-					name = "right-middle";
-				}
-				if (name === "left") {
-					name = "left-middle";
-				}
-				if (name === "bottom") {
-					name = "bottom-center";
-				}
-				parsed[name] = node.block;
-				list.remove(item);
 			}
 		});
 
@@ -683,6 +711,11 @@ class AtPage extends Handler {
 			this.addMarginaliaStyles(page, ruleList, rule, sheet);
 			this.addMarginaliaContent(page, ruleList, rule, sheet);
 		}
+
+		if(page.notes) {
+			this.addNotesStyles(page.notes, page, ruleList, rule, sheet);
+		}
+
 		return rule;
 	}
 
@@ -1050,6 +1083,29 @@ class AtPage extends Handler {
 		let rule = this.createRule(selectors, rules);
 
 		ast.children.appendData(rule);
+	}
+
+
+	addNotesStyles(notes, page, list, item, sheet) {
+
+		for (const note in notes) {
+			let selectors = this.selectorsForPage(page);
+
+			selectors.insertData({
+				type: "Combinator",
+				name: " "
+			});
+
+			selectors.insertData({
+				type: "ClassSelector",
+				name: "pagedjs_" + note + "_content"
+			});
+
+			let notesRule = this.createRule(selectors, notes[note]);
+
+			list.appendData(notesRule);
+		}
+
 	}
 
 	/*

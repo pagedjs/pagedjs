@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en" lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>
+        Footnotes
+    </title>
+
+    <!-- Paged js-->
+    <script src="../../../dist/paged.polyfill.js"></script>
+
+    
+    </script> 
+
+    <style>
+        @media screen {
+            .pagedjs_page {
+                box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
+            }
+
+            .pagedjs_area {
+                box-shadow: 0 0 0 1px rgb(202, 20, 20);
+            }
+        }
+        /* interface */
+
+    @media screen {
+
+      body {
+        background-color: whitesmoke;
+      }
+
+      .pagedjs_page {
+        margin-bottom: 20px;
+        flex: none;
+        box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
+        background-color: white;
+      }
+
+      .pagedjs_pages {
+        width: calc(var(--pagedjs-width) * 2);
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        transform-origin: 0 0;
+        margin: 0 auto;
+      }
+
+      .pagedjs_first_page {
+        margin-left: 50%;
+      }
+    }
+    
+    @page {
+        size: 160mm 210mm;
+        margin-top: 83px;
+        margin-bottom: 86px;
+        margin-left: 35mm;
+        margin-right: 35mm;
+        @footnote {
+            padding-top: 6px;
+        }
+        @bottom-left{
+            content: counter(page);
+        }
+    }
+
+     .chapter {
+        page: chapter;
+      }
+
+      @page chapter {
+        background-color: yellow;
+        @bottom-center{
+          content: "this is a chapter";
+        }
+      }
+
+      section {
+        break-before: page;
+        page-break-before: always;
+      }
+
+
+ p{ 
+	 font-family: Georgia, 'Times New Roman', Times, serif;
+	 margin-top: 0; 
+	 margin-bottom: 0;
+	 text-align: justify;
+	 font-size: 14px;
+	 line-height: 16px;
+}
+
+span.note { 
+    float: footnote;
+    font-size: 12px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* .pagedjs_page{
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+} */
+
+.note::footnote-call {
+    color: red;
+}
+        
+.note::footnote-marker {
+    color: blue;
+}
+
+
+    </style>
+
+    
+
+</head>
+
+<body>
+    <section class="chapter">
+        <p>employed were not always those of matured letter-founding, seems
+            to us not only probable, but evident, from a study of the works themselves.</p>
+
+        <p>Mr. Theo. De Vinne, in his able treatise on the invention of printing,<span class="note" data-note="19" id="note-19"><em>The Invention of Printing.</em>
+                New York, 1876. 8vo.</span>
+            speaking with the authority of a practical typographer, insists that the key to
+            that invention is to be found, not in the press nor in the movable types,
+            but in the adjustable type-mould, upon which, he argues, the existence of
+            typography depends. While not prepared to go as far as Mr. De Vinne
+            on this point, and still content to regard the invention of movable types as the
+            real key to the invention of typography proper, we find in the mould not only
+            the culminating acchievement of the inventor, but also the key to the distinction
+            between the two schools of early typography to which we have alluded.</p>
+
+        <p>The adjustable mould was undoubtedly the goal of the discovery, and those
+            who reached it at once were the advanced typographers of the Mentz press.
+            Those who groped after it through clumsy and tedious by-ways were the rude
+            artists of the <em>Donatus</em> and <em>Speculum</em>.</p>
+
+        <p>In considering the primitive modes of type-casting, it must be frankly
+            admitted that the inquirer stands in a field of pure conjecture. He has only
+            negative evidence to assure him that such primitive modes undoubtedly did
+            exist, and he searches in vain for any direct clue as to the nature and details
+            of those methods.</p>
+
+        <p>We shall briefly refer to one or two theories which have been propounded,
+            all with more or less of plausibility.</p>
+
+        <p>Casting in sand was an art not unknown to the
+            silversmiths and trinket-makers of the fifteenth century, and several writers have suggested that some of
+            the early printers applied this process to typefounding. M. Bernard<span class="note" data-note="20" id="note-20"><em>Origine de l’Imprimerie</em>,
+                i, 40.</span>
+            considers
+            that the types of the <em>Speculum</em> were sand-cast, and accounts for the varieties
+            observable in the shapes of various letters, by explaining that several models
+            would probably be made of each letter, and that the types when cast would, as is
+            usual after sand-casting, require some touching up or finishing by hand. He
+            But admitting the possibility of producing type
+            in this manner, and the possible obtuseness which could allow an inventor of
+            printing to spend five years in laboriously engraving “shanks” enough for a single
+            forme, the lack of any satisfactory evidence that such types were ever used, even
+            experimentally, inclines us to deny them any place in the history of the origin
+            of typography.
+            Mr. Skeen seriously applies himself to demonstrate how the shanks could
+            be cast in clay moulds stamped with a number of trough-like matrices representing
+            the various widths of the blanks required, and calculates that at the rate
+            of four a day, 6,000 of these blanks could be engraved on the end by one man
+            in five years, the whole weighing 100 lb, than in the perforated
+            wood types. The enormous labour involved, in itself renders the idea improbable.
+            body of their types together?”
+            shows a specimen of a word cast by himself by this process, which, as far as it
+            goes, is a satisfactory proof of the possibility of casting letters in this way.<span class="note" data-note="21" id="note-21">Mr. Blades points out that there
+                are no overhanging
+                letters in the specimen. The necessity for such letters would be, we
+                imagine, entirely obviated by the numerous combinations with which the
+                type of the printers of the school abounded. The body is almost always
+                large enough to carry ascending and descending sorts, and in width,
+                a sort which would naturally overhang, is invariably covered by its
+                following letter cast on the same piece.</span>
+            There are, indeed, many points in this theory which satisfactorily account
+            for peculiarities in the appearance of books printed by the earliest rude Dutch
+            School. Not only are the irregularities of the letters in body and line intelligible,
+            but the specks between the lines, so frequently observable, would be accounted
+            for by the roughness on the “shoulders” of the sand-cast bodies.<span class="note" data-note="22" id="note-22">It is well known that until
+                comparatively recently the
+                large “proscription letters” of our foundries, from three-line pica and
+                upwards, were cast in sand. The practice died out at the close of last
+                century.</span></p>
+       
+    </section>
+    <section class="chapter2">
+        <p>employed were not always those of matured letter-founding, seems
+            to us not only probable, but evident, from a study of the works themselves.</p>
+    
+        <p>Mr. Theo. De Vinne, in his able treatise on the invention of printing,<span class="note" data-note="19"
+                id="note-19"><em>The Invention of Printing.</em>
+                New York, 1876. 8vo.</span>
+            speaking with the authority of a practical typographer, insists that the key to
+            that invention is to be found, not in the press nor in the movable types,
+            but in the adjustable type-mould, upon which, he argues, the existence of
+            typography depends. While not prepared to go as far as Mr. De Vinne
+            on this point, and still content to regard the invention of movable types as the
+            real key to the invention of typography proper, we find in the mould not only
+            the culminating acchievement of the inventor, but also the key to the distinction
+            between the two schools of early typography to which we have alluded.</p>
+    
+        <p>The adjustable mould was undoubtedly the goal of the discovery, and those
+            who reached it at once were the advanced typographers of the Mentz press.
+            Those who groped after it through clumsy and tedious by-ways were the rude
+            artists of the <em>Donatus</em> and <em>Speculum</em>.</p>
+    
+        <p>In considering the primitive modes of type-casting, it must be frankly
+            admitted that the inquirer stands in a field of pure conjecture. He has only
+            negative evidence to assure him that such primitive modes undoubtedly did
+            exist, and he searches in vain for any direct clue as to the nature and details
+            of those methods.</p>
+    
+        <p>We shall briefly refer to one or two theories which have been propounded,
+            all with more or less of plausibility.</p>
+    
+        <p>Casting in sand was an art not unknown to the
+            silversmiths and trinket-makers of the fifteenth century, and several writers have suggested that some of
+            the early printers applied this process to typefounding. M. Bernard<span class="note" data-note="20"
+                id="note-20"><em>Origine de l’Imprimerie</em>,
+                i, 40.</span>
+            considers
+            that the types of the <em>Speculum</em> were sand-cast, and accounts for the varieties
+            observable in the shapes of various letters, by explaining that several models
+            would probably be made of each letter, and that the types when cast would, as is
+            usual after sand-casting, require some touching up or finishing by hand. He
+            But admitting the possibility of producing type
+            in this manner, and the possible obtuseness which could allow an inventor of
+            printing to spend five years in laboriously engraving “shanks” enough for a single
+            forme, the lack of any satisfactory evidence that such types were ever used, even
+            experimentally, inclines us to deny them any place in the history of the origin
+            of typography.
+            Mr. Skeen seriously applies himself to demonstrate how the shanks could
+            be cast in clay moulds stamped with a number of trough-like matrices representing
+            the various widths of the blanks required, and calculates that at the rate
+            of four a day, 6,000 of these blanks could be engraved on the end by one man
+            in five years, the whole weighing 100 lb, than in the perforated
+            wood types. The enormous labour involved, in itself renders the idea improbable.
+            body of their types together?”
+            shows a specimen of a word cast by himself by this process, which, as far as it
+            goes, is a satisfactory proof of the possibility of casting letters in this way.<span class="note"
+                data-note="21" id="note-21">Mr. Blades points out that there
+                are no overhanging
+                letters in the specimen. The necessity for such letters would be, we
+                imagine, entirely obviated by the numerous combinations with which the
+                type of the printers of the school abounded. The body is almost always
+                large enough to carry ascending and descending sorts, and in width,
+                a sort which would naturally overhang, is invariably covered by its
+                following letter cast on the same piece.</span>
+            There are, indeed, many points in this theory which satisfactorily account
+            for peculiarities in the appearance of books printed by the earliest rude Dutch
+            School. Not only are the irregularities of the letters in body and line intelligible,
+            but the specks between the lines, so frequently observable, would be accounted
+            for by the roughness on the “shoulders” of the sand-cast bodies.<span class="note" data-note="22"
+                id="note-22">It is well known that until
+                comparatively recently the
+                large “proscription letters” of our foundries, from three-line pica and
+                upwards, were cast in sand. The practice died out at the close of last
+                century.</span></p>
+    
+    </section>
+
+</body>
+
+</html>

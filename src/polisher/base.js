@@ -8,6 +8,7 @@ export default `
 	--pagedjs-height-left: 11in;
 	--pagedjs-pagebox-width: 8.5in;
 	--pagedjs-pagebox-height: 11in;
+	--pagedjs-footnotes-height: 0mm;
 	--pagedjs-margin-top: 1in;
 	--pagedjs-margin-right: 1in;
 	--pagedjs-margin-bottom: 1in;
@@ -41,6 +42,7 @@ export default `
 	--pagedjs-mark-crop-display: none;
 	--pagedjs-page-count: 0;
 	--pagedjs-page-counter-increment: 1;
+	--pagedjs-footnotes-count: 0;
 }
 
 @page {
@@ -378,9 +380,80 @@ export default `
 
 .pagedjs_pagebox > .pagedjs_area > .pagedjs_page_content {
 	width: 100%;
-	height: 100%;
+	height: calc(100% - var(--pagedjs-footnotes-height));
 	position: relative;
 	column-fill: auto;
+}
+
+.pagedjs_pagebox > .pagedjs_area > .pagedjs_footnote_area {
+	position: relative;
+	overflow: hidden;
+	height: var(--pagedjs-footnotes-height);
+	display: flex;
+    justify-content: flex-end;
+    flex-flow: column;
+}
+
+.pagedjs_pagebox > .pagedjs_area > .pagedjs_footnote_area > .pagedjs_footnote_content {
+	overflow: hidden;
+}
+
+.pagedjs_pagebox > .pagedjs_area > .pagedjs_footnote_area > .pagedjs_footnote_inner_content {
+	overflow: hidden;
+}
+
+.pagedjs_area [data-footnote-call] {
+	all: unset;
+	counter-increment: footnote;
+}
+
+.pagedjs_area [data-split-from] {
+	counter-increment: unset;
+	counter-reset: unset;
+}
+
+[data-footnote-call]::after {
+	vertical-align: super;
+	font-size: 65%;
+	line-height: normal;
+	content: counter(footnote);
+}
+
+@supports ( font-variant-position: super ) {
+	[data-footnote-call]::after {
+		vertical-align: baseline;
+		font-size: 100%;
+		line-height: inherit;
+		font-variant-position: super;
+	}
+}
+
+.pagedjs_footnote_empty {
+	display: none;
+}
+
+.pagedjs_area [data-split-from] {
+	counter-increment: unset;
+	counter-reset: unset;
+}
+
+[data-footnote-marker]:not([data-split-from]) {
+	counter-increment: footnote-marker;
+	text-indent: 0;
+	display: list-item;
+	list-style-position: inside;
+}
+
+[data-footnote-marker]::marker {
+	content: counter(footnote-marker) ". ";
+}
+
+[data-footnote-marker][data-split-from]::marker {
+	content: unset;
+}
+
+.pagedjs_area .pagedjs_footnote_inner_content [data-note-display="inline"] {
+ 	display: inline;
 }
 
 .pagedjs_page {
@@ -400,7 +473,7 @@ export default `
 }
 
 .pagedjs_pages {
-	counter-reset: pages var(--pagedjs-page-count);
+	counter-reset: pages var(--pagedjs-page-count) footnote var(--pagedjs-footnotes-count) footnote-marker var(--pagedjs-footnotes-count);
 }
 
 .pagedjs_pagebox .pagedjs_margin-top-left-corner,
@@ -528,13 +601,13 @@ export default `
 	margin: unset;
 }
 
-.pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div [data-split-to]:after,
-.pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div [data-split-to]::after {
+.pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div [data-split-to]:not([data-footnote-call]):after,
+.pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div [data-split-to]:not([data-footnote-call])::after {
 	content: unset;
 }
 
-.pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div [data-split-from]:before,
-.pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div [data-split-from]::before {
+.pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div [data-split-from]:not([data-footnote-call]):before,
+.pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div [data-split-from]:not([data-footnote-call])::before {
 	content: unset;
 }
 

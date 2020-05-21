@@ -151,7 +151,6 @@ class Sheet {
 		csstree.walk(ruleNode, {
 			visit: "Selector",
 			enter: (selectNode, selectItem, selectList) => {
-				// console.log(selectNode);
 				this.hooks.onSelector.trigger(selectNode, selectItem, selectList, {ruleNode, ruleItem, rulelist});
 
 				if (selectNode.children.forEach(node => {if (node.type === "PseudoElementSelector") {
@@ -162,10 +161,6 @@ class Sheet {
 						}
 					});
 				}}));
-				// else {
-				// 	console.log("dommage");
-				// }
-
 			}
 		});
 	}

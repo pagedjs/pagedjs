@@ -14,21 +14,29 @@ class Counters extends Handler {
 		let property = declaration.property;
 
 		if (property === "counter-increment") {
-			let inc = this.handleIncrement(declaration, rule);
-			if (inc) {
+			this.handleIncrement(declaration, rule);
+			// clean up empty declaration
+			let hasProperities = false;
+			declaration.value.children.forEach((data) => {
+				if (data.type && data.type !== "WhiteSpace") {
+					hasProperities = true;
+				}
+			});
+			if (!hasProperities) {
 				dList.remove(dItem);
 			}
 		} else if (property === "counter-reset") {
-			let reset = this.handleReset(declaration, rule);
-			if (reset) {
+			this.handleReset(declaration, rule);
+			// clean up empty declaration
+			let hasProperities = false;
+			declaration.value.children.forEach((data) => {
+				if (data.type && data.type !== "WhiteSpace") {
+					hasProperities = true;
+				}
+			});
+			if (!hasProperities) {
 				dList.remove(dItem);
 			}
-		}
-	}
-
-	onContent(funcNode, fItem, fList, declaration, rule) {
-		if (funcNode.name === "counter") {
-			// console.log("counter", funcNode);
 		}
 	}
 
@@ -52,47 +60,113 @@ class Counters extends Handler {
 	}
 
 	handleIncrement(declaration, rule) {
-		const identifier = declaration.value.children.first();
-		const number = declaration.value.children.getSize() > 1 ? declaration.value.children.last().value : 1;
-		const name = identifier && identifier.name;
+		let increments = [];
+		let children = declaration.value.children;
 
-		if (name === "page" || name.indexOf("target-counter-") === 0) {
-			return;
-		}
+		children.forEach((data, item) => {
+			if (data.type && data.type === "Identifier") {
+				let name = data.name;
 
-		let selector = csstree.generate(rule.ruleNode.prelude);
+				if (name === "page" || name.indexOf("target-counter-") === 0) {
+					return;
+				}
 
-		let counter;
-		if (!(name in this.counters)) {
-			counter = this.addCounter(name);
-		} else {
-			counter = this.counters[name];
-		}
+				let whitespace, number, value;
+				if (item.next && item.next.data.type === "WhiteSpace") {
+					whitespace = item.next;
+				}
+				if (whitespace && whitespace.next && whitespace.next.data.type === "Number") {
+					number = whitespace.next;
+					value = parseInt(number.data.value);
+				}
 
-		return counter.increments[selector] = {
-			selector: selector,
-			number
-		};
+				let selector = csstree.generate(rule.ruleNode.prelude);
+
+				let counter;
+				if (!(name in this.counters)) {
+					counter = this.addCounter(name);
+				} else {
+					counter = this.counters[name];
+				}
+				let increment = {
+					selector: selector,
+					number: value || 1
+				};
+				counter.increments[selector] = increment;
+				increments.push(increment);
+
+				// Remove the parsed resets
+				children.remove(item);
+				if (whitespace) {
+					children.remove(whitespace);
+				}
+				if (number) {
+					children.remove(number);
+				}
+			}
+		});
+		
+		return increments;
 	}
 
 	handleReset(declaration, rule) {
-		let identifier = declaration.value.children.first();
-		let number = declaration.value.children.getSize() > 1
-							&& declaration.value.children.last().value;
-		let name = identifier && identifier.name;
-		let selector = csstree.generate(rule.ruleNode.prelude);
-		let counter;
+		let resets = [];
+		let children = declaration.value.children;
 
-		if (!(name in this.counters)) {
-			counter = this.addCounter(name);
-		} else {
-			counter = this.counters[name];
-		}
+		children.forEach((data, item) => {
+			if (data.type && data.type === "Identifier") {
+				let name = data.name;
+				let whitespace, number, value;
+				if (item.next && item.next.data.type === "WhiteSpace") {
+					whitespace = item.next;
+				}
+				if (whitespace && whitespace.next && whitespace.next.data.type === "Number") {
+					number = whitespace.next;
+					value = parseInt(number.data.value);
+				}
 
-		return counter.resets[selector] = {
-			selector: selector,
-			number: number || 0
-		};
+				let counter;
+				let selector;
+				let prelude = rule.ruleNode.prelude;
+
+				if (rule.ruleNode.type === "Atrule" && rule.ruleNode.name === "page") {
+					selector = ".pagedjs_page";
+				} else {
+					selector = csstree.generate(prelude || rule.ruleNode);
+				}
+
+				if (name === "footnote") {
+					this.addFootnoteMarkerCounter(declaration.value.children);
+				}
+
+				if (!(name in this.counters)) {
+					counter = this.addCounter(name);
+				} else {
+					counter = this.counters[name];
+				}
+
+				let reset = {
+					selector: selector,
+					number: value || 0
+				};
+
+				counter.resets[selector] = reset;
+				resets.push(reset);
+
+				if (selector !== ".pagedjs_page") {
+					// Remove the parsed resets
+					children.remove(item);
+					if (whitespace) {
+						children.remove(whitespace);
+					}
+					if (number) {
+						children.remove(number);
+					}
+				}
+			}
+		});
+
+		return resets;
 	}
 
 	processCounters(parsed, counters) {
@@ -115,7 +189,7 @@ class Counters extends Handler {
 			}
 		}
 		// Add to pages to allow cross page scope
-		this.insertRule(`.pagedjs_pages { counter-reset: ${countersArray.join(" ")} page 0 pages var(--pagedjs-page-count)}`);
+		this.insertRule(`.pagedjs_pages { counter-reset: ${countersArray.join(" ")} page 0 pages var(--pagedjs-page-count) footnote var(--pagedjs-footnotes-count) footnote-marker var(--pagedjs-footnotes-count)}`);
 	}
 
 	insertRule(rule) {
@@ -131,7 +205,11 @@ class Counters extends Handler {
 			// Add counter data
 			for (let i = 0; i < incrementElements.length; i++) {
 				incrementElements[i].setAttribute("data-counter-"+ counter.name +"-increment", increment.number);
-				incrementElements[i].setAttribute("data-counter-increment", counter.name);
+				if (incrementElements[i].getAttribute("data-counter-increment")) {
+					incrementElements[i].setAttribute("data-counter-increment", incrementElements[i].getAttribute("data-counter-increment") + " " + counter.name);
+				} else {
+					incrementElements[i].setAttribute("data-counter-increment", counter.name);
+				}
 			}
 		}
 	}
@@ -145,14 +223,23 @@ class Counters extends Handler {
 			// Add counter data
 			for (var i = 0; i < resetElements.length; i++) {
 				resetElements[i].setAttribute("data-counter-"+ counter.name +"-reset", reset.number);
-				resetElements[i].setAttribute("data-counter-reset", counter.name);
+				if (resetElements[i].getAttribute("data-counter-reset")) {
+					resetElements[i].setAttribute("data-counter-reset", resetElements[i].getAttribute("data-counter-reset") + " " + counter.name);
+				} else {
+					resetElements[i].setAttribute("data-counter-reset", counter.name);
+				}
 			}
 		}
 	}
 
 	addCounterValues(parsed, counter) {
-		const counterName = counter.name;
-		const elements = parsed.querySelectorAll("[data-counter-"+ counterName +"-reset], [data-counter-"+ counterName +"-increment]");
+		let counterName = counter.name;
+
+		if (counterName === "page" || counterName === "footnote") {
+			return;
+		}
+
+		let elements = parsed.querySelectorAll("[data-counter-"+ counterName +"-reset], [data-counter-"+ counterName +"-increment]");
 
 		let count = 0;
 		let element;
@@ -195,6 +282,41 @@ class Counters extends Handler {
 		}
 	}
 
+	addFootnoteMarkerCounter(list) {
+		let markers = [];
+		csstree.walk(list, {
+			visit: "Identifier",
+			enter: (identNode, iItem, iList) => {
+				markers.push(identNode.name);
+			}
+		});
+
+		// Already added
+		if (markers.includes("footnote-maker")) {
+			return;
+		}
+
+		list.insertData({
+			type: "WhiteSpace",
+			value: " "
+		});
+
+		list.insertData({
+			type: "Identifier",
+			name: "footnote-marker"
+		});
+
+		list.insertData({
+			type: "WhiteSpace",
+			value: " "
+		});
+
+		list.insertData({
+			type: "Number",
+			value: 0
+		});
+	}
+
 	incrementCounterForElement(element, incrementArray) {
 		if (!element || !incrementArray || incrementArray.length === 0) return;
 
@@ -218,7 +340,9 @@ class Counters extends Handler {
 	}
 
 	afterPageLayout(pageElement, page) {
-		let pgreset = pageElement.querySelectorAll("[data-counter-page-reset]");
+		let resets = [];
+
+		let pgreset = pageElement.querySelectorAll("[data-counter-page-reset]:not([data-split-from])");
 		pgreset.forEach((reset) => {
 			const ref = reset.dataset && reset.dataset.ref;
 			if (ref && this.resetCountersMap.has(ref)) {
@@ -228,9 +352,20 @@ class Counters extends Handler {
 					this.resetCountersMap.set(ref, "");
 				}
 				let value = reset.dataset.counterPageReset;
-				this.styleSheet.insertRule(`[data-page-number="${pageElement.dataset.pageNumber}"] { counter-increment: none; counter-reset: page ${value}; }`, this.styleSheet.cssRules.length);
+				resets.push(`page ${value}`);
 			}
 		});
+
+		let notereset = pageElement.querySelectorAll("[data-counter-footnote-reset]:not([data-split-from])");
+		notereset.forEach((reset) => {
+			let value = reset.dataset.counterFootnoteReset;
+			resets.push(`footnote ${value}`);
+			resets.push(`footnote-marker ${value}`);
+		});
+
+		if (resets.length) {
+			this.styleSheet.insertRule(`[data-page-number="${pageElement.dataset.pageNumber}"] { counter-increment: none; counter-reset: ${resets.join(" ")} }`, this.styleSheet.cssRules.length);
+		}
 	}
 
 }

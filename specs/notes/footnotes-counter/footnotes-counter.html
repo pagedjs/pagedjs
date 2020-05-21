@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en" lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>
+        Footnotes
+    </title>
+
+    <!-- Paged js-->
+    <script src="../../../dist/paged.polyfill.js"></script>
+    <style>
+        body {
+            widows: 1;
+            orphans: 1;
+        }
+    
+        @media screen {
+            .pagedjs_page {
+                box-shadow: 0 0 0 1px #666;
+            }
+        
+            .pagedjs_area {
+                box-shadow: 0 0 0 1px teal;
+            }
+        }
+    
+    
+        .footnote,
+        .footnote-ref::after {
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            font-size: 12px;
+            line-height: 14px;
+            margin-top: 16px;
+        }
+    
+    
+    
+        @page {
+            size: 160mm 210mm;
+            margin-top: 83px;
+            margin-bottom: 86px;
+            margin-left: 35mm;
+            margin-right: 35mm;
+
+            @bottom-center {
+                content: counter(page);
+            }
+
+            @footnote {
+                background-color: #cfcfcf;
+                border-top: 2px dotted black;
+    
+            }
+        }
+    
+    
+    
+    
+    
+        p {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            margin-top: 0;
+            margin-bottom: 0;
+            text-align: justify;
+            font-size: 14px;
+            line-height: 16px;
+        }
+    
+    
+    
+        .afnanch {
+            display: none;
+        }
+    
+        hr {
+            border: none;
+        }
+    
+        .pfirst {
+            padding-top: 50mm;
+        }
+    
+        .footnote {
+            color: red;
+            float: footnote;
+        }
+    
+        ::footnote-marker {
+            color: blue !important;
+            font-weight: bold;
+            font-size: 30px;
+            content: "hello";
+        }
+    
+        ::footnote-call {
+            color: orange;
+            font-weight: bold;
+            font-size: 30px !important;
+            content: "hello";
+        }
+    </style>
+    
+    
+    
+    
+    
+    </head>
+    
+    <body>
+    
+        <p>No one has done more to clear the way for a free
+            investigation of all questions relating to the origin
+            of printing than Dr. Van der Linde, in his able essay,
+            <em>The Haarlem Legend</em>,
+            <span class="footnote" data-note="01" id="note-01"><em>The Haarlem Legend of the Invention of Printing by
+                    Lourens Janszoon Coster, critically examined.</em> From the Dutch by J.
+                H. Hessels, with an introduction and classified list of the Costerian
+                Incunabula. London, 1871. 8vo.</span> which, while disposing ruthlessly of
+            the fiction of Coster’s invention, lays down the important
+            principle, too often neglected by writers on the subject,
+            that the essence of Typography consists in the mobility of
+            the types, and that, therefore, it is not a development of
+            the long practised art of printing from fixed blocks, but
+            an entirely distinct invention.</p>
+    
+        <p>The principle is so important, and Dr. Van der Linde’s words are so
+            emphatic, that we make no apology for quoting them:―</p>
+    
+        
+    
+        </section>
+
+        
+</body>
+
+</html>

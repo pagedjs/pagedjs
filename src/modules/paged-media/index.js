@@ -8,6 +8,7 @@ import PositionFixed from "./position-fixed";
 import PageCounterIncrement from "./page-counter-increment";
 import NthOfType from "./nth-of-type";
 import Following from "./following";
+import Footnotes from "./footnotes";
 
 export default [
 	AtPage,
@@ -19,5 +20,6 @@ export default [
 	PositionFixed,
 	PageCounterIncrement,
 	NthOfType,
-	Following
+	Following,
+	Footnotes
 ];

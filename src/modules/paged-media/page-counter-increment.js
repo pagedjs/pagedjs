@@ -36,7 +36,7 @@ class PageCounterIncrement extends Handler {
 		const number = declaration.value.children.getSize() > 1 ? declaration.value.children.last().value : 1;
 		const name = identifier && identifier.name;
 
-		if (name.indexOf("target-counter-") === 0) {
+		if (name && name.indexOf("target-counter-") === 0) {
 			return;
 		}
 		// A counter named page is automatically created and incremented by 1 on every page of the document,

@@ -14,7 +14,8 @@ import {
 	needsPageBreak,
 	needsPreviousBreakAfter,
 	nodeAfter,
-	displayedElementBefore, previousSignificantNode,
+	nodeBefore,
+	previousSignificantNode,
 	prevValidNode,
 	rebuildAncestors,
 	validNode,
@@ -452,7 +453,7 @@ class Layout {
 						isFloat = styles.getPropertyValue("float") !== "none";
 						skip = styles.getPropertyValue("break-inside") === "avoid";
 						breakAvoid = node.dataset.breakBefore === "avoid" || node.dataset.previousBreakAfter === "avoid";
-						prev = breakAvoid && displayedElementBefore(node, rendered);
+						prev = breakAvoid && nodeBefore(node, rendered);
 						br = node.tagName === "BR" || node.tagName === "WBR";
 					}
 

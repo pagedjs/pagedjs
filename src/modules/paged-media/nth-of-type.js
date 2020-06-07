@@ -13,10 +13,7 @@ class NthOfType extends Handler {
 	onRule(ruleNode, ruleItem, rulelist) {
 		let selector = csstree.generate(ruleNode.prelude);
 		if (selector.match(/:(first|last|nth)-of-type/)) {
-			console.log(ruleItem);
 			
-			console.log(selector);
-
 			let declarations = csstree.generate(ruleNode.block);
 			declarations = declarations.replace(/[{}]/g,"");
 
@@ -31,7 +28,6 @@ class NthOfType extends Handler {
 			});
 
 			rulelist.remove(ruleItem);
-			console.log(this.selectors);
 		}
 	}
 

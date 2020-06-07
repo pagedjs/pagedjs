@@ -47,19 +47,19 @@
                 display: block;
                 margin-bottom: 3em;
             }
-            nav li:nth-of-type(1) a[href]::after {
+            nav li#first a[href]::after {
                 content: target-text(attr(href url));
             }
-            nav li:nth-of-type(2) a[href]::after {
+            nav li#second a[href]::after {
                 content: target-text(attr(href url), content);
             }
-            nav li:nth-of-type(3) a[href]::after {
+            nav li#third a[href]::after {
                 content: target-text(attr(href url), first-letter);
             }
-            nav li:nth-of-type(4) a[href]::after {
+            nav li#fourth a[href]::after {
                 content: target-text(attr(href url), before);
             }
-            nav li:nth-of-type(5) a[href]::after {
+            nav li#fifth a[href]::after {
                 content: target-text(attr(href url), after);
             }
 
@@ -106,11 +106,11 @@
             <nav>
                 <h1>Table of contents</h1>
                 <ul>
-                        <li><a href="#chap0">target-text: </a></li>
-                    <li><a href="#chap1">target-text content: </a></li>
-                    <li><a href="#chap2">target-text first-letter: </a></li>
-                    <li><a href="#chap3">target-text:: before: </a></li>
-                    <li><a href="#chap4">target-text:: after: </a></li>
+                        <li id="first"><a href="#chap0">target-text: </a></li>
+                    <li id="second"><a href="#chap1">target-text content: </a></li>
+                    <li id="third"><a href="#chap2">target-text first-letter: </a></li>
+                    <li id="fourth"><a href="#chap3">target-text:: before: </a></li>
+                    <li id="fifth"><a href="#chap4">target-text:: after: </a></li>
                 </ul>
             </nav>
         </section>

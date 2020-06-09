@@ -41,10 +41,17 @@ class NthOfType extends Handler {
 			let elements = parsed.querySelectorAll(s);
 
 			for (var i = 0; i < elements.length; i++) {
-				elements[i].setAttribute("data-css-rule", selectors[s][0]);
+				let dataCssRule = elements[i].getAttribute("data-css-rule");
+
+				if (dataCssRule && dataCssRule != "") {
+					dataCssRule = `${dataCssRule},${selectors[s][0]}`;
+					elements[i].setAttribute("data-css-rule", dataCssRule);
+				} else {
+					elements[i].setAttribute("data-css-rule", selectors[s][0]);
+				}
 			}
 
-			let rule = `*[data-css-rule='${selectors[s][0]}'] { ${selectors[s][1]}; }`;
+			let rule = `*[data-css-rule*='${selectors[s][0]}'] { ${selectors[s][1]}; }`;
 			this.styleSheet.insertRule(rule, this.styleSheet.cssRules.length);
 		}
 	}

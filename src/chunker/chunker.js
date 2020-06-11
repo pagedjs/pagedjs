@@ -8,6 +8,7 @@ import {
 } from "../utils/utils";
 
 const MAX_PAGES = false;
+const MAX_LAYOUTS = false;
 
 const TEMPLATE = `
 <div class="pagedjs_page">
@@ -90,6 +91,7 @@ class Chunker {
 
 		this.hooks = {};
 		this.hooks.beforeParsed = new Hook(this);
+		this.hooks.filter = new Hook(this);
 		this.hooks.afterParsed = new Hook(this);
 		this.hooks.beforePageLayout = new Hook(this);
 		this.hooks.layout = new Hook(this);
@@ -139,6 +141,8 @@ class Chunker {
 
 		parsed = new ContentParser(content);
 
+		this.hooks.filter.triggerSync(parsed);
+
 		this.source = parsed;
 		this.breakToken = undefined;
 
@@ -149,7 +153,7 @@ class Chunker {
 			this.setup(renderTo);
 		}
 
-		this.emit("rendering", content);
+		this.emit("rendering", parsed);
 
 		await this.hooks.afterParsed.trigger(parsed, this);
 
@@ -162,7 +166,7 @@ class Chunker {
 		}
 
 		this.rendered = true;
-		this.pagesArea.style.setProperty("--pagedjs-page-count", this.total);		
+		this.pagesArea.style.setProperty("--pagedjs-page-count", this.total);
 
 		await this.hooks.afterRendered.trigger(this.pages, this);
 
@@ -207,9 +211,17 @@ class Chunker {
 		let done = false;
 		let result;
 
+		let loops = 0;
 		while (!done) {
 			result = await this.q.enqueue(() => { return this.renderAsync(renderer); });
 			done = result.done;
+			if(MAX_LAYOUTS) {
+				loops += 1;
+				if (loops >= MAX_LAYOUTS) {
+					this.stop();
+					break;
+				}
+			}
 		}
 
 		return result;

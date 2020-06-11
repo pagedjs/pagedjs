@@ -39,69 +39,82 @@ export function *walk(start, limiter) {
 }
 
 export function nodeAfter(node, limiter) {
-	let after = node;
-
-	if (after.nextSibling) {
-		if (limiter && node === limiter) {
-			return;
-		}
-		after = after.nextSibling;
-	} else {
-		while (after) {
-			after = after.parentNode;
-			if (limiter && after === limiter) {
-				after = undefined;
-				break;
+	if (limiter && node === limiter) {
+		return;
+	}
+	let significantNode = nextSignificantNode(node);
+	if (significantNode) {
+		return significantNode;
+	}
+	if (node.parentNode) {
+		while ((node = node.parentNode)) {
+			if (limiter && node === limiter) {
+				return;
 			}
-			if (after && after.nextSibling) {
-				after = after.nextSibling;
-				break;
+			significantNode = nextSignificantNode(node);
+			if (significantNode) {
+				return significantNode;
 			}
 		}
 	}
-
-	return after;
 }
 
 export function nodeBefore(node, limiter) {
-	let before = node;
-	if (before.previousSibling) {
-		if (limiter && node === limiter) {
-			return;
-		}
-		before = before.previousSibling;
-	} else {
-		while (before) {
-			before = before.parentNode;
-			if (limiter && before === limiter) {
-				before = undefined;
-				break;
+	if (limiter && node === limiter) {
+		return;
+	}
+	let significantNode = previousSignificantNode(node);
+	if (significantNode) {
+		return significantNode;
+	}
+	if (node.parentNode) {
+		while ((node = node.parentNode)) {
+			if (limiter && node === limiter) {
+				return;
 			}
-			if (before && before.previousSibling) {
-				before = before.previousSibling;
-				break;
+			significantNode = previousSignificantNode(node);
+			if (significantNode) {
+				return significantNode;
 			}
 		}
 	}
-
-	return before;
 }
 
 export function elementAfter(node, limiter) {
-	let after = nodeAfter(node);
+	let after = nodeAfter(node, limiter);
 
 	while (after && after.nodeType !== 1) {
-		after = nodeAfter(after);
+		after = nodeAfter(after, limiter);
 	}
 
 	return after;
 }
 
 export function elementBefore(node, limiter) {
-	let before = nodeAfter(node);
+	let before = nodeBefore(node, limiter);
 
 	while (before && before.nodeType !== 1) {
-		before = nodeAfter(before);
+		before = nodeBefore(before, limiter);
+	}
+
+	return before;
+}
+
+export function displayedElementAfter(node, limiter) {
+	let after = elementAfter(node, limiter);
+
+	while (after && after.dataset.undisplayed) {
+		after = elementAfter(after);
+	}
+
+	return after;
+}
+
+export function displayedElementBefore(node, limiter) {
+	let before = elementBefore(node, limiter);
+
+	while (before && before.dataset.undisplayed) {
+		before = elementBefore(before);
 	}
 
 	return before;
@@ -340,7 +353,7 @@ export function isContainer(node) {
 		return true;
 	}
 
-	if (node.style.display === "none") {
+	if (node.style && node.style.display === "none") {
 		return false;
 	}
 
@@ -529,4 +542,94 @@ export function indexOfTextNode(node, parent) {
 	}
 
 	return index;
+}
+
+
+/**
+ * Throughout, whitespace is defined as one of the characters
+ *  "\t" TAB \u0009
+ *  "\n" LF  \u000A
+ *  "\r" CR  \u000D
+ *  " "  SPC \u0020
+ *
+ * This does not use Javascript's "\s" because that includes non-breaking
+ * spaces (and also some other characters).
+ */
+
+/**
+ * Determine if a node should be ignored by the iterator functions.
+ * taken from https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Whitespace#Whitespace_helper_functions
+ *
+ * @param {Node} node An object implementing the DOM1 |Node| interface.
+ * @return {boolean} true if the node is:
+ *  1) A |Text| node that is all whitespace
+ *  2) A |Comment| node
+ *  and otherwise false.
+ */
+export function isIgnorable(node) {
+	return (node.nodeType === 8) || // A comment node
+		((node.nodeType === 3) && isAllWhitespace(node)); // a text node, all whitespace
+}
+
+/**
+ * Determine whether a node's text content is entirely whitespace.
+ *
+ * @param {Node} node  A node implementing the |CharacterData| interface (i.e., a |Text|, |Comment|, or |CDATASection| node
+ * @return {boolean} true if all of the text content of |nod| is whitespace, otherwise false.
+ */
+export function isAllWhitespace(node) {
+	return !(/[^\t\n\r ]/.test(node.textContent));
+}
+
+/**
+ * Version of |previousSibling| that skips nodes that are entirely
+ * whitespace or comments.  (Normally |previousSibling| is a property
+ * of all DOM nodes that gives the sibling node, the node that is
+ * a child of the same parent, that occurs immediately before the
+ * reference node.)
+ *
+ * @param {ChildNode} sib  The reference node.
+ * @return {Node|null} Either:
+ *  1) The closest previous sibling to |sib| that is not ignorable according to |is_ignorable|, or
+ *  2) null if no such node exists.
+ */
+export function previousSignificantNode(sib) {
+	while ((sib = sib.previousSibling)) {
+		if (!isIgnorable(sib)) return sib;
+	}
+	return null;
+}
+
+/**
+ * Version of |nextSibling| that skips nodes that are entirely
+ * whitespace or comments.
+ *
+ * @param {ChildNode} sib  The reference node.
+ * @return {Node|null} Either:
+ *  1) The closest next sibling to |sib| that is not ignorable according to |is_ignorable|, or
+ *  2) null if no such node exists.
+ */
+export function nextSignificantNode(sib) {
+	while ((sib = sib.nextSibling)) {
+		if (!isIgnorable(sib)) return sib;
+	}
+	return null;
+}
+
+export function filterTree(content, func, what) {
+	const treeWalker = document.createTreeWalker(
+		content || this.dom,
+		what || NodeFilter.SHOW_ALL,
+		func ? { acceptNode: func } : null,
+		false
+	);
+
+	let node;
+	let current;
+	node = treeWalker.nextNode();
+	while(node) {
+		current = node;
+		node = treeWalker.nextNode();
+		current.parentNode.removeChild(current);
+	}
 }

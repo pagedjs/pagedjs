@@ -71,7 +71,7 @@ class Page {
 		let page = this.element;
 		// let pagebox = this.pagebox;
 
-		let index = pgnum+1;
+		let index = pgnum + 1;
 
 		let id = `page-${index}`;
 
@@ -126,7 +126,7 @@ class Page {
 		this.layoutMethod = new Layout(this.area, this.hooks, maxChars);
 
 		let newBreakToken = await this.layoutMethod.renderTo(this.wrapper, contents, breakToken);
-
+		
 		this.addListeners(contents);
 
 		this.endToken = newBreakToken;
@@ -151,7 +151,7 @@ class Page {
 		let e;
 		for (var i = 0; i < entries.length; i++) {
 			e = entries[i];
-			if(e.dataset.ref === ref) {
+			if (e.dataset.ref === ref) {
 				return e;
 			}
 		}
@@ -181,8 +181,8 @@ class Page {
 		}
 		// TODO: fall back to mutation observer?
 
-		this._onScroll = function() {
-			if(this.listening) {
+		this._onScroll = function () {
+			if (this.listening) {
 				this.element.scrollLeft = 0;
 			}
 		}.bind(this);
@@ -205,30 +205,31 @@ class Page {
 			this.element.removeEventListener("underflow", this._checkOverflowAfterResize, false);
 		}
 
-		this.element &&this.element.removeEventListener("scroll", this._onScroll);
+		this.element && this.element.removeEventListener("scroll", this._onScroll);
 
 	}
 
 	addResizeObserver(contents) {
 		let wrapper = this.wrapper;
 		let prevHeight = wrapper.getBoundingClientRect().height;
-		this.ro = new ResizeObserver( entries => {
+		this.ro = new ResizeObserver(entries => {
 
 			if (!this.listening) {
 				return;
 			}
+			requestAnimationFrame(() => {
+				for (let entry of entries) {
+					const cr = entry.contentRect;
 
-			for (let entry of entries) {
-				const cr = entry.contentRect;
-
-				if (cr.height > prevHeight) {
-					this.checkOverflowAfterResize(contents);
-					prevHeight = wrapper.getBoundingClientRect().height;
-				} else if (cr.height < prevHeight ) { // TODO: calc line height && (prevHeight - cr.height) >= 22
-					this.checkUnderflowAfterResize(contents);
-					prevHeight = cr.height;
+					if (cr.height > prevHeight) {
+						this.checkOverflowAfterResize(contents);
+						prevHeight = wrapper.getBoundingClientRect().height;
+					} else if (cr.height < prevHeight) { // TODO: calc line height && (prevHeight - cr.height) >= 22
+						this.checkUnderflowAfterResize(contents);
+						prevHeight = cr.height;
+					}
 				}
-			}
+			});
 		});
 
 		this.ro.observe(wrapper);
@@ -239,7 +240,7 @@ class Page {
 			return;
 		}
 
-		let newBreakToken = this.layoutMethod.findBreakToken(this.wrapper, contents);
+		let newBreakToken = this.layoutMethod.findBreakToken(this.wrapper, contents, this.startToken);
 
 		if (newBreakToken) {
 			this.endToken = newBreakToken;
@@ -253,8 +254,6 @@ class Page {
 		}
 
 		let endToken = this.layoutMethod.findEndToken(this.wrapper, contents);
-
-		// let newBreakToken = this.layoutMethod.findBreakToken(this.wrapper, contents);
 
 		if (endToken) {
 			this._onUnderflow && this._onUnderflow(endToken);

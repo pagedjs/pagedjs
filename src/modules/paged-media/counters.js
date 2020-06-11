@@ -111,7 +111,7 @@ class Counters extends Handler {
 			countersArray.push(`${counters[c].name} 0`);
 		}
 		// Add to pages to allow cross page scope
-		this.insertRule(`.pagedjs_pages { counter-reset: ${countersArray.join(" ")}}`);
+		this.insertRule(`.pagedjs_pages { counter-reset: ${countersArray.join(" ")} pages var(--pagedjs-page-count)}`);
 	}
 
 	insertRule(rule) {

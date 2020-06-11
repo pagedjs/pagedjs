@@ -25,9 +25,16 @@ class Lists extends Handler {
 	}
 
 	addDataNumbers(list) {
+		let start = 1;
+		if (list.hasAttribute("start")) {
+			start = parseInt(list.getAttribute("start"), 10);
+			if (isNaN(start)) {
+				start = 1;
+			}
+		}
 		let items = list.children;
 		for (var i = 0; i < items.length; i++) {
-			items[i].setAttribute("data-item-num", i + 1);
+			items[i].setAttribute("data-item-num", i + start);
 		}
 	}
 

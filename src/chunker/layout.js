@@ -54,6 +54,7 @@ class Layout {
 		this.settings = options || {};
 
 		this.maxChars = this.settings.maxChars || MAX_CHARS_PER_BREAK;
+		this.forceRenderBreak = false;
 	}
 
 	async renderTo(wrapper, source, breakToken, bounds = this.bounds) {
@@ -112,7 +113,7 @@ class Layout {
 					newBreakToken = this.breakAt(node);
 				}
 
-				if (newBreakToken.equals(prevBreakToken)) {
+				if (newBreakToken && newBreakToken.equals(prevBreakToken)) {
 					console.warn("Unable to layout item: ", node);
 					return undefined;
 				}
@@ -137,6 +138,21 @@ class Layout {
 			// Skip to the next node if a deep clone was rendered
 			if (!shallow) {
 				walker = walk(nodeAfter(node, source), source);
+			}
+
+			if (this.forceRenderBreak) {
+				this.hooks && this.hooks.layout.trigger(wrapper, this);
+
+				newBreakToken = this.findBreakToken(wrapper, source, bounds, prevBreakToken);
+
+				if (!newBreakToken) {
+					newBreakToken = this.breakAt(node);
+				}
+
+				length = 0;
+				this.forceRenderBreak = false;
+
+				break;
 			}
 
 			// Only check x characters
@@ -167,10 +183,18 @@ class Layout {
 	}
 
 	breakAt(node, offset = 0) {
-		return new BreakToken(
+		let newBreakToken = new BreakToken(
 			node,
 			offset
 		);
+		let breakHooks = this.hooks.onBreakToken.triggerSync(newBreakToken, undefined, node, this);
+		breakHooks.forEach((newToken) => {
+			if (typeof newToken != "undefined") {
+				newBreakToken = newToken;
+			}
+		});
+
+		return newBreakToken;
 	}
 
 	shouldBreak(node) {
@@ -184,6 +208,10 @@ class Layout {
 		}
 
 		return !doubleBreakBefore && needsBreakBefore(node) || needsPreviousBreakAfter(node) || needsPageBreak(node);
+	}
+
+	forceBreak() {
+		this.forceRenderBreak = true;
 	}
 
 	getStart(source, breakToken) {
@@ -230,7 +258,7 @@ class Layout {
 			dest.appendChild(clone);
 		}
 
-		let nodeHooks = this.hooks.renderNode.triggerSync(clone, node);
+		let nodeHooks = this.hooks.renderNode.triggerSync(clone, node, this);
 		nodeHooks.forEach((newNode) => {
 			if (typeof newNode != "undefined") {
 				clone = newNode;
@@ -301,7 +329,11 @@ class Layout {
 
 				if (!renderedNode) {
 					// Find closest element with data-ref
-					renderedNode = findElement(prevValidNode(temp), rendered);
+					let prevNode = prevValidNode(temp);
+					if (!isElement(prevNode)) {
+						prevNode = prevNode.parentElement;
+					}
+					renderedNode = findElement(prevNode, rendered);
 					// Check if temp is the last rendered node at its level.
 					if (!temp.nextSibling) {
 						// We need to ensure that the previous sibling of temp is fully rendered.
@@ -394,7 +426,7 @@ class Layout {
 			});
 
 			// Stop removal if we are in a loop
-			if (breakToken.equals(prevBreakToken)) {
+			if (breakToken && breakToken.equals(prevBreakToken)) {
 				return breakToken;
 			}
 

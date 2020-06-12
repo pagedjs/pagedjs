@@ -17,7 +17,7 @@ class Following extends Handler {
 			let declarations = csstree.generate(ruleNode.block);
 			declarations = declarations.replace(/[{}]/g,"");
 
-			let uuid = UUID();
+			let uuid = "following-" + UUID();
 
 			selector.split(",").forEach((s) => {
 				if (!this.selectors[s]) {
@@ -41,17 +41,17 @@ class Following extends Handler {
 			let elements = parsed.querySelectorAll(s);
 
 			for (var i = 0; i < elements.length; i++) {
-				let dataCssRule = elements[i].getAttribute("data-css-rule");
+				let dataFollowing = elements[i].getAttribute("data-following");
 
-				if (dataCssRule && dataCssRule != "") {
-					dataCssRule = `${dataCssRule},${selectors[s][0]}`;
-					elements[i].setAttribute("data-css-rule", dataCssRule);
+				if (dataFollowing && dataFollowing != "") {
+					dataFollowing = `${dataFollowing},${selectors[s][0]}`;
+					elements[i].setAttribute("data-following", dataFollowing);
 				} else {
-					elements[i].setAttribute("data-css-rule", selectors[s][0]);
+					elements[i].setAttribute("data-following", selectors[s][0]);
 				}
 			}
 
-			let rule = `*[data-css-rule*='${selectors[s][0]}'] { ${selectors[s][1]}; }`;
+			let rule = `*[data-following*='${selectors[s][0]}'] { ${selectors[s][1]}; }`;
 			this.styleSheet.insertRule(rule, this.styleSheet.cssRules.length);
 		}
 	}

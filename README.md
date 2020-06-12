@@ -135,7 +135,7 @@ onContent(contentNode, declarationNode, ruleNode)
 
 // Layout
 layoutNode(node)
-renderNode(node, sourceNode)
+renderNode(node, sourceNode, layout)
 onOverflow(overflow, rendered, bounds)
 onBreakToken(breakToken, overflow, rendered)
 ```

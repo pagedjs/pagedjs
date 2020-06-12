@@ -5,6 +5,7 @@ import Splits from "./splits";
 import Counters from "./counters";
 import Lists from "./lists";
 import PositionFixed from "./position-fixed";
+import PageCounterIncrement from "./page-counter-increment";
 
 export default [
 	AtPage,
@@ -13,5 +14,6 @@ export default [
 	Splits,
 	Counters,
 	Lists,
-	PositionFixed
+	PositionFixed,
+	PageCounterIncrement
 ];

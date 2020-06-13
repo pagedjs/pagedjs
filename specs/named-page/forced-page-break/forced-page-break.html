@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>forced-page-break</title>
+	<meta charset="UTF-8">
+	<script src="../../../dist/paged.polyfill.js"></script>
+	<style>
+		@page {
+			size: 4cm 4cm;
+			margin: 0.25cm;
+			text-align: center;
+			color: white;
+		}
+		@page pink {
+			background-color: hotpink;
+		}
+
+		@page teal {
+			background-color: #31adad;
+		}
+
+		p {
+			page: teal
+		}
+
+		div {
+			page: pink
+		}
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+	<div>Hot</div>
+	<div>Pink</div>
+	<p>Teal</p>
+</body>
+</html>

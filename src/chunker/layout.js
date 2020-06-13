@@ -78,7 +78,7 @@ class Layout {
 			prevNode = node;
 			node = next.value;
 			done = next.done;
-			
+
 			if (!node) {
 				this.hooks && this.hooks.layout.trigger(wrapper, this);
 
@@ -86,7 +86,7 @@ class Layout {
 				if (imgs.length) {
 					await this.waitForImages(imgs);
 				}
-				
+
 				newBreakToken = this.findBreakToken(wrapper, source, bounds, prevBreakToken);
 
 				if (newBreakToken && newBreakToken.equals(prevBreakToken)) {
@@ -207,7 +207,7 @@ class Layout {
 			doubleBreakBefore = node.dataset.breakBefore === parentNode.dataset.breakBefore;
 		}
 
-		return !doubleBreakBefore && needsBreakBefore(node) || needsPreviousBreakAfter(node) || needsPageBreak(node);
+		return !doubleBreakBefore && needsBreakBefore(node) || needsPreviousBreakAfter(node) || needsPageBreak(node, previousSibling);
 	}
 
 	forceBreak() {

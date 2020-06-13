@@ -285,7 +285,7 @@ export function needsPreviousBreakAfter(node) {
 export function needsPageBreak(node) {
 	if( typeof node !== "undefined" &&
 			typeof node.dataset !== "undefined" &&
-			(node.dataset.page || node.dataset.afterPage)
+			node.dataset.afterPage
 		 ) {
 		return true;
 	}

@@ -282,15 +282,13 @@ export function needsPreviousBreakAfter(node) {
 	return false;
 }
 
-export function needsPageBreak(node) {
-	if( typeof node !== "undefined" &&
-			typeof node.dataset !== "undefined" &&
-			(node.dataset.page || node.dataset.afterPage)
-		 ) {
-		return true;
+export function needsPageBreak(node, previousSignificantNode) {
+	if (typeof node === "undefined" || !previousSignificantNode || isIgnorable(node)) {
+		return false;
 	}
-
-	return false;
+	const previousSignificantNodePage = previousSignificantNode.dataset ? previousSignificantNode.dataset.page : undefined;
+	const currentNodePage = node.dataset ? node.dataset.page : undefined;
+	return currentNodePage !== previousSignificantNodePage;
 }
 
 export function *words(node) {

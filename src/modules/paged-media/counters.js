@@ -51,10 +51,9 @@ class Counters extends Handler {
 	}
 
 	handleIncrement(declaration, rule) {
-		let identifier = declaration.value.children.first();
-		let number = declaration.value.children.getSize() > 1
-							&& declaration.value.children.last().value;
-		let name = identifier && identifier.name;
+		const identifier = declaration.value.children.first();
+		const number = declaration.value.children.getSize() > 1 ? declaration.value.children.last().value : 1;
+		const name = identifier && identifier.name;
 
 		if (name === "page" || name.indexOf("target-counter-") === 0) {
 			return;
@@ -71,7 +70,7 @@ class Counters extends Handler {
 
 		return counter.increments[selector] = {
 			selector: selector,
-			number: number || 1
+			number
 		};
 	}
 
@@ -125,7 +124,7 @@ class Counters extends Handler {
 			// Find elements for increments
 			let incrementElements = parsed.querySelectorAll(increment.selector);
 			// Add counter data
-			for (var i = 0; i < incrementElements.length; i++) {
+			for (let i = 0; i < incrementElements.length; i++) {
 				incrementElements[i].setAttribute("data-counter-"+ counter.name +"-increment", increment.number);
 				incrementElements[i].setAttribute("data-counter-increment", counter.name);
 			}
@@ -147,8 +146,8 @@ class Counters extends Handler {
 	}
 
 	addCounterValues(parsed, counter) {
-		let counterName = counter.name;
-		let elements = parsed.querySelectorAll("[data-counter-"+ counterName +"-reset], [data-counter-"+ counterName +"-increment]");
+		const counterName = counter.name;
+		const elements = parsed.querySelectorAll("[data-counter-"+ counterName +"-reset], [data-counter-"+ counterName +"-increment]");
 
 		let count = 0;
 		let element;
@@ -156,7 +155,7 @@ class Counters extends Handler {
 		let resetValue, incrementValue, resetDelta;
 		let incrementArray;
 
-		for (var i = 0; i < elements.length; i++) {
+		for (let i = 0; i < elements.length; i++) {
 			element = elements[i];
 			resetDelta = 0;
 			incrementArray = [];
@@ -194,16 +193,16 @@ class Counters extends Handler {
 	incrementCounterForElement(element, incrementArray) {
 		if (!element || !incrementArray || incrementArray.length === 0) return;
 
-		let ref = element.dataset.ref;
-		let prevIncrements = Array.from(this.styleSheet.cssRules).filter((rule) => {
+		const ref = element.dataset.ref;
+		const prevIncrements = Array.from(this.styleSheet.cssRules).filter((rule) => {
 			return rule.selectorText === `[data-ref="${element.dataset.ref}"]:not([data-split-from])`
 						 && rule.style[0] === "counter-increment";
 		});
 
-		let increments = [];
+		const increments = [];
 		for (let styleRule of prevIncrements) {
 			let values = styleRule.style.counterIncrement.split(" ");
-			for (var i = 0; i < values.length; i+=2) {
+			for (let i = 0; i < values.length; i+=2) {
 				increments.push(values[i] + " " + values[i+1]);
 			}
 		}

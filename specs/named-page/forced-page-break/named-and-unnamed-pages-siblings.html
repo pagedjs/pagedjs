@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>named-and-unnamed-pages-siblings</title>
+	<meta charset="UTF-8">
+	<script src="../../../dist/paged.polyfill.js"></script>
+	<style>
+		@page {
+			size: 4cm 4cm;
+			margin: 0.25cm;
+		}
+		@page section {
+			background-color: #00b3ff;
+		}
+		.section {
+			page: section;
+		}
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<section>Plain element</section>
+<section class="section">First section</section>
+<section class="section">Second section</section>
+<section>Plain element</section>
+<section class="section">Fourth section</section>
+</body>
+</html>

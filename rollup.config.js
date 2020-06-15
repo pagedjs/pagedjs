@@ -1,15 +1,19 @@
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import json from 'rollup-plugin-json';
+import resolve from "rollup-plugin-node-resolve";
+import commonjs from "rollup-plugin-commonjs";
+import json from "rollup-plugin-json";
+import license from "rollup-plugin-license";
 
-import pkg from './package.json';
+import pkg from "./package.json";
 
 const plugins = [
 	resolve(),
 	commonjs({
-		include: 'node_modules/**'
+		include: "node_modules/**"
 	}),
-	json()
+	json(),
+	license({
+		banner: "@license Paged.js v<%= pkg.version %> | MIT | https://gitlab.pagedmedia.org/tools/pagedjs",
+	})
 ];
 
 export default [
@@ -17,9 +21,9 @@ export default [
 	{
 		input: pkg.module,
 		output: {
-			name: 'Paged',
+			name: "Paged",
 			file: pkg.browser,
-			format: 'umd'
+			format: "umd"
 		},
 		plugins: plugins
 	},
@@ -27,9 +31,9 @@ export default [
 	{
 		input: pkg.module,
 		output: {
-				name: "PagedModule",
-				file: "./dist/paged.esm.js",
-				format: 'es'
+			name: "PagedModule",
+			file: "./dist/paged.esm.js",
+			format: "es"
 		},
 		plugins: plugins
 	},
@@ -37,9 +41,9 @@ export default [
 	{
 		input: "./src/polyfill/polyfill.js",
 		output: {
-			name: 'PagedPolyfill',
+			name: "PagedPolyfill",
 			file: "./dist/paged.polyfill.js",
-			format: 'umd'
+			format: "umd"
 		},
 		plugins: plugins
 	}

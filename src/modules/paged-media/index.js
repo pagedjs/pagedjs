@@ -6,6 +6,8 @@ import Counters from "./counters";
 import Lists from "./lists";
 import PositionFixed from "./position-fixed";
 import PageCounterIncrement from "./page-counter-increment";
+import NthOfType from "./nth-of-type";
+import Following from "./following";
 
 export default [
 	AtPage,
@@ -15,5 +17,7 @@ export default [
 	Counters,
 	Lists,
 	PositionFixed,
-	PageCounterIncrement
+	PageCounterIncrement,
+	NthOfType,
+	Following
 ];

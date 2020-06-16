@@ -39,6 +39,7 @@ export default `
 	--pagedjs-mark-cross-display: none;
 	--pagedjs-mark-crop-display: none;
 	--pagedjs-page-count: 0;
+	--pagedjs-page-counter-increment: 1;
 }
 
 @page {
@@ -377,19 +378,19 @@ export default `
 }
 
 .pagedjs_page {
-	counter-increment: page;
+	counter-increment: page var(--pagedjs-page-counter-increment);
 	width: var(--pagedjs-width);
 	height: var(--pagedjs-height);
 }
 
 .pagedjs_page.pagedjs_right_page {
-	counter-increment: page;
+	counter-increment: page var(--pagedjs-page-counter-increment);
 	width: var(--pagedjs-width-right);
 	height: var(--pagedjs-height-right);
 }
 
 .pagedjs_page.pagedjs_left_page {
-	counter-increment: page;
+	counter-increment: page var(--pagedjs-page-counter-increment);
 	width: var(--pagedjs-width-left);
 	height: var(--pagedjs-height-left);
 }
@@ -397,7 +398,6 @@ export default `
 .pagedjs_pages {
 	counter-reset: pages var(--pagedjs-page-count);
 }
-
 
 .pagedjs_pagebox .pagedjs_margin-top-left-corner,
 .pagedjs_pagebox .pagedjs_margin-top-right-corner,

@@ -11,7 +11,7 @@
   <script src="../../../dist/paged.polyfill.js"></script>
 
   <style>
-    :root{
+    :root {
       font-size: 18px;
     }
 
@@ -33,16 +33,21 @@
       }
     }
 
-    /* @page main:first {
-      counter-reset: page;
-    } */
-
     .front-matter, .toc {
       page: frontmatter;
     }
 
+    .toc {
+      break-before: page;
+    }
+
+    #preface {
+      break-before: page;
+    }
+
     .chapter {
       page: main;
+      break-after: page;
     }
 
     #first-chapter {

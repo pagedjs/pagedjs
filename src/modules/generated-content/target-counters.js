@@ -1,5 +1,5 @@
 import Handler from "../handler";
-import { UUID, attr, querySelectorEscape } from "../../utils/utils";
+import {attr, querySelectorEscape, UUID} from "../../utils/utils";
 import csstree from "css-tree";
 
 class TargetCounters extends Handler {
@@ -58,7 +58,7 @@ class TargetCounters extends Handler {
 					variable: variable
 				};
 			});
-			
+
 			// Replace with counter
 			funcNode.name = "counter";
 			funcNode.children = new csstree.List();
@@ -80,7 +80,7 @@ class TargetCounters extends Handler {
 			let target = this.counterTargets[name];
 			let split = target.selector.split("::");
 			let query = split[0];
-			
+
 			let queried = chunker.pagesArea.querySelectorAll(query + ":not([data-" + target.variable + "])");
 
 			queried.forEach((selected, index) => {
@@ -102,16 +102,19 @@ class TargetCounters extends Handler {
 					if (target.counter === "page") {
 						let pages = chunker.pagesArea.querySelectorAll(".pagedjs_page");
 						let pg = 0;
-						for (var i = 0; i < pages.length; i++) {
+						for (let i = 0; i < pages.length; i++) {
 							let styles = window.getComputedStyle(pages[i]);
 							let reset = styles["counter-reset"].replace("page", "").trim();
+							let increment = styles["counter-increment"].replace("page", "").trim();
 
 							if (reset !== "none") {
 								pg = parseInt(reset);
 							}
-							pg += 1;
+							if (increment !== "none") {
+								pg += parseInt(increment);
+							}
 
-							if (pages[i].contains( element )){
+							if (pages[i].contains(element)) {
 								break;
 							}
 						}

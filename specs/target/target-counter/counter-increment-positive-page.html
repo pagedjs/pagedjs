@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>target-count: counter-increment-page</title>
+	<script src="../../../dist/paged.polyfill.js"></script>
+	<style>
+		:root{
+			font-size: 18px;
+		}
+
+		@page {
+			size: 6in 8in;
+			margin: 20mm 20mm;
+			counter-increment: page 2;
+			@bottom-left{
+				content: counter(page);
+			}
+		}
+
+		section {
+			break-before: page;
+		}
+
+		p {
+			line-height: 22px;
+		}
+
+		a {
+			text-decoration: none;
+			color: currentColor;
+		}
+
+		nav a[href]::after {
+			content: target-counter(attr(href), page);
+			float: right;
+		}
+		/* interface */
+		@media screen {
+			body {
+				background: whitesmoke;
+			}
+			.pagedjs_page {
+				background: white;
+				margin-bottom: 10px;
+				box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
+			}
+			.pagedjs_pages {
+				width: calc(var(--pagedjs-width) * 2);
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+				justify-content: flex-start;
+				margin: 0 auto;
+			}
+			.pagedjs_first_page {
+				margin-left: 50%;
+			}
+		}
+	</style>
+</head>
+<body>
+<section>
+	<nav>
+		<h2>Table of contents</h2>
+		<ul>
+			<li><a href="#chap1">Lorem ipsum dolor sit amet</a></li>
+		</ul>
+	</nav>
+</section>
+
+<section>
+	<h1 id="chap1">Lorem ipsum dolor sit amet</h1>
+	<p>
+		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi non suscipit odio. Aenean ut ligula id mauris efficitur tincidunt vitae non leo. In convallis convallis leo, eget molestie metus imperdiet eu. Praesent pharetra, leo a laoreet mattis, ligula nisl commodo ante, non vestibulum nisi lacus eget magna. Maecenas scelerisque nibh ac felis egestas, egestas elementum risus pellentesque. Nulla iaculis ut leo a iaculis. Donec vel sodales dolor, vel fringilla elit. Vivamus aliquam diam eu maximus elementum. Integer eu urna at felis fermentum hendrerit.
+	</p>
+	<p>
+		Nulla dignissim pellentesque ac maximus. Integer id tincidunt erat. Sed elementum posuere augue, quis pharetra mi vehicula in. Nullam rhoncus mi quis lectus gravida dignissim. Pellentesque a tortor ut leo pretium auctor non in massa. Nunc efficitur vestibulum mi, id mattis quam aliquet id. Ut semper tortor sit amet molestie mattis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec laoreet eleifend purus ut sagittis. Nunc consequat vel sapien at convallis. Maecenas sollicitudin quis justo non varius.
+	</p>
+	<p>
+		Maecenas arcu massa, egestas vel est nec, mollis venenatis tortor. Ut eu finibus libero. Phasellus pharetra ante a purus ornare, eget facilisis sem ultricies. Etiam tincidunt feugiat erat, eget hendrerit turpis ullamcorper quis. Fusce finibus porttitor nisi sed blandit. Nunc libero erat, vehicula ut tincidunt quis, maximus vitae eros. Donec tristique urna bibendum, mattis nisl vel, dignissim nisl. Duis tincidunt eros nec volutpat scelerisque. Phasellus id malesuada nulla. Duis aliquam mi non malesuada suscipit. Curabitur pretium nisl eu tortor tempus, et sollicitudin quam iaculis. Ut venenatis eros ligula, in ornare eros facilisis vel.
+	</p>
+	<p>
+		Donec auctor libero a lorem egestas consequat. Cras ac lacinia ipsum. Donec non elementum purus, et porta eros. Cras ullamcorper mi eu semper aliquam. Duis magna ipsum, auctor at leo non, pharetra luctus felis. Ut tempus finibus dui, sit amet scelerisque nisi feugiat non. Proin posuere quam vitae finibus pulvinar. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum id felis at nulla mollis bibendum.
+	</p>
+	<p>
+		Donec odio lacus, maximus a ultrices non, pulvinar eget nunc. Morbi cursus eget enim eleifend tincidunt. In vel odio gravida, hendrerit diam ut, fringilla urna. Aenean sit amet nisi ut nisl placerat bibendum. Aenean consequat dapibus orci non accumsan. In imperdiet leo lectus, vitae euismod quam egestas et. Donec augue mauris, malesuada ac nunc dapibus, faucibus malesuada velit. Vivamus quis enim eget orci sollicitudin ultrices. Duis ut nulla velit. Donec feugiat quam nec sem cursus, vel feugiat nunc fringilla.
+	</p>
+</section>
+</body>
+</html>

@@ -1,5 +1,5 @@
 import Handler from "../handler";
-import csstree, { parse } from "css-tree";
+import csstree from "css-tree";
 import pageSizes from "../../polisher/sizes";
 import { rebuildAncestors } from "../../utils/dom";
 import { CSSValueToString } from "../../utils/utils";
@@ -361,7 +361,6 @@ class AtPage extends Handler {
 							bottom: {}
 						};
 					}
-					console.log(declaration);
 					parsed.border.top = csstree.generate(declaration.value);
 					parsed.border.right = csstree.generate(declaration.value);
 					parsed.border.left = csstree.generate(declaration.value);
@@ -675,7 +674,6 @@ class AtPage extends Handler {
 			children: children
 		};
 
-		console.log('page.border :', page.border);
 
 		let rule = this.createRule(selectors, block);
 

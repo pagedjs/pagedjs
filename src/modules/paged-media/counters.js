@@ -100,17 +100,21 @@ class Counters extends Handler {
 			counter = this.counters[c];
 			this.processCounterIncrements(parsed, counter);
 			this.processCounterResets(parsed, counter);
-			this.addCounterValues(parsed, counter);
+			if (c !== "page") {
+				this.addCounterValues(parsed, counter);
+			}
 		}
 	}
 
 	scopeCounters(counters) {
 		let countersArray = [];
 		for (let c in counters) {
-			countersArray.push(`${counters[c].name} 0`);
+			if(c !== "page") {
+				countersArray.push(`${counters[c].name} 0`);
+			}
 		}
 		// Add to pages to allow cross page scope
-		this.insertRule(`.pagedjs_pages { counter-reset: ${countersArray.join(" ")} pages var(--pagedjs-page-count)}`);
+		this.insertRule(`.pagedjs_pages { counter-reset: ${countersArray.join(" ")} page 0 pages var(--pagedjs-page-count)}`);
 	}
 
 	insertRule(rule) {
@@ -215,8 +219,8 @@ class Counters extends Handler {
 	afterPageLayout(pageElement, page) {
 		let pgreset = pageElement.querySelectorAll("[data-counter-page-reset]");
 		pgreset.forEach((reset) => {
-			let value = reset.datasetCounterPageReset;
-			this.styleSheet.insertRule(`[data-page-number="${pageElement.dataset.pageNumber}"] { counter-reset: page ${value} }`, this.styleSheet.cssRules.length);
+			let value = reset.dataset.counterPageReset;
+			this.styleSheet.insertRule(`[data-page-number="${pageElement.dataset.pageNumber}"] { counter-increment: none; counter-reset: page ${value}; }`, this.styleSheet.cssRules.length);
 		});
 	}
 

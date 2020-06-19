@@ -384,13 +384,11 @@ export default `
 }
 
 .pagedjs_page.pagedjs_right_page {
-	counter-increment: page var(--pagedjs-page-counter-increment);
 	width: var(--pagedjs-width-right);
 	height: var(--pagedjs-height-right);
 }
 
 .pagedjs_page.pagedjs_left_page {
-	counter-increment: page var(--pagedjs-page-counter-increment);
 	width: var(--pagedjs-width-left);
 	height: var(--pagedjs-height-left);
 }

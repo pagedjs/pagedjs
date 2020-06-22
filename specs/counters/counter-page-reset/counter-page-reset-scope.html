@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8"/>
+	<title>counter-page-reset-scope</title>
+	<style>
+		@page {
+			size: A4;
+		}
+
+		@page {
+			@bottom-center {
+				content: "Page " counter(page);
+			}
+		}
+
+		@page frontmatter {
+			@bottom-center {
+				content: none;
+			}
+		}
+
+		header {
+			page: frontmatter;
+		}
+
+		.cover {
+			page: cover;
+		}
+
+		main {
+			counter-reset: page 1;
+			break-before: right;
+		}
+
+		section {
+			break-after: page;
+		}
+	</style>
+	<script src="../../../dist/paged.polyfill.js"></script>
+</head>
+<body>
+<header>
+	<div class="cover">
+		<h1>Test Document</h1>
+	</div>
+	<div class="tableofcontents">
+		<h2>Table Of Contents</h2>
+	</div>
+</header>
+<main>
+	<section>
+		<h2>Section 1</h2>
+	</section>
+	<section>
+		<h2>Section 2</h2>
+	</section>
+	<section>
+		<h2>Section 3</h2>
+	</section>
+</main>
+</body>
+</html>

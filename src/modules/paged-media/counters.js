@@ -7,6 +7,7 @@ class Counters extends Handler {
 
 		this.styleSheet = polisher.styleSheet;
 		this.counters = {};
+		this.resetCountersMap = new Map();
 	}
 
 	onDeclaration(declaration, dItem, dList, rule) {
@@ -219,8 +220,16 @@ class Counters extends Handler {
 	afterPageLayout(pageElement, page) {
 		let pgreset = pageElement.querySelectorAll("[data-counter-page-reset]");
 		pgreset.forEach((reset) => {
-			let value = reset.dataset.counterPageReset;
-			this.styleSheet.insertRule(`[data-page-number="${pageElement.dataset.pageNumber}"] { counter-increment: none; counter-reset: page ${value}; }`, this.styleSheet.cssRules.length);
+			const ref = reset.dataset && reset.dataset.ref;
+			if (ref && this.resetCountersMap.has(ref)) {
+				// ignoring, the counter-reset directive has already been taken into account.
+			} else {
+				if (ref) {
+					this.resetCountersMap.set(ref, "");
+				}
+				let value = reset.dataset.counterPageReset;
+				this.styleSheet.insertRule(`[data-page-number="${pageElement.dataset.pageNumber}"] { counter-increment: none; counter-reset: page ${value}; }`, this.styleSheet.cssRules.length);
+			}
 		});
 	}
 

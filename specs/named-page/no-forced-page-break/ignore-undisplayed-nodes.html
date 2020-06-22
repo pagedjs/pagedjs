@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>no-forced-page-break</title>
+	<meta charset="UTF-8">
+	<script src="../../../dist/paged.polyfill.js"></script>
+	<style>
+		#toc {
+			page: tableofcontents;
+		}
+		section {
+			page: section;
+		}
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<header>
+	<div id="toc"><h1>Table of Contents</h1></div>
+	<div style="display: none;"><ul class="sectlevel1">
+		<li class="toc-entry"><a href="#section-1">Section 1</a></li>
+	</ul></div>
+	<section>
+		<h2 id="section-1">Section 1</h2>
+	</section>
+</header>
+</body>
+</html>

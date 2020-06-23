@@ -46,11 +46,12 @@ class Hook {
 			if(executing && typeof executing["then"] === "function") {
 				// Task is a function that returns a promise
 				promises.push(executing);
+			} else {
+				// Otherwise Task resolves immediately, add resolved promise with result
+				promises.push(new Promise((resolve, reject) => {
+					resolve(executing);
+				}));
 			}
-			// Otherwise Task resolves immediately, add resolved promise with result
-			promises.push(new Promise((resolve, reject) => {
-				resolve(executing);
-			}));
 		});
 
 

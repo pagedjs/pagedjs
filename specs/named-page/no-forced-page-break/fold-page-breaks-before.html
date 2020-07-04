@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+	<title>fold-page-breaks-before</title>
+	<meta charset="UTF-8">
+	<style>
+		header {
+			page: cover;
+		}
+
+		section {
+			break-before: page;
+		}
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="../../../dist/paged.polyfill.js"></script>
+</head>
+<body>
+<header>
+	<h1>Title</h1>
+</header>
+<main>
+	<section>
+		<h2>Section</h2>
+		<p>This is a paragraph.</p>
+	</section>
+</main>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>break-before-container-propagation</title>
+	<meta charset="UTF-8">
+	<script src="../../../dist/paged.polyfill.js"></script>
+	<style>
+		@page {
+			size: A4
+		}
+		section {
+			break-before: page;
+		}
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<header>
+	<h1>Document title</h1>
+</header>
+<main>
+	<section>
+		<h2>Section 1</h2>
+		<p>This is a paragraph.</p>
+	</section>
+	<section>
+		<h2>Section 2</h2>
+		<p>This is a paragraph.</p>
+	</section>
+</main>
+</body>
+</html>

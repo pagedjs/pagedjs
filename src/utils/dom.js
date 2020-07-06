@@ -286,6 +286,9 @@ export function needsPageBreak(node, previousSignificantNode) {
 	if (typeof node === "undefined" || !previousSignificantNode || isIgnorable(node)) {
 		return false;
 	}
+	if (node.dataset && node.dataset.undisplayed) {
+		return false;
+	}
 	const previousSignificantNodePage = previousSignificantNode.dataset ? previousSignificantNode.dataset.page : undefined;
 	const currentNodePage = node.dataset ? node.dataset.page : undefined;
 	return currentNodePage !== previousSignificantNodePage;

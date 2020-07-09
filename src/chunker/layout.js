@@ -72,6 +72,10 @@ class Layout {
 		let length = 0;
 
 		let prevBreakToken = breakToken || new BreakToken(start);
+		// Check for adjustments in beforeLayout
+		if (wrapper.firstChild) {
+			prevBreakToken = new BreakToken(wrapper.firstChild);
+		}
 
 		while (!done && !newBreakToken) {
 			next = walker.next();

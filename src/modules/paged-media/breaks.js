@@ -1,6 +1,6 @@
 import Handler from "../handler";
 import csstree from "css-tree";
-import { displayedElementAfter, displayedElementBefore } from "../../utils/dom";
+import { displayedElementAfter, displayedElementBefore, needsPageBreak } from "../../utils/dom";
 
 class Breaks extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -93,10 +93,14 @@ class Breaks extends Handler {
 					} else if (prop.property === "break-before") {
 						let nodeBefore = displayedElementBefore(elements[i], parsed);
 
+						// Breaks are only allowed between siblings, not between a box and its container.
+						// If we cannot find a node before we should not break!
+						// https://drafts.csswg.org/css-break-3/#break-propagation
 						if (nodeBefore) {
-							// Breaks are only allowed between siblings, not between a box and its container.
-							// If we cannot find a node before we should not break!
-							// https://drafts.csswg.org/css-break-3/#break-propagation
+							if (prop.value === "page" && needsPageBreak(elements[i], nodeBefore)) {
+								// we ignore this explicit page break because an implicit page break is already needed
+								continue;
+							}
 							elements[i].setAttribute("data-break-before", prop.value);
 							nodeBefore.setAttribute("data-next-break-before", prop.value);
 						}

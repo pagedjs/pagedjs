@@ -134,19 +134,17 @@ class StringSets extends Handler {
 				varFirstExcept = stringPrevPage;
 			}else{
 
-			
 
 				varFirst = selected[0].textContent;
+
 				varLast = selected[selected.length - 1].textContent;
 
 				// Hack to find if the sel is the first elem of the page / find a better way 
 				let selTop = selected[0].getBoundingClientRect().top;
 				let pageContent = selected[0].closest(".pagedjs_page_content");
 				let pageContentTop = pageContent.getBoundingClientRect().top;
-				console.log("selTop = " + selTop);
-				console.log("pageContentTop = " + pageContentTop);
+
 				if(selTop == pageContentTop){
-					console.log("EGAL");
 					varStart = varFirst;
 				}else{
 					varStart = stringPrevPage;

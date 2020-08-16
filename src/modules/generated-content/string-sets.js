@@ -73,20 +73,36 @@ class StringSets extends Handler {
 	
 			console.log(selected.length);
 
-						// Get the last found string for the current identifier
+			// Get the last found string for the current identifier
 			let stringPrevPage = ( name in this.pageLastString ) ? this.pageLastString[name] : "";
 
-			let varFirst, varLast, varStart, varFirstExcept
+			let varFirst, varLast, varStart, varFirstExcept;
 
 			if(selected.length == 0){
 				// if there is no sel. on the page
 				varFirst = stringPrevPage;
 				varLast = stringPrevPage;
 				varStart = stringPrevPage;
+				varFirstExcept = stringPrevPage;
 			}else{
 
+				selected.forEach((sel) => {
+					// push each content into the array to define in the variable the first and the last element of the page.
+					this.pageLastString[name] = selected[selected.length - 1].textContent;
+				
+				});	
+
+				/* FIRST */
+	
 				varFirst = selected[0].textContent;
+
+
+				/* LAST */
+
 				varLast = selected[selected.length - 1].textContent;
+
+
+				/* START */
 
 				// Hack to find if the sel. is the first elem of the page / find a better way 
 				let selTop = selected[0].getBoundingClientRect().top;
@@ -99,29 +115,17 @@ class StringSets extends Handler {
 					varStart = stringPrevPage;
 				}
 
-				selected.forEach((sel) => {
-					// push each content into the array to define in the variable the first and the last element of the page.
-					this.pageLastString[name] = selected[selected.length - 1].textContent;
+				/* FIRST EXCEPT */
+
+				varFirstExcept = "";
 				
-				});	
-
 			}
-
-			varFirstExcept = "";
-
-			// fragment.setAttribute("data-string", `string-type-${this.type}-${name}`);
-			// fragment.style.setProperty(`--pagedjs-string-${name}`, `"${cleanPseudoContent(cssVar)}`);
 
 			fragment.style.setProperty(`--pagedjs-string-first-${name}`, `"${cleanPseudoContent(varFirst)}`);
 			fragment.style.setProperty(`--pagedjs-string-last-${name}`, `"${cleanPseudoContent(varLast)}`);
 			fragment.style.setProperty(`--pagedjs-string-start-${name}`, `"${cleanPseudoContent(varStart)}`);
 			fragment.style.setProperty(`--pagedjs-string-first-except-${name}`, `"${cleanPseudoContent(varFirstExcept)}`);
 			
-		
-			// if there is no new string on the page
-			// if (!fragment.hasAttribute("data-string")) {
-			// 	fragment.style.setProperty(`--pagedjs-string-${name}`, `"${this.pageLastString}"`);
-			// }	
 	
 		}
 	}

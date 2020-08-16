@@ -113,48 +113,98 @@ class StringSets extends Handler {
 			let set = this.stringSetSelectors[name];
 			let selected = fragment.querySelectorAll(set.selector);
 	
+			console.log(selected.length);
+
+			
 			// let cssVar = previousPageLastString;
 			// Get the last found string for the current identifier
 			let cssVar = ( name in this.pageLastString ) ? this.pageLastString[name] : "";
 
+			let stringPrevPage = ( name in this.pageLastString ) ? this.pageLastString[name] : "";
+
+			// console.log(stringPrevPage);
+
 			let varFirst, varLast, varStart, varFirstExcept;
+
+			if(selected.length == 0){
+				// if there is no sel on the page
+				varFirst = stringPrevPage;
+				varLast = stringPrevPage;
+				varStart = stringPrevPage;
+				varFirstExcept = stringPrevPage;
+			}else{
+
+			
+
+				varFirst = selected[0].textContent;
+				varLast = selected[selected.length - 1].textContent;
+
+				// Hack to find if the sel is the first elem of the page / find a better way 
+				let selTop = selected[0].getBoundingClientRect().top;
+				let pageContent = selected[0].closest(".pagedjs_page_content");
+				let pageContentTop = pageContent.getBoundingClientRect().top;
+				console.log("selTop = " + selTop);
+				console.log("pageContentTop = " + pageContentTop);
+				if(selTop == pageContentTop){
+					console.log("EGAL");
+					varStart = varFirst;
+				}else{
+					varStart = stringPrevPage;
+				}
+
+				selected.forEach((sel) => {
+					// push each content into the array to define in the variable the first and the last element of the page.
+		
+		
+					//this.pageLastString = selected[selected.length - 1].textContent;
+					// Index by identifier
+					this.pageLastString[name] = selected[selected.length - 1].textContent;
 	
-			selected.forEach((sel) => {
-				// push each content into the array to define in the variable the first and the last element of the page.
-	
-	
-				//this.pageLastString = selected[selected.length - 1].textContent;
-				// Index by identifier
-				this.pageLastString[name] = selected[selected.length - 1].textContent;
-	
-				varFirst = "var first";
-				varLast = "var last";
-				varStart = "var start";
-				varFirstExcept = "varFirstExcept"
+					
+		
+					
+
 				
-				// if (this.type === "first") {
-				// 	cssVar = selected[0].textContent;
-				// } 
+					console.log(set);
+
+					
+					
+
+
 				
-				// else if (this.type === "last") {
-				// 	cssVar = selected[selected.length - 1].textContent;
-				// } 
-				
-				// else if (this.type === "start") {
-				
-				// 	if (sel.parentElement.firstChild === sel) {
-				// 		cssVar = sel.textContent;
-				// 	}
-				// }
+
+					varFirstExcept = "varFirstExcept"
+					
+					// if (this.type === "first") {
+					// 	cssVar = selected[0].textContent;
+					// } 
+					
+					// else if (this.type === "last") {
+					// 	cssVar = selected[selected.length - 1].textContent;
+					// } 
+					
+					// else if (this.type === "start") {
+					
+					// 	if (sel.parentElement.firstChild === sel) {
+					// 		cssVar = sel.textContent;
+					// 	}
+					// }
+		
+					// else if (this.type === "first-except") {
+					// 	cssVar = "";
+					// }
+		
+					// else {
+					// 	cssVar = selected[0].textContent;
+					// } 
+				});	
+
+			}
+
+
+
 	
-				// else if (this.type === "first-except") {
-				// 	cssVar = "";
-				// }
-	
-				// else {
-				// 	cssVar = selected[0].textContent;
-				// } 
-			});	
+			
 	
 			fragment.setAttribute("data-string", `string-type-${this.type}-${name}`);
 	

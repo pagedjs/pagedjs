@@ -43,13 +43,59 @@ class StringSets extends Handler {
 			funcNode.name = "var";
 			funcNode.children = new csstree.List();
 
-			funcNode.children.append(
-				funcNode.children.createItem({
-					type: "Identifier",
-					loc: null,
-					name: "--pagedjs-string-" + identifier
-				})
-			);
+
+			if(this.type === "first"){
+				console.log(this.type);
+				funcNode.children.append(
+					funcNode.children.createItem({
+						type: "Identifier",
+						loc: null,
+						name: "--pagedjs-string-first-" + identifier
+					})
+				);
+			}
+
+			if(this.type === "last"){
+				console.log(this.type);
+				funcNode.children.append(
+					funcNode.children.createItem({
+						type: "Identifier",
+						loc: null,
+						name: "--pagedjs-string-last-" + identifier
+					})
+				);
+			}
+
+			if(this.type === "start"){
+				console.log(this.type);
+				funcNode.children.append(
+					funcNode.children.createItem({
+						type: "Identifier",
+						loc: null,
+						name: "--pagedjs-string-start-" + identifier
+					})
+				);
+			}
+
+			if(this.type === "first-except"){
+				console.log(this.type);
+				funcNode.children.append(
+					funcNode.children.createItem({
+						type: "Identifier",
+						loc: null,
+						name: "--pagedjs-string-first-except" + identifier
+					})
+				);
+			}
+
+
+			// funcNode.children.append(
+			// 	funcNode.children.createItem({
+			// 		type: "Identifier",
+			// 		loc: null,
+			// 		name: "--pagedjs-string-" + identifier
+			// 	})
+			// );
 		}
 	}
 

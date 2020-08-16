@@ -43,50 +43,50 @@ class StringSets extends Handler {
 			funcNode.name = "var";
 			funcNode.children = new csstree.List();
 
-
-			if(this.type === "first"){
+ 
+			if(this.type === "first" || "last" || "start" || "first-except"){
 				console.log(this.type);
 				funcNode.children.append(
 					funcNode.children.createItem({
 						type: "Identifier",
 						loc: null,
-						name: "--pagedjs-string-first-" + identifier
+						name: "--pagedjs-string-" + this.type + "-" + identifier
 					})
 				);
 			}
 
-			if(this.type === "last"){
-				console.log(this.type);
-				funcNode.children.append(
-					funcNode.children.createItem({
-						type: "Identifier",
-						loc: null,
-						name: "--pagedjs-string-last-" + identifier
-					})
-				);
-			}
+			// if(this.type === "last"){
+			// 	console.log(this.type);
+			// 	funcNode.children.append(
+			// 		funcNode.children.createItem({
+			// 			type: "Identifier",
+			// 			loc: null,
+			// 			name: "--pagedjs-string-last-" + identifier
+			// 		})
+			// 	);
+			// }
 
-			if(this.type === "start"){
-				console.log(this.type);
-				funcNode.children.append(
-					funcNode.children.createItem({
-						type: "Identifier",
-						loc: null,
-						name: "--pagedjs-string-start-" + identifier
-					})
-				);
-			}
+			// if(this.type === "start"){
+			// 	console.log(this.type);
+			// 	funcNode.children.append(
+			// 		funcNode.children.createItem({
+			// 			type: "Identifier",
+			// 			loc: null,
+			// 			name: "--pagedjs-string-start-" + identifier
+			// 		})
+			// 	);
+			// }
 
-			if(this.type === "first-except"){
-				console.log(this.type);
-				funcNode.children.append(
-					funcNode.children.createItem({
-						type: "Identifier",
-						loc: null,
-						name: "--pagedjs-string-first-except" + identifier
-					})
-				);
-			}
+			// if(this.type === "first-except"){
+			// 	console.log(this.type);
+			// 	funcNode.children.append(
+			// 		funcNode.children.createItem({
+			// 			type: "Identifier",
+			// 			loc: null,
+			// 			name: "--pagedjs-string-first-except" + identifier
+			// 		})
+			// 	);
+			// }
 
 
 			// funcNode.children.append(

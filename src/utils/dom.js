@@ -140,6 +140,29 @@ export function rebuildAncestors(node) {
 
 	let fragment = document.createDocumentFragment();
 
+	// Handle rowspan on table
+	if (node.nodeName === "TR") {
+		let previousRow = node.previousElementSibling;
+		let previousRowDistance = 1;
+		while (previousRow) {
+			// previous row has more columns, might indicate a rowspan.
+			if (previousRow.childElementCount > node.childElementCount) {
+				for (let j = previousRow.children.length - 1; j >= 0; j--) {
+					let column = previousRow.children[j];
+					if (column.rowSpan && column.rowSpan > previousRowDistance) {
+						const duplicatedColumn = column.cloneNode(true);
+						// Adjust rowspan value
+						duplicatedColumn.rowSpan = column.rowSpan - previousRowDistance;
+						// Add the column to the row
+						node.prepend(duplicatedColumn);
+					}
+				}
+			}
+			previousRow = previousRow.previousElementSibling;
+			previousRowDistance++;
+		}
+	}
+
 	// Gather all ancestors
 	let element = node;
 	while(element.parentNode && element.parentNode.nodeType === 1) {

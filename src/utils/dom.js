@@ -147,14 +147,22 @@ export function rebuildAncestors(node) {
 		while (previousRow) {
 			// previous row has more columns, might indicate a rowspan.
 			if (previousRow.childElementCount > node.childElementCount) {
-				for (let j = previousRow.children.length - 1; j >= 0; j--) {
+				const initialColumns = Array.from(node.children);
+				while (node.firstChild) {
+					node.firstChild.remove();
+				}
+				let k = 0;
+				for (let j = 0; j < previousRow.children.length; j++) {
 					let column = previousRow.children[j];
 					if (column.rowSpan && column.rowSpan > previousRowDistance) {
 						const duplicatedColumn = column.cloneNode(true);
 						// Adjust rowspan value
 						duplicatedColumn.rowSpan = column.rowSpan - previousRowDistance;
 						// Add the column to the row
-						node.prepend(duplicatedColumn);
+						node.appendChild(duplicatedColumn);
+					} else {
+						// Fill the gap with the initial columns
+						node.appendChild(initialColumns[k++]);
 					}
 				}
 			}

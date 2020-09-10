@@ -108,6 +108,7 @@ export default `
 	display: var(--pagedjs-mark-crop-display);
 	flex-grow: 0;
 	flex-shrink: 0;
+	z-index: 9999999999;
 }
 
 .pagedjs_bleed-top .pagedjs_marks-crop:nth-child(1),

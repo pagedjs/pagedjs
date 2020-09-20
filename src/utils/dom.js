@@ -161,8 +161,12 @@ export function rebuildAncestors(node) {
 						// Add the column to the row
 						node.appendChild(duplicatedColumn);
 					} else {
-						// Fill the gap with the initial columns
-						node.appendChild(initialColumns[k++]);
+						// Fill the gap with the initial columns (if exists)
+						const initialColumn = initialColumns[k++];
+						// The initial column can be undefined if the newly created table has less columns than the original table
+						if (initialColumn) {
+							node.appendChild(initialColumn);
+						}
 					}
 				}
 			}

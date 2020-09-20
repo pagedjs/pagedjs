@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>exceeding-rowspan-table</title>
+	<script src="../../../dist/paged.polyfill.js"></script>
+	<style>
+		@page {
+			size: 600px 600px;
+			border: 1px solid #cfc2c2;
+		}
+
+		table {
+			border-collapse: collapse;
+		}
+
+		table, th, td {
+			border: 1px solid black;
+		}
+
+		tr, td {
+			break-inside: avoid;
+		}
+	</style>
+</head>
+<body>
+<table>
+	<colgroup>
+		<col style="width: 15%;">
+		<col style="width: 10%;">
+		<col style="width: 25%;">
+		<col style="width: 15%;">
+		<col style="width: 10%;">
+		<col style="width: 25%;">
+	</colgroup>
+	<tbody>
+	<tr>
+		<td colspan="6"><p><strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+			Aenean dignissim odio eget justo lacinia, vel accumsan nulla interdum.
+			Nunc dapibus dapibus pulvinar. Aliquam pellentesque leo et ullamcorper euismod.
+			Proin nec hendrerit augue. Integer sit amet congue ex.
+			Integer sollicitudin condimentum ultricies.</strong></p></td>
+	</tr>
+	<tr>
+		<td colspan="6"><p><strong>5. Lorem ipsum dolor sit amet</strong></p></td>
+	</tr>
+	<tr>
+		<td colspan="2"><p>5.1. Lorem ipsum dolor sit amet</p></td>
+		<td colspan="4"><p>Aenean dignissim odio eget justo lacinia, vel accumsan nulla interdum.</p></td>
+	</tr>
+	<tr>
+		<td colspan="6"><p>6. Nunc dapibus dapibus pulvinar. Aliquam pellentesque leo et ullamcorper euismod.</p></td>
+	</tr>
+	<tr>
+		<td colspan="2"><p>hendrerit</p></td>
+		<td colspan="2"><p>condimentum</p></td>
+		<td colspan="2"><p>ultricies</p></td>
+	</tr>
+	<tr>
+		<td colspan="2"><p>nec hendrerit augue</p></td>
+		<td colspan="2"><p>Aliquam pellentesque leo</p></td>
+		<td><p>№ <em><em></em></em></p></td>
+		<td><p>vel accumsan nulla </p></td>
+	</tr>
+	<tr>
+		<td colspan="2"><p>psum dolor sit amet</p></td>
+		<td colspan="2"><p>(зав. № <em><em>_ ),  инв. № </em><em></em></em></p></td>
+		<td><p>№ <em><em></em></em></p></td>
+		<td><p>ullamcorper</p></td>
+	</tr>
+	<tr>
+		<td colspan="2"><p>dignissim odio</p></td>
+		<td colspan="2"><p> ullamcorper euismod</p></td>
+		<td><p>№ <em><em></em></em></p></td>
+		<td><p>justo lacinia</p></td>
+	</tr>
+	<tr>
+		<td colspan="6"><p><strong>7. Integer sit amet congue ex.</strong></p></td>
+	</tr>
+	<tr>
+		<td colspan="2"><p>7.1. Dignissim odio eget justo lacinia.</p></td>
+		<td colspan="4"><p>Nunc dapibus dapibus pulvinar. Aliquam pellentesque leo et ullamcorper euismod.
+			Proin nec hendrerit augue. Integer sit amet congue ex.</p></td>
+	</tr>
+	</tbody>
+</table>
+</body>
+</html>

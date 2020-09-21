@@ -1,5 +1,6 @@
 import {getBoundingClientRect, getClientRects} from "../utils/utils";
 import {
+	breakInsideAvoidParentNode,
 	child,
 	cloneNode,
 	findElement,
@@ -15,6 +16,7 @@ import {
 	needsPreviousBreakAfter,
 	nodeAfter,
 	nodeBefore,
+	parentOf,
 	previousSignificantNode,
 	prevValidNode,
 	rebuildAncestors,
@@ -480,7 +482,12 @@ class Layout {
 					// Check if it is a float
 					let isFloat = false;
 
-					if (isElement(node)) {
+					// Check if the node is inside a break-inside: avoid table cell
+					const insideTableCell = parentOf(node, "TD", rendered);
+					if (insideTableCell && window.getComputedStyle(insideTableCell)["break-inside"] === "avoid") {
+						// breaking inside a table cell produces unexpected result, as a workaround, we forcibly avoid break inside in a cell.
+						prev = insideTableCell;
+					} else if (isElement(node)) {
 						let styles = window.getComputedStyle(node);
 						isFloat = styles.getPropertyValue("float") !== "none";
 						skip = styles.getPropertyValue("break-inside") === "avoid";
@@ -511,7 +518,7 @@ class Layout {
 
 				if (!range && isText(node) &&
 					node.textContent.trim().length &&
-					window.getComputedStyle(node.parentNode)["break-inside"] !== "avoid") {
+					!breakInsideAvoidParentNode(node.parentNode)) {
 
 					let rects = getClientRects(node);
 					let rect;

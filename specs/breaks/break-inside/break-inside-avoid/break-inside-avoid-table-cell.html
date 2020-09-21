@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>break-inside-avoid-table-cell</title>
+	<script src="../../../../dist/paged.polyfill.js"></script>
+	<style>
+		@page {
+			size: 210mm 100mm;
+			border: 1px solid #cfc2c2;
+		}
+
+		table {
+			border-collapse: collapse;
+		}
+
+		table, th, td {
+			border: 1px solid black;
+		}
+
+		tr, td {
+			break-inside: avoid;
+		}
+	</style>
+</head>
+<body>
+<table>
+	<tbody>
+	<tr>
+		<td>1</td>
+		<td>2</td>
+		<td>3</td>
+		<td>4</td>
+		<td>5</td>
+	</tr>
+	<tr>
+		<td>a</td>
+		<td>b</td>
+		<td>c</td>
+		<td>d</td>
+		<td>e</td>
+	</tr>
+	<tr>
+		<td>
+			<p>Sed sollicitudin ac neque at tincidunt. Proin gravida neque sit amet euismod imperdiet.</p>
+			<p>Nunc eu faucibus mi, nec tincidunt turpis. In mi lacus, sagittis et <em>iaculis</em> id, tincidunt vitae dui. Sed <strong>aliquet ornare ornare</strong>.</p>
+			<p>Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Vivamus iaculis finibus nisl in pharetra.</p>
+		</td>
+		<td><p>Lorem ipsum dolor sit amet</p></td>
+		<td><p>Lorem ipsum dolor sit amet</p></td>
+		<td><p>Lorem ipsum dolor sit amet</p></td>
+		<td><p>Lorem ipsum dolor sit amet</p></td>
+	</tr>
+	</tbody>
+</table>
+</body>
+</html>

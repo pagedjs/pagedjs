@@ -601,6 +601,40 @@ export function previousSignificantNode(sib) {
 	return null;
 }
 
+export function breakInsideAvoidParentNode(node) {
+	while ((node = node.parentNode)) {
+		if (node && node.dataset && node.dataset.breakInside === "avoid") {
+			return node;
+		}
+	}
+	return null;
+}
+
+/**
+ * Find a parent with a given node name.
+ * @param {Node} node - initial Node
+ * @param {string} nodeName - node name (eg. "TD", "TABLE", "STRONG"...)
+ * @param {Node} limiter - go up to the parent until there's no more parent or the current node is equals to the limiter
+ * @returns {Node|undefined} - Either:
+ *  1) The closest parent for a the given node name, or
+ *  2) undefined if no such node exists.
+ */
+export function parentOf(node, nodeName, limiter) {
+	if (limiter && node === limiter) {
+		return;
+	}
+	if (node.parentNode) {
+		while ((node = node.parentNode)) {
+			if (limiter && node === limiter) {
+				return;
+			}
+			if (node.nodeName === nodeName) {
+				return node;
+			}
+		}
+	}
+}
+
 /**
  * Version of |nextSibling| that skips nodes that are entirely
  * whitespace or comments.

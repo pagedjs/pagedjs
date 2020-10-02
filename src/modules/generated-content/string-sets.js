@@ -44,7 +44,7 @@ class StringSets extends Handler {
 			funcNode.children = new csstree.List();
 
  
-			if(this.type === "first" || "last" || "start" || "first-except"){
+			if(this.type === "first" || this.type === "last" || this.type === "start" || this.type === "first-except"){
 				console.log(this.type);
 				funcNode.children.append(
 					funcNode.children.createItem({

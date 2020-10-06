@@ -565,10 +565,6 @@ export default `
 	content: none !important;
 }
 
-img {
-	height: auto;
-}
-
 [data-align-last-split-element='justify'] {
 	text-align-last: justify;
 }

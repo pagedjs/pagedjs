@@ -617,48 +617,41 @@ class AtPage extends Handler {
 
 	addPageClasses(pages, ast, sheet) {
 		// First add * page
-		if ("*" in pages && !pages["*"].added) {
+		if ("*" in pages) {
 			let p = this.createPage(pages["*"], ast.children, sheet);
 			sheet.insertRule(p);
-			pages["*"].added = true;
 		}
 		// Add :left & :right
-		if (":left" in pages && !pages[":left"].added) {
+		if (":left" in pages) {
 			let left = this.createPage(pages[":left"], ast.children, sheet);
 			sheet.insertRule(left);
-			pages[":left"].added = true;
 		}
-		if (":right" in pages && !pages[":right"].added) {
+		if (":right" in pages) {
 			let right = this.createPage(pages[":right"], ast.children, sheet);
 			sheet.insertRule(right);
-			pages[":right"].added = true;
 		}
 		// Add :first & :blank
-		if (":first" in pages && !pages[":first"].first) {
+		if (":first" in pages) {
 			let first = this.createPage(pages[":first"], ast.children, sheet);
 			sheet.insertRule(first);
-			pages[":first"].added = true;
 		}
-		if (":blank" in pages && !pages[":blank"].added) {
+		if (":blank" in pages) {
 			let blank = this.createPage(pages[":blank"], ast.children, sheet);
 			sheet.insertRule(blank);
-			pages[":blank"].added = true;
 		}
 		// Add nth pages
 		for (let pg in pages) {
-			if (pages[pg].nth && !pages[pg].added) {
+			if (pages[pg].nth) {
 				let nth = this.createPage(pages[pg], ast.children, sheet);
 				sheet.insertRule(nth);
-				pages[pg].added = true;
 			}
 		}
 
 		// Add named pages
 		for (let pg in pages) {
-			if (pages[pg].name && !pages[pg].added) {
+			if (pages[pg].name) {
 				let named = this.createPage(pages[pg], ast.children, sheet);
 				sheet.insertRule(named);
-				pages[pg].added = true;
 			}
 		}
 
@@ -747,7 +740,7 @@ class AtPage extends Handler {
 					}
 				});
 				list.append(bVar, item);
-			}	
+			}
 
 		}
 	}

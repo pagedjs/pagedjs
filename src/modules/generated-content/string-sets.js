@@ -52,6 +52,14 @@ class StringSets extends Handler {
 						name: "--pagedjs-string-" + this.type + "-" + identifier
 					})
 				);
+			}else{
+				funcNode.children.append(
+					funcNode.children.createItem({
+						type: "Identifier",
+						loc: null,
+						name: "--pagedjs-string-first-" + identifier
+					})
+				);
 			}
 		}
 	}

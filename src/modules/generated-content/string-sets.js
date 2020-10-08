@@ -45,7 +45,6 @@ class StringSets extends Handler {
 
  
 			if(this.type === "first" || this.type === "last" || this.type === "start" || this.type === "first-except"){
-				console.log(this.type);
 				funcNode.children.append(
 					funcNode.children.createItem({
 						type: "Identifier",
@@ -70,8 +69,6 @@ class StringSets extends Handler {
 	
 			let set = this.stringSetSelectors[name];
 			let selected = fragment.querySelectorAll(set.selector);
-	
-			console.log(selected.length);
 
 			// Get the last found string for the current identifier
 			let stringPrevPage = ( name in this.pageLastString ) ? this.pageLastString[name] : "";

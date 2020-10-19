@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+	<title>Preformatted Text element</title>
+	<script src="../../../dist/paged.polyfill.js"></script>
+	<style>
+		@page {
+			size: 220mm 15mm;
+			margin: 0;
+		}
+
+		/* interface */
+		@media screen {
+			body {
+				background-color: whitesmoke;
+			}
+
+			.pagedjs_page {
+				margin-bottom: 0;
+				flex: none;
+				border-left: 1px solid rgba(0, 0,0,0.2);
+				border-right: 1px solid rgba(0, 0,0,0.2);
+				border-bottom: 1px dashed rgba(0, 0,0,0.1);
+				background-color: white;
+			}
+			.pagedjs_page:first-child {
+				border-top: 1px solid rgba(0, 0,0,0.2);
+			}
+			.pagedjs_page:last-child {
+				border-bottom: 1px solid rgba(0, 0,0,0.2);
+			}
+		}
+	</style>
+</head>
+<body>
+<section>
+	<pre>
+        88888888ba                                                 88       88
+        88      "8b                                                88       ""
+        88      ,8P                                                88
+        88aaaaaa8P'  ,adPPYYba,   ,adPPYb,d8   ,adPPYba,   ,adPPYb,88       88  ,adPPYba,
+        88""""""'    ""     `Y8  a8"    `Y88  a8P_____88  a8"    `Y88       88  I8[    ""
+        88           ,adPPPPP88  8b       88  8PP"""""""  8b       88       88   `"Y8ba,
+        88           88,    ,88  "8a,   ,d88  "8b,   ,aa  "8a,   ,d88  888  88  aa    ]8I
+        88           `"8bbdP"Y8   `"YbbdP"Y8   `"Ybbd8"'   `"8bbdP"Y8  888  88  `"YbbdP"'
+                                  aa,    ,88                               ,88
+                                   "Y8bbdP"                              888P"
+	</pre>
+</section>
+</body>
+</html>

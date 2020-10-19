@@ -301,10 +301,11 @@ export function *words(node) {
 	let currentLetter;
 
 	let range;
+	const significantWhitespaces = node.parentElement && node.parentElement.nodeName === 'PRE';
 
-	while(currentOffset < max) {
+	while (currentOffset < max) {
 		currentLetter = currentText[currentOffset];
-		if (/^[\S\u202F\u00A0]$/.test(currentLetter)) {
+		if (/^[\S\u202F\u00A0]$/.test(currentLetter) || significantWhitespaces) {
 			if (!range) {
 				range = document.createRange();
 				range.setStart(node, currentOffset);
@@ -323,7 +324,6 @@ export function *words(node) {
 	if (range) {
 		range.setEnd(node, currentOffset);
 		yield range;
-		range = undefined;
 	}
 }
 

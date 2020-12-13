@@ -5,6 +5,31 @@ export function getBoundingClientRect(element) {
 	let rect;
 	if (typeof element.getBoundingClientRect !== "undefined") {
 		rect = element.getBoundingClientRect();
+
+		let writeableRect = new Object;
+		writeableRect.bottom = rect.bottom;
+		writeableRect.height = rect.height;
+		writeableRect.left = rect.left;
+		writeableRect.right = rect.right;
+		writeableRect.top = rect.top;
+		writeableRect.width = rect.width;
+		writeableRect.x = rect.x;
+		writeableRect.y = rect.y;
+		rect = writeableRect;
+
+		// Fix for Safari
+		// Check left and right values of all children
+		// to detect if element overflows full or partially
+		let children = element.querySelectorAll('*');
+		for (let i = 0; i < children.length; i++) {
+			let childRect = children[i].getBoundingClientRect();
+			if (childRect.right > rect.right) { 
+				rect.right = childRect.right;
+			}
+			if (childRect.left < rect.left) {
+				rect.left = childRect.left;
+			}
+		}
 	} else {
 		let range = document.createRange();
 		range.selectNode(element);

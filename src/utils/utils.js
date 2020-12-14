@@ -20,14 +20,18 @@ export function getBoundingClientRect(element) {
 		// Fix for Safari
 		// Check left and right values of all children
 		// to detect if element overflows full or partially
-		let children = element.querySelectorAll('*');
-		for (let i = 0; i < children.length; i++) {
-			let childRect = children[i].getBoundingClientRect();
-			if (childRect.right > rect.right) { 
-				rect.right = childRect.right;
-			}
-			if (childRect.left < rect.left) {
-				rect.left = childRect.left;
+		if (typeof element.querySelectorAll !== "undefined") {
+			let children = element.querySelectorAll('*');
+			for (let i = 0; i < children.length; i++) {
+				if (typeof children[i].getBoundingClientRect !== "undefined") {
+					let childRect = children[i].getBoundingClientRect();
+					if (childRect.right > rect.right) { 
+						rect.right = childRect.right;
+					}
+					if (childRect.left < rect.left) {
+						rect.left = childRect.left;
+					}
+				}
 			}
 		}
 	} else {

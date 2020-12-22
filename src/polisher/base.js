@@ -33,6 +33,7 @@ export default `
 	--pagedjs-bleed-left-bottom: 0mm;
 	--pagedjs-bleed-left-left: 0mm;
 	--pagedjs-crop-color: black;
+	--pagedjs-crop-shadow: white;
 	--pagedjs-crop-offset: 2mm;
 	--pagedjs-crop-stroke: 1px;
 	--pagedjs-cross-size: 5mm;
@@ -115,6 +116,7 @@ export default `
 .pagedjs_bleed-bottom .pagedjs_marks-crop:nth-child(1) {
 	width: calc(var(--pagedjs-bleed-left) - var(--pagedjs-crop-stroke));
 	border-right: var(--pagedjs-crop-stroke) solid var(--pagedjs-crop-color);
+	box-shadow: 1px 0px 0px 0px var(--pagedjs-crop-shadow);
 }
 
 .pagedjs_right_page .pagedjs_bleed-top .pagedjs_marks-crop:nth-child(1),
@@ -131,6 +133,7 @@ export default `
 .pagedjs_bleed-bottom .pagedjs_marks-crop:nth-child(3) {
 	width: calc(var(--pagedjs-bleed-right) - var(--pagedjs-crop-stroke));
 	border-left: var(--pagedjs-crop-stroke) solid var(--pagedjs-crop-color);
+	box-shadow: -1px 0px 0px 0px var(--pagedjs-crop-shadow);
 }
 
 .pagedjs_right_page .pagedjs_bleed-top .pagedjs_marks-crop:nth-child(3),
@@ -173,6 +176,7 @@ export default `
 .pagedjs_bleed-right .pagedjs_marks-crop:nth-child(1) {
 	height: calc(var(--pagedjs-bleed-top) - var(--pagedjs-crop-stroke));
 	border-bottom: var(--pagedjs-crop-stroke) solid var(--pagedjs-crop-color);
+	box-shadow: 0px 1px 0px 0px var(--pagedjs-crop-shadow);
 }
 
 .pagedjs_right_page .pagedjs_bleed-left .pagedjs_marks-crop:nth-child(1),
@@ -189,6 +193,7 @@ export default `
 .pagedjs_bleed-right .pagedjs_marks-crop:nth-child(3) {
 	height: calc(var(--pagedjs-bleed-bottom) - var(--pagedjs-crop-stroke));
 	border-top: var(--pagedjs-crop-stroke) solid var(--pagedjs-crop-color);
+	box-shadow: 0px -1px 0px 0px var(--pagedjs-crop-shadow);
 }
 
 .pagedjs_right_page .pagedjs_bleed-left .pagedjs_marks-crop:nth-child(3),

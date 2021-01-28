@@ -728,20 +728,20 @@ class AtPage extends Handler {
 
 	addBorderVars(border, list, item) {
 		// variables for borders
-		for (let b in border) {
-			if (typeof border[b] !== "undefined") {
-				let value = border[b];
-				let bVar = list.createItem({
+		for (const name of Object.keys(border)) {
+			const value = border[name];
+			// value is an empty object when undefined
+			if (typeof value === "string") {
+				const borderItem = list.createItem({
 					type: "Declaration",
-					property: "--pagedjs-border-" + b,
+					property: "--pagedjs-border-" + name,
 					value: {
 						type: "Raw",
 						value: value
 					}
 				});
-				list.append(bVar, item);
+				list.append(borderItem, item);
 			}
-
 		}
 	}
 

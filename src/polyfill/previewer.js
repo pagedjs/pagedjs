@@ -4,7 +4,7 @@ import Hook from "../utils/hook";
 import Chunker from "../chunker/chunker";
 import Polisher from "../polisher/polisher";
 
-import { registerHandlers, initializeHandlers } from "../utils/handlers";
+import { initializeHandlers, registerHandlers } from "../utils/handlers";
 
 class Previewer {
 	constructor(options) {
@@ -101,22 +101,36 @@ class Previewer {
 
 	removeStyles(doc=document) {
 		// Get all stylesheets
-		let stylesheets = Array.from(doc.querySelectorAll("link[rel='stylesheet']"));
-		let hrefs = stylesheets.map((sheet) => {
-			sheet.remove();
-			return sheet.href;
-		});
-
+		const stylesheets = Array.from(doc.querySelectorAll("link[rel='stylesheet']"));
 		// Get inline styles
-		let inlineStyles = Array.from(doc.querySelectorAll("style:not([data-pagedjs-inserted-styles])"));
-		inlineStyles.forEach((inlineStyle) => {
-			let obj = {};
-			obj[window.location.href] = inlineStyle.textContent;
-			hrefs.push(obj);
-			inlineStyle.remove();
-		});
-
-		return hrefs;
+		const inlineStyles = Array.from(doc.querySelectorAll("style:not([data-pagedjs-inserted-styles])"));
+		const elements = [...stylesheets, ...inlineStyles];
+		return elements
+			// preserve order
+			.sort(function (element1, element2) {
+				const position = element1.compareDocumentPosition(element2);
+				if (position === Node.DOCUMENT_POSITION_PRECEDING) {
+					return 1;
+				} else if (position === Node.DOCUMENT_POSITION_FOLLOWING) {
+					return -1;
+				}
+				return 0;
+			})
+			// extract the href
+			.map((element) => {
+				if (element.nodeName === "STYLE") {
+					const obj = {};
+					obj[window.location.href] = element.textContent;
+					element.remove();
+					return obj;
+				}
+				if (element.nodeName === "LINK") {
+					element.remove();
+					return element.href;
+				}
+				// ignore
+				console.warn(`Unable to process: ${element}, ignoring.`);
+			});
 	}
 
 	async preview(content, stylesheets, renderTo) {

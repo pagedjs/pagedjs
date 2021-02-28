@@ -1,4 +1,4 @@
-import {getBoundingClientRect, getClientRects} from "../utils/utils";
+import { getBoundingClientRect, getClientRects } from "../utils/utils";
 import {
 	breakInsideAvoidParentNode,
 	child,
@@ -24,7 +24,8 @@ import {
 	walk,
 	words
 } from "../utils/dom";
-import BreakToken  from "./breaktoken";
+import BreakToken from "./breaktoken";
+import RenderResult, { OverflowContentError } from "./renderresult";
 import EventEmitter from "event-emitter";
 import Hook from "../utils/hook";
 
@@ -93,9 +94,9 @@ class Layout {
 
 				if (newBreakToken && newBreakToken.equals(prevBreakToken)) {
 					console.warn("Unable to layout item: ", prevNode);
-					return undefined;
+					return new RenderResult(undefined, new OverflowContentError("Unable to layout item", [prevNode]));
 				}
-				return newBreakToken;
+				return new RenderResult(newBreakToken);
 			}
 
 			this.hooks && this.hooks.layoutNode.trigger(node);
@@ -117,7 +118,7 @@ class Layout {
 
 				if (newBreakToken && newBreakToken.equals(prevBreakToken)) {
 					console.warn("Unable to layout item: ", node);
-					return undefined;
+					return new RenderResult(undefined, new OverflowContentError("Unable to layout item", [node]));
 				}
 
 				length = 0;
@@ -171,7 +172,7 @@ class Layout {
 
 				if (newBreakToken && newBreakToken.equals(prevBreakToken)) {
 					console.warn("Unable to layout item: ", node);
-					return undefined;
+					return new RenderResult(undefined, new OverflowContentError("Unable to layout item", [node]));
 				}
 
 				if (newBreakToken) {
@@ -181,7 +182,7 @@ class Layout {
 
 		}
 
-		return newBreakToken;
+		return new RenderResult(newBreakToken);
 	}
 
 	breakAt(node, offset = 0) {

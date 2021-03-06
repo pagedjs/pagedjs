@@ -496,6 +496,40 @@ class Layout {
 						br = node.tagName === "BR" || node.tagName === "WBR";
 					}
 
+					let tableRow;
+					if (node.nodeName === "TR") {
+						tableRow = node;
+					} else {
+						tableRow = parentOf(node, "TR", rendered);
+					}
+					if (tableRow) {
+						// Check if the node is inside a row with a rowspan
+						const table = parentOf(tableRow, "TABLE", rendered);
+						if (table) {
+							let columnCount = 0;
+							for (const cell of Array.from(table.rows[0].cells)) {
+								columnCount += parseInt(cell.getAttribute("COLSPAN") || "1");
+							}
+							if (tableRow.cells.length !== columnCount) {
+								let previousRow = tableRow.previousSibling;
+								let previousRowColumnCount;
+								while (previousRow !== null) {
+									previousRowColumnCount = 0;
+									for (const cell of Array.from(previousRow.cells)) {
+										previousRowColumnCount += parseInt(cell.getAttribute("COLSPAN") || "1");
+									}
+									if (previousRowColumnCount === columnCount) {
+										break;
+									}
+									previousRow = previousRow.previousSibling;
+								}
+								if (previousRowColumnCount === columnCount) {
+									prev = previousRow;
+								}
+							}
+						}
+					}
+
 					if (prev) {
 						range = document.createRange();
 						range.selectNode(prev);

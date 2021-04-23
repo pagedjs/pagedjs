@@ -36,6 +36,7 @@ class Page {
 
 		let pagebox = page.querySelector(".pagedjs_pagebox");
 		let area = page.querySelector(".pagedjs_page_content");
+		let footnotesArea = page.querySelector(".pagedjs_footnote_area");
 
 
 		let size = area.getBoundingClientRect();
@@ -51,6 +52,7 @@ class Page {
 		this.element = page;
 		this.pagebox = pagebox;
 		this.area = area;
+		this.footnotesArea = footnotesArea;
 
 		return page;
 	}

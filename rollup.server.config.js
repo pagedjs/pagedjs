@@ -5,7 +5,7 @@ import json from 'rollup-plugin-json';
 // import builtins from 'rollup-plugin-node-builtins';
 // import globals from 'rollup-plugin-node-globals';
 
-import pkg from './package.json';
+// import pkg from './package.json';
 
 import serve from 'rollup-plugin-serve'
 import livereload from 'rollup-plugin-livereload'

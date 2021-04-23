@@ -103,7 +103,8 @@ class TargetCounters extends Handler {
 						let pages = chunker.pagesArea.querySelectorAll(".pagedjs_page");
 						let pg = 0;
 						for (let i = 0; i < pages.length; i++) {
-							let styles = window.getComputedStyle(pages[i]);
+							let page = pages[i];
+							let styles = window.getComputedStyle(page);
 							let reset = styles["counter-reset"].replace("page", "").trim();
 							let increment = styles["counter-increment"].replace("page", "").trim();
 
@@ -114,17 +115,24 @@ class TargetCounters extends Handler {
 								pg += parseInt(increment);
 							}
 
-							if (pages[i].contains(element)) {
+							if (page.contains(element)){
 								break;
 							}
 						}
-
 						this.styleSheet.insertRule(`[data-${target.variable}="${selector}"]${pseudo} { counter-reset: ${target.variable} ${pg}; }`, this.styleSheet.cssRules.length);
 					} else {
 						let value = element.getAttribute(`data-counter-${target.counter}-value`);
 						if (value) {
 							this.styleSheet.insertRule(`[data-${target.variable}="${selector}"]${pseudo} { counter-reset: ${target.variable} ${target.variable} ${parseInt(value)}; }`, this.styleSheet.cssRules.length);
 						}
+					}
+
+					// force redraw
+					let el = document.querySelector(`[data-${target.variable}="${selector}"]`);
+					if (el) {
+						el.style.display = "none";
+						el.clientHeight;
+						el.style.removeProperty("display");
 					}
 				}
 			});

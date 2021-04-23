@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en" lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>
+        Footnotes
+    </title>
+
+    <!-- Paged js-->
+    <script src="../../../dist/paged.polyfill.js"></script>
+    <style>
+
+
+        body {
+            widows: 1;
+            orphans: 1;
+        }
+
+        @media screen {
+            .pagedjs_page {
+                box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
+            }
+        }
+
+        .footnote {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            line-height: 14px;
+            margin-top: 16px;
+            color: grey;
+        }
+
+
+        @page {
+            size: 160mm 210mm;
+            margin-top: 83px;
+            margin-bottom: 86px;
+            margin-left: 35mm;
+            margin-right: 35mm;
+            
+            @bottom-left{
+                content: counter(page);
+            }
+
+            @footnote {
+                border-top: dashed red 1px;
+                margin-top: 12px;
+                float: bottom;
+            }
+        }
+
+        span.footnote { 
+            float: footnote;
+            footnote-policy: auto;
+            footnote-display: compact;
+        }
+
+        .footnote::footnote-call {
+            color: red;
+        }
+        
+        .footnote::footnote-marker {
+            color: blue;
+        }
+
+        p{ 
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            margin-top: 0; 
+            margin-bottom: 0;
+            text-align: justify;
+            font-size: 14px;
+            line-height: 16px;
+        }
+
+
+
+        .afnanch{ display: none; }
+
+        hr{
+            border: none;	
+        }
+
+        .pfirst{
+            padding-top: 50mm;
+        }
+    </style>
+
+    
+
+</head>
+
+<body>
+        <p>the passage from Xylography to Typography. Those who write on the
+            affirmative side of the question profess to see in the earlier typographical works,
+            as well as in the historical statements handed down by the
+            old authorities, the clearest evidence that wooden types were used, and that several of the most
+            famous works of the first printers were executed by their means.</p>
+
+        <p>As regards the latter source of their confidence, it is at least remarkable
+            that no single writer of the fifteenth century makes the slightest allusion to the
+            use of wooden types. Indeed, it was not till Bibliander, in 1548,<span class="footnote" data-note="04" id="note-04"><em>In Commentatione de ratione
+                    communi omnium linguarum et
+                    literarum.</em> Tiguri, 1548, p. 80.</span>
+            first mentioned
+            and described them, that anything professing to be a record on the subject
+            existed. “First they cut their letters,” he says, “on wood blocks the size of an
+            entire page, but because the labour and cost of that way was so great, they devised
+            movable wooden types, perforated and joined one to the other by a thread.”</p>
+
+        <p>The legend, once started, found no lack of sponsors, and the typographical
+            histories of the sixteenth century and onward abound with testimonies confirmatory
+            more or less of Bibliander’s statement. Of these testimonies, those only
+            are worthy of attention which profess to be based on actual inspection of the
+            alleged perforated wooden types. Specklin
+            (who died in 1589) asserts that he
+            saw some of these relics at Strasburg<span class="footnote" data-note="05" id="note-05">In <em>Chronico Argentoratensi</em>, <em>m.s.</em> ed. Jo.
+                Schilterus,
+                p. 442. “Ich habe die erste press, auch die buchstaben gesehen, waren
+                von holtz geschnitten, auch gäntze wörter und syllaben, hatten löchle,
+                und fasst man an ein schnur nacheinander mit einer nadel, zoge sie
+                darnach den zeilen in die länge,” etc.</span>. Angelo Roccha,<span
+                class="footnote" data-note="06" id="note-06"><em>De Bibliothecâ Vaticanâ.</em> Romæ, 1591, p. 412.
+                “Characteres enim a primis illis inventoribus non ita eleganter et
+                expedite, ut a nostris fieri solet, sed filo in litterarum foramen
+                immisso connectebantur, sicut Venetiis id genus typos me vidisse
+                memini.”</span>
+            in 1591, vouches for the
+            existence of similar letters (though he does not say whether wood or metal) at
+            Venice. </p>
+
+        
+</body>
+
+</html>

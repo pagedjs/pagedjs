@@ -140,6 +140,41 @@ export function rebuildAncestors(node) {
 
 	let fragment = document.createDocumentFragment();
 
+	// Handle rowspan on table
+	if (node.nodeName === "TR") {
+		let previousRow = node.previousElementSibling;
+		let previousRowDistance = 1;
+		while (previousRow) {
+			// previous row has more columns, might indicate a rowspan.
+			if (previousRow.childElementCount > node.childElementCount) {
+				const initialColumns = Array.from(node.children);
+				while (node.firstChild) {
+					node.firstChild.remove();
+				}
+				let k = 0;
+				for (let j = 0; j < previousRow.children.length; j++) {
+					let column = previousRow.children[j];
+					if (column.rowSpan && column.rowSpan > previousRowDistance) {
+						const duplicatedColumn = column.cloneNode(true);
+						// Adjust rowspan value
+						duplicatedColumn.rowSpan = column.rowSpan - previousRowDistance;
+						// Add the column to the row
+						node.appendChild(duplicatedColumn);
+					} else {
+						// Fill the gap with the initial columns (if exists)
+						const initialColumn = initialColumns[k++];
+						// The initial column can be undefined if the newly created table has less columns than the original table
+						if (initialColumn) {
+							node.appendChild(initialColumn);
+						}
+					}
+				}
+			}
+			previousRow = previousRow.previousElementSibling;
+			previousRowDistance++;
+		}
+	}
+
 	// Gather all ancestors
 	let element = node;
 	while(element.parentNode && element.parentNode.nodeType === 1) {

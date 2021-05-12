@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>rowspan-table</title>
+	<script src="../../../dist/paged.polyfill.js"></script>
+	<style>
+		@page {
+			size: 600px 300px;
+			border: 1px solid #cfc2c2;
+		}
+
+		table {
+			border-collapse: collapse;
+		}
+
+		table, th, td {
+			border: 1px solid black;
+		}
+
+		tr, td {
+			break-inside: avoid;
+		}
+	</style>
+</head>
+<body>
+<table>
+	<tbody>
+	<tr>
+		<td rowspan="4">1.1</td>
+		<td rowspan="4">This is a long description</td>
+		<td>First row, third column</td>
+		<td rowspan="4">1.4</td>
+		<td>First row, fifth column</td>
+		<td rowspan="4">1.6</td>
+	</tr>
+	<tr>
+		<td>Second row, third column</td>
+		<td>Second row, fifth column</td>
+	</tr>
+	<tr>
+		<td>Third row, third column</td>
+		<td>Third row, fifth column</td>
+	</tr>
+	<tr>
+		<td>Fourth row, third column</td>
+		<td>Fourth row, fifth column</td>
+	</tr>
+	</tbody>
+</table>
+</body>
+</html>

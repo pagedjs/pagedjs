@@ -104,7 +104,6 @@ class Polisher {
 	insert(text){
 		let head = document.querySelector("head");
 		let style = document.createElement("style");
-		style.type = "text/css";
 		style.setAttribute("data-pagedjs-inserted-styles", "true");
 
 		style.appendChild(document.createTextNode(text));

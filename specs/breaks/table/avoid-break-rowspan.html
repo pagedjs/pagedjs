@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>table-avoid-break-rowspan</title>
+	<meta charset="UTF-8">
+	<script src="../../../dist/paged.polyfill.js"></script>
+	<style>
+		@page {
+			size: A5;
+			margin: 1cm;
+		}
+
+		table {
+			border-collapse: collapse;
+			border-spacing: 0;
+		}
+
+		tr {
+			break-inside: avoid;
+		}
+
+		.table td, .table th {
+			border: 1px solid #dbdbdb;
+			padding: .5em .75em;
+			vertical-align: top;
+		}
+
+		/* interface */
+
+		@media screen {
+
+			body {
+				background-color: whitesmoke;
+			}
+
+			.pagedjs_page {
+				margin-bottom: 20px;
+				flex: none;
+				box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
+				background-color: white;
+			}
+		}
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<main>
+	<section>
+		<table class="table is-bordered">
+			<thead>
+			<tr>
+				<th>id</th>
+				<th>first_name</th>
+				<th>last_name</th>
+				<th colspan="2">email + score</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr>
+				<td>1</td>
+				<td>Magdalen</td>
+				<td>Holtaway</td>
+				<td>Flowdesk</td>
+				<td rowspan="3">37.67</td>
+			</tr>
+			<tr>
+				<td>2</td>
+				<td>Olenka</td>
+				<td>Tuckett</td>
+				<td>Subin</td>
+			</tr>
+			<tr>
+				<td>3</td>
+				<td>Towny</td>
+				<td>Calverley</td>
+				<td>Fintone</td>
+			</tr>
+			<tr>
+				<td>4</td>
+				<td>Maribeth</td>
+				<td>Caskie</td>
+				<td>Tresom</td>
+				<td rowspan="3">13.64</td>
+			</tr>
+			<tr>
+				<td>5</td>
+				<td>Roldan</td>
+				<td>Whitham</td>
+				<td>Flowdesk</td>
+			</tr>
+			<tr>
+				<td>6</td>
+				<td>Melody</td>
+				<td>Gentle</td>
+				<td>Asoka</td>
+			</tr>
+			<tr>
+				<td>7</td>
+				<td>Aida</td>
+				<td>Holtum</td>
+				<td>Bigtax</td>
+				<td rowspan="3">84.10</td>
+			</tr>
+			<tr>
+				<td>8</td>
+				<td>Angelia</td>
+				<td>O'Farrell</td>
+				<td>Bamity</td>
+			</tr>
+			<tr>
+				<td>9</td>
+				<td>Puff</td>
+				<td>Stennet</td>
+				<td>Aerified</td>
+			</tr>
+			<tr>
+				<td>10</td>
+				<td>Carmel</td>
+				<td>Ennion</td>
+				<td>Kanlam</td>
+				<td rowspan="3">59.44</td>
+			</tr>
+			<tr>
+				<td>11</td>
+				<td>Phyllida</td>
+				<td>Sarra</td>
+				<td>Toughjoyfax</td>
+			</tr>
+			<tr>
+				<td>12</td>
+				<td>Dulcy</td>
+				<td>Lamb-shine</td>
+				<td>Tresom</td>
+			</tr>
+			<tr>
+				<td>13</td>
+				<td>Piggy</td>
+				<td>Junifer</td>
+				<td>Bitchip</td>
+				<td rowspan="3">23.64</td>
+			</tr>
+			<tr>
+				<td>14</td>
+				<td>Adrianna</td>
+				<td>Millichap</td>
+				<td>It</td>
+			</tr>
+			<tr>
+				<td>15</td>
+				<td>Celeste</td>
+				<td>Milleton</td>
+				<td>Daltfresh</td>
+			</tr>
+			<tr>
+				<td>16</td>
+				<td>Ted</td>
+				<td>Slyde</td>
+				<td>Treeflex</td>
+				<td rowspan="3">74.64</td>
+			</tr>
+			<tr>
+				<td>17</td>
+				<td>Maurene</td>
+				<td>Sylvester</td>
+				<td>Tres-Zap</td>
+			</tr>
+			<tr>
+				<td>18</td>
+				<td>Monte</td>
+				<td>Tingley</td>
+				<td>Redhold</td>
+			</tr>
+			<tr>
+				<td>19</td>
+				<td>Louise</td>
+				<td>McMichell</td>
+				<td>Latlux</td>
+				<td rowspan="3">18.86</td>
+			</tr>
+			<tr>
+				<td>20</td>
+				<td>Turner</td>
+				<td>McQuirter</td>
+				<td>Keylex</td>
+			</tr>
+			<tr>
+				<td>21</td>
+				<td>Alvin</td>
+				<td>Emilien</td>
+				<td>Cardguard</td>
+			</tr>
+			<tr>
+				<td>22</td>
+				<td>Joanne</td>
+				<td>Obey</td>
+				<td>Regrant</td>
+				<td rowspan="3">25.32</td>
+			</tr>
+			<tr>
+				<td>23</td>
+				<td>Lorne</td>
+				<td>Lescop</td>
+				<td>Home Ing</td>
+			</tr>
+			<tr>
+				<td>24</td>
+				<td>Zara</td>
+				<td>Jillett</td>
+				<td>Matsoft</td>
+			</tr>
+			<tr>
+				<td>25</td>
+				<td>Delmore</td>
+				<td>Hellis</td>
+				<td>Regrant</td>
+				<td>42.33</td>
+			</tr>
+			</tbody>
+		</table>
+	</section>
+</main>
+</body>
+</html>

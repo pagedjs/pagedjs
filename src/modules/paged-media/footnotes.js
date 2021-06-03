@@ -183,7 +183,7 @@ class Footnotes extends Handler {
 
 			if (node.dataset.note === "footnote") {
 				notes = [node];
-			} else if (node.dataset.hasNotes) {
+			} else if (node.dataset.hasNotes || node.querySelectorAll("[data-note='footnote']")) {
 				notes = node.querySelectorAll("[data-note='footnote']");
 			}
 

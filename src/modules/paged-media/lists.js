@@ -18,9 +18,6 @@ class Lists extends Handler {
 			if (list.hasChildNodes()) {
 				list.start = list.firstElementChild.dataset.itemNum;
 			}
-			else {
-				list.parentNode.removeChild(list);
-			}
 		}
 	}
 

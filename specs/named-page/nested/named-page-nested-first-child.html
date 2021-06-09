@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+<head>
+	<title>named-page-nested-first-child</title>
+	<meta charset="UTF-8">
+	<script src="../../../dist/paged.polyfill.js"></script>
+	<style>
+		.preamble {
+			page: preamble;
+		}
+
+		@page preamble {
+			background: orange;
+		}
+
+		/* interface */
+		@media screen {
+
+			body {
+				background-color: whitesmoke;
+			}
+
+			.pagedjs_page {
+				margin-bottom: 20px;
+				flex: none;
+				box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+				background-color: white;
+			}
+
+			.pagedjs_pages {
+				width: calc(var(--pagedjs-width) * 2);
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+				justify-content: flex-start;
+				transform-origin: 0 0;
+				margin: 0 auto;
+			}
+
+			.pagedjs_first_page {
+				margin-left: 50%;
+			}
+		}
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+<p>Introduction.</p>
+<div class="content">
+	<div class="preamble">
+		<p>This is a preamble.</p>
+	</div>
+</div>
+</body>
+</html>

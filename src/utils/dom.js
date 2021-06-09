@@ -6,7 +6,7 @@ export function isText(node) {
 	return node && node.nodeType === 3;
 }
 
-export function *walk(start, limiter) {
+export function* walk(start, limiter) {
 	let node = start;
 
 	while (node) {
@@ -324,8 +324,20 @@ export function needsPageBreak(node, previousSignificantNode) {
 	if (node.dataset && node.dataset.undisplayed) {
 		return false;
 	}
-	const previousSignificantNodePage = previousSignificantNode.dataset ? previousSignificantNode.dataset.page : undefined;
-	const currentNodePage = node.dataset ? node.dataset.page : undefined;
+	let previousSignificantNodePage = previousSignificantNode.dataset ? previousSignificantNode.dataset.page : undefined;
+	if (typeof previousSignificantNodePage === "undefined") {
+		const nodeWithNamedPage = getNodeWithNamedPage(previousSignificantNode);
+		if (nodeWithNamedPage) {
+			previousSignificantNodePage = nodeWithNamedPage.dataset.page;
+		}
+	}
+	let currentNodePage = node.dataset ? node.dataset.page : undefined;
+	if (typeof currentNodePage === "undefined") {
+		const nodeWithNamedPage = getNodeWithNamedPage(node, previousSignificantNode);
+		if (nodeWithNamedPage) {
+			currentNodePage = nodeWithNamedPage.dataset.page;
+		}
+	}
 	return currentNodePage !== previousSignificantNodePage;
 }
 
@@ -336,7 +348,7 @@ export function *words(node) {
 	let currentLetter;
 
 	let range;
-	const significantWhitespaces = node.parentElement && node.parentElement.nodeName === 'PRE';
+	const significantWhitespaces = node.parentElement && node.parentElement.nodeName === "PRE";
 
 	while (currentOffset < max) {
 		currentLetter = currentText[currentOffset];
@@ -632,6 +644,23 @@ export function isAllWhitespace(node) {
 export function previousSignificantNode(sib) {
 	while ((sib = sib.previousSibling)) {
 		if (!isIgnorable(sib)) return sib;
+	}
+	return null;
+}
+
+function getNodeWithNamedPage(node, limiter) {
+	if (node && node.dataset && node.dataset.page) {
+		return node;
+	}
+	if (node.parentNode) {
+		while ((node = node.parentNode)) {
+			if (limiter && node === limiter) {
+				return;
+			}
+			if (node.dataset && node.dataset.page) {
+				return node;
+			}
+		}
 	}
 	return null;
 }

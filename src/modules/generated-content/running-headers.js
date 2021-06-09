@@ -146,7 +146,7 @@ class RunningHeaders extends Handler {
 
 		switch (parts.length) {
 			case 4:
-				if (parts[3] === "pagedjs_first_page") {
+				if (/^pagedjs_[\w-]+_first_page$/.test(parts[3])) {
 					weight = 7;
 				} else if (parts[3] === "pagedjs_left_page" || parts[3] === "pagedjs_right_page") {
 					weight = 6;

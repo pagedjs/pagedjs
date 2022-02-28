@@ -506,6 +506,13 @@ class Layout {
 						tableRow = parentOf(node, "TR", rendered);
 					}
 					if (tableRow) {
+						// honor break-inside="avoid" in parent tbody/thead
+						let container = tableRow.parentElement;
+						if (['TBODY', 'THEAD'].includes(container.nodeName)) {
+							let styles = window.getComputedStyle(container);
+							if (styles.getPropertyValue("break-inside") === "avoid") prev = container;
+						}
+
 						// Check if the node is inside a row with a rowspan
 						const table = parentOf(tableRow, "TABLE", rendered);
 						if (table) {

@@ -7,9 +7,9 @@ Paged.js is an open-source library to display paginated content in the browser a
 
 It contains a set of handlers for CSS transformations and fragmented layout which polyfill the [Paged Media](https://www.w3.org/TR/css-page-3/) and [Generated Content](https://www.w3.org/TR/css-gcpm-3/) CSS modules, along with hooks to create new handlers for custom properties.
 
-The currently supported properties can be found on [the wiki](https://gitlab.pagedmedia.org/tools/pagedjs/wikis/Support-of-specifications).
+The currently supported properties can be found on [the pagedjs website](https://pagedjs.org/documentation/cheatsheet/).
 
-A quick overview to getting started with Paged Media CSS and Paged.js is available on [pagedmedia.org](https://www.pagedmedia.org/paged-js/).
+A quick overview to getting started with Paged Media CSS and Paged.js is available on [pagedjs.org/documentation](https://pagedjs.org/documentation/).
 
 ## NPM Module
 ```sh

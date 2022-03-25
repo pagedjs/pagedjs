@@ -212,7 +212,7 @@ class Chunker {
 	// }
 
 	async render(parsed, startAt) {
-		let renderer = this.layout(parsed, startAt, this.settings);
+		let renderer = this.layout(parsed, startAt);
 
 		let done = false;
 		let result;
@@ -395,7 +395,7 @@ class Chunker {
 	addPage(blank) {
 		let lastPage = this.pages[this.pages.length - 1];
 		// Create a new page from the template
-		let page = new Page(this.pagesArea, this.pageTemplate, blank, this.hooks);
+		let page = new Page(this.pagesArea, this.pageTemplate, blank, this.hooks, this.settings);
 
 		this.pages.push(page);
 

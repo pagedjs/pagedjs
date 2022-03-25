@@ -6,7 +6,7 @@ import EventEmitter from "event-emitter";
  * @class
  */
 class Page {
-	constructor(pagesArea, pageTemplate, blank, hooks) {
+	constructor(pagesArea, pageTemplate, blank, hooks, options) {
 		this.pagesArea = pagesArea;
 		this.pageTemplate = pageTemplate;
 		this.blank = blank;
@@ -15,6 +15,8 @@ class Page {
 		this.height = undefined;
 
 		this.hooks = hooks;
+
+		this.settings = options || {};
 
 		// this.element = this.create(this.pageTemplate);
 	}
@@ -125,7 +127,12 @@ class Page {
 
 		this.startToken = breakToken;
 
-		this.layoutMethod = new Layout(this.area, this.hooks, maxChars);
+		let settings = this.settings;
+		if (maxChars) {
+			settings.maxChars = maxChars;
+		}
+
+		this.layoutMethod = new Layout(this.area, this.hooks, settings);
 
 		let renderResult = await this.layoutMethod.renderTo(this.wrapper, contents, breakToken);
 		let newBreakToken = renderResult.breakToken;

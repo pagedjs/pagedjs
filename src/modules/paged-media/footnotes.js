@@ -387,7 +387,7 @@ class Footnotes extends Handler {
 		noteInnerContent.style.columnGap = "calc(var(--pagedjs-margin-right) + var(--pagedjs-margin-left))";
 
 		// Get overflow
-		let layout = new Layout(noteArea);
+		let layout = new Layout(noteArea, undefined, chunker.settings);
 		let overflow = layout.findOverflow(noteInnerContent, noteContentBounds);
 
 		if (overflow) {

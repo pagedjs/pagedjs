@@ -1,4 +1,4 @@
-FROM node:15-stretch
+FROM node:17
 
 # Application parameters and variables
 ENV NODE_ENV=development

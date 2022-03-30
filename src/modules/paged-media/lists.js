@@ -15,7 +15,7 @@ class Lists extends Handler {
 	afterPageLayout(pageElement, page, breakToken, chunker) {
 		var orderedLists = pageElement.getElementsByTagName("ol");
 		for (var list of orderedLists) {
-			if (list.hasChildNodes()) {
+			if (list.firstElementChild) {
 				list.start = list.firstElementChild.dataset.itemNum;
 			}
 		}

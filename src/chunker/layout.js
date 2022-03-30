@@ -17,7 +17,6 @@ import {
 	nodeAfter,
 	nodeBefore,
 	parentOf,
-	previousSignificantNode,
 	prevValidNode,
 	rebuildAncestors,
 	validNode,
@@ -103,7 +102,7 @@ class Layout {
 			this.hooks && this.hooks.layoutNode.trigger(node);
 
 			// Check if the rendered element has a break set
-			if (hasRenderedContent && this.shouldBreak(node)) {
+			if (hasRenderedContent && this.shouldBreak(node, start)) {
 				this.hooks && this.hooks.layout.trigger(wrapper, this);
 
 				let imgs = wrapper.querySelectorAll("img");
@@ -201,17 +200,17 @@ class Layout {
 		return newBreakToken;
 	}
 
-	shouldBreak(node) {
-		let previousSibling = previousSignificantNode(node);
+	shouldBreak(node, limiter) {
+		let previousNode = nodeBefore(node, limiter);
 		let parentNode = node.parentNode;
-		let parentBreakBefore = needsBreakBefore(node) && parentNode && !previousSibling && needsBreakBefore(parentNode);
+		let parentBreakBefore = needsBreakBefore(node) && parentNode && !previousNode && needsBreakBefore(parentNode);
 		let doubleBreakBefore;
 
 		if (parentBreakBefore) {
 			doubleBreakBefore = node.dataset.breakBefore === parentNode.dataset.breakBefore;
 		}
 
-		return !doubleBreakBefore && needsBreakBefore(node) || needsPreviousBreakAfter(node) || needsPageBreak(node, previousSibling);
+		return !doubleBreakBefore && needsBreakBefore(node) || needsPreviousBreakAfter(node) || needsPageBreak(node, previousNode);
 	}
 
 	forceBreak() {

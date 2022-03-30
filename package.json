@@ -8,6 +8,12 @@
   "main": "lib/index.js",
   "module": "src/index.js",
   "browser": "dist/paged.js",
+  "exports": {
+    "import": "./src/index.js",
+    "require": "./lib/index.js",
+    "browser": "./dist/paged.js",
+    "default": "./lib/index.js"
+  },
   "dependencies": {
     "@babel/polyfill": "^7.10.1",
     "@babel/runtime": "^7.14.0",
@@ -58,6 +64,7 @@
   },
   "files": [
     "dist",
-    "lib"
+    "lib",
+    "src"
   ]
 }

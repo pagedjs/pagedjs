@@ -385,6 +385,10 @@ export default `
 	column-fill: auto;
 }
 
+.pagedjs_pagebox > .pagedjs_area > .pagedjs_page_content > div {
+	height: inherit;
+}
+
 .pagedjs_pagebox > .pagedjs_area > .pagedjs_footnote_area {
 	position: relative;
 	overflow: hidden;

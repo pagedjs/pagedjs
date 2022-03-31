@@ -4,5 +4,4 @@ dist
 lib
 __diff_output__
 specs/**/*.pdf
-issues
 .vscode

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>
+      Wapper Height
+    </title>
+
+    <script src="../../../dist/paged.polyfill.js"></script>
+
+    <style>
+      /* interface */
+
+      @media screen {
+
+        body {
+          background: whitesmoke;
+        }
+
+        .pagedjs_page {
+          background: white;
+          margin-bottom: 10px;
+          box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
+        }
+
+        .pagedjs_pages {
+          width: calc(var(--pagedjs-width) * 2);
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          margin: 0 auto;
+        }
+      }
+    </style>
+
+    <style>
+        #cover {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          height: 100%;
+          break-after: page;
+          align-items: flex-end;
+          background-color: green;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="cover" class="title-page">
+      <h1>Title</h1>
+    </div>
+    <div id="content" class="content">
+      <div id="preamble">
+        <div class="sectionbody">
+          <div class="paragraph">
+            <p>This is a preamble.</p>
+          </div>
+        </div>
+      </div>
+      <div class="sect1">
+        <h2 id="_section">Section</h2>
+        <div class="sectionbody">
+          <div class="paragraph">
+            <p>This is a paragraph.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

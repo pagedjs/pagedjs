@@ -1,27 +1,33 @@
-const { toMatchImageSnapshot } = require("jest-image-snapshot");
-const path = require("path");
-const gs = require("ghostscript4js");
-const fs = require("fs");
-const rimraf = require("rimraf");
-const { DEBUG } = require("./constants");
+// const { toMatchImageSnapshot } = require("jest-image-snapshot");
+// const path = require("path");
+// const gs = require("ghostscript4js");
+// const fs = require("fs");
+// const rimraf = require("rimraf");
+// const { DEBUG } = require("./constants");
+import { toMatchImageSnapshot } from "jest-image-snapshot";
+import path from "path";
+import gs from "ghostscript4js";
+import fs from "fs";
+import rimraf from "rimraf";
+import { DEBUG } from "./constants.js";
 // const CONFIG = {
 // 	customSnapshotsDir: `__image_snapshots_${platformToOS(process.platform)}__`
 // };
 
-function platformToOS(platform) {
-	let os;
-	switch (platform) {
-		case "darwin":
-			os = "mac";
-			break;
-		case "win32":
-			os = "windows";
-			break;
-		default:
-			os = "linux";
-	}
-	return os;
-}
+// function platformToOS(platform) {
+// 	let os;
+// 	switch (platform) {
+// 		case "darwin":
+// 			os = "mac";
+// 			break;
+// 		case "win32":
+// 			os = "windows";
+// 			break;
+// 		default:
+// 			os = "linux";
+// 	}
+// 	return os;
+// }
 
 function toMatchPDFSnapshot(received, page=1) {
 	let pdfImage;
@@ -45,7 +51,7 @@ function toMatchPDFSnapshot(received, page=1) {
 	}
 
 	const config = {
-		customSnapshotsDir: dirname + `/__image_snapshots_${platformToOS(process.platform)}__`
+		// customSnapshotsDir: dirname + `/__image_snapshots_${platformToOS(process.platform)}__`
 	};
 
 	return toMatchImageSnapshot.apply(this, [pdfImage, config]);
@@ -63,4 +69,4 @@ export function UUID() {
 	});
 }
 
-module.exports = toMatchPDFSnapshot;
+export default toMatchPDFSnapshot;

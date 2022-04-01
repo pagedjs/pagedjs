@@ -1,5 +1,5 @@
-const path = require("path");
-const os = require("os");
+import path from "path";
+import os from "os";
 
 const DIR = path.join(os.tmpdir(), "jest_puppeteer_global_setup");
 const WS_ENDPOINT_PATH = path.join(DIR, "wsEndpoint");
@@ -14,7 +14,7 @@ const PDF_SETTINGS = {
 	preferCSSPageSize: true
 };
 
-module.exports = {
+export {
 	DIR,
 	WS_ENDPOINT_PATH,
 	DEBUG,

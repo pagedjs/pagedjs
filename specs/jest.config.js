@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	testMatch: ["**/?(*.)(spec).js?(x)"],
 	globalSetup: "./jest_helpers/setup.js",
 	globalTeardown: "./jest_helpers/teardown.js",

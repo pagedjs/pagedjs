@@ -1,9 +1,12 @@
-const chalk = require("chalk");
-const rimraf = require("rimraf");
+// const chalk = require("chalk");
+// const rimraf = require("rimraf");
 
-const { DIR, DEBUG } = require("./constants");
+// const { DIR, DEBUG } = require("./constants");
+import chalk from "chalk";
+import rimraf from "rimraf";
+import { DIR, DEBUG } from "./constants.js";
 
-module.exports = async function() {
+export default async function() {
 	// eslint-disable-next-line no-console
 	DEBUG && console.log(chalk.green("Teardown Puppeteer"));
 	if (!DEBUG) {
@@ -11,4 +14,4 @@ module.exports = async function() {
 		global.server.close();
 	}
 	rimraf.sync(DIR);
-};
+}

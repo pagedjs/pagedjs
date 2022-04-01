@@ -19,7 +19,7 @@ const plugins = [
 export default [
 	// browser-friendly UMD build
 	{
-		input: pkg.module,
+		input: pkg.main,
 		output: {
 			name: "Paged",
 			file: pkg.browser,
@@ -29,7 +29,7 @@ export default [
 	},
 
 	{
-		input: pkg.module,
+		input: pkg.main,
 		output: {
 			name: "PagedModule",
 			file: "./dist/paged.esm.js",

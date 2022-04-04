@@ -78,7 +78,7 @@ class TargetCounters extends Handler {
 	afterPageLayout(fragment, page, breakToken, chunker) {
 		Object.keys(this.counterTargets).forEach((name) => {
 			let target = this.counterTargets[name];
-			let split = target.selector.split("::");
+			let split = target.selector.split(/::?/g);
 			let query = split[0];
 
 			let queried = chunker.pagesArea.querySelectorAll(query + ":not([data-" + target.variable + "])");

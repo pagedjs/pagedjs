@@ -128,7 +128,7 @@ class Page {
 		this.startToken = breakToken;
 
 		let settings = this.settings;
-		if (maxChars) {
+		if (!settings.maxChars && maxChars) {
 			settings.maxChars = maxChars;
 		}
 

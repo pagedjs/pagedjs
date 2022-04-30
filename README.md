@@ -57,7 +57,7 @@ whenever you want to start.
 ```html
 <script>
 	window.PagedConfig = {
-		auto: false
+		auto: false,
 		after: (flow) => { console.log("after", flow) },
 	};
 

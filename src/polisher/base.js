@@ -656,6 +656,8 @@ export default `
 	html {
 		width: 100%;
 		height: 100%;
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
 	}
 	body {
 		margin: 0;

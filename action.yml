@@ -1,0 +1,24 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches: 
+      - "main"
+
+jobs:
+  test:
+    name: Run test suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build docker image
+        run:  docker build -t pagedmedia/pagedjs .
+
+      - name: Run tests
+        run: docker run --ipc=host pagedmedia/pagedjs npm test
+
+      - name: Run specs
+        run: docker run --ipc=host pagedmedia/pagedjs npm run specs

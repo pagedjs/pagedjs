@@ -1,4 +1,4 @@
-const { toMatchImageSnapshot } = require("jest-image-snapshot");
-const toMatchPDFSnapshot = require("./pdf_snapshot.js");
+import { toMatchImageSnapshot } from "jest-image-snapshot";
+import toMatchPDFSnapshot from "./pdf_snapshot.js";
 
 expect.extend({ toMatchImageSnapshot, toMatchPDFSnapshot });

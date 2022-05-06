@@ -1,9 +1,9 @@
-const chalk = require("chalk");
-const NodeEnvironment = require("jest-environment-node");
-const puppeteer = require("puppeteer");
-const fs = require("fs");
-
-const { WS_ENDPOINT_PATH, DEBUG, ORIGIN, PDF_SETTINGS } = require("./constants");
+import chalk from "chalk";
+import NodeEnvironment from "jest-environment-node";
+// import puppeteer from "puppeteer";
+import { chromium } from "playwright-core";
+import fs from "fs";
+import { WS_ENDPOINT_PATH, DEBUG, ORIGIN, PDF_SETTINGS } from "./constants.js";
 
 class PuppeteerEnvironment extends NodeEnvironment {
 	constructor(config) {
@@ -18,9 +18,10 @@ class PuppeteerEnvironment extends NodeEnvironment {
 		if (!wsEndpoint) {
 			throw new Error("wsEndpoint not found");
 		}
-		this.global.browser = await puppeteer.connect({
-			browserWSEndpoint: wsEndpoint,
-		});
+		// this.global.browser = await chromium.connect({
+		// 	browserWSEndpoint: wsEndpoint
+		// });
+		this.global.browser = await chromium.connect(wsEndpoint);
 
 		this.global.loadPage = this.loadPage.bind(this);
 
@@ -90,7 +91,7 @@ class PuppeteerEnvironment extends NodeEnvironment {
 			renderedResolve(msg, width, height, orientation);
 		});
 
-		await page.evaluateOnNewDocument(() => {
+		await page.addInitScript(() => {
 			document.addEventListener("DOMContentLoaded", () => {
 				window.PagedPolyfill.on("rendered", (flow) => {
 					let msg = "Rendering " + flow.total + " pages took " + flow.performance + " milliseconds.";
@@ -99,10 +100,10 @@ class PuppeteerEnvironment extends NodeEnvironment {
 			});
 		});
 
-		await page.goto(ORIGIN + "/specs/" + path, { waitUntil: "networkidle2" });
+		await page.goto(ORIGIN + "/specs/" + path, { waitUntil: "networkidle" });
 
 		return page;
 	}
 }
 
-module.exports = PuppeteerEnvironment;
+export default PuppeteerEnvironment;

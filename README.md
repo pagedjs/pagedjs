@@ -189,7 +189,13 @@ They can also output a pdf and compare pages (one at a time) in that PDF with sa
 
 The PDF comparison tests depend on the `ghostscript` and the `ghostscript4js` package.
 
-To run them you'll need to install a local version of Ghostscript for you system according to https://www.npmjs.com/package/ghostscript4js#prerequisites
+It is recomend to run these in the Docker container below via:
+
+```bash
+npm run docker-specs
+```
+
+However if you'd like to run the specs outside of Docker, you'll need to install a local version of Ghostscript for your system according to https://www.npmjs.com/package/ghostscript4js#prerequisites
 
 For Mac you can install it with
 
@@ -247,7 +253,7 @@ docker run -it -p 9090:9090 pagedmedia/pagedjs
 The tests and specs can be run within the container by passing a `seccomp` file for Chrome and running `npm test`
 
 ```bash
-docker run -it --security-opt 'seccomp=seccomp.json' pagedmedia/pagedjs npm test
+docker run -it --security-opt 'seccomp=seccomp.json' pagedmedia/pagedjs npm test && npm run specs
 ```
 
 ## Contributors

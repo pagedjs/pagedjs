@@ -5,7 +5,9 @@ import json from "@rollup/plugin-json";
 import pkg from './package.json';
 
 const plugins = [
-	nodeResolve(),
+	nodeResolve({
+		extensions: ['.cjs','.mjs', '.js']
+	}),
 	commonjs(),
 	json()
 ];
@@ -22,7 +24,7 @@ export default [
 		plugins: plugins
 	},
 	{
-		input: "./lib/polyfill/polyfill.js",
+		input: "./lib/polyfill/polyfill.cjs",
 		output: {
 			name: 'PagedPolyfill',
 			file: "./dist/paged.legacy.polyfill.js",

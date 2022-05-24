@@ -520,7 +520,7 @@ class Layout {
 								columnCount += parseInt(cell.getAttribute("COLSPAN") || "1");
 							}
 							if (tableRow.cells.length !== columnCount) {
-								let previousRow = tableRow.previousSibling;
+								let previousRow = tableRow.previousElementSibling;
 								let previousRowColumnCount;
 								while (previousRow !== null) {
 									previousRowColumnCount = 0;
@@ -530,7 +530,7 @@ class Layout {
 									if (previousRowColumnCount === columnCount) {
 										break;
 									}
-									previousRow = previousRow.previousSibling;
+									previousRow = previousRow.previousElementSibling;
 								}
 								if (previousRowColumnCount === columnCount) {
 									prev = previousRow;

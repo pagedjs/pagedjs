@@ -261,6 +261,13 @@ class Layout {
 			dest.appendChild(clone);
 		}
 
+		if (clone.dataset && clone.dataset.ref) {
+			if (!dest.indexOfRefs) {
+				dest.indexOfRefs = {};
+			}
+			dest.indexOfRefs[clone.dataset.ref] = clone;
+		}
+
 		let nodeHooks = this.hooks.renderNode.triggerSync(clone, node, this);
 		nodeHooks.forEach((newNode) => {
 			if (typeof newNode != "undefined") {

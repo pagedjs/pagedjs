@@ -474,7 +474,11 @@ export function findElement(node, doc) {
 }
 
 export function findRef(ref, doc) {
-	return doc.querySelector(`[data-ref='${ref}']`);
+	if (doc.indexOfRefs && doc.indexOfRefs[ref]) {
+		return doc.indexOfRefs[ref];
+	} else {
+		return doc.querySelector(`[data-ref='${ref}']`);
+	}
 }
 
 export function validNode(node) {

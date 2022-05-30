@@ -6,7 +6,9 @@ import license from "rollup-plugin-license";
 import pkg from "./package.json";
 
 const plugins = [
-	nodeResolve(),
+	nodeResolve({
+		extensions: [".cjs",".mjs", ".js"]
+	}),
 	commonjs({
 		include: "node_modules/**"
 	}),

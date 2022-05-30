@@ -1,30 +1,27 @@
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
-// import builtins from 'rollup-plugin-node-builtins';
-// import globals from 'rollup-plugin-node-globals';
-
-// import pkg from './package.json';
-
-import serve from 'rollup-plugin-serve'
-import livereload from 'rollup-plugin-livereload'
+import serve from "rollup-plugin-serve";
+import livereload from "rollup-plugin-livereload";
 
 const plugins = [
-	nodeResolve(),
-	commonjs(),
+	nodeResolve({
+		extensions: [".cjs",".mjs", ".js"]
+	}),
+	commonjs({
+		include: ["node_modules/**"]
+	}),
 	json(),
-	// globals(),
-	// builtins(),
 	serve({
 		port: 9090,
-		contentBase: './',
+		contentBase: "./",
 		headers: {
 			"Access-Control-Allow-Origin": "*",
 			"Service-Worker-Allowed": "/",
 		}
 	}),
 	livereload({
-		watch: ['dist', 'examples']
+		watch: ["dist", "examples"]
 	})
 ];
 
@@ -32,9 +29,9 @@ export default [
 	{
 		input: "./src/polyfill/polyfill.js",
 		output: {
-			name: 'PagedPolyfill',
+			name: "PagedPolyfill",
 			file: "./dist/paged.polyfill.js",
-			format: 'umd'
+			format: "umd"
 		},
 		plugins: plugins
 	}

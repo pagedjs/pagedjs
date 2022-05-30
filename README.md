@@ -210,6 +210,12 @@ sudo apt-get install ghostscript
 sudo apt-get install libgs-dev
 ```
 
+Now you can install the `ghostscript4js` library. For Linux you can optionally pass the location ghostscript was installed to in `GS4JS_HOME`.
+
+```bash
+GS4JS_HOME="/usr/lib/$(gcc -dumpmachine)" npm install ghostscript4js
+```
+
 To test the pdf output of specs, you'll need to build the library locally.
 
 ```bash

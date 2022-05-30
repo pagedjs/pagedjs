@@ -1,15 +1,19 @@
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
+import license from "rollup-plugin-license";
 
-import pkg from './package.json';
+import pkg from "./package.json";
 
 const plugins = [
 	nodeResolve({
-		extensions: ['.cjs','.mjs', '.js']
+		extensions: [".cjs",".mjs", ".js"]
 	}),
 	commonjs(),
-	json()
+	json(),
+	license({
+		banner: "@license Paged.js v<%= pkg.version %> | MIT | https://pagedjs.org",
+	})
 ];
 
 export default [
@@ -17,18 +21,18 @@ export default [
 	{
 		input: pkg.main,
 		output: {
-			name: 'Paged',
+			name: "Paged",
 			file: pkg.browser.replace(".js", ".legacy.js"),
-			format: 'umd'
+			format: "umd"
 		},
 		plugins: plugins
 	},
 	{
 		input: "./lib/polyfill/polyfill.cjs",
 		output: {
-			name: 'PagedPolyfill',
+			name: "PagedPolyfill",
 			file: "./dist/paged.legacy.polyfill.js",
-			format: 'umd'
+			format: "umd"
 		},
 		plugins: plugins
 	}

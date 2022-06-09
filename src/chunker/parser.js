@@ -1,4 +1,4 @@
-import {UUID} from "../utils/utils";
+import {UUID} from "../utils/utils.js";
 
 /**
  * Render a flow of text offscreen

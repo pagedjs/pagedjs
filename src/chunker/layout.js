@@ -1,4 +1,4 @@
-import { getBoundingClientRect, getClientRects } from "../utils/utils";
+import { getBoundingClientRect, getClientRects } from "../utils/utils.js";
 import {
 	breakInsideAvoidParentNode,
 	child,
@@ -22,11 +22,11 @@ import {
 	validNode,
 	walk,
 	words
-} from "../utils/dom";
-import BreakToken from "./breaktoken";
-import RenderResult, { OverflowContentError } from "./renderresult";
+} from "../utils/dom.js";
+import BreakToken from "./breaktoken.js";
+import RenderResult, { OverflowContentError } from "./renderresult.js";
 import EventEmitter from "event-emitter";
-import Hook from "../utils/hook";
+import Hook from "../utils/hook.js";
 
 const MAX_CHARS_PER_BREAK = 1500;
 

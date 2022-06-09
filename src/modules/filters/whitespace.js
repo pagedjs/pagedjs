@@ -1,5 +1,5 @@
-import Handler from "../handler";
-import {isElement, isIgnorable, nextSignificantNode, previousSignificantNode, filterTree} from "../../utils/dom";
+import Handler from "../handler.js";
+import {isElement, isIgnorable, nextSignificantNode, previousSignificantNode, filterTree} from "../../utils/dom.js";
 
 class WhiteSpaceFilter extends Handler {
 	constructor(chunker, polisher, caller) {

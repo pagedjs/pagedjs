@@ -1,6 +1,6 @@
 import csstree from "css-tree";
-import { UUID } from "../utils/utils";
-import Hook from "../utils/hook";
+import { UUID } from "../utils/utils.js";
+import Hook from "../utils/hook.js";
 
 class Sheet {
 	constructor(url, hooks) {

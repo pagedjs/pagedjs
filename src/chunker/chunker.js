@@ -1,11 +1,11 @@
-import Page from "./page";
-import ContentParser from "./parser";
+import Page from "./page.js";
+import ContentParser from "./parser.js";
 import EventEmitter from "event-emitter";
-import Hook from "../utils/hook";
-import Queue from "../utils/queue";
+import Hook from "../utils/hook.js";
+import Queue from "../utils/queue.js";
 import {
 	requestIdleCallback
-} from "../utils/utils";
+} from "../utils/utils.js";
 
 const MAX_PAGES = false;
 const MAX_LAYOUTS = false;

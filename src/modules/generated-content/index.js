@@ -1,7 +1,7 @@
-import RunningHeaders from "./running-headers";
-import StringSets from "./string-sets";
-import TargetCounters from "./target-counters";
-import TargetText from "./target-text";
+import RunningHeaders from "./running-headers.js";
+import StringSets from "./string-sets.js";
+import TargetCounters from "./target-counters.js";
+import TargetText from "./target-text.js";
 
 export default [
 	RunningHeaders,

@@ -1,4 +1,4 @@
-import Handler from "../handler";
+import Handler from "../handler.js";
 import csstree from "css-tree";
 
 class PageCounterIncrement extends Handler {

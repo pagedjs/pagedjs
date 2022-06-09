@@ -1,6 +1,6 @@
-import pagedMediaHandlers from "../modules/paged-media/index";
-import generatedContentHandlers from "../modules/generated-content/index";
-import filters from "../modules/filters/index";
+import pagedMediaHandlers from "../modules/paged-media/index.js";
+import generatedContentHandlers from "../modules/generated-content/index.js";
+import filters from "../modules/filters/index.js";
 import EventEmitter from "event-emitter";
 import pipe from "event-emitter/pipe";
 

@@ -1,10 +1,10 @@
 import EventEmitter from "event-emitter";
 
-import Hook from "../utils/hook";
-import Chunker from "../chunker/chunker";
-import Polisher from "../polisher/polisher";
+import Hook from "../utils/hook.js";
+import Chunker from "../chunker/chunker.js";
+import Polisher from "../polisher/polisher.js";
 
-import { initializeHandlers, registerHandlers } from "../utils/handlers";
+import { initializeHandlers, registerHandlers } from "../utils/handlers.js";
 
 class Previewer {
 	constructor(options) {

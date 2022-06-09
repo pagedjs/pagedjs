@@ -1,4 +1,4 @@
-import Layout from "./layout";
+import Layout from "./layout.js";
 import EventEmitter from "event-emitter";
 
 /**

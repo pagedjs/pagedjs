@@ -1,7 +1,7 @@
-import WhiteSpaceFilter from "./whitespace";
-import CommentsFilter from "./comments";
-import ScriptsFilter from "./scripts";
-import UndisplayedFilter from "./undisplayed";
+import WhiteSpaceFilter from "./whitespace.js";
+import CommentsFilter from "./comments.js";
+import ScriptsFilter from "./scripts.js";
+import UndisplayedFilter from "./undisplayed.js";
 
 export default [
 	WhiteSpaceFilter,

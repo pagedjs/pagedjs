@@ -1,6 +1,6 @@
-import Handler from "../handler";
-import { isContainer, isElement } from "../../utils/dom";
-import Layout from "../../chunker/layout";
+import Handler from "../handler.js";
+import { isContainer, isElement } from "../../utils/dom.js";
+import Layout from "../../chunker/layout.js";
 import csstree from "css-tree";
 
 class Footnotes extends Handler {

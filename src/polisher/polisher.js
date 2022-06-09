@@ -1,7 +1,7 @@
-import Sheet from "./sheet";
-import baseStyles from "./base";
-import Hook from "../utils/hook";
-import request from "../utils/request";
+import Sheet from "./sheet.js";
+import baseStyles from "./base.js";
+import Hook from "../utils/hook.js";
+import request from "../utils/request.js";
 
 class Polisher {
 	constructor(setup) {

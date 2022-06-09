@@ -1,5 +1,5 @@
-import Previewer from "./previewer";
-import * as Paged from "../index";
+import Previewer from "./previewer.js";
+import * as Paged from "../index.js";
 
 window.Paged = Paged;
 

@@ -1,4 +1,4 @@
-import {defer} from "./utils";
+import {defer} from "./utils.js";
 
 /**
  * Queue for handling tasks one at a time

@@ -1,6 +1,6 @@
-import Handler from "../handler";
+import Handler from "../handler.js";
 import csstree from "css-tree";
-import { cleanPseudoContent } from "../../utils/css";
+import { cleanPseudoContent } from "../../utils/css.js";
 
 class StringSets extends Handler {
 	constructor(chunker, polisher, caller) {

@@ -1,8 +1,8 @@
-import Handler from "../handler";
+import Handler from "../handler.js";
 import csstree from "css-tree";
-import pageSizes from "../../polisher/sizes";
-import { rebuildAncestors } from "../../utils/dom";
-import { CSSValueToString } from "../../utils/utils";
+import pageSizes from "../../polisher/sizes.js";
+import { rebuildAncestors } from "../../utils/dom.js";
+import { CSSValueToString } from "../../utils/utils.js";
 
 class AtPage extends Handler {
 	constructor(chunker, polisher, caller) {

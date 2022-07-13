@@ -126,6 +126,17 @@ class Layout {
 				break;
 			}
 
+			if (node.dataset && node.dataset.page) {
+				let named = node.dataset.page;
+				let page = this.element.closest(".pagedjs_page");
+				page.classList.add("pagedjs_named_page");
+				page.classList.add("pagedjs_" + named + "_page");
+
+				if (!node.dataset.splitFrom) {
+					page.classList.add("pagedjs_" + named + "_first_page");
+				}
+			}
+
 			// Should the Node be a shallow or deep clone
 			let shallow = isContainer(node);
 

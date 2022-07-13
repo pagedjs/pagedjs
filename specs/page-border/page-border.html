@@ -13,12 +13,6 @@
 				padding: 1em;
 			}
 
-			@media screen {
-				.pagedjs_page {
-					box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
-				}
-			}
-
 			section {
 				break-before: page;
 			}
@@ -50,6 +44,13 @@
 				background: purple;
 				background-origin: content-box;
 
+			}
+		</style>
+		<style media="screen">
+			@media screen {
+				.pagedjs_page {
+					box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+				}
 			}
 		</style>
 	</head>

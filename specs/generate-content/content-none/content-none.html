@@ -150,29 +150,35 @@
     /* BELOW COMES CSS FOR THE BOOK STYLING AND FOR THE THE PAGES ALIGNMENTS */
 
     header p {
-    text-transform: uppercase;
-    font-family: sans-serif;
-    margin-top: -6em;
-    margin-left: -14ch;
-    background: white;
-    position: absolute;
-    padding: 0.5em;
-    padding-left: 4em;
+      text-transform: uppercase;
+      font-family: sans-serif;
+      margin-top: -6em;
+      margin-left: -14ch;
+      background: white;
+      position: absolute;
+      padding: 0.5em;
+      padding-left: 4em;
     }
 
     header h1 {
-    margin-top: 2em;
+      margin-top: 2em;
     }
 
     body {
-    padding: 1em;
+      padding: 1em;
     }
 
 
     section {
-    break-before: right;
+      break-before: right;
     }
 
+    body {
+      font-family: serif;
+    }
+  </style>
+
+  <style media="screen">
     /* To define how the book look on the screen: */
     @media screen {
       body {
@@ -198,18 +204,13 @@
           margin-left: var(--pagedjs-width);
       }
 
-    /* show the margin-box */
+      /* show the margin-box */
 
-    [class*="pagedjs_margin-top"],  [class*="pagedjs_margin-left"],   [class*="pagedjs_margin-right"],   [class*="pagedjs_margin-bottom"]    {
-      box-shadow: 0 0 0 var(--size-margin-box) inset var(--color-margin-box);
+      [class*="pagedjs_margin-top"],  [class*="pagedjs_margin-left"],   [class*="pagedjs_margin-right"],   [class*="pagedjs_margin-bottom"]    {
+        box-shadow: 0 0 0 var(--size-margin-box) inset var(--color-margin-box);
+      }
     }
-    }
-
-    body {
-    font-family: serif;
-    }
-    </style>
-
+  </style>
 
 
   </head>

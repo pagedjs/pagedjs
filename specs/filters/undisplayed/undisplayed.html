@@ -3,34 +3,38 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
     <title>display: none elements should be ignored</title>
-    <style>
-        /* interface */
-        @media screen {
+    <style media="screen">
+      /* interface */
 
-          body {
-            background: whitesmoke;
-          }
+      @media screen {
 
-          .pagedjs_page {
-            background: white;
-            margin-bottom: 10px;
-            box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
-          }
-
-          .pagedjs_pages {
-            width: calc(var(--pagedjs-width) * 2);
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-            margin: 0 auto;
-          }
-
-          .pagedjs_first_page {
-            margin-left: 50%;
-          }
+        body {
+          background-color: whitesmoke;
         }
 
+        .pagedjs_page {
+          margin-bottom: 20px;
+          flex: none;
+          box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
+          background-color: white;
+        }
+
+        .pagedjs_pages {
+          width: calc(var(--pagedjs-width) * 2);
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          transform-origin: 0 0;
+          margin: 0 auto;
+        }
+
+        .pagedjs_first_page {
+          margin-left: 50%;
+        }
+      }
+    </style>
+    <style>
         @page {
           size: A5;
           margin: 20mm 20mm;

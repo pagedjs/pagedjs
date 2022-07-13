@@ -101,9 +101,9 @@ class Previewer {
 
 	removeStyles(doc=document) {
 		// Get all stylesheets
-		const stylesheets = Array.from(doc.querySelectorAll("link[rel='stylesheet']"));
+		const stylesheets = Array.from(doc.querySelectorAll("link[rel='stylesheet']:not([data-pagedjs-ignore], [media~='screen'])"));
 		// Get inline styles
-		const inlineStyles = Array.from(doc.querySelectorAll("style:not([data-pagedjs-inserted-styles])"));
+		const inlineStyles = Array.from(doc.querySelectorAll("style:not([data-pagedjs-inserted-styles], [data-pagedjs-ignore], [media~='screen'])"));
 		const elements = [...stylesheets, ...inlineStyles];
 		return elements
 			// preserve order

@@ -1,0 +1,286 @@
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+	<title>PagedJS Specs</title>
+
+	<link rel="stylesheet" type="text/css" href="../examples/assets/styles/moby-dick.css">
+	<style>
+		section {
+			margin-top: 40px;
+			column-width: 20vh;
+		}
+		section > ul > li {
+			list-style-type: none;
+		}
+		h1 {
+			margin-top: 40px;
+			text-decoration: underline;
+		}
+		h2, h3 {
+			text-align: left;
+		}
+		li {
+			break-inside: avoid;
+		}
+	</style>
+
+</head>
+<body>
+	<h1>Pagedjs Specs</h1>
+	<section>
+		<ul>
+			<li>
+				<h2>Default</h2>
+				<ul>
+					<li><a href="default/default.html">Default</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Bleeds</h2>
+				<ul>
+					<li><a href="bleed/bleed.html">Bleeds</a></li>
+					<li><a href="custom-bleeds/custom-bleeds.html">Custom</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Breaks</h2>
+				<ul>
+					<li><a href="breaks/breaks.html">Breaks</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Break After</h2>
+				<ul>
+					<li><a href="breaks/break-after/break-after-avoid/break-after-avoid.html">Break After Avoid</a></li>
+					<li><a href="breaks/break-after/break-after-left/break-after-left.html">Break After Left</a></li>
+					<li><a href="breaks/break-after/break-after-page/break-after-page.html">Break After Page</a></li>
+					<li><a href="breaks/break-after/break-after-recto/break-after-recto.html">Break After Recto</a></li>
+					<li><a href="breaks/break-after/break-after-right/break-after-right.html">Break After Right</a></li>
+					<li><a href="breaks/break-after/break-after-verso/break-after-verso.html">Break After Verso</a></li>
+					<li><a href="breaks/break-before/break-before-avoid/break-before-avoid.html">Break Before Avoid</a></li>
+					<li><a href="breaks/break-before/break-before-left/break-before-left.html">Break Before Left</a></li>
+					<li><a href="breaks/break-before/break-before-page/break-before-page.html">Break Before Page</a></li>
+					<li><a href="breaks/break-before/break-before-right/break-before-right.html">Break Before Right</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Break Inside</h2>
+				<ul>
+					<li><a href="breaks/break-inside/break-inside-avoid/break-inside-avoid.html">Break Inside Avoid</a></li>
+					<li><a href="breaks/break-inside/break-inside-avoid/break-inside-avoid-table-cell.html">Break Inside Avoid Table Cell</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Break Propagation</h2>
+				<ul>
+					<li><a href="breaks/child-parent-propagation/break-after-child-parent-propagation.html">Break After Child Parent Propagation</a></li>
+					<li><a href="breaks/child-parent-propagation/break-before-child-parent-propagation.html">Break Before Child Parent Propagation</a></li>
+					<li><a href="breaks/child-parent-propagation/break-before-container-propagation.html">Break Before Child Parent Propagation</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Table Breaks</h2>
+				<ul>
+					<li><a href="breaks/table/avoid-break-rowspan.html">Avoid Break Rowspan</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Counters</h2>
+				<ul>
+					<li><a href="counters/counter-page/counter-page.html">Counter Page</a></li>
+					<li><a href="counters/counter-page-reset/counter-page-reset-scope.html">Counter page Reset Scope</a></li>
+					<li><a href="counters/counter-page-reset/counter-page-reset.html">Counter Page Reset</a></li>
+					<li><a href="counters/counter-pages/counter-pages.html">Default</a></li>
+					<li><a href="counters/nested/nested.html">Default</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Data base64</h2>
+				<ul>
+					<li><a href="data64/data64.html">Data base64</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Filters</h2>
+				<ul>
+					<li><a href="filters/script-elements/script-elements.html">Script Elements</a></li>
+					<li><a href="filters/undisplayed/undisplayed.html">Undisplayed</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Following Selector</h2>
+				<ul>
+					<li><a href="following-selector/following-selector.html">Following Selector</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Generated Content</h2>
+				<ul>
+					<li><a href="generate-content/content-none/content-none.html">Content None</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Hooks</h2>
+				<ul>
+					<li><a href="hooks/hooks.html">Hooks</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Hyphens</h2>
+				<ul>
+					<li><a href="hyphens/awesome/awesome.html">Awesome</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Infinite Loop</h2>
+				<ul>
+					<li><a href="infinite-loop/infinite-loop.html">Infinite Loop</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Margin Boxes</h2>
+				<ul>
+					<li><a href="margin-boxes/dimension/dimension.html">Dimension</a></li>
+					<li><a href="margin-boxes/style/style.html">Style</a></li>
+					<li><a href="margin-boxes/text-align/text-align.html">Text Align</a></li>
+					<li><a href="margin-boxes/vertical-align/vertical-align.html">Vertical Align</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Math</h2>
+				<ul>
+					<li><a href="math/math.html">Math</a></li>
+					<li><a href="math/mathjax.html">MathJax</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Media</h2>
+				<ul>
+					<li><a href="media/print/print.html">Print</a></li>
+					<li><a href="media/screen/screen.html">Screen</a></li>
+					<li><a href="media/all/all.html">All</a></li>
+					<li><a href="media/ignore/ignore.html">Ignore</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Named Page</h2>
+				<ul>
+					<li><a href="named-page/forced-page-break/forced-page-break.html">Forced Page Break</a></li>
+					<li><a href="named-page/forced-page-break/named-and-unnamed-pages-siblings.html">Named and Unnamed Pages Siblings</a></li>
+					<li><a href="named-page/named-page/named-page.html">Named Page</a></li>
+					<li><a href="named-page/nested/named-page-nested-first-child.html">Named Page Nested First Child</a></li>
+					<li><a href="named-page/multiple-named/multiple-named.html">Multiple Named Pages</a></li>
+					<li><a href="named-page/no-forced-page-break/contiguous-named-pages.html">Contiguous Named Pages</a></li>
+					<li><a href="named-page/no-forced-page-break/fold-page-breaks-after.html">Fold Page Breaks After</a></li>
+					<li><a href="named-page/no-forced-page-break/fold-page-breaks-before.html">Fold Page Breaks Before</a></li>
+					<li><a href="named-page/no-forced-page-break/ignore-undisplayed-nodes.html">Ignore Undisplayed Nodes</a></li>
+					<li><a href="named-page/no-forced-page-break/no-forced-page-break.html">No Forced Page Break</a></li>
+					<li><a href="named-page/page-group/page-group.html">Page Group</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Notes</h2>
+				<ul>
+					<li><a href="notes/footnotes/footnotes.html">Footnotes</a></li>
+					<li><a href="notes/footnote-display/footnote-display.html">Footnote Display</a></li>
+					<li><a href="notes/footnote-policy/footnote-policy.html">Footnote Policy</a></li>
+					<li><a href="notes/footnotes-counter/footnotes-counter.html">Footnotes Counter</a></li>
+					<li><a href="notes/footnotes-counter-reset/footnotes-counter-reset.html">Footnotes Counter Reset</a></li>
+					<li><a href="notes/footnotes-counter-reset-page/footnotes-counter-reset-page.html">Footnotes Counter Reset Page</a></li>
+					<li><a href="notes/footnotes-lastpage/footnotes-lastpage.html">Footnotes Lastpage</a></li>
+					<li><a href="notes/footnotes-padding/footnotes-padding.html">Footnotes Padding</a></li>
+					<li><a href="notes/footnotes-place/footnotes-place.html">Footnotes Place</a></li>
+					<li><a href="notes/footnotes-sameline/footnotes-sameline.html">Footnotes Sameline</a></li>
+					<li><a href="notes/footnotes-styles/footnotes-styles.html">Footnotes Styles</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Selector</h2>
+				<ul>
+					<li><a href="nth-of-type-selector/nth-of-type-selector.html">Nth-of-type Selector</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Page Borders</h2>
+				<ul>
+					<li><a href="page-border/page-border.html">Page Border</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Page Rules</h2>
+				<ul>
+					<li><a href="page-rules/combined/combined.html">Combined</a></li>
+					<li><a href="page-rules/size/landscape/landscape.html">Landscape</a></li>
+					<li><a href="page-rules/size/length/length.html">Length</a></li>
+					<li><a href="page-rules/size/margin/margin-0.html">Margin Zero</a></li>
+					<li><a href="page-rules/size/padding/padding-0.html">Padding Zero</a></li>
+					<li><a href="page-rules/size/page-size/page-size.html">Page Size</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Page Selector</h2>
+				<ul>
+					<li><a href="page-selector/blank-page/blank-page.html">Blank Page</a></li>
+					<li><a href="page-selector/first-page/first-page.html">First Page</a></li>
+					<li><a href="page-selector/page-group/first-page-of-page-group/first-page-of-page-group.html">First Page of Page group</a></li>
+					<li><a href="page-selector/page-group/spread-of-page-group/spread-of-page-group.html">Spread of Page Group</a></li>
+					<li><a href="page-selector/page-nth/page-nth.html">Nth Page</a></li>
+					<li><a href="page-selector/page-spread/page-spread.html">Page Spread</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Position Fixed</h2>
+				<ul>
+					<li><a href="/Users/fchasen/Repos/pagedjs/position-fixed/position-fixed.html">Position Fixed</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Splits</h2>
+				<ul>
+					<li><a href="splits/lists/lists.html">Lists</a></li>
+					<li><a href="splits/numbering/numbering.html">Numbering</a></li>
+					<li><a href="splits/pre/pre.html">Pre</a></li>
+					<li><a href="splits/tables/exceeding-rowspan-table.html">Excedding Rowspan Table</a></li>
+					<li><a href="splits/text-align-last/text-align-last.html">Text Align Last</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>String</h2>
+				<ul>
+					<li><a href="string/string-default.html">String Default</a></li>
+					<li><a href="string/string-first-except.html">String First-except</a></li>
+					<li><a href="string/string-last.html">String Last</a></li>
+					<li><a href="string/string-multiple.html">String Multiple</a></li>
+					<li><a href="string/string-start.html">String Start</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Styles</h2>
+				<ul>
+					<li><a href="styles/consecutive.html">Consecutive</a></li>
+					<li><a href="styles/scattered.html">Scattered</a></li>
+					<li><a href="styles/simple.html">Simple</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Target</h2>
+				<ul>
+					<li><a href="target/target-counter/counter-increment-negative-page.html">Counter Increment Negative Page</a></li>
+					<li><a href="target/target-counter/counter-increment-page.html">Counter Increment Page</a></li>
+					<li><a href="target/target-counter/counter-increment-positive-page.html">Counter Increment Positive Page</a></li>
+					<li><a href="target/target-counter/counter-increment-zero-page.html">Counter Increment Zero Page</a></li>
+					<li><a href="target/target-counter/target-counter-single-colon.html">Target Counter Single Colon</a></li>
+					<li><a href="target/target-counter/target-counter.html">Target Counter</a></li>
+					<li><a href="target/target-text/target-text.html">Target Text</a></li>
+				</ul>
+			</li>
+			<li>
+				<h2>Whitespaces</h2>
+				<ul>
+					<li><a href="whitespaces/whitespaces.html">Whitespaces</a></li>
+				</ul>
+			</li>
+		</ul>
+	</section>
+</body>
+</html>

@@ -15,12 +15,6 @@
         font-size: 18px;
       }
 
-      @media screen {
-        .pagedjs_page {
-          box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
-        }
-      }
-
       @page {
         size: 6in 8in;
         margin: 20mm 20mm;
@@ -50,7 +44,13 @@
       }
 
     </style>
-
+    <style media="screen">
+			@media screen {
+				.pagedjs_page {
+					box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+				}
+			}
+		</style>
 
 
 

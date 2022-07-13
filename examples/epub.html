@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/epubjs@0.4.2/dist/epub.min.js"></script>
     <script src="../dist/paged.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="assets/styles/examples.css">
+    <link rel="stylesheet" type="text/css" href="assets/styles/examples.css" media="screen">
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
@@ -311,6 +311,11 @@
     display: none;
   }
 
+  #input {
+    display: none;
+  }
+  </style>
+  <style media="screen">
   @media screen {
 
     body {
@@ -472,108 +477,104 @@
     #next, #prev {
       visibility: hidden;
     }
+  
+
+    .box {
+      font-size: 1.25rem; /* 20 */
+      background-color: #ddd;
+      position: relative;
+      padding: 100px 20px;
+
+      outline: 2px dashed #ccc;
+      outline-offset: -10px;
+
+      -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
+      transition: outline-offset .15s ease-in-out, background-color .15s linear;
+
+      width: 400px;
+      margin: 80px auto;
+    }
+
+    .box.is-dragover {
+      outline-offset: -20px;
+      outline-color: #000;
+      background-color: #ccc;
+    }
+
+    .box .box__dragndrop {
+      display: inline;
+    }
+
+    .box .box__icon {
+      width: 100%;
+      height: 80px;
+      fill: #92b0b3;
+      display: block;
+      margin-bottom: 40px;
+      font-size: 100px;
+    }
+
+    .box.is-uploading .box__input,
+    .box.is-success .box__input,
+    .box.is-error .box__input
+    {
+      visibility: hidden;
+    }
+
+    .box__uploading,
+    .box__success,
+    .box__error
+    {
+      display: none;
+    }
+
+    .box.is-uploading .box__uploading,
+    .box.is-success .box__success,
+    .box.is-error .box__error
+    {
+      display: block;
+      position: absolute;
+      top: 50%;
+      right: 0;
+      left: 0;
+
+      -webkit-transform: translateY( -50% );
+      transform: translateY( -50% );
+    }
+
+    .box__uploading
+    {
+      font-style: italic;
+    }
+    .box__success
+    {
+      -webkit-animation: appear-from-inside .25s ease-in-out;
+      animation: appear-from-inside .25s ease-in-out;
+    }
+
+    @-webkit-keyframes appear-from-inside
+    {
+      from	{ -webkit-transform: translateY( -50% ) scale( 0 ); }
+      75%		{ -webkit-transform: translateY( -50% ) scale( 1.1 ); }
+      to		{ -webkit-transform: translateY( -50% ) scale( 1 ); }
+    }
+    @keyframes appear-from-inside
+    {
+      from	{ transform: translateY( -50% ) scale( 0 ); }
+      75%		{ transform: translateY( -50% ) scale( 1.1 ); }
+      to		{ transform: translateY( -50% ) scale( 1 ); }
+    }
+
+    .box__file + label
+    {
+      max-width: 80%;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+      display: inline-block;
+      overflow: hidden;
+    }
   }
-
-  .box {
-    font-size: 1.25rem; /* 20 */
-    background-color: #ddd;
-    position: relative;
-    padding: 100px 20px;
-
-    outline: 2px dashed #ccc;
-    outline-offset: -10px;
-
-    -webkit-transition: outline-offset .15s ease-in-out, background-color .15s linear;
-    transition: outline-offset .15s ease-in-out, background-color .15s linear;
-
-    width: 400px;
-    margin: 80px auto;
-  }
-
-  .box.is-dragover {
-    outline-offset: -20px;
-    outline-color: #000;
-    background-color: #ccc;
-  }
-
-  .box .box__dragndrop {
-    display: inline;
-  }
-
-  .box .box__icon {
-    width: 100%;
-    height: 80px;
-    fill: #92b0b3;
-    display: block;
-    margin-bottom: 40px;
-    font-size: 100px;
-  }
-
-  .box.is-uploading .box__input,
-  .box.is-success .box__input,
-  .box.is-error .box__input
-  {
-    visibility: hidden;
-  }
-
-  .box__uploading,
-  .box__success,
-  .box__error
-  {
-    display: none;
-  }
-
-  .box.is-uploading .box__uploading,
-  .box.is-success .box__success,
-  .box.is-error .box__error
-  {
-    display: block;
-    position: absolute;
-    top: 50%;
-    right: 0;
-    left: 0;
-
-    -webkit-transform: translateY( -50% );
-    transform: translateY( -50% );
-  }
-
-  .box__uploading
-  {
-    font-style: italic;
-  }
-  .box__success
-  {
-    -webkit-animation: appear-from-inside .25s ease-in-out;
-    animation: appear-from-inside .25s ease-in-out;
-  }
-
-  @-webkit-keyframes appear-from-inside
-  {
-    from	{ -webkit-transform: translateY( -50% ) scale( 0 ); }
-    75%		{ -webkit-transform: translateY( -50% ) scale( 1.1 ); }
-    to		{ -webkit-transform: translateY( -50% ) scale( 1 ); }
-  }
-  @keyframes appear-from-inside
-  {
-    from	{ transform: translateY( -50% ) scale( 0 ); }
-    75%		{ transform: translateY( -50% ) scale( 1.1 ); }
-    to		{ transform: translateY( -50% ) scale( 1 ); }
-  }
-
-  .box__file + label
-	{
-		max-width: 80%;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		cursor: pointer;
-		display: inline-block;
-		overflow: hidden;
-	}
-
-  #input {
-    display: none;
-  }
-
   </style>
 <body>
 

@@ -16,16 +16,6 @@
             orphans: 1;
         }
 
-        @media screen {
-            .pagedjs_page {
-                box-shadow: 0 0 0 1px #666;
-            }
-        
-            .pagedjs_area {
-                box-shadow: 0 0 0 1px teal;
-            }
-        }
-
         @page {
             size: 160mm 210mm;
             margin-top: 83px;
@@ -82,6 +72,17 @@
         ::footnote-call {
             color: orange;
             font-weight: bold;
+        }
+    </style>
+    <style media="screen">
+        @media screen {
+            .pagedjs_page {
+                box-shadow: 0 0 0 1px #666;
+            }
+        
+            .pagedjs_area {
+                box-shadow: 0 0 0 1px teal;
+            }
         }
     </style>
     </head>

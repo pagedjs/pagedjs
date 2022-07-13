@@ -10,20 +10,38 @@ class PrintMedia extends Handler {
 		let media = this.getMediaName(node);
 		let rules;
 
-		if (media === "print") {
+		if (media.includes("print")) {
 			rules = node.block.children;
 
-			// Remove rules from the @media block
-			node.block.children = new csstree.List();
-
 			// Append rules to the end of main rules list
-			list.appendList(rules);
+			rules.forEach((selectList) => {
+				selectList.prelude.children.forEach((rule) => {
+
+					rule.children.prependData({
+						type: "Combinator",
+						name: " "
+					});
+
+					rule.children.prependData({
+						type: "ClassSelector",
+						name: "pagedjs_page"
+					});
+				});
+
+			});
+
+			list.insertList(rules, item);
+
+			// Remove rules from the @media block
+			list.remove(item);
+		} else if (!media.includes("all") && !media.includes("pagedjs-ignore")) {
+			list.remove(item);
 		}
 
 	}
 
 	getMediaName(node) {
-		let media = "";
+		let media = [];
 
 		if (typeof node.prelude === "undefined" ||
 				node.prelude.type !== "AtrulePrelude" ) {
@@ -33,7 +51,7 @@ class PrintMedia extends Handler {
 		csstree.walk(node.prelude, {
 			visit: "Identifier",
 			enter: (identNode, iItem, iList) => {
-				media = identNode.name;
+				media.push(identNode.name);
 			}
 		});
 		return media;

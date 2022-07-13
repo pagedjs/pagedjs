@@ -15,16 +15,6 @@
     </script> 
 
     <style>
-        @media screen {
-            .pagedjs_page {
-                box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
-            }
-
-            .pagedjs_area {
-                box-shadow: 0 0 0 1px rgb(202, 20, 20);
-            }
-        }
-
     @page {
         size: 160mm 210mm;
         margin-top: 83px;
@@ -74,7 +64,17 @@
 
 
     </style>
+    <style media="screen">
+        @media screen {
+            .pagedjs_page {
+                box-shadow: 0 0 0 1px rgba(0, 0,0,0.2);
+            }
 
+            .pagedjs_area {
+                box-shadow: 0 0 0 1px rgb(202, 20, 20);
+            }
+        }
+    </style>
     
 
 </head>

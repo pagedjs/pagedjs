@@ -13,14 +13,6 @@ html{
   size: A5 portrait;
 }
 
-@media screen {
-  .baseline .pagedjs_page {
-    background-image:  repeating-linear-gradient(180deg, transparent  0, transparent 14px , rgba(0,255,0,0.7) var(--baseline)) ;
-    background-size: cover;
-    background-position:  0 -3px , 0 0
-  }
-}
-
 @page cover {
   margin: 0;
   background: url("images/cover.jpg");

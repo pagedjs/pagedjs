@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+<head>
+	<title>multiple nested named pages</title>
+	<meta charset="UTF-8">
+	<script src="../../../dist/paged.polyfill.js"></script>
+	<style>
+		.content {
+			page: contentpage;
+		}
+
+		.preamble {
+			page: preamble;
+		}
+
+		@page contentpage {
+			background: red;
+		}
+
+		@page preamble {
+			background: green;
+		}
+
+		/* interface */
+		@media screen {
+
+			body {
+				background-color: whitesmoke;
+			}
+
+			.pagedjs_page {
+				margin-bottom: 20px;
+				flex: none;
+				box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+				background-color: white;
+			}
+		}
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+<div class="content">
+	<div class="preamble">
+		<p>This is a preamble.</p>
+	</div>
+</div>
+</body>
+</html>

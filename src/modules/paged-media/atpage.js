@@ -1663,15 +1663,20 @@ class AtPage extends Handler {
 	}
 
 	addPageAttributes(page, start, pages) {
-		let named = start.dataset.page;
+		let namedPages = [start.dataset.page];
 
-		if (named) {
-			page.name = named;
-			page.element.classList.add("pagedjs_named_page");
-			page.element.classList.add("pagedjs_" + named + "_page");
+		if (namedPages && namedPages.length) {
+			for (const named of namedPages) {
+				if (!named) {
+					continue;
+				}
+				page.name = named;
+				page.element.classList.add("pagedjs_named_page");
+				page.element.classList.add("pagedjs_" + named + "_page");
 
-			if (!start.dataset.splitFrom) {
-				page.element.classList.add("pagedjs_" + named + "_first_page");
+				if (!start.dataset.splitFrom) {
+					page.element.classList.add("pagedjs_" + named + "_first_page");
+				}
 			}
 		}
 	}

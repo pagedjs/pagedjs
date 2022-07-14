@@ -96,6 +96,9 @@ class Layout {
 					console.warn("Unable to layout item: ", prevNode);
 					return new RenderResult(undefined, new OverflowContentError("Unable to layout item", [prevNode]));
 				}
+
+				this.rebuildTableFromBreakToken(newBreakToken, wrapper);
+
 				return new RenderResult(newBreakToken);
 			}
 
@@ -120,6 +123,8 @@ class Layout {
 					console.warn("Unable to layout item: ", node);
 					return new RenderResult(undefined, new OverflowContentError("Unable to layout item", [node]));
 				}
+
+				this.rebuildTableFromBreakToken(newBreakToken, wrapper);
 
 				length = 0;
 
@@ -163,6 +168,8 @@ class Layout {
 					newBreakToken = this.breakAt(node);
 				}
 
+				this.rebuildTableFromBreakToken(newBreakToken, wrapper);
+
 				length = 0;
 				this.forceRenderBreak = false;
 
@@ -188,6 +195,7 @@ class Layout {
 
 				if (newBreakToken) {
 					length = 0;
+					this.rebuildTableFromBreakToken(newBreakToken, wrapper);
 				}
 			}
 
@@ -287,6 +295,23 @@ class Layout {
 		});
 
 		return clone;
+	}
+
+	rebuildTableFromBreakToken(breakToken, dest) {
+		if (!breakToken || !breakToken.node) {
+			return;
+		}
+		let node = breakToken.node;
+		let td = isElement(node) ? node.closest("td") : node.parentElement.closest("td");
+		if (td) {
+			let rendered = findElement(td, dest, true);
+			if (!rendered) {
+				return;
+			}
+			while ((td = td.nextElementSibling)) {
+				this.append(td, dest, null, true);
+			}
+		}
 	}
 
 	async waitForImages(imgs) {

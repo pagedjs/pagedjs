@@ -185,7 +185,7 @@ export function rebuildAncestors(node) {
 	for (var i = 0; i < ancestors.length; i++) {
 		ancestor = ancestors[i];
 		parent = ancestor.cloneNode(false);
-
+	
 		parent.setAttribute("data-split-from", parent.getAttribute("data-ref"));
 		// ancestor.setAttribute("data-split-to", parent.getAttribute("data-ref"));
 
@@ -211,12 +211,23 @@ export function rebuildAncestors(node) {
 			fragment.appendChild(parent);
 		}
 		added.push(parent);
+
+		// rebuild table rows
+		if (parent.nodeName === "TD" && ancestor.parentElement.contains(ancestor)) {
+			let td = ancestor;
+			let prev = parent;
+			while ((td = td.previousElementSibling)) {
+				let sib = td.cloneNode(false);
+				parent.parentElement.insertBefore(sib, prev);
+				prev = sib;
+			}
+			
+		}
 	}
 
 	added = undefined;
 	return fragment;
 }
-
 /*
 export function split(bound, cutElement, breakAfter) {
 		let needsRemoval = [];
@@ -450,7 +461,7 @@ export function isContainer(node) {
 		case "BLOCKQUOTE":
 		case "PRE":
 		case "LI":
-		case "TR":
+		case "TD":
 		case "DT":
 		case "DD":
 		case "VIDEO":
@@ -468,13 +479,13 @@ export function cloneNode(n, deep=false) {
 	return n.cloneNode(deep);
 }
 
-export function findElement(node, doc) {
+export function findElement(node, doc, forceQuery) {
 	const ref = node.getAttribute("data-ref");
-	return findRef(ref, doc);
+	return findRef(ref, doc, forceQuery);
 }
 
-export function findRef(ref, doc) {
-	if (doc.indexOfRefs && doc.indexOfRefs[ref]) {
+export function findRef(ref, doc, forceQuery) {
+	if (!forceQuery && doc.indexOfRefs && doc.indexOfRefs[ref]) {
 		return doc.indexOfRefs[ref];
 	} else {
 		return doc.querySelector(`[data-ref='${ref}']`);

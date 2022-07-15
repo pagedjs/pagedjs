@@ -96,6 +96,9 @@ class Layout {
 					console.warn("Unable to layout item: ", prevNode);
 					return new RenderResult(undefined, new OverflowContentError("Unable to layout item", [prevNode]));
 				}
+
+				this.rebuildTableFromBreakToken(newBreakToken, wrapper);
+
 				return new RenderResult(newBreakToken);
 			}
 
@@ -120,6 +123,8 @@ class Layout {
 					console.warn("Unable to layout item: ", node);
 					return new RenderResult(undefined, new OverflowContentError("Unable to layout item", [node]));
 				}
+
+				this.rebuildTableFromBreakToken(newBreakToken, wrapper);
 
 				length = 0;
 
@@ -163,6 +168,8 @@ class Layout {
 					newBreakToken = this.breakAt(node);
 				}
 
+				this.rebuildTableFromBreakToken(newBreakToken, wrapper);
+
 				length = 0;
 				this.forceRenderBreak = false;
 
@@ -188,6 +195,7 @@ class Layout {
 
 				if (newBreakToken) {
 					length = 0;
+					this.rebuildTableFromBreakToken(newBreakToken, wrapper);
 				}
 			}
 
@@ -287,6 +295,23 @@ class Layout {
 		});
 
 		return clone;
+	}
+
+	rebuildTableFromBreakToken(breakToken, dest) {
+		if (!breakToken || !breakToken.node) {
+			return;
+		}
+		let node = breakToken.node;
+		let td = isElement(node) ? node.closest("td") : node.parentElement.closest("td");
+		if (td) {
+			let rendered = findElement(td, dest, true);
+			if (!rendered) {
+				return;
+			}
+			while ((td = td.nextElementSibling)) {
+				this.append(td, dest, null, true);
+			}
+		}
 	}
 
 	async waitForImages(imgs) {
@@ -532,10 +557,11 @@ class Layout {
 
 						// Check if the node is inside a row with a rowspan
 						const table = parentOf(tableRow, "TABLE", rendered);
-						if (table) {
+						const rowspan = table.querySelector("[colspan]");
+						if (table && rowspan) {
 							let columnCount = 0;
 							for (const cell of Array.from(table.rows[0].cells)) {
-								columnCount += parseInt(cell.getAttribute("COLSPAN") || "1");
+								columnCount += parseInt(cell.getAttribute("colspan") || "1");
 							}
 							if (tableRow.cells.length !== columnCount) {
 								let previousRow = tableRow.previousElementSibling;
@@ -543,7 +569,7 @@ class Layout {
 								while (previousRow !== null) {
 									previousRowColumnCount = 0;
 									for (const cell of Array.from(previousRow.cells)) {
-										previousRowColumnCount += parseInt(cell.getAttribute("COLSPAN") || "1");
+										previousRowColumnCount += parseInt(cell.getAttribute("colspan") || "1");
 									}
 									if (previousRowColumnCount === columnCount) {
 										break;

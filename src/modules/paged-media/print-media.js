@@ -9,25 +9,25 @@ class PrintMedia extends Handler {
 	onAtMedia(node, item, list) {
 		let media = this.getMediaName(node);
 		let rules;
-
 		if (media.includes("print")) {
 			rules = node.block.children;
 
 			// Append rules to the end of main rules list
 			rules.forEach((selectList) => {
-				selectList.prelude.children.forEach((rule) => {
+				if (selectList.prelude) {
+					selectList.prelude.children.forEach((rule) => {
 
-					rule.children.prependData({
-						type: "Combinator",
-						name: " "
-					});
-
-					rule.children.prependData({
-						type: "ClassSelector",
-						name: "pagedjs_page"
-					});
-				});
-
+						rule.children.prependData({
+							type: "Combinator",
+							name: " "
+						});
+	
+						rule.children.prependData({
+							type: "ClassSelector",
+							name: "pagedjs_page"
+						});
+					});	
+				}
 			});
 
 			list.insertList(rules, item);

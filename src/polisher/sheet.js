@@ -72,9 +72,10 @@ class Sheet {
 
 	insertRule(rule) {
 		let inserted = this.ast.children.appendData(rule);
-		inserted.forEach((item) => {
-			this.declarations(item);
-		});
+
+		this.declarations(rule);
+
+		return inserted;
 	}
 
 	urls(ast) {
@@ -115,7 +116,6 @@ class Sheet {
 		csstree.walk(ast, {
 			visit: "Rule",
 			enter: (ruleNode, ruleItem, rulelist) => {
-				// console.log("rule", ruleNode);
 
 				this.hooks.onRule.trigger(ruleNode, ruleItem, rulelist);
 				this.declarations(ruleNode, ruleItem, rulelist);
@@ -129,7 +129,6 @@ class Sheet {
 		csstree.walk(ruleNode, {
 			visit: "Declaration",
 			enter: (declarationNode, dItem, dList) => {
-				// console.log(declarationNode);
 
 				this.hooks.onDeclaration.trigger(declarationNode, dItem, dList, {ruleNode, ruleItem, rulelist});
 

@@ -47,7 +47,8 @@ class AtPage extends Handler {
 			backgroundOrigin: undefined,
 			block: {},
 			marks: undefined,
-			notes: undefined
+			notes: undefined,
+			added: false
 		};
 	}
 
@@ -75,6 +76,8 @@ class AtPage extends Handler {
 			page = this.pages[selector];
 			marginalia = this.replaceMarginalia(node);
 			needsMerge = true;
+			// Mark page for getting classes added again
+			page.added = false;
 		} else {
 			page = this.pageModel(selector);
 			marginalia = this.replaceMarginalia(node);
@@ -194,9 +197,11 @@ class AtPage extends Handler {
 	*/
 
 	afterTreeWalk(ast, sheet) {
+		let dirtyPage = "*" in this.pages && this.pages["*"].added === false;
+
 		this.addPageClasses(this.pages, ast, sheet);
 
-		if ("*" in this.pages) {
+		if (dirtyPage) {
 			let width = this.pages["*"].width;
 			let height = this.pages["*"].height;
 			let format = this.pages["*"].format;
@@ -645,41 +650,48 @@ class AtPage extends Handler {
 
 	addPageClasses(pages, ast, sheet) {
 		// First add * page
-		if ("*" in pages) {
+		if ("*" in pages && pages["*"].added === false) {
 			let p = this.createPage(pages["*"], ast.children, sheet);
 			sheet.insertRule(p);
+			pages["*"].added = true;
 		}
 		// Add :left & :right
-		if (":left" in pages) {
+		if (":left" in pages && pages[":left"].added === false) {
 			let left = this.createPage(pages[":left"], ast.children, sheet);
 			sheet.insertRule(left);
+			pages[":left"].added = true;
 		}
-		if (":right" in pages) {
+		if (":right" in pages && pages[":right"].added === false) {
 			let right = this.createPage(pages[":right"], ast.children, sheet);
 			sheet.insertRule(right);
+			pages[":right"].added = true;
 		}
 		// Add :first & :blank
-		if (":first" in pages) {
+		if (":first" in pages && pages[":first"].added === false) {
 			let first = this.createPage(pages[":first"], ast.children, sheet);
 			sheet.insertRule(first);
+			pages[":first"].added = true;
 		}
-		if (":blank" in pages) {
+		if (":blank" in pages && pages[":blank"].added === false) {
 			let blank = this.createPage(pages[":blank"], ast.children, sheet);
 			sheet.insertRule(blank);
+			pages[":blank"].added = true;
 		}
 		// Add nth pages
 		for (let pg in pages) {
-			if (pages[pg].nth) {
+			if (pages[pg].nth && pages[pg].added === false) {
 				let nth = this.createPage(pages[pg], ast.children, sheet);
 				sheet.insertRule(nth);
+				pages[pg].added = true;
 			}
 		}
 
 		// Add named pages
 		for (let pg in pages) {
-			if (pages[pg].name) {
+			if (pages[pg].name && pages[pg].added === false) {
 				let named = this.createPage(pages[pg], ast.children, sheet);
 				sheet.insertRule(named);
+				pages[pg].added = true;
 			}
 		}
 

@@ -11,9 +11,9 @@ import Following from "./following.js";
 import Footnotes from "./footnotes.js";
 
 export default [
+	PrintMedia,
 	AtPage,
 	Breaks,
-	PrintMedia,
 	Splits,
 	Counters,
 	Lists,

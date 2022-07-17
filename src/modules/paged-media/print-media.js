@@ -13,6 +13,8 @@ class PrintMedia extends Handler {
 			rules = node.block.children;
 
 			// Append rules to the end of main rules list
+			// TODO: this isn't working right, needs to check what is in the prelude
+			/*
 			rules.forEach((selectList) => {
 				if (selectList.prelude) {
 					selectList.prelude.children.forEach((rule) => {
@@ -31,6 +33,10 @@ class PrintMedia extends Handler {
 			});
 
 			list.insertList(rules, item);
+			*/
+
+			// Append rules to the end of main rules list
+			list.appendList(rules);
 
 			// Remove rules from the @media block
 			list.remove(item);

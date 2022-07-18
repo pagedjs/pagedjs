@@ -45,7 +45,7 @@ class Page {
 
 
 		area.style.columnWidth = Math.round(size.width) + "px";
-		area.style.columnGap = "calc(var(--pagedjs-margin-right) + var(--pagedjs-margin-left))";
+		area.style.columnGap = "calc(var(--pagedjs-margin-right) + var(--pagedjs-margin-left) + var(--pagedjs-bleed-right) + var(--pagedjs-bleed-left))";
 		// area.style.overflow = "scroll";
 
 		this.width = Math.round(size.width);

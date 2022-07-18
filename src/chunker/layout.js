@@ -40,6 +40,15 @@ class Layout {
 		this.element = element;
 
 		this.bounds = this.element.getBoundingClientRect();
+		this.parentBounds = this.element.offsetParent.getBoundingClientRect();
+		let gap = parseFloat(window.getComputedStyle(this.element).columnGap);
+	
+		if (gap) {
+			let leftMargin = this.bounds.left - this.parentBounds.left;
+			this.gap =  gap - leftMargin;	
+		} else {
+			this.gap = 0;
+		}
 
 		if (hooks) {
 			this.hooks = hooks;
@@ -498,11 +507,11 @@ class Layout {
 		return Math.max(Math.floor(width), scrollWidth) > Math.round(bounds.width);
 	}
 
-	findOverflow(rendered, bounds = this.bounds) {
+	findOverflow(rendered, bounds = this.bounds, gap = this.gap) {
 		if (!this.hasOverflow(rendered, bounds)) return;
 
-		let start = Math.round(bounds.left);
-		let end = Math.round(bounds.right);
+		let start = Math.floor(bounds.left);
+		let end = Math.round(bounds.right + gap);
 		let range;
 
 		let walker = walk(rendered.firstChild, rendered);
@@ -649,7 +658,7 @@ class Layout {
 
 	}
 
-	findEndToken(rendered, source, bounds = this.bounds) {
+	findEndToken(rendered, source) {
 		if (rendered.childNodes.length === 0) {
 			return;
 		}

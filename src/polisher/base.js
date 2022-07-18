@@ -43,6 +43,7 @@ export default `
 	--pagedjs-page-count: 0;
 	--pagedjs-page-counter-increment: 1;
 	--pagedjs-footnotes-count: 0;
+	--pagedjs-column-gap-offset: 1000px;
 }
 
 @page {

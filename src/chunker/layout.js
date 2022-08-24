@@ -502,9 +502,11 @@ class Layout {
 
 	hasOverflow(element, bounds = this.bounds) {
 		let constrainingElement = element && element.parentNode; // this gets the element, instead of the wrapper for the width workaround
-		let {width} = element.getBoundingClientRect();
+		let {width, height} = element.getBoundingClientRect();
 		let scrollWidth = constrainingElement ? constrainingElement.scrollWidth : 0;
-		return Math.max(Math.floor(width), scrollWidth) > Math.round(bounds.width);
+		let scrollHeight = constrainingElement ? constrainingElement.scrollHeight : 0;
+		return Math.max(Math.floor(width), scrollWidth) > Math.round(bounds.width) ||
+			Math.max(Math.floor(height), scrollHeight) > Math.round(bounds.height);
 	}
 
 	findOverflow(rendered, bounds = this.bounds, gap = this.gap) {
@@ -512,6 +514,8 @@ class Layout {
 
 		let start = Math.floor(bounds.left);
 		let end = Math.round(bounds.right + gap);
+		let vStart = Math.round(bounds.top);
+		let vEnd = Math.round(bounds.bottom);
 		let range;
 
 		let walker = walk(rendered.firstChild, rendered);
@@ -531,8 +535,10 @@ class Layout {
 				let pos = getBoundingClientRect(node);
 				let left = Math.round(pos.left);
 				let right = Math.floor(pos.right);
+				let top = Math.round(pos.top);
+				let bottom = Math.floor(pos.bottom);
 
-				if (!range && left >= end) {
+				if (!range && (left >= end || top >= vEnd)) {
 					// Check if it is a float
 					let isFloat = false;
 
@@ -540,7 +546,8 @@ class Layout {
 					const insideTableCell = parentOf(node, "TD", rendered);
 					if (insideTableCell && window.getComputedStyle(insideTableCell)["break-inside"] === "avoid") {
 						// breaking inside a table cell produces unexpected result, as a workaround, we forcibly avoid break inside in a cell.
-						prev = insideTableCell;
+						// But we take the whole row, not just the cell that is causing the break.
+						prev = insideTableCell.parentElement;
 					} else if (isElement(node)) {
 						let styles = window.getComputedStyle(node);
 						isFloat = styles.getPropertyValue("float") !== "none";
@@ -619,16 +626,20 @@ class Layout {
 					let rects = getClientRects(node);
 					let rect;
 					left = 0;
+					top = 0;
 					for (var i = 0; i != rects.length; i++) {
 						rect = rects[i];
 						if (rect.width > 0 && (!left || rect.left > left)) {
 							left = rect.left;
 						}
+						if (rect.height > 0 && (!top || rect.top > top)) {
+							top = rect.top;
+						}
 					}
 
-					if (left >= end) {
+					if (left >= end || top >= vEnd) {
 						range = document.createRange();
-						offset = this.textBreak(node, start, end);
+						offset = this.textBreak(node, start, end, vStart, vEnd);
 						if (!offset) {
 							range = undefined;
 						} else {
@@ -639,7 +650,7 @@ class Layout {
 				}
 
 				// Skip children
-				if (skip || right <= end) {
+				if (skip || (right <= end && bottom <= vEnd)) {
 					next = nodeAfter(node, rendered);
 					if (next) {
 						walker = walk(next, rendered);
@@ -700,10 +711,12 @@ class Layout {
 		return this.breakAt(after);
 	}
 
-	textBreak(node, start, end) {
+	textBreak(node, start, end, vStart, vEnd) {
 		let wordwalker = words(node);
 		let left = 0;
 		let right = 0;
+		let top = 0;
+		let bottom = 0;
 		let word, next, done, pos;
 		let offset;
 		while (!done) {
@@ -719,13 +732,15 @@ class Layout {
 
 			left = Math.floor(pos.left);
 			right = Math.floor(pos.right);
+			top = Math.floor(pos.top);
+			bottom = Math.floor(pos.bottom);
 
-			if (left >= end) {
+			if (left >= end || top >= vEnd) {
 				offset = word.startOffset;
 				break;
 			}
 
-			if (right > end) {
+			if (right > end || bottom > vEnd) {
 				let letterwalker = letters(word);
 				let letter, nextLetter, doneLetter;
 
@@ -740,8 +755,9 @@ class Layout {
 
 					pos = getBoundingClientRect(letter);
 					left = Math.floor(pos.left);
+					top = Math.floor(pos.top);
 
-					if (left >= end) {
+					if (left >= end || top >= vEnd) {
 						offset = letter.startOffset;
 						done = true;
 

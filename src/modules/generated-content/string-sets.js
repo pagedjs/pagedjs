@@ -8,7 +8,7 @@ class StringSets extends Handler {
 
 		this.stringSetSelectors = {};
 		this.type;
-		// pageLastString = last string variable defined on the page 
+		// pageLastString = last string variable defined on the page
 		this.pageLastString;
 
 	}
@@ -17,21 +17,35 @@ class StringSets extends Handler {
 		if (declaration.property === "string-set") {
 			let selector = csstree.generate(rule.ruleNode.prelude);
 
-			let identifier = declaration.value.children.first().name;
+			let identifiers = [];
+			let functions = [];
+			let values = [];
 
-			let value;
-			csstree.walk(declaration, {
-				visit: "Function",
-				enter: (node, item, list) => {
-					value = csstree.generate(node);
+			declaration.value.children.forEach((child) => {
+				if (child.type === "Identifier") {
+					identifiers.push(child.name);
+				}
+				if (child.type === "Function") {
+					functions.push(child.name);
+					child.children.forEach((subchild) => {
+						if (subchild.type === "Identifier") {
+							values.push(subchild.name);
+						}
+					});
 				}
 			});
 
-			this.stringSetSelectors[identifier] = {
-				identifier,
-				value,
-				selector
-			};
+			identifiers.forEach((identifier, index) => {
+				let func = functions[index];
+				let value = values[index];
+				this.stringSetSelectors[identifier] = {
+					identifier,
+					func,
+					value,
+					selector
+				};
+			});
+
 		}
 	}
 
@@ -71,11 +85,13 @@ class StringSets extends Handler {
 		{
 			this.pageLastString = {};
 		}
-	
+
 		
 		for (let name of Object.keys(this.stringSetSelectors)) {
 	
 			let set = this.stringSetSelectors[name];
+			let value = set.value;
+			let func = set.func;
 			let selected = fragment.querySelectorAll(set.selector);
 
 			// Get the last found string for the current identifier
@@ -93,18 +109,36 @@ class StringSets extends Handler {
 
 				selected.forEach((sel) => {
 					// push each content into the array to define in the variable the first and the last element of the page.
-					this.pageLastString[name] = selected[selected.length - 1].textContent;
-				
+					if (func === "content") {
+						this.pageLastString[name] = selected[selected.length - 1].textContent;
+					}
+
+					if (func === "attr") {
+						this.pageLastString[name] = selected[selected.length - 1].getAttribute(value) || "";
+					}
+
 				});	
 
 				/* FIRST */
 	
-				varFirst = selected[0].textContent;
+				if (func === "content") {
+					varFirst = selected[0].textContent;
+				}
+
+				if (func === "attr") {
+					varFirst = selected[0].getAttribute(value) || "";
+				}
 
 
 				/* LAST */
 
-				varLast = selected[selected.length - 1].textContent;
+				if (func === "content") {
+					varLast = selected[selected.length - 1].textContent;
+				}
+
+				if (func === "attr") {
+					varLast = selected[selected.length - 1].getAttribute(value) || "";
+				}
 
 
 				/* START */

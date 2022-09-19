@@ -170,4 +170,30 @@ describe("string-multiple", () => {
 			window.getComputedStyle(r).getPropertyValue("--pagedjs-string-first-except-alphabetbis"));
 		expect(text).toEqual("\"2222\"");
 	});
+
+	describe("string-attr", () => {
+		let page;
+		beforeAll(async () => {
+			page = await loadPage("string/string-attr.html");
+			return page.rendered;
+		}, TIMEOUT);
+	
+		afterAll(async () => {
+			if (!DEBUG) {
+				await page.close();
+			}
+		});
+	
+		it("should set the running header as \"a '' this \" 'Chpater A\" on the first page", async () => {
+			let text = await page.$eval(".pagedjs_first_page", (r) =>
+				window.getComputedStyle(r).getPropertyValue("--pagedjs-string-first-alphabet"));
+			expect(text).toEqual("\"Chapter A\"");
+		});
+	
+		it("should set the running header as \"Chapter F\" on the second page", async () => {
+			let text = await page.$eval("#page-2", (r) =>
+				window.getComputedStyle(r).getPropertyValue("--pagedjs-string-first-alphabet"));
+			expect(text).toEqual("\"Chapter F\"");
+		});
+	});
 });

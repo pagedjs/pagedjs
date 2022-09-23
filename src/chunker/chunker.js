@@ -106,6 +106,7 @@ class Chunker {
 		this.hooks.afterOverflowRemoved = new Hook(this);
 		this.hooks.onBreakToken = new Hook();
 		this.hooks.afterPageLayout = new Hook(this);
+		this.hooks.finalizePage = new Hook(this);
 		this.hooks.afterRendered = new Hook(this);
 
 		this.pages = [];
@@ -321,6 +322,7 @@ class Chunker {
 			this.emit("page", page);
 			// await this.hooks.layout.trigger(page.element, page, undefined, this);
 			await this.hooks.afterPageLayout.trigger(page.element, page, undefined, this);
+			await this.hooks.finalizePage.trigger(page.element, page, undefined, this);
 			this.emit("renderedPage", page);
 		}
 	}
@@ -345,6 +347,7 @@ class Chunker {
 			breakToken = await page.layout(content, breakToken, this.maxChars);
 
 			await this.hooks.afterPageLayout.trigger(page.element, page, breakToken, this);
+			await this.hooks.finalizePage.trigger(page.element, page, undefined, this);
 			this.emit("renderedPage", page);
 
 			this.recoredCharLength(page.wrapper.textContent.length);
@@ -515,6 +518,7 @@ class Chunker {
 		}
 
 		await this.hooks.afterPageLayout.trigger(page.element, page, undefined, this);
+		await this.hooks.finalizePage.trigger(page.element, page, undefined, this);
 		this.emit("renderedPage", page);
 	}
 

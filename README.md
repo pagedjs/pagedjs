@@ -121,6 +121,7 @@ filter(content)
 afterParsed(parsed)
 beforePageLayout(page)
 afterPageLayout(pageElement, page, breakToken)
+finalizePage(pageElement, page, breakToken)
 afterRendered(pages)
 
 // Polisher

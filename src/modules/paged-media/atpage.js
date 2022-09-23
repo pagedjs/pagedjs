@@ -1734,7 +1734,7 @@ class AtPage extends Handler {
 		// page.element.querySelector('.paged_area').style.color = red;
 	}
 
-	afterPageLayout(fragment, page, breakToken, chunker) {
+	finalizePage(fragment, page, breakToken, chunker) {
 		for (let m in this.marginalia) {
 			let margin = this.marginalia[m];
 			let sels = m.split(" ");

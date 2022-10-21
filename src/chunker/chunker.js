@@ -6,6 +6,7 @@ import Queue from "../utils/queue.js";
 import {
 	requestIdleCallback
 } from "../utils/utils.js";
+import { OverflowContentError } from "./renderresult.js";
 
 const MAX_PAGES = false;
 const MAX_LAYOUTS = false;
@@ -329,6 +330,7 @@ class Chunker {
 
 	async *layout(content, startAt) {
 		let breakToken = startAt || false;
+		let tokens = [];
 
 		while (breakToken !== undefined && (MAX_PAGES ? this.total < MAX_PAGES : true)) {
 
@@ -345,6 +347,18 @@ class Chunker {
 
 			// Layout content in the page, starting from the breakToken
 			breakToken = await page.layout(content, breakToken, this.maxChars);
+
+			if (breakToken) {
+				let newToken = breakToken.toJSON(true);
+				if (tokens.lastIndexOf(newToken) > -1) {
+					// loop
+					let err = new OverflowContentError("Layout repeated", [breakToken.node]);
+					console.error("Layout repeated at: ", breakToken.node);
+					return err;
+				} else {
+					tokens.push(newToken);
+				}
+			}
 
 			await this.hooks.afterPageLayout.trigger(page.element, page, breakToken, this);
 			await this.hooks.finalizePage.trigger(page.element, page, undefined, this);

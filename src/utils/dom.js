@@ -104,7 +104,7 @@ export function displayedElementAfter(node, limiter) {
 	let after = elementAfter(node, limiter);
 
 	while (after && after.dataset.undisplayed) {
-		after = elementAfter(after);
+		after = elementAfter(after, limiter);
 	}
 
 	return after;
@@ -114,7 +114,7 @@ export function displayedElementBefore(node, limiter) {
 	let before = elementBefore(node, limiter);
 
 	while (before && before.dataset.undisplayed) {
-		before = elementBefore(before);
+		before = elementBefore(before, limiter);
 	}
 
 	return before;

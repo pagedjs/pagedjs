@@ -126,14 +126,19 @@ class Layout {
 
 				if (!newBreakToken) {
 					newBreakToken = this.breakAt(node);
+				} else {
+					this.rebuildTableFromBreakToken(newBreakToken, wrapper);
 				}
 
 				if (newBreakToken && newBreakToken.equals(prevBreakToken)) {
 					console.warn("Unable to layout item: ", node);
-					return new RenderResult(undefined, new OverflowContentError("Unable to layout item", [node]));
+					let after = newBreakToken.node && nodeAfter(newBreakToken.node);
+					if (after) {
+						newBreakToken = new BreakToken(after);
+					} else {
+						return new RenderResult(undefined, new OverflowContentError("Unable to layout item", [node]));
+					}
 				}
-
-				this.rebuildTableFromBreakToken(newBreakToken, wrapper);
 
 				length = 0;
 
@@ -175,9 +180,9 @@ class Layout {
 
 				if (!newBreakToken) {
 					newBreakToken = this.breakAt(node);
+				} else {
+					this.rebuildTableFromBreakToken(newBreakToken, wrapper);
 				}
-
-				this.rebuildTableFromBreakToken(newBreakToken, wrapper);
 
 				length = 0;
 				this.forceRenderBreak = false;
@@ -197,14 +202,19 @@ class Layout {
 
 				newBreakToken = this.findBreakToken(wrapper, source, bounds, prevBreakToken);
 
-				if (newBreakToken && newBreakToken.equals(prevBreakToken)) {
-					console.warn("Unable to layout item: ", node);
-					return new RenderResult(undefined, new OverflowContentError("Unable to layout item", [node]));
-				}
-
 				if (newBreakToken) {
 					length = 0;
 					this.rebuildTableFromBreakToken(newBreakToken, wrapper);
+				}
+
+				if (newBreakToken && newBreakToken.equals(prevBreakToken)) {
+					console.warn("Unable to layout item: ", node);
+					let after = newBreakToken.node && nodeAfter(newBreakToken.node);
+					if (after) {
+						newBreakToken = new BreakToken(after);
+					} else {
+						return new RenderResult(undefined, new OverflowContentError("Unable to layout item", [node]));
+					}
 				}
 			}
 

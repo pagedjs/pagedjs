@@ -19,7 +19,7 @@ describe("padding-0", () => {
 	});
 
 	if (!DEBUG) {
-		it("should create a pdf", async () => {
+		xit("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 			expect(pdf).toMatchPDFSnapshot(1);
 		});

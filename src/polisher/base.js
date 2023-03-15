@@ -442,11 +442,18 @@ export default `
 	counter-reset: unset;
 }
 
-[data-footnote-marker]:not([data-split-from]) {
-	counter-increment: footnote-marker;
+[data-footnote-marker] {
 	text-indent: 0;
 	display: list-item;
 	list-style-position: inside;
+}
+
+[data-footnote-marker][data-split-from] {
+	list-style: none;
+}
+
+[data-footnote-marker]:not([data-split-from]) {
+	counter-increment: footnote-marker;
 }
 
 [data-footnote-marker]::marker {

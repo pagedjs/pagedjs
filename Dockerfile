@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright:v1.20.0-focal
+FROM mcr.microsoft.com/playwright:v1.31.1-focal
 
 # Application parameters and variables
 ENV NODE_ENV=development

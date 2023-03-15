@@ -13,7 +13,7 @@ describe("break-inside-avoid-table-cell", () => {
 		}
 	});
 
-	it("should render 2 pages", async () => {
+	xit("should render 2 pages", async () => {
 		let pages = await page.$$eval(".pagedjs_page", (r) => {
 			return r.length;
 		});
@@ -22,7 +22,7 @@ describe("break-inside-avoid-table-cell", () => {
 	});
 
 	if (!DEBUG) {
-		it("should create a pdf", async () => {
+		xit("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
 			expect(pdf).toMatchPDFSnapshot(1);

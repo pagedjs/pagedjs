@@ -20,7 +20,8 @@
     "@babel/runtime": "^7.17.8",
     "clear-cut": "^2.0.2",
     "css-tree": "^1.1.3",
-    "event-emitter": "^0.3.5"
+    "event-emitter": "^0.3.5",
+    "rollup-plugin-terser": "^7.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",

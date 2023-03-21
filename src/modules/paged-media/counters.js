@@ -110,7 +110,6 @@ class Counters extends Handler {
 	}
 
 	handleReset(declaration, rule) {
-		let resets = [];
 		let children = declaration.value.children;
 
 		children.forEach((data, item) => {
@@ -120,9 +119,20 @@ class Counters extends Handler {
 				if (item.next && item.next.data.type === "WhiteSpace") {
 					whitespace = item.next;
 				}
-				if (whitespace && whitespace.next && whitespace.next.data.type === "Number") {
-					number = whitespace.next;
-					value = parseInt(number.data.value);
+				if (whitespace && whitespace.next) {
+					if (whitespace.next.data.type === "Number") {
+						// The counter reset value is specified using a number. E.g. counter-reset: c2 5;
+						number = whitespace.next;
+						value = parseInt(number.data.value);
+					} else if (whitespace.next.data.type === "Function" && whitespace.next.data.name === "var") {
+						// The counter reset value is specified using a CSS variable (custom property).
+						// E.g. counter-reset: c2 var(--my-variable);
+						// See https://developer.mozilla.org/en-US/docs/Web/CSS/var
+						number = whitespace.next;
+						// Use the variable name (e.g. '--my-variable') as value for now. The actual value is resolved later by the
+						// processCounterResets function.
+						value = whitespace.next.data.children.head.data.name;
+					}
 				}
 
 				let counter;
@@ -151,7 +161,6 @@ class Counters extends Handler {
 				};
 
 				counter.resets[selector] = reset;
-				resets.push(reset);
 
 				if (selector !== ".pagedjs_page") {
 					// Remove the parsed resets
@@ -165,8 +174,6 @@ class Counters extends Handler {
 				}
 			}
 		});
-
-		return resets;
 	}
 
 	processCounters(parsed, counters) {
@@ -222,7 +229,19 @@ class Counters extends Handler {
 			let resetElements = parsed.querySelectorAll(reset.selector);
 			// Add counter data
 			for (var i = 0; i < resetElements.length; i++) {
-				resetElements[i].setAttribute("data-counter-"+ counter.name +"-reset", reset.number);
+				let value = reset.number;
+				if (typeof value === "string" && value.startsWith("--")) {
+					// The value is specified using a CSS variable (custom property).
+					// FIXME: We get the variable value only from the inline style of the element because at this point the
+					// element is detached and thus using:
+					//
+					//		getComputedStyle(resetElements[i]).getPropertyValue(value)
+					//
+					// always returns an empty string. We could try to temporarily attach the element to get its computed style,
+					// but for now using the inline style is enough for us.
+					value = resetElements[i].style.getPropertyValue(value) || 0;
+				}
+				resetElements[i].setAttribute("data-counter-"+ counter.name +"-reset", value);
 				if (resetElements[i].getAttribute("data-counter-reset")) {
 					resetElements[i].setAttribute("data-counter-reset", resetElements[i].getAttribute("data-counter-reset") + " " + counter.name);
 				} else {

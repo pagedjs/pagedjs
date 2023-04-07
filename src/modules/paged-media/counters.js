@@ -321,22 +321,40 @@ class Counters extends Handler {
 		if (!element || !incrementArray || incrementArray.length === 0) return;
 
 		const ref = element.dataset.ref;
-		const prevIncrements = Array.from(this.styleSheet.cssRules).filter((rule) => {
+		const increments = Array.from(this.styleSheet.cssRules).filter((rule) => {
 			return rule.selectorText === `[data-ref="${element.dataset.ref}"]:not([data-split-from])`
 						 && rule.style[0] === "counter-increment";
+		}).map(rule => rule.style.counterIncrement);
+
+		// Merge the current increments by summing the values because we generate both a decrement and an increment when the
+		// element resets and increments the counter at the same time. E.g. ['c1 -7', 'c1 1'] should lead to 'c1 -6'.
+		increments.push(this.mergeIncrements(incrementArray,
+			(prev, next) => (parseInt(prev) || 0) + (parseInt(next) || 0)));
+
+		// Keep the last value for each counter when merging with the previous increments. E.g. ['c1 -7 c2 3', 'c1 1']
+		// should lead to 'c1 1 c2 3'.
+		const counterIncrement = this.mergeIncrements(increments, (prev, next) => next);
+		this.insertRule(`[data-ref="${ref}"]:not([data-split-from]) { counter-increment: ${counterIncrement} }`);
+	}
+
+	/**
+	 * Merge multiple values of a counter-increment CSS rule, using the specified operator.
+	 *
+	 * @param {Array} incrementArray the values to merge, e.g. ['c1 1', 'c1 -7 c2 1']
+	 * @param {Function} operator the function used to merge counter values (e.g. keep the last value of a counter or sum
+	 *					the counter values)
+	 * @return {string} the merged value of the counter-increment CSS rule
+	 */
+	mergeIncrements(incrementArray, operator) {
+		const increments = {};
+		incrementArray.forEach(increment => {
+			let values = increment.split(" ");
+			for (let i = 0; i < values.length; i+=2) {
+				increments[values[i]] = operator(increments[values[i]], values[i + 1]);
+			}
 		});
 
-		const increments = [];
-		for (let styleRule of prevIncrements) {
-			let values = styleRule.style.counterIncrement.split(" ");
-			for (let i = 0; i < values.length; i+=2) {
-				increments.push(values[i] + " " + values[i+1]);
-			}
-		}
-
-		Array.prototype.push.apply(increments, incrementArray);
-
-		this.insertRule(`[data-ref="${ref}"]:not([data-split-from]) { counter-increment: ${increments.join(" ")} }`);
+		return Object.entries(increments).map(([key, value]) => `${key} ${value}`).join(" ");
 	}
 
 	afterPageLayout(pageElement, page) {

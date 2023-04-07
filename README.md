@@ -42,9 +42,9 @@ However, you can add an async `before` function or return a Promise to delay the
 <script>
 	window.PagedConfig = {
 		before: () => {
-			return new Promise(resolve, reject) {
+			return new Promise((resolve, reject) => {
 				setTimeout(() => { resolve() }, 1000);
-			}
+			})
 		},
 		after: (flow) => { console.log("after", flow) },
 	};

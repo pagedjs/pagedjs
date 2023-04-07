@@ -1,15 +1,85 @@
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
-    <title>Paged JS</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+	<title>PagedJS Specs and Examples</title>
 
-    <link rel="stylesheet" type="text/css" href="assets/styles/index.css">
+  <style>
+    body *, body * * {
+      box-sizing: border-box;
+    }
+    body {
+      font-size: 1.2em;
+      margin: 2em;
+      font-family: sans-serif;
+    }
+    h1,h2,h3 {
+      font-weight: 300;
+      margin:0;
+      margin-bottom: 2em;
+      margin-top: 1.3em;
+    }
+    h2 {
+      font-size: 1.2em;
+      margin-bottom: .4em;
+    }
+    section {
+      margin-bottom: 3em;
+    }
+    section > ul {
+      display: flex; 
+      flex-wrap: wrap;
+      gap: 5ch;
+    }
+    section ul {
+      list-style-type: none;
+    }
+    section li > ul {
+      padding-left: 1ch;
+    }
+    section > ul > li > ul > li {
+      min-width: 40ch; 
+      margin-bottom: .3em;
+    }
+
+
+    li a {
+      color: #0da6ba;
+      /* text-decoration-color: ; */
+      text-underline-offset: 3px;
+    }
+
+    li a:hover {
+      color: black;
+      background: #dcf4f7;
+    }
+
+    ul ul {
+      border-left: 2px solid grey;
+      padding-top:0;
+    }
+  </style>
 
 </head>
 <body>
+	<h1>Pagedjs</h1>
+	<section>
+    <h2>Pagedjs examples</h2>
 	<ul>
 		<li><a href="examples/index.html">Moby Dick (1-50)</a></li>
 		<li><a href="examples/epub.html">Epub Loader</a></li>
 	</ul>
+	</section>
+	<section>
+    <h2>Pagedjs specs</h2>
+	<ul>
+		<li><a href="specs/">specifications for pagedjs</a></li>
+	</ul>
+	</section>
+</body>
+</html>
+
+
+
+
 </body>
 </html>

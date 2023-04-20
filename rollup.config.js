@@ -1,10 +1,12 @@
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
-import { terser } from "rollup-plugin-terser";
+import terser from "@rollup/plugin-terser";
 import license from "rollup-plugin-license";
 
-import pkg from "./package.json";
+import pkg from "./package.json" assert {
+  type: 'json'
+};
 
 const plugins = [
 	nodeResolve({
@@ -15,7 +17,7 @@ const plugins = [
 	}),
 	json(),
 	license({
-		banner: "@license Paged.js v<%= pkg.version %> | MIT | https://gitlab.pagedmedia.org/tools/pagedjs",
+		banner: "@license Paged.js v<%= pkg.version %> | MIT | https://gitlab.coko.foundation/pagedjs/pagedjs",
 	})
 ];
 

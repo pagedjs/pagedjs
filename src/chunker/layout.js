@@ -547,8 +547,8 @@ class Layout {
 				let right = Math.floor(pos.right);
 				let top = Math.round(pos.top);
 				let bottom = Math.floor(pos.bottom);
-				// Check if it overflow, the right of Rect is bounds.right + gap + bounds.width when tr break of table,so add  || (right >= end && node.tagName === "TR")
-				if (!range && (left >= end || top >= vEnd || (right >= end && node.tagName === "TR"))) {
+
+				if (!range && (left >= end || top >= vEnd)) {
 					// Check if it is a float
 					let isFloat = false;
 

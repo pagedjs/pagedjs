@@ -2,7 +2,7 @@ import { toMatchImageSnapshot } from "jest-image-snapshot";
 import path from "path";
 import gs from "ghostscript4js";
 import fs from "fs";
-import rimraf from "rimraf";
+import { rimrafSync } from "rimraf";
 import { DEBUG } from "./constants.js";
 
 function toMatchPDFSnapshot(received, page=1) {
@@ -22,8 +22,8 @@ function toMatchPDFSnapshot(received, page=1) {
 	pdfImage = fs.readFileSync(imagePath);
 	// remove output
 	if (!DEBUG) {
-		rimraf.sync(imagePath);
-		// rimraf.sync(pdfPath);
+		rimrafSync(imagePath);
+		// rimrafSync(pdfPath);
 	}
 
 	const config = {};

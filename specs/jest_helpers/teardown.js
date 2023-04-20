@@ -3,7 +3,7 @@
 
 // const { DIR, DEBUG } = require("./constants");
 import chalk from "chalk";
-import rimraf from "rimraf";
+import { rimrafSync } from "rimraf";
 import { DIR, DEBUG } from "./constants.js";
 
 export default async function() {
@@ -13,5 +13,5 @@ export default async function() {
 		await global.browser.close();
 		global.server.close();
 	}
-	rimraf.sync(DIR);
+	rimrafSync(DIR);
 }

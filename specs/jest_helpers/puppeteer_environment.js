@@ -1,11 +1,11 @@
 import chalk from "chalk";
-import NodeEnvironment from "jest-environment-node";
+import { TestEnvironment } from "jest-environment-node";
 // import puppeteer from "puppeteer";
 import { chromium } from "playwright-core";
 import fs from "fs";
 import { WS_ENDPOINT_PATH, DEBUG, ORIGIN, PDF_SETTINGS } from "./constants.js";
 
-class PuppeteerEnvironment extends NodeEnvironment {
+class PuppeteerEnvironment extends TestEnvironment {
 	constructor(config) {
 		super(config);
 	}

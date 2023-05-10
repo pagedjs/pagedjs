@@ -106,6 +106,7 @@ class Chunker {
 		this.hooks.onOverflow = new Hook(this);
 		this.hooks.afterOverflowRemoved = new Hook(this);
 		this.hooks.onBreakToken = new Hook();
+		this.hooks.beforeRenderResult = new Hook(this);
 		this.hooks.afterPageLayout = new Hook(this);
 		this.hooks.finalizePage = new Hook(this);
 		this.hooks.afterRendered = new Hook(this);

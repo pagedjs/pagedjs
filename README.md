@@ -141,6 +141,7 @@ renderNode(node, sourceNode, layout)
 onOverflow(overflow, rendered, bounds)
 onBreakToken(breakToken, overflow, rendered)
 afterOverflowRemoved(removed, rendered)
+beforeRenderResult(breakToken, pageWrapper)
 ```
 
 ## Setup

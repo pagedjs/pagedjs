@@ -62,6 +62,7 @@ class Layout {
 			this.hooks.onOverflow = new Hook();
 			this.hooks.afterOverflowRemoved = new Hook();
 			this.hooks.onBreakToken = new Hook();
+			this.hooks.beforeRenderResult = new Hook();
 		}
 
 		this.settings = options || {};
@@ -106,11 +107,13 @@ class Layout {
 
 				if (newBreakToken && newBreakToken.equals(prevBreakToken)) {
 					console.warn("Unable to layout item: ", prevNode);
+					this.hooks && this.hooks.beforeRenderResult.trigger(undefined, wrapper, this);
 					return new RenderResult(undefined, new OverflowContentError("Unable to layout item", [prevNode]));
 				}
 
 				this.rebuildTableFromBreakToken(newBreakToken, wrapper);
 
+				this.hooks && this.hooks.beforeRenderResult.trigger(newBreakToken, wrapper, this);
 				return new RenderResult(newBreakToken);
 			}
 
@@ -216,6 +219,7 @@ class Layout {
 					if (after) {
 						newBreakToken = new BreakToken(after);
 					} else {
+						this.hooks && this.hooks.beforeRenderResult.trigger(undefined, wrapper, this);
 						return new RenderResult(undefined, new OverflowContentError("Unable to layout item", [node]));
 					}
 				}
@@ -223,6 +227,7 @@ class Layout {
 
 		}
 
+		this.hooks && this.hooks.beforeRenderResult.trigger(newBreakToken, wrapper, this);
 		return new RenderResult(newBreakToken);
 	}
 

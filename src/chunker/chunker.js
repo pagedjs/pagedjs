@@ -100,6 +100,7 @@ class Chunker {
 		this.hooks.filter = new Hook(this);
 		this.hooks.afterParsed = new Hook(this);
 		this.hooks.beforePageLayout = new Hook(this);
+		this.hooks.onPageLayout = new Hook(this);
 		this.hooks.layout = new Hook(this);
 		this.hooks.renderNode = new Hook(this);
 		this.hooks.layoutNode = new Hook(this);

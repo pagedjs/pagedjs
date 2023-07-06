@@ -54,6 +54,7 @@ class Layout {
 			this.hooks = hooks;
 		} else {
 			this.hooks = {};
+			this.hooks.onPageLayout = new Hook();
 			this.hooks.layout = new Hook();
 			this.hooks.renderNode = new Hook();
 			this.hooks.layoutNode = new Hook();
@@ -84,6 +85,8 @@ class Layout {
 		let length = 0;
 
 		let prevBreakToken = breakToken || new BreakToken(start);
+
+		this.hooks && this.hooks.onPageLayout.trigger(wrapper, prevBreakToken, this);
 
 		while (!done && !newBreakToken) {
 			next = walker.next();

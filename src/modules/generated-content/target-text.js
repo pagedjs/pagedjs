@@ -90,7 +90,7 @@ class TargetText extends Handler {
 	afterParsed(fragment) {
 		Object.keys(this.textTargets).forEach(name => {
 			let target = this.textTargets[name];
-			let split = target.selector.split("::");
+			let split = target.selector.split(/::?/g);
 			let query = split[0];
 			let queried = fragment.querySelectorAll(query);
 			let textContent;

@@ -120,6 +120,7 @@ beforeParsed(content)
 filter(content)
 afterParsed(parsed)
 beforePageLayout(page)
+onPageLayout(pageWrapper, breakToken, layout);
 afterPageLayout(pageElement, page, breakToken)
 finalizePage(pageElement, page, breakToken)
 afterRendered(pages)
@@ -140,6 +141,7 @@ renderNode(node, sourceNode, layout)
 onOverflow(overflow, rendered, bounds)
 onBreakToken(breakToken, overflow, rendered)
 afterOverflowRemoved(removed, rendered)
+beforeRenderResult(breakToken, pageWrapper)
 ```
 
 ## Setup

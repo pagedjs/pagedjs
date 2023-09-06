@@ -557,9 +557,6 @@ class Layout {
 				let bottom = Math.floor(pos.bottom);
 
 				if (!range && (left >= end || top >= vEnd)) {
-					// Check if it is a float
-					let isFloat = false;
-
 					// Check if the node is inside a break-inside: avoid table cell
 					const insideTableCell = parentOf(node, "TD", rendered);
 					if (insideTableCell && window.getComputedStyle(insideTableCell)["break-inside"] === "avoid") {
@@ -568,7 +565,6 @@ class Layout {
 						prev = insideTableCell.parentElement;
 					} else if (isElement(node)) {
 						let styles = window.getComputedStyle(node);
-						isFloat = styles.getPropertyValue("float") !== "none";
 						skip = styles.getPropertyValue("break-inside") === "avoid";
 						breakAvoid = node.dataset.breakBefore === "avoid" || node.dataset.previousBreakAfter === "avoid";
 						prev = breakAvoid && nodeBefore(node, rendered);
@@ -623,7 +619,7 @@ class Layout {
 						break;
 					}
 
-					if (!br && !isFloat && isElement(node)) {
+					if (!br && isElement(node)) {
 						range = document.createRange();
 						range.selectNode(node);
 						break;

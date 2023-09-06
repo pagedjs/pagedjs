@@ -754,15 +754,21 @@ class Layout {
 			bottom = Math.floor(pos.bottom);
 
 			if (left >= end || top >= vEnd) {
+				// The word is completely outside the bounds of the print page. We need to break before it.
 				offset = word.startOffset;
 				break;
 			}
 
 			if (right > end || bottom > vEnd) {
+				// The word is partially outside the print page (e.g. a word could be split / hyphenated on two lines of
+				// text and only the first part fits into the current print page; or simply because the end of the page
+				// truncates vertically the word). We need to see if any of its letters fit into the current print page.
 				let letterwalker = letters(word);
 				let letter, nextLetter, doneLetter;
 
 				while (!doneLetter) {
+					// Note that the letter walker continues to walk beyond the end of the word, until the end of the
+					// text node.
 					nextLetter = letterwalker.next();
 					letter = nextLetter.value;
 					doneLetter = nextLetter.done;
@@ -772,10 +778,11 @@ class Layout {
 					}
 
 					pos = getBoundingClientRect(letter);
-					left = Math.floor(pos.left);
-					top = Math.floor(pos.top);
+					right = Math.floor(pos.right);
+					bottom = Math.floor(pos.bottom);
 
-					if (left >= end || top >= vEnd) {
+					// Stop if the letter exceeds the bounds of the print page. We need to break before it.
+					if (right > end || bottom > vEnd) {
 						offset = letter.startOffset;
 						done = true;
 

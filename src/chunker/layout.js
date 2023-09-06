@@ -269,7 +269,30 @@ class Layout {
 	}
 
 	append(node, dest, breakToken, shallow = true, rebuild = true) {
+		// Check if the node is already appended.
+		if (isElement(node)) {
+			// If the node is an element then we can look directly for it (based on data-ref attribute).
+			const existingElement = findElement(node, dest, true);
+			if (existingElement) {
+				// The element is already appended, but maybe it was a shallow clone.
+				if (!shallow && node.hasChildNodes() && !existingElement.hasChildNodes()) {
+					// A shallow clone was previously appended, but now we need a deep clone.
+					const deepClone = cloneNode(node, true);
+					// We reuse the existing element because it is already cached in indexOfRefs.
+					existingElement.append(...deepClone.childNodes);
+				}
+				return existingElement;
+			}
+		} else if (isElement(node.parentNode)) {
+			// The node is most likely a text node, so we need to find its parent element.
+			const existingParent = findElement(node.parentNode, dest, true);
+			// Check if the parent element was fully cloned.
+			if (existingParent && existingParent.childNodes.length === node.parentNode.childNodes.length) {
+				return child(existingParent, indexOf(node));
+			}
+		}
 
+		// This node hasn't been appended yet.
 		let clone = cloneNode(node, !shallow);
 
 		if (node.parentNode && isElement(node.parentNode)) {
@@ -314,6 +337,23 @@ class Layout {
 		});
 
 		return clone;
+	}
+
+	rebuildTableRows(rendered, source) {
+		rendered.querySelectorAll("tr").forEach((renderedRow) => {
+			const sourceRow = findElement(renderedRow, source, true);
+			// Skip if the row is fully rendered.
+			if (!sourceRow || renderedRow.childNodes.length >= sourceRow.childNodes.length) {
+				return;
+			}
+			// Otherwise, we will append the missing cells. Note that we perform a deep clone of the missing cells
+			// because we don't want them to be skipped (if empty) when finding the overflow point (since this method is
+			// normally called right before the overflow is computed).
+			const sourceCells = [...sourceRow.childNodes];
+			for (let i = renderedRow.childNodes.length; i < sourceCells.length; i++) {
+				this.append(sourceCells[i], rendered, null, false);
+			}
+		});
 	}
 
 	rebuildTableFromBreakToken(breakToken, dest) {
@@ -470,6 +510,10 @@ class Layout {
 	}
 
 	findBreakToken(rendered, source, bounds = this.bounds, prevBreakToken, extract = true) {
+		// Make sure the table rows are complete before determining the overflow, otherwise the table layout will be
+		// different than on the source document (e.g. different column widths). Moreover, we're rebuilding the table
+		// rows also after removing the overflown content for the same reason, to ensure the table layout is preserved.
+		this.rebuildTableRows(rendered, source);
 		let overflow = this.findOverflow(rendered, bounds);
 		let breakToken, breakLetter;
 

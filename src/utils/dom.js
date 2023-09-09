@@ -211,7 +211,23 @@ export function rebuildAncestors(node) {
 			fragment.appendChild(parent);
 		}
 		added.push(parent);
+		
+		// rebuild table headers and columns
+		if (parent.nodeName === "TABLE" && ancestor.parentElement.contains(ancestor)) {
+			let table = ancestor;
+			let thead = table.querySelector("thead");
+			if (thead) {
+				let clone = thead.cloneNode(true);
+				parent.prepend(clone);
+			}
 
+			let colgroup = table.querySelector("colgroup");
+			if (colgroup) {
+				let clone = colgroup.cloneNode(true);
+				parent.prepend(clone);
+			}
+		}
+		
 		// rebuild table rows
 		if (parent.nodeName === "TD" && ancestor.parentElement.contains(ancestor)) {
 			let td = ancestor;

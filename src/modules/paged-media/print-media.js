@@ -51,7 +51,7 @@ class PrintMedia extends Handler {
 
 		if (typeof node.prelude === "undefined" ||
 				node.prelude.type !== "AtrulePrelude" ) {
-			return;
+			return media;
 		}
 
 		csstree.walk(node.prelude, {

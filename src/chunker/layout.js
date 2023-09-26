@@ -656,12 +656,21 @@ class Layout {
 					}
 
 					if (left >= end || top >= vEnd) {
+						// The text node overflows the current print page so it needs to be split.
 						range = document.createRange();
 						offset = this.textBreak(node, start, end, vStart, vEnd);
-						if (!offset) {
-							range = undefined;
-						} else {
+						if (offset === 0) {
+							// Not even a single character from the text node fits the current print page so the text
+							// node needs to be moved to the next print page.
+							range.setStartBefore(node);
+						} else if (offset) {
+							// Only the text before the offset fits the current print page. The rest needs to be moved
+							// to the next print page.
 							range.setStart(node, offset);
+						} else {
+							// Undefined offset is unexpected because we know that the text node is not empty (not even
+							// blank, because we check node.textContent.trim().length above).
+							range = undefined;
 						}
 						break;
 					}
@@ -754,15 +763,21 @@ class Layout {
 			bottom = Math.floor(pos.bottom);
 
 			if (left >= end || top >= vEnd) {
+				// The word is completely outside the bounds of the print page. We need to break before it.
 				offset = word.startOffset;
 				break;
 			}
 
 			if (right > end || bottom > vEnd) {
+				// The word is partially outside the print page (e.g. a word could be split / hyphenated on two lines of
+				// text and only the first part fits into the current print page; or simply because the end of the page
+				// truncates vertically the word). We need to see if any of its letters fit into the current print page.
 				let letterwalker = letters(word);
 				let letter, nextLetter, doneLetter;
 
 				while (!doneLetter) {
+					// Note that the letter walker continues to walk beyond the end of the word, until the end of the
+					// text node.
 					nextLetter = letterwalker.next();
 					letter = nextLetter.value;
 					doneLetter = nextLetter.done;
@@ -772,10 +787,11 @@ class Layout {
 					}
 
 					pos = getBoundingClientRect(letter);
-					left = Math.floor(pos.left);
-					top = Math.floor(pos.top);
+					right = Math.floor(pos.right);
+					bottom = Math.floor(pos.bottom);
 
-					if (left >= end || top >= vEnd) {
+					// Stop if the letter exceeds the bounds of the print page. We need to break before it.
+					if (right > end || bottom > vEnd) {
 						offset = letter.startOffset;
 						done = true;
 

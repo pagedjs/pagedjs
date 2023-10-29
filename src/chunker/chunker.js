@@ -332,6 +332,7 @@ class Chunker {
 
 	async *layout(content, startAt) {
 		let breakToken = startAt || false;
+		let page, prevPage;
 		let tokens = [];
 
 		while (breakToken !== undefined && (MAX_PAGES ? this.total < MAX_PAGES : true)) {
@@ -342,37 +343,54 @@ class Chunker {
 				await this.handleBreaks(content.firstChild);
 			}
 
-			let page = this.addPage();
+			// Don't add a page if we have a forced break now and we just
+			// did a break due to overflow but have nothing displayed on
+			// the current page.
+			if (page && breakToken.overflow.length &&
+				(
+					!page.area.childElementCount ||
+					!page.area.firstChild.getBoundingClientRect().height
+				)
+			) {
+				console.log("Suppress page break");
+			} else {
+				let page = this.addPage();
 
-			await this.hooks.beforePageLayout.trigger(page, content, breakToken, this);
-			this.emit("page", page);
+				await this.hooks.beforePageLayout.trigger(page, content, breakToken, this);
+				this.emit("page", page);
 
-			// Layout content in the page, starting from the breakToken
-			breakToken = await page.layout(content, breakToken, this.maxChars);
-
-			if (breakToken) {
-				let newToken = breakToken.toJSON(true);
-				if (tokens.lastIndexOf(newToken) > -1) {
-					// loop
-					let err = new OverflowContentError("Layout repeated", [breakToken.node]);
-					console.error("Layout repeated at: ", breakToken.node);
-					return err;
-				} else {
-					tokens.push(newToken);
+				// Layout content in the page, starting from the breakToken
+				if (breakToken) {
+					// Debugging tool - ensures previously rendered content is visible.
+					window.scrollTo(0, document.body.scrollHeight);
 				}
+				breakToken = await page.layout(content, breakToken, prevPage);
+
+				if (breakToken) {
+					let newToken = breakToken.toJSON(true);
+					if (tokens.lastIndexOf(newToken) > -1) {
+						// loop
+						let err = new OverflowContentError("Layout repeated", [breakToken.node]);
+						console.error("Layout repeated at: ", breakToken.node);
+						return err;
+					} else {
+						tokens.push(newToken);
+					}
+				}
+
+				await this.hooks.afterPageLayout.trigger(page.element, page, breakToken, this);
+				await this.hooks.finalizePage.trigger(page.element, page, undefined, this);
+				this.emit("renderedPage", page);
+
+				prevPage = page.wrapper;
+
+				this.recoredCharLength(page.wrapper.textContent.length);
+
+				yield breakToken;
+
+				// Stop if we get undefined, showing we have reached the end of the content
 			}
-
-			await this.hooks.afterPageLayout.trigger(page.element, page, breakToken, this);
-			await this.hooks.finalizePage.trigger(page.element, page, undefined, this);
-			this.emit("renderedPage", page);
-
-			this.recoredCharLength(page.wrapper.textContent.length);
-
-			yield breakToken;
-
-			// Stop if we get undefined, showing we have reached the end of the content
 		}
-
 
 	}
 

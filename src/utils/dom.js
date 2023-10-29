@@ -1,4 +1,6 @@
+import { getBoundingClientRect } from "./utils.js";
 export function isElement(node) {
+
 	return node && node.nodeType === 1;
 }
 
@@ -133,7 +135,134 @@ export function stackChildren(currentNode, stacked) {
 	return stack;
 }
 
-export function rebuildAncestors(node) {
+export function rebuildTree (node, fragment, alreadyRendered) {
+	let parent, ancestor;
+	let ancestors = [];
+	let added = [];
+	let dupSiblings = false;
+	let freshPage = !fragment;
+	let numListItems = 0;
+
+	if (!fragment) {
+		fragment = document.createDocumentFragment();
+	}
+
+	// Gather all ancestors
+	let element = node;
+
+	if (!isText(node)) {
+		ancestors.unshift(node);
+		if (node.tagName == "LI") {
+			numListItems++;
+		}
+	}
+	while (element.parentNode && element.parentNode.nodeType === 1) {
+		ancestors.unshift(element.parentNode);
+		if (element.parentNode.tagName == "LI") {
+			numListItems++;
+		}
+		element = element.parentNode;
+	}
+
+	for (var i = 0; i < ancestors.length; i++) {
+		ancestor = ancestors[i];
+
+		let container;
+		if (added.length) {
+			container = added[added.length - 1];
+		} else {
+			container = fragment;
+		}
+
+		if (dupSiblings) {
+			// Duplicate surrounding elements too. We won't be able to do anything about making any
+			// content derived widths match up.
+			let sibling = ancestor.parentElement ? ancestor.parentElement.children[0] : ancestor;
+
+			while (sibling) {
+				let existing = findElement(sibling, container), siblingClone;
+				if (!existing) {
+					siblingClone = cloneNodeAncestor(sibling);
+					if (alreadyRendered) {
+						let originalElement = findElement(sibling, alreadyRendered);
+						if (originalElement) {
+							let width = getBoundingClientRect(originalElement).width;
+							if (!isNaN(width) && width) {
+								siblingClone.setAttribute("width", width + "px");
+							}
+						}
+					}
+					container.appendChild(siblingClone);
+				}
+
+				if (sibling == ancestor) {
+					parent = siblingClone || existing;
+				}
+				sibling = sibling.nextElementSibling;
+			}
+		} else {
+			parent = findElement(ancestor, container);
+			if (!parent) {
+				parent = cloneNodeAncestor(ancestor);
+				if (alreadyRendered) {
+					let originalElement = findElement(ancestor, alreadyRendered);
+					if (originalElement) {
+						let width = getBoundingClientRect(originalElement).width;
+						if (!isNaN(width) && width) {
+							parent.setAttribute("width", width + "px");
+						}
+					}
+				}
+				container.appendChild(parent);
+			}
+		}
+
+		dupSiblings = (ancestor.nodeName == "TR" || ancestor.dataset.clonesiblings == true);
+		added.push(parent);
+
+		if (ancestor.tagName == "LI") {
+			numListItems--;
+		}
+
+		if (freshPage && (isText(node) || numListItems)) {
+			// Flag the first node on the page so we can suppress list styles on
+			// a continued item and list item numbers except the list one
+			// if an item number should be printed.
+			parent.dataset.suppressListStyle = true;
+		}
+	}
+
+	added = undefined;
+	return fragment;
+}
+
+function cloneNodeAncestor (node) {
+	let result = node.cloneNode(false);
+
+	result.setAttribute("data-split-from", result.getAttribute("data-ref"));
+
+	// This will let us split a table with multiple columns correctly.
+	node.setAttribute("data-split-to", result.getAttribute("data-ref"));
+
+	if (result.hasAttribute("id")) {
+		let dataID = result.getAttribute("id");
+		result.setAttribute("data-id", dataID);
+		result.removeAttribute("id");
+	}
+
+	// This is handled by css :not, but also tidied up here
+	if (result.hasAttribute("data-break-before")) {
+		result.removeAttribute("data-break-before");
+	}
+
+	if (result.hasAttribute("data-previous-break-after")) {
+		result.removeAttribute("data-previous-break-after");
+	}
+
+	return result;
+}
+
+export function rebuildAncestors (node) {
 	let parent, ancestor;
 	let ancestors = [];
 	let added = [];
@@ -242,7 +371,7 @@ export function split(bound, cutElement, breakAfter) {
 		}
 
 		// Create a fragment with rebuilt ancestors
-		let fragment = rebuildAncestors(cutElement);
+		let fragment = rebuildTree(cutElement);
 
 		// Clone cut
 		if (!breakAfter) {

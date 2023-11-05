@@ -1,6 +1,5 @@
-import { getBoundingClientRect, getClientRects } from "../utils/utils.js";
+import { getBoundingClientRect } from "../utils/utils.js";
 import {
-	breakInsideAvoidParentNode,
 	child,
 	cloneNode,
 	findElement,
@@ -16,9 +15,7 @@ import {
 	needsPreviousBreakAfter,
 	nodeAfter,
 	nodeBefore,
-	parentOf,
 	prevValidNode,
-	rebuildAncestors,
 	rebuildTree,
 	validNode,
 	walk,
@@ -28,6 +25,7 @@ import BreakToken from "./breaktoken.js";
 import RenderResult, { OverflowContentError } from "./renderresult.js";
 import EventEmitter from "event-emitter";
 import Hook from "../utils/hook.js";
+import Overflow from "./overflow.js";
 
 const MAX_CHARS_PER_BREAK = 1500;
 
@@ -41,12 +39,13 @@ class Layout {
 		this.element = element;
 
 		this.bounds = this.element.getBoundingClientRect();
-		this.parentBounds = this.element.offsetParent.getBoundingClientRect();
+		this.parentBounds = this.element.offsetParent?.getBoundingClientRect() ||
+			{ left: 0 };
 		let gap = parseFloat(window.getComputedStyle(this.element).columnGap);
-	
+
 		if (gap) {
 			let leftMargin = this.bounds.left - this.parentBounds.left;
-			this.gap =  gap - leftMargin;	
+			this.gap = gap - leftMargin;
 		} else {
 			this.gap = 0;
 		}
@@ -83,15 +82,12 @@ class Layout {
 		let walker = walk(start, source);
 
 		let node;
-		let prevNode;
 		let done;
 		let next;
 		let needsBreak;
 
 		let hasRenderedContent = false;
 		let newBreakToken;
-
-		let length = 0;
 
 		let prevBreakToken = breakToken || new BreakToken(start);
 
@@ -105,12 +101,11 @@ class Layout {
 			if (newBreakToken) {
 				newBreakToken.setFinished();
 			}
-			return newBreakToken;
+			return new RenderResult(newBreakToken);
 		}
 
 		while (!done && !newBreakToken) {
 			next = walker.next();
-			prevNode = node;
 			node = next.value;
 			done = next.done;
 
@@ -151,22 +146,19 @@ class Layout {
 				}
 
 				if (newBreakToken && newBreakToken.equals(prevBreakToken)) {
-					console.warn("Unable to layout item: ", node);
 					this.failed = true;
-					return undefined;
+					return new RenderResult(undefined, "Unable to layout item: " + node);
 				}
 
 				if (!node || newBreakToken) {
-					return newBreakToken;
+					return new RenderResult(newBreakToken);
 				}
 			}
 
 			// Should the Node be a shallow or deep clone?
 			let shallow = isContainer(node);
 
-			let rendered = this.append(node, wrapper, breakToken, shallow);
-
-			length += rendered.textContent.length;
+			this.append(node, wrapper, breakToken, shallow);
 
 			// Check if layout has content yet.
 			if (!hasRenderedContent) {
@@ -359,15 +351,15 @@ class Layout {
 		return new Promise(resolve => {
 			if (image.complete !== true) {
 				image.onload = function () {
-					let {width, height} = window.getComputedStyle(image);
+					let { width, height } = window.getComputedStyle(image);
 					resolve(width, height);
 				};
 				image.onerror = function (e) {
-					let {width, height} = window.getComputedStyle(image);
+					let { width, height } = window.getComputedStyle(image);
 					resolve(width, height, e);
 				};
 			} else {
-				let {width, height} = window.getComputedStyle(image);
+				let { width, height } = window.getComputedStyle(image);
 				resolve(width, height);
 			}
 		});
@@ -453,7 +445,7 @@ class Layout {
 				parent = findElement(renderedNode, source);
 				index = indexOfTextNode(temp, parent);
 				// No seperatation for the first textNode of an element
-				if(index === 0) {
+				if (index === 0) {
 					node = parent;
 					offset = 0;
 				} else {
@@ -731,7 +723,7 @@ class Layout {
 
 				let styles = window.getComputedStyle(check);
 				if (styles.getPropertyValue("break-inside") === "avoid" && !mustSplit) {
-					// If there is a TD with overflow and it's within a break-inside:
+					// If there is a TD with overflow and it is within a break-inside:
 					// avoid, we take the whole container, provided that it will fit
 					// on a page by itself. The normal handling below will take care
 					// of that.
@@ -740,7 +732,7 @@ class Layout {
 				} else if (check.nextElementSibling) {
 					let checkBounds = getBoundingClientRect(check);
 					let siblingBounds = getBoundingClientRect(check.nextElementSibling);
-					let cStyle = element.currentStyle || getComputedStyle(check, "");
+					let cStyle = check.currentStyle || getComputedStyle(check, "");
 					if (siblingBounds.top == checkBounds.top && siblingBounds.left != checkBounds.left && cStyle.display !== "inline") {
 						siblingRangeStart = prev;
 						siblingRangeEnd = check.lastChild;
@@ -999,7 +991,7 @@ class Layout {
 	}
 
 	removeOverflow(overflow, breakLetter) {
-		let {startContainer} = overflow;
+		let { startContainer } = overflow;
 		let extracted = overflow.extractContents();
 
 		this.hyphenateAtBreak(startContainer, breakLetter);

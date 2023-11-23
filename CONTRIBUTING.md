@@ -14,7 +14,7 @@ We'll review the code on either a github or gitlab pull request and then merge i
 
 ## I need help!
 
-Chat with us on mattermost @ https://mattermost.pagedmedia.org/login
+Chat with us on mattermost @ [https://mattermost.coko.foundation](https://mattermost.coko.foundation)
 
 You can also open an issue with the `Question` label: https://gitlab.coko.foundation/pagedjs/pagedjs/-/issues?label_name%5B%5D=Question
 

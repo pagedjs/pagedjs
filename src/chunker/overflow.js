@@ -23,6 +23,10 @@ class Overflow {
 			this["offset"] !== otherOffset["offset"]) {
 			return false;
 		}
+		if (this["range"] && otherOffset["range"] &&
+			this["range"] !== otherOffset["range"]) {
+			return false;
+		}
 		return true;
 	}
 

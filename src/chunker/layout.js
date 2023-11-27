@@ -840,7 +840,7 @@ class Layout {
 				} else if (check.nextElementSibling) {
 					let checkBounds = getBoundingClientRect(check);
 					let siblingBounds = getBoundingClientRect(check.nextElementSibling);
-					let cStyle = element.currentStyle || getComputedStyle(check, "");
+					let cStyle = check.currentStyle || getComputedStyle(check, "");
 					// Possibilities here:
 					// - Two table TD elements: We want the content in the table data
 					//   including and after the selected node.

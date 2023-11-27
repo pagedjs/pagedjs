@@ -333,7 +333,6 @@ class Chunker {
 	async *layout(content, startAt) {
 		let breakToken = startAt || false;
 		let page, prevPage;
-		let tokens = [];
 
 		while (breakToken !== undefined && (MAX_PAGES ? this.total < MAX_PAGES : true)) {
 
@@ -365,18 +364,6 @@ class Chunker {
 					window.scrollTo(0, document.body.scrollHeight);
 				}
 				breakToken = await page.layout(content, breakToken, prevPage);
-
-				if (breakToken) {
-					let newToken = breakToken.toJSON(true);
-					if (tokens.lastIndexOf(newToken) > -1) {
-						// loop
-						let err = new OverflowContentError("Layout repeated", [breakToken.node]);
-						console.error("Layout repeated at: ", breakToken.node);
-						return err;
-					} else {
-						tokens.push(newToken);
-					}
-				}
 
 				await this.hooks.afterPageLayout.trigger(page.element, page, breakToken, this);
 				await this.hooks.finalizePage.trigger(page.element, page, undefined, this);

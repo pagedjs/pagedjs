@@ -550,6 +550,9 @@ class Layout {
 	 */
 	hasOverflow(element, bounds = this.bounds, ignoreSides = false) {
 		let constrainingElement = element && element.parentNode; // this gets the element, instead of the wrapper for the width workaround
+		if (constrainingElement.classList.contains('pagedjs_page_content')) {
+			constrainingElement = element;
+		}
 		let { width, height } = element.getBoundingClientRect();
 		let scrollWidth = constrainingElement ? constrainingElement.scrollWidth : 0;
 		let scrollHeight = constrainingElement ? constrainingElement.scrollHeight : 0;
@@ -617,6 +620,12 @@ class Layout {
 					// * a sibling div / td / element with height that stretches this
 					//   element
 					// * margin / padding on this element
+					// * a possible bug in Chromium - in seeking to merge upstream,
+					//   an issue was raised in which overflow was getting coordinates
+					//   over to the right but within the page height, when there was
+					//   no apparent CSS to make that happen. If that happens,
+					//   irrespective of ignoreSides, we want to treat such a node as
+					//   the start of overflow.
 					// In the former case, we want to ignore this node and take the
 					// sibling. In the later case, we want to move this node.
 					let intrinsicBottom = 0;
@@ -630,6 +639,12 @@ class Layout {
 							// Has no children so should have no height, all other things
 							// being equal.
 							intrinsicBottom = getBoundingClientRect(node).top;
+							let intrinsicLeft = getBoundingClientRect(node).x;
+
+							// Check for possible Chromium bug case.
+							if (intrinsicBottom < bounds.bottom && intrinsicLeft > (bounds.x + bounds.width)) {
+								done = true;
+							}
 						}
 
 						intrinsicBottom += parseInt(styles["paddingBottom"]) + parseInt(styles["marginBottom"]);
@@ -717,7 +732,8 @@ class Layout {
 		do {
 			if (isElement(check)) {
 				let checkBounds = getBoundingClientRect(check);
-				if (checkBounds.height > bounds.height) {
+				// Width check is for possible Chromium bug.
+				if (checkBounds.height > bounds.height || checkBounds.width > bounds.width) {
 					mustSplit = true;
 				}
 

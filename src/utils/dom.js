@@ -184,7 +184,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 					if (alreadyRendered) {
 						let originalElement = findElement(sibling, alreadyRendered);
 						if (originalElement) {
-							let width = getBoundingClientRect(originalElement).width;
+							let width = originalElement.width || getBoundingClientRect(originalElement).width;
 							if (!isNaN(width) && width) {
 								siblingClone.setAttribute("width", width + "px");
 							}
@@ -205,7 +205,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 				if (alreadyRendered) {
 					let originalElement = findElement(ancestor, alreadyRendered);
 					if (originalElement) {
-						let width = getBoundingClientRect(originalElement).width;
+						let width = originalElement.width || getBoundingClientRect(originalElement).width;
 						if (!isNaN(width) && width) {
 							parent.setAttribute("width", width + "px");
 						}

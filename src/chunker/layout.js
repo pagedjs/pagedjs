@@ -724,6 +724,7 @@ class Layout {
 		let check = node = prev, rangeEndNode = check, lastcheck = check;
 		let mustSplit = false;
 		let siblingRangeStart, siblingRangeEnd, container;
+		let checkIsFirstChild = false, rowCandidate;
 
 		// Check whether we have a td with overflow or divs laid out side by side.
 		// If we do and it's within content that can be or must be split, remove
@@ -743,10 +744,15 @@ class Layout {
 					// avoid, we take the whole container, provided that it will fit
 					// on a page by itself. The normal handling below will take care
 					// of that.
-					siblingRangeStart = siblingRangeEnd = undefined;
-					prev = check;
-				} else if (check.nextElementSibling) {
-					let checkBounds = getBoundingClientRect(check);
+					if (!mustSplit) {
+						siblingRangeStart = siblingRangeEnd = undefined;
+						prev = check;
+					}
+
+					rowCandidate = check;
+				}
+
+				if (check.nextElementSibling) {
 					let siblingBounds = getBoundingClientRect(check.nextElementSibling);
 					let cStyle = check.currentStyle || getComputedStyle(check, "");
 					if (siblingBounds.top == checkBounds.top && siblingBounds.left != checkBounds.left && cStyle.display !== "inline") {
@@ -761,10 +767,12 @@ class Layout {
 								childNode.width = getComputedStyle(childNode).width;
 							}
 						});
+
+						// Might be removing all the content?
+						checkIsFirstChild = (check.parentElement.firstChild === check);
 					}
 				}
-				let classes = check.getAttribute("class");
-				if (classes && classes.includes("region-content")) {
+				if (Array.from(check.classList).filter(value => ['region-content', 'pagedjs_page_content'].includes(value)).length) {
 					break;
 				}
 			}
@@ -773,8 +781,12 @@ class Layout {
 		} while (check);
 
 		let offset;
+
 		if (siblingRangeEnd) {
 			let ranges = [], origSiblingRangeEnd = siblingRangeEnd;
+
+			// Reset to take next row / equivalent as overflow too.
+			node = origSiblingRangeEnd.parentElement.parentElement.nextElementSibling;
 
 			// Get the overflow for all siblings at once.
 			do {
@@ -783,32 +795,36 @@ class Layout {
 					offset = this.textBreak(siblingRangeStart, start, end, vStart, vEnd);
 				}
 
-				// Set the start of the range and record on node or the previous element
-				// that overflow was moved.
-				range = document.createRange();
-				if (offset) {
-					range.setStart(siblingRangeStart, offset);
-				} else {
-					range.selectNode(siblingRangeStart);
+				// Is a whole row being removed?
+				if (checkIsFirstChild && !offset && rowCandidate !== undefined) {
+					node = container = rowCandidate;
+					siblingRangeStart = undefined;
+				}
+				else {
+					// Set the start of the range and record on node or the previous element
+					// that overflow was moved.
+					range = document.createRange();
+					if (offset) {
+						range.setStart(siblingRangeStart, offset);
+					} else {
+						range.selectNode(siblingRangeStart);
+					}
+
+					// Additional nodes may have been added that will overflow further beyond
+					// node. Include them in the range.
+					range.setEndAfter(siblingRangeEnd);
+					ranges.push(range);
+
+					do {
+						container = container.nextElementSibling;
+						if (container) {
+							[siblingRangeStart] = this.startOfOverflow(container, bounds, ignoreSides);
+							siblingRangeEnd = container.lastChild;
+						}
+					} while (container && !siblingRangeStart);
 				}
 
-				// Additional nodes may have been added that will overflow further beyond
-				// node. Include them in the range.
-				range.setEndAfter(siblingRangeEnd);
-				ranges.push(range);
-
-				do {
-					container = container.nextElementSibling;
-					if (container) {
-						[siblingRangeStart] = this.startOfOverflow(container, bounds, ignoreSides);
-						siblingRangeEnd = container.lastChild;
-					}
-				} while (container && !siblingRangeStart);
-
 			} while (container && siblingRangeStart);
-
-			// Reset to take next row / equivalent as overflow too.
-			node = origSiblingRangeEnd.parentElement.parentElement.nextElementSibling;
 
 			if (node) {
 				// Everything including and after node is overflow.

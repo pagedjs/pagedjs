@@ -743,7 +743,7 @@ class Layout {
 				}
 
 				let styles = window.getComputedStyle(check);
-				if (styles.getPropertyValue("break-inside") === "avoid" && !mustSplit) {
+				if ([ "avoid", "avoid-column" ].indexOf(styles.getPropertyValue("break-inside")) > -1) {
 					// If there is a TD with overflow and it is within a break-inside:
 					// avoid, we take the whole container, provided that it will fit
 					// on a page by itself. The normal handling below will take care

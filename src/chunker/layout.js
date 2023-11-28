@@ -816,7 +816,7 @@ class Layout {
 
 					// Additional nodes may have been added that will overflow further beyond
 					// node. Include them in the range.
-					range.setEndAfter(siblingRangeEnd);
+					range.setEndAfter(siblingRangeEnd || siblingRangeStart);
 					ranges.push(range);
 
 					do {

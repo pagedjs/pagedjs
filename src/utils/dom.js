@@ -175,8 +175,6 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 		}
 
 		if (dupSiblings) {
-			// Duplicate surrounding elements too. We won't be able to do anything about making any
-			// content derived widths match up.
 			let sibling = ancestor.parentElement ? ancestor.parentElement.children[0] : ancestor;
 
 			while (sibling) {

@@ -209,6 +209,13 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 						if (!isNaN(width) && width) {
 							parent.setAttribute("width", width + "px");
 						}
+
+						// Colgroup to clone?
+						Array.from(originalElement.children).forEach(child => {
+							if (child.tagName == 'COLGROUP') {
+								parent.append(child.cloneNode(true));
+							}
+						});
 					}
 				}
 				container.appendChild(parent);

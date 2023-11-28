@@ -581,6 +581,10 @@ class Layout {
 		let vEnd = Math.floor(bounds.bottom);
 
 		for (const child of node.childNodes) {
+			if (child.tagName == 'COLGROUP') {
+				continue;
+			}
+
 			let pos = getBoundingClientRect(child);
 			let bottomMargin = 0;
 

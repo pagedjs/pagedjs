@@ -688,7 +688,7 @@ class Layout {
 		// Find the deepest element that is the first in set of siblings with
 		// overflow. There may be others. We just take the first we find and
 		// are called again to check for additional instances.
-		let node = rendered.firstChild, prev;
+		let node = rendered.firstChild, prev, startRemainder;
 
 		while (isText(node)) {
 			node = node.nextElementSibling;
@@ -725,7 +725,7 @@ class Layout {
 		// the original node) having siblings that extend the overflow. They
 		// should be included in this range.
 
-		let check = node = prev, rangeEndNode = check, lastcheck = check;
+		let check = startRemainder = node = prev, rangeEndNode = check, lastcheck = check;
 		let mustSplit = false;
 		let siblingRangeStart, siblingRangeEnd, container;
 		let checkIsFirstChild = false, rowCandidate;
@@ -790,7 +790,7 @@ class Layout {
 			let ranges = [], origSiblingRangeEnd = siblingRangeEnd;
 
 			// Reset to take next row / equivalent as overflow too.
-			node = origSiblingRangeEnd.parentElement.parentElement.nextElementSibling;
+			startRemainder = origSiblingRangeEnd.parentElement.parentElement.nextElementSibling;
 
 			// Get the overflow for all siblings at once.
 			do {
@@ -801,7 +801,7 @@ class Layout {
 
 				// Is a whole row being removed?
 				if (checkIsFirstChild && !offset && rowCandidate !== undefined) {
-					node = container = rowCandidate;
+					startRemainder = container = rowCandidate;
 					siblingRangeStart = undefined;
 				}
 				else {
@@ -830,10 +830,10 @@ class Layout {
 
 			} while (container && siblingRangeStart);
 
-			if (node) {
+			if (startRemainder) {
 				// Everything including and after node is overflow.
 				range = document.createRange();
-				range.selectNode(node);
+				range.selectNode(startRemainder);
 				range.setEndAfter(rendered.childNodes[rendered.childNodes.length - 1]);
 
 				ranges.push(range);

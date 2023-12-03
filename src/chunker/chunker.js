@@ -361,7 +361,7 @@ class Chunker {
 				// Layout content in the page, starting from the breakToken
 				if (breakToken) {
 					// Debugging tool - ensures previously rendered content is visible.
-					window.scrollTo(0, document.body.scrollHeight);
+					// window.scrollTo(0, document.body.scrollHeight);
 				}
 				breakToken = await page.layout(content, breakToken, prevPage);
 

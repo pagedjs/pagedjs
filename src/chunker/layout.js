@@ -753,7 +753,9 @@ class Layout {
 						prev = check;
 					}
 
-					rowCandidate = check;
+					if (!rowCandidate) {
+						rowCandidate = check;
+					}
 				}
 
 				if (check.nextElementSibling) {
@@ -795,12 +797,13 @@ class Layout {
 			// Get the overflow for all siblings at once.
 			do {
 				offset = 0;
-				if (isText(siblingRangeStart) && node.textContent.trim().length) {
+				if (isText(siblingRangeStart) && siblingRangeStart.textContent.trim().length) {
 					offset = this.textBreak(siblingRangeStart, start, end, vStart, vEnd);
 				}
 
 				// Is a whole row being removed?
-				if (checkIsFirstChild && !offset && rowCandidate !== undefined) {
+				// Ignore newlines when deciding this.
+				if (checkIsFirstChild && !siblingRangeStart.textContent.substring(0, offset).trim().length && rowCandidate !== undefined) {
 					startRemainder = container = rowCandidate;
 					siblingRangeStart = undefined;
 				}

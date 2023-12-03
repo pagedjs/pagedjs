@@ -575,10 +575,10 @@ class Layout {
 	 * @returns {ChildNode | null | undefined}
 	 */
 	firstOverflowingChild(node, bounds, ignoreSides) {
-		let start = Math.ceil(bounds.left);
-		let end = Math.floor(bounds.right);
-		let vStart = Math.ceil(bounds.top);
-		let vEnd = Math.floor(bounds.bottom);
+		let bLeft = Math.ceil(bounds.left);
+		let bRight = Math.floor(bounds.right);
+		let bTop = Math.ceil(bounds.top);
+		let bBottom = Math.floor(bounds.bottom);
 
 		for (const child of node.childNodes) {
 			if (child.tagName == 'COLGROUP') {
@@ -602,7 +602,7 @@ class Layout {
 				continue;
 			}
 
-			if ((!ignoreSides && (left < start || top < vStart)) || right > end || bottom > vEnd) {
+			if ((!ignoreSides && (left < bLeft || right > bRight)) || top < bTop || bottom > bBottom) {
 				return child;
 			}
 		}
@@ -673,7 +673,7 @@ class Layout {
 	}
 
 	findOverflow(rendered, bounds, source) {
-		var ignoreSides = true;
+		var ignoreSides = false;
 
 		if (!this.hasOverflow(rendered, bounds, ignoreSides)) {
 			return;

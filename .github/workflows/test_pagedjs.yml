@@ -1,11 +1,10 @@
-name: Test
-
+name: Test Pagedjs
+run-name: Pagedjs Tests & Specs
 on:
   pull_request:
   push:
-    branches: 
+    branches:
       - "main"
-
 jobs:
   test:
     name: Run test suite

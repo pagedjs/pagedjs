@@ -120,6 +120,15 @@ class Layout {
 					needsBreak = node;
 				}
 
+				if (node.dataset && node.dataset.page) {
+					let named = node.dataset.page;
+					let page = this.element.closest(".pagedjs_page");
+					page.classList.add("pagejs_named_page");
+					page.classList.add("pagedjs__" + named + "_page");
+					if (!node.dataset.splitFrom) {
+						page.classList.add("pagedjs_" + named + "_first_page");
+					}
+				}
 			}
 
 			// Check whether we have overflow when we've completed laying out a top

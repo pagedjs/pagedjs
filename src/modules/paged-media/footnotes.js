@@ -388,71 +388,73 @@ class Footnotes extends Handler {
 
 		// Get overflow
 		let layout = new Layout(noteArea, undefined, chunker.settings);
-		let overflow = layout.findOverflow(noteInnerContent, noteContentBounds);
+		let overflowRanges = layout.findOverflow(noteInnerContent, noteContentBounds);
 
-		if (overflow) {
-			let { startContainer, startOffset } = overflow;
-			let startIsNode;
-			if (isElement(startContainer)) {
-				let start = startContainer.childNodes[startOffset];
-				startIsNode = isElement(start) && start.hasAttribute("data-footnote-marker");
-			}
-
-			let extracted = overflow.extractContents();
-
-			if (!startIsNode) {
-				let splitChild = extracted.firstElementChild;
-				splitChild.dataset.splitFrom = splitChild.dataset.ref;
-
-				this.handleAlignment(noteInnerContent.lastElementChild);
-			}
-
-			this.needsLayout.push(extracted);
-
-			noteContent.style.removeProperty("height");
-			noteInnerContent.style.removeProperty("height");
-
-			let noteInnerContentBounds = noteInnerContent.getBoundingClientRect();
-			let { height } = noteInnerContentBounds;
-
-			// Get the @footnote margins
-			let noteContentMargins = this.marginsHeight(noteContent);
-			let noteContentPadding = this.paddingHeight(noteContent);
-			let noteContentBorders = this.borderHeight(noteContent);
-			pageArea.style.setProperty(
-				"--pagedjs-footnotes-height",
-				`${height + noteContentMargins + noteContentBorders + noteContentPadding}px`
-			);
-
-			// Hide footnote content if empty
-			if (noteInnerContent.childNodes.length === 0) {
-				noteContent.classList.add("pagedjs_footnote_empty");
-			}
-
-			if (!breakToken) {
-				chunker.clonePage(page);
-			} else {
-				let breakBefore, previousBreakAfter;
-				if (
-					breakToken.node &&
-					typeof breakToken.node.dataset !== "undefined" &&
-					typeof breakToken.node.dataset.previousBreakAfter !== "undefined"
-				) {
-					previousBreakAfter = breakToken.node.dataset.previousBreakAfter;
+		if (overflowRanges) {
+			overflowRanges.forEach((overflow) => {
+				let { startContainer, startOffset } = overflow;
+				let startIsNode;
+				if (isElement(startContainer)) {
+					let start = startContainer.childNodes[startOffset];
+					startIsNode = isElement(start) && start.hasAttribute("data-footnote-marker");
 				}
 
-				if (
-					breakToken.node &&
-					typeof breakToken.node.dataset !== "undefined" &&
-					typeof breakToken.node.dataset.breakBefore !== "undefined"
-				) {
-					breakBefore = breakToken.node.dataset.breakBefore;
+				let extracted = overflow.extractContents();
+
+				if (!startIsNode) {
+					let splitChild = extracted.childNodes[0];
+					splitChild.dataset.splitFrom = splitChild.dataset.ref;
+
+					this.handleAlignment(noteInnerContent.lastElementChild);
 				}
 
-				if (breakBefore || previousBreakAfter) {
+				this.needsLayout.push(extracted);
+
+				noteContent.style.removeProperty("height");
+				noteInnerContent.style.removeProperty("height");
+
+				let noteInnerContentBounds = noteInnerContent.getBoundingClientRect();
+				let { height } = noteInnerContentBounds;
+
+				// Get the @footnote margins
+				let noteContentMargins = this.marginsHeight(noteContent);
+				let noteContentPadding = this.paddingHeight(noteContent);
+				let noteContentBorders = this.borderHeight(noteContent);
+				pageArea.style.setProperty(
+					"--pagedjs-footnotes-height",
+					`${height + noteContentMargins + noteContentBorders + noteContentPadding}px`
+				);
+
+				// Hide footnote content if empty
+				if (noteInnerContent.childNodes.length === 0) {
+					noteContent.classList.add("pagedjs_footnote_empty");
+				}
+
+				if (!breakToken) {
 					chunker.clonePage(page);
+				} else {
+					let breakBefore, previousBreakAfter;
+					if (
+						breakToken.node &&
+						typeof breakToken.node.dataset !== "undefined" &&
+						typeof breakToken.node.dataset.previousBreakAfter !== "undefined"
+					) {
+						previousBreakAfter = breakToken.node.dataset.previousBreakAfter;
+					}
+
+					if (
+						breakToken.node &&
+						typeof breakToken.node.dataset !== "undefined" &&
+						typeof breakToken.node.dataset.breakBefore !== "undefined"
+					) {
+						breakBefore = breakToken.node.dataset.breakBefore;
+					}
+
+					if (breakBefore || previousBreakAfter) {
+						chunker.clonePage(page);
+					}
 				}
-			}
+			})
 		}
 		noteInnerContent.style.height = "auto";
 	}

@@ -401,8 +401,8 @@ class Footnotes extends Handler {
 
 				let extracted = overflow.extractContents();
 
-				if (!startIsNode) {
-					let splitChild = extracted.childNodes[0];
+				if (startIsNode) {
+					let splitChild = extracted.firstElementChild;
 					splitChild.dataset.splitFrom = splitChild.dataset.ref;
 
 					this.handleAlignment(noteInnerContent.lastElementChild);

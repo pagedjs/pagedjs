@@ -130,6 +130,10 @@ class Page {
 		let renderResult = await this.layoutMethod.renderTo(this.wrapper, contents, breakToken, prevPage);
 		let newBreakToken = renderResult.breakToken;
 
+		if (breakToken && newBreakToken && breakToken.equals(newBreakToken)) {
+			return;
+		}
+
 		this.addListeners(contents);
 
 		this.endToken = newBreakToken;

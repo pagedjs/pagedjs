@@ -526,7 +526,7 @@ class Layout {
 
 				// Stop removal if we are in a loop
 				if (breakToken.equals(prevBreakToken)) {
-					return breakToken;
+					return;
 				}
 
 				if (overflow?.node && overflow?.offset && overflow?.node?.textContent) {

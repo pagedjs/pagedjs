@@ -244,7 +244,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 function cloneNodeAncestor (node) {
 	let result = node.cloneNode(false);
 
-	result.setAttribute("data-split-from", result.getAttribute("data-ref"));
+	// result.setAttribute("data-split-from", result.getAttribute("data-ref"));
 
 	// This will let us split a table with multiple columns correctly.
 	node.setAttribute("data-split-to", result.getAttribute("data-ref"));

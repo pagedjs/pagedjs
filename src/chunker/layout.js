@@ -747,7 +747,7 @@ class Layout {
 			if (isElement(check)) {
 				let checkBounds = getBoundingClientRect(check);
 				// Width check is for possible Chromium bug.
-				if (checkBounds.height > bounds.height || checkBounds.width > bounds.width) {
+				if (checkBounds.bottom > bounds.bottom || checkBounds.right > bounds.right) {
 					mustSplit = true;
 				}
 
@@ -858,7 +858,7 @@ class Layout {
 		do {
 			if (isElement(check)) {
 				let checkBounds = getBoundingClientRect(check);
-				if (checkBounds.height > bounds.height) {
+				if (checkBounds.bottom > bounds.bottom) {
 					mustSplit = true;
 				}
 

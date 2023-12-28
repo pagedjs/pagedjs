@@ -667,7 +667,7 @@ class Layout {
 					if (intrinsicBottom <= bounds.bottom) {
 						node = node.nextElementSibling;
 					} else {
-						// node is causing the overflow via padding and margin.
+						// Node is causing the overflow via padding and margin or text content.
 						done = true;
 					}
 				}

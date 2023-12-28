@@ -135,6 +135,84 @@ export function stackChildren(currentNode, stacked) {
 	return stack;
 }
 
+export function rebuildTableRow(node, alreadyRendered) {
+	let currentCol = 0, maxCols = 0, nextInitialColumn = 0;
+	const initialColumns = Array.from(node.children);
+	while (node.firstChild) {
+		node.firstChild.remove();
+	}
+
+	// Find the max number of columns.
+	let earlierRow = node.parentElement.children[0];
+	while (earlierRow && earlierRow !== node) {
+		if (earlierRow.children.length > maxCols) {
+			maxCols = earlierRow.children.length;
+		}
+		earlierRow = earlierRow.nextElementSibling;
+	}
+
+	// The next td to use in each tr.
+	// Doesn't take account of rowspans above that might make extra columns.
+	let rowOffsets = Array(maxCols).fill(0);
+
+	// Duplicate rowspans and our initial columns.
+	while (nextInitialColumn < initialColumns.length || currentCol < maxCols) {
+		let earlierRow = node.parentElement.children[0];
+		let earlierRowIndex = 0, earlierRowDistance = 0;
+		let rowspan, column;
+		// Find the nth column we'll duplicate (rowspan) or use.
+		while (earlierRow && earlierRow !== node) {
+			if (rowspan !== undefined) {
+				rowOffsets[earlierRowIndex]++;
+			}
+			else {
+				column = earlierRow.children[currentCol - rowOffsets[earlierRowIndex]];
+				if (column && column.rowSpan !== undefined) {
+					rowspan = column.rowSpan;
+				}
+			}
+			// Don't do the following if rowspan === 0.
+			if (rowspan) {
+				rowspan--;
+				// Previous value may be 1 or 2.
+				if (rowspan < 2) {
+					rowspan = undefined;
+				}
+			}
+			earlierRow = earlierRow.nextElementSibling;
+			earlierRowIndex++;
+		}
+
+		let destColumn;
+		if (rowspan !== undefined) {
+			destColumn = column.cloneNode(false);
+			// Adjust rowspan value.
+		  destColumn.rowSpan = !column.rowSpan ? 0 : rowspan;
+		} else {
+			// Fill the gap with the initial columns (if exists).
+			destColumn = column = initialColumns[nextInitialColumn++]?.cloneNode(false);
+			// The initial column can be undefined if the newly created table has less columns than the original table.
+			destColumn?.removeAttribute("rowspan");
+		}
+		if (alreadyRendered) {
+			let existing = findElement(column, alreadyRendered);
+			if (existing) {
+				column = existing;
+			}
+		}
+		if (column) {
+			let width = column.width || getBoundingClientRect(column).width;
+			if (!isNaN(width) && width) {
+				destColumn.setAttribute("width", width + "px");
+			}
+			if (destColumn) {
+				node.appendChild(destColumn);
+			}
+		}
+		currentCol++;
+	}
+}
+
 export function rebuildTree (node, fragment, alreadyRendered) {
 	let parent, ancestor;
 	let ancestors = [];
@@ -174,7 +252,11 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 			container = fragment;
 		}
 
-		if (dupSiblings) {
+		if (ancestor.nodeName == 'TR') {
+			rebuildTableRow(ancestor, alreadyRendered);
+			container.appendChild(ancestor);
+		}
+		else if (dupSiblings) {
 			let sibling = ancestor.parentElement ? ancestor.parentElement.children[0] : ancestor;
 
 			while (sibling) {
@@ -222,7 +304,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 			}
 		}
 
-		dupSiblings = (ancestor.nodeName == "TR" || ancestor.dataset.clonesiblings == true);
+		dupSiblings = (ancestor.nodeName !== "TR" && ancestor.dataset.clonesiblings == true);
 		added.push(parent);
 
 		if (ancestor.tagName == "LI") {
@@ -273,41 +355,6 @@ export function rebuildAncestors (node) {
 	let added = [];
 
 	let fragment = document.createDocumentFragment();
-
-	// Handle rowspan on table
-	if (node.nodeName === "TR") {
-		let previousRow = node.previousElementSibling;
-		let previousRowDistance = 1;
-		while (previousRow) {
-			// previous row has more columns, might indicate a rowspan.
-			if (previousRow.childElementCount > node.childElementCount) {
-				const initialColumns = Array.from(node.children);
-				while (node.firstChild) {
-					node.firstChild.remove();
-				}
-				let k = 0;
-				for (let j = 0; j < previousRow.children.length; j++) {
-					let column = previousRow.children[j];
-					if (column.rowSpan && column.rowSpan > previousRowDistance) {
-						const duplicatedColumn = column.cloneNode(true);
-						// Adjust rowspan value
-						duplicatedColumn.rowSpan = column.rowSpan - previousRowDistance;
-						// Add the column to the row
-						node.appendChild(duplicatedColumn);
-					} else {
-						// Fill the gap with the initial columns (if exists)
-						const initialColumn = initialColumns[k++];
-						// The initial column can be undefined if the newly created table has less columns than the original table
-						if (initialColumn) {
-							node.appendChild(initialColumn);
-						}
-					}
-				}
-			}
-			previousRow = previousRow.previousElementSibling;
-			previousRowDistance++;
-		}
-	}
 
 	// Gather all ancestors
 	let element = node;

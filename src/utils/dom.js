@@ -171,10 +171,10 @@ export function rebuildTableRow(node, alreadyRendered) {
 					rowspan = column.rowSpan;
 				}
 			}
-			// Don't do the following if rowspan === 0.
+			// If rowspan === 0 the entire remainder of the table row is used.
 			if (rowspan) {
+				// Tracking how many rows in the overflow.
 				rowspan--;
-				// Previous value may be 1 or 2.
 				if (rowspan < 2) {
 					rowspan = undefined;
 				}

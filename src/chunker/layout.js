@@ -538,6 +538,7 @@ class Layout {
 				if (overflow?.node && extract) {
 					overflow.ancestor = findElement(overflow.range.commonAncestorContainer, source);
 					overflow.content = this.removeOverflow(overflowRange, breakLetter);
+					this.hooks && this.hooks.afterOverflowRemoved.trigger(overflow.content, rendered, this);
 				}
 			});
 		}

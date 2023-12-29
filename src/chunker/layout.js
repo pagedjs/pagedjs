@@ -697,7 +697,7 @@ class Layout {
 		// Find the deepest element that is the first in set of siblings with
 		// overflow. There may be others. We just take the first we find and
 		// are called again to check for additional instances.
-		let node = rendered.firstChild, prev, startRemainder;
+		let node = rendered, prev, startRemainder;
 
 		while (isText(node)) {
 			node = node.nextElementSibling;

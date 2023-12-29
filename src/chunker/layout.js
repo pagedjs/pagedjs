@@ -116,7 +116,7 @@ class Layout {
 				// out the rest of any parent content - this lets a table or divs
 				// side by side still add content to this page before we start a new
 				// one.
-				if (hasRenderedContent && this.shouldBreak(node)) {
+				if (hasRenderedContent && !needsBreak && this.shouldBreak(node)) {
 					needsBreak = node;
 				}
 
@@ -134,7 +134,7 @@ class Layout {
 			// Check whether we have overflow when we've completed laying out a top
 			// level element. This lets it have multiple children overflowing and
 			// allows us to move all of the overflows onto the next page together.
-			if (!node || node.parentElement == firstDivisible) {
+			if (!node || !node.parentElement || node.parentElement == firstDivisible) {
 				this.hooks && this.hooks.layout.trigger(wrapper, this);
 
 				let imgs = wrapper.querySelectorAll("img");

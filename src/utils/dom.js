@@ -194,13 +194,13 @@ export function rebuildTableRow(node, alreadyRendered) {
 			// The initial column can be undefined if the newly created table has less columns than the original table.
 			destColumn?.removeAttribute("rowspan");
 		}
-		if (alreadyRendered) {
-			let existing = findElement(column, alreadyRendered);
-			if (existing) {
-				column = existing;
-			}
-		}
 		if (column) {
+			if (alreadyRendered) {
+				let existing = findElement(column, alreadyRendered);
+				if (existing) {
+					column = existing;
+				}
+			}
 			let width = column.width || getBoundingClientRect(column).width;
 			if (!isNaN(width) && width) {
 				destColumn.setAttribute("width", width + "px");

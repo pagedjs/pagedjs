@@ -6,7 +6,6 @@ import Queue from "../utils/queue.js";
 import {
 	requestIdleCallback
 } from "../utils/utils.js";
-import { OverflowContentError } from "./renderresult.js";
 
 const MAX_PAGES = false;
 const MAX_LAYOUTS = false;
@@ -345,14 +344,12 @@ class Chunker {
 			// Don't add a page if we have a forced break now and we just
 			// did a break due to overflow but have nothing displayed on
 			// the current page.
-			if (page && breakToken.overflow.length &&
+			if (!page || !breakToken.overflow.length ||
 				(
-					!page.area.childElementCount ||
-					!page.area.firstChild.getBoundingClientRect().height
+					page.area.childElementCount &&
+					page.area.firstChild.getBoundingClientRect().height
 				)
 			) {
-				console.log("Suppress page break");
-			} else {
 				let page = this.addPage();
 
 				await this.hooks.beforePageLayout.trigger(page, content, breakToken, this);

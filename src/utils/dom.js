@@ -158,7 +158,7 @@ export function rebuildTableRow(node, alreadyRendered) {
 	// Duplicate rowspans and our initial columns.
 	while (nextInitialColumn < initialColumns.length || currentCol < maxCols) {
 		let earlierRow = node.parentElement.children[0];
-		let earlierRowIndex = 0, earlierRowDistance = 0;
+		let earlierRowIndex = 0;
 		let rowspan, column;
 		// Find the nth column we'll duplicate (rowspan) or use.
 		while (earlierRow && earlierRow !== node) {
@@ -252,7 +252,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 			container = fragment;
 		}
 
-		if (ancestor.nodeName == 'TR') {
+		if (ancestor.nodeName == "TR") {
 			rebuildTableRow(ancestor, alreadyRendered);
 			container.appendChild(ancestor);
 		}
@@ -294,7 +294,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 
 						// Colgroup to clone?
 						Array.from(originalElement.children).forEach(child => {
-							if (child.tagName == 'COLGROUP') {
+							if (child.tagName == "COLGROUP") {
 								parent.append(child.cloneNode(true));
 							}
 						});

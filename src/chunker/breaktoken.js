@@ -1,9 +1,3 @@
-import {
-	isElement
-} from "../utils/dom.js";
-
-import Overflow from './overflow.js';
-
 /**
  * BreakToken
  * @class

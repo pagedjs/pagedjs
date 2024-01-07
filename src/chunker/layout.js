@@ -22,7 +22,7 @@ import {
 	words
 } from "../utils/dom.js";
 import BreakToken from "./breaktoken.js";
-import RenderResult, { OverflowContentError } from "./renderresult.js";
+import RenderResult from "./renderresult.js";
 import EventEmitter from "event-emitter";
 import Hook from "../utils/hook.js";
 import Overflow from "./overflow.js";
@@ -232,10 +232,12 @@ class Layout {
 	/**
 	 * Merge items from source into dest which don't yet exist in dest.
 	 *
-	 * @param dest
+	 * @param {element} dest
 	 *   A destination DOM node tree.
-	 * @param source
+	 * @param {element} source
 	 *   A source DOM node tree.
+	 *
+	 * @returns {void}
 	 */
 	addOverflowNodes(dest, source) {
 		// Since we are modifying source as we go, we need to remember what
@@ -257,6 +259,17 @@ class Layout {
 
 	/**
 	 * Add overflow to new page.
+	 *
+	 * @param {element} dest
+	 *   The page content being built.
+	 * @param {breakToken} breakToken
+	 *   The current break cotent.
+	 * @param {element} alreadyRendered
+	 *   The content that has already been rendered.
+	 * @param {element} source
+	 *   The source content.
+	 *
+	 * @returns {void}
 	 */
 	addOverflowToPage(dest, breakToken, alreadyRendered, source) {
 
@@ -286,12 +299,19 @@ class Layout {
 	/**
 	 * Add text to new page.
 	 *
-	 * @param node
-	 * @param dest
-	 * @param breakToken
-	 * @param shallow
-	 * @param rebuild
+	 * @param {element} node
+	 *   The node being appended to the destination.
+	 * @param {element} dest
+	 *   The destination to which content is being added.
+	 * @param {breakToken} breakToken
+	 *   The current breakToken.
+	 * @param {bool} shallow
+	 *	 Whether to do a shallow copy of the node.
+	 * @param {bool} rebuild
+	 *   Whether to rebuild parents.
+	 *
 	 * @returns {ChildNode}
+	 *   The cloned node.
 	 */
 	append(node, dest, breakToken, shallow = true, rebuild = true) {
 
@@ -548,19 +568,19 @@ class Layout {
 	/**
 	 * Does the element exceed the bounds?
 	 *
-	 * @param element
+	 * @param {element} element
 	 *   The element being constrained.
-	 * @param bounds
+	 * @param {array} bounds
 	 *   The bounding element.
-	 * @param bool ignoreSides
+	 * @param {bool} ignoreSides
 	 *   Whether we should ignore overflow on the sides.
 	 *
-	 * @return boolean
+	 * @returns {bool}
 	 *   Whether the element is within bounds + slack.
 	 */
 	hasOverflow(element, bounds = this.bounds, ignoreSides = false) {
 		let constrainingElement = element && element.parentNode; // this gets the element, instead of the wrapper for the width workaround
-		if (constrainingElement.classList.contains('pagedjs_page_content')) {
+		if (constrainingElement.classList.contains("pagedjs_page_content")) {
 			constrainingElement = element;
 		}
 		let { width, height } = element.getBoundingClientRect();
@@ -571,18 +591,19 @@ class Layout {
 	}
 
 	/**
-	 * Returns the last child that overflows the bounds.
+	 * Returns the first child that overflows the bounds.
 	 *
 	 * There may be no children that overflow (the height might be extended
 	 * by a sibling). In this case, this function returns NULL.
 	 *
-	 * @param node
+	 * @param {node} node
 	 *   The parent node of the children we are searching.
-	 * @param bounds
+	 * @param {array} bounds
 	 *   The bounds of the page area.
-	 * @param bool ignoreSides
+	 * @param {bool} ignoreSides
 	 *   Whether sideways overflow is ignored.
 	 * @returns {ChildNode | null | undefined}
+	 *   The first overflowing child within the node.
 	 */
 	firstOverflowingChild(node, bounds, ignoreSides) {
 		let bLeft = Math.ceil(bounds.left);
@@ -591,7 +612,7 @@ class Layout {
 		let bBottom = Math.floor(bounds.bottom);
 
 		for (const child of node.childNodes) {
-			if (child.tagName == 'COLGROUP') {
+			if (child.tagName == "COLGROUP") {
 				continue;
 			}
 

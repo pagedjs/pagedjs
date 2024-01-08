@@ -58,6 +58,7 @@ class Layout {
 			this.hooks.layout = new Hook();
 			this.hooks.renderNode = new Hook();
 			this.hooks.layoutNode = new Hook();
+			this.hooks.getOverflow = new Hook();
 			this.hooks.beforeOverflow = new Hook();
 			this.hooks.onOverflow = new Hook();
 			this.hooks.afterOverflowRemoved = new Hook();
@@ -502,7 +503,7 @@ class Layout {
 		}
 
 		if (!node) {
-			console.log(isElement(container), child(container, offset), temp);
+			// console.log(isElement(container), child(container, offset), temp);
 			return;
 		}
 
@@ -516,9 +517,9 @@ class Layout {
 	}
 
 	findBreakToken(rendered, source, bounds = this.bounds, prevBreakToken, node = null, extract = true) {
-		let overflowRange, breakToken, breakLetter;
+		let breakToken, breakLetter;
 
-		let overflowResult = this.findOverflow(rendered, bounds, source);
+		let overflowResult = this.getOverflow(rendered, bounds, source);
 		if (overflowResult) {
 			overflowResult.forEach((overflowRange) => {
 
@@ -701,6 +702,11 @@ class Layout {
 		} while (node && !done);
 
 		return [prev, anyOverflowFound];
+	}
+
+	getOverflow(rendered, bounds, source) {
+		this.hooks && this.hooks.getOverflow.trigger(rendered, bounds, source, this);
+		return this.findOverflow(rendered, bounds, source);
 	}
 
 	findOverflow(rendered, bounds, source) {

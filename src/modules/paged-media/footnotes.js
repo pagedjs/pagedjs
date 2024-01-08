@@ -4,6 +4,10 @@ import { getBoundingClientRect } from "../../utils/utils.js";
 // import Layout from "../../chunker/layout.js";
 import csstree from "css-tree";
 
+const FOOTNOTES_OVERLAPS_WITH = -1;
+const FOOTNOTES_NO_OVERLAP = 0;
+const FOOTNOTES_CONTAINS = 1;
+
 class Footnotes extends Handler {
 	constructor(chunker, polisher, caller) {
 		super(chunker, polisher, caller);
@@ -125,10 +129,6 @@ class Footnotes extends Handler {
 
 			prelude.children.first().children = newPrelude;
 		}
-	}
-
-	afterParsed(parsed) {
-		// this.processFootnotes(parsed, this.footnotes);
 	}
 
 	processFootnotes(parsed, notes, pageArea) {
@@ -419,6 +419,17 @@ class Footnotes extends Handler {
 			!this.entirelyOutside(parentBounds, potentialChildBounds);
 	}
 
+	overlapState(parentElement, potentialChild) {
+		if (this.entirelyWithin(parentElement, potentialChild)) {
+			return FOOTNOTES_CONTAINS;
+		}
+		else if(this.entirelyOutside(parentElement, potentialChild)) {
+			return FOOTNOTES_NO_OVERLAP;
+		}
+
+		return FOOTNOTES_OVERLAPS_WITH;
+	}
+
 	overlapDescription(parentElement, potentialChild, parentDesc, childDesc) {
 		let outcome = "overlaps with";
 
@@ -443,6 +454,9 @@ class Footnotes extends Handler {
 		let noteContentMargins = this.marginsHeight(noteContent);
 		let noteContentPadding = this.paddingHeight(noteContent);
 		let noteContentBorders = this.borderHeight(noteContent);
+
+		// I know we're going to need to handle footnotes from a previous page.
+		let deferredFootnotes = 0;
 
 		// Gather footnotes to potentially include on this page.
 		this.processFootnotes(rendered, this.footnotes, pageArea);
@@ -506,9 +520,18 @@ class Footnotes extends Handler {
 
 				console.log(`${footnoteCalls.length} footnote calls.`);
 
-				Array.from(footnoteCalls).forEach((note, i) => {
-					this.logIfNotEmpty(this.overlapDescription(pageArea, note, `Page area bounds`, `call ${i}`));
+				let callsInPage = 0;
+
+				Array.from(footnoteCalls).forEach((call, i) => {
+					this.logIfNotEmpty(this.overlapDescription(pageArea, call, `Page area bounds`, `call ${i}`));
+					if (this.overlapState(pageArea, call) == FOOTNOTES_CONTAINS) {
+						callsInPage++;
+					}
 				});
+
+				console.log(`Page contains ${callsInPage} footnote calls.`);
+
+				let footnotesOnPage = 0;
 
 				Array.from(noteInnerContent.childNodes).reverse().forEach((note, i) => {
 					let constrainingElement = rendered && rendered.parentNode; // this gets the element, instead of the wrapper for the width workaround
@@ -520,7 +543,13 @@ class Footnotes extends Handler {
 					let noteTextBounds = note.getBoundingClientRect();
 					this.outputBounds(note.getBoundingClientRect(), `Bounding rectangle for call ${i} is:`);
 					this.logIfNotEmpty(this.overlapDescription(pageArea, note, "Page area", `footnote content ${i}`));
+
+					if (this.overlapState(pageArea, note) == FOOTNOTES_CONTAINS) {
+						footnotesOnPage++;
+					}
 				});
+
+				console.log(`Page contains ${footnotesOnPage} footnotes.`);
 
 				// Get overflow.
 				// let layout = new Layout(noteArea, undefined, chunker.settings);
@@ -528,10 +557,12 @@ class Footnotes extends Handler {
 				this.logIfNotEmpty(this.outputBounds(bounds, `Invoking layout.findOverflow for page with bounds`));
 				let overflowRanges = layout.findOverflow(rendered, bounds, source, layout);
 
-				if (!overflowRanges) {
-					console.log('|| No overflow with this number of footnotes shown.');
-					break;
+				if (deferredFootnotes + callsInPage < footnotesOnPage) {
+					// Don't display footnotes for which the reference hasn't yet been seen.
+					continue;
 				}
+
+				break;
 			}
 		}
 
@@ -574,26 +605,6 @@ class Footnotes extends Handler {
 				true
 			);
 		});
-	}
-
-	oldAfterOverflowRemoved(removed, rendered) {
-		// Find the page area
-		let area = rendered.closest(".pagedjs_area");
-		// Get any rendered footnotes
-		let notes = area.querySelectorAll(".pagedjs_footnote_area [data-note='footnote']");
-		for (let n = 0; n < notes.length; n++) {
-			const note = notes[n];
-			// Check if the call for that footnote has been removed with the overflow
-			let call = removed.querySelector(`[data-footnote-call="${note.dataset.ref}"]`);
-			if (call) {
-				note.remove();
-			}
-		}
-		// Hide footnote content if empty
-		let noteInnerContent = area.querySelector(".pagedjs_footnote_inner_content");
-		if (noteInnerContent && noteInnerContent.childNodes.length === 0) {
-			noteInnerContent.parentElement.classList.add("pagedjs_footnote_empty");
-		}
 	}
 
 	marginsHeight(element, total=true) {

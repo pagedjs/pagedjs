@@ -175,7 +175,7 @@ class Footnotes extends Handler {
 		}
 	}
 
-	oldRenderNode(node) {
+	renderNode(node) {
 		if (node.nodeType == 1) {
 			// Get all notes
 			let notes;
@@ -185,38 +185,28 @@ class Footnotes extends Handler {
 				return;
 			}
 
-			if (node.dataset.note === "footnote") {
-				notes = [node];
-			} else if (node.dataset.hasNotes || node.querySelectorAll("[data-note='footnote']")) {
-				notes = node.querySelectorAll("[data-note='footnote']");
-			}
+			for (let noteSelector in this.footnotes) {
+				let note = this.footnotes[noteSelector];
+				let elements = node.querySelectorAll(noteSelector);
+				for (var i = 0; i < elements.length; i++) {
+					let element = elements[i];
+					// Add note type
+					element.setAttribute("data-note", "footnote");
+					element.setAttribute("data-break-before", "avoid");
+					element.setAttribute("data-note-policy", note.policy || "auto");
+					element.setAttribute("data-note-display", note.display || "block");
+					// Mark all parents
+					this.processFootnoteContainer(element);
 
-			if (notes && notes.length) {
-				this.findVisibleFootnotes(notes, node);
-			}
-		}
-	}
-
-	findVisibleFootnotes(notes, node) {
-		let area, size, right;
-		area = node.closest(".pagedjs_page_content");
-		size = area.getBoundingClientRect();
-		right = size.left + size.width;
-
-		for (let i = 0; i < notes.length; ++i) {
-			let currentNote = notes[i];
-			let bounds = currentNote.getBoundingClientRect();
-			let left = bounds.left;
-
-			if (left < right) {
-				// Add call for the note
-				this.moveFootnote(currentNote, node.closest(".pagedjs_area"), true);
+					// Make the caller.
+					this.moveFootnote(element, node, true);
+				}
 			}
 		}
 	}
 
-	moveFootnote(node, pageArea, needsNoteCall) {
-		// let pageArea = node.closest(".pagedjs_area");
+	moveFootnote(element, node, needsNoteCall) {
+		let pageArea = node.closest(".pagedjs_area");
 		let noteArea = pageArea.querySelector(".pagedjs_footnote_area");
 		let noteContent = noteArea.querySelector(".pagedjs_footnote_content");
 		let noteInnerContent = noteContent.querySelector(".pagedjs_footnote_inner_content");
@@ -459,7 +449,7 @@ class Footnotes extends Handler {
 		let deferredFootnotes = 0;
 
 		// Gather footnotes to potentially include on this page.
-		this.processFootnotes(rendered, this.footnotes, pageArea);
+		// this.processFootnotes(rendered, this.footnotes, pageArea);
 		let footnoteCalls = pageArea.children[0].querySelectorAll(`[data-footnote-call]`);
 		this.moveFootnotesToPage(footnoteCalls, pageArea);
 		if (footnoteCalls.length) {

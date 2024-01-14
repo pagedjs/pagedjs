@@ -95,7 +95,7 @@ class Layout {
 		this.hooks && this.hooks.onPageLayout.trigger(wrapper, prevBreakToken, this);
 
 		// Add overflow, and check that it doesn't have overflow itself.
-		this.addOverflowToPage(wrapper, breakToken, prevPage, source);
+		this.addOverflowToPage(wrapper, breakToken, prevPage);
 		newBreakToken = this.findBreakToken(wrapper, source, bounds, prevBreakToken, start);
 
 		if (prevBreakToken.isFinished()) {
@@ -267,12 +267,10 @@ class Layout {
 	 *   The current break cotent.
 	 * @param {element} alreadyRendered
 	 *   The content that has already been rendered.
-	 * @param {element} source
-	 *   The source content.
 	 *
 	 * @returns {void}
 	 */
-	addOverflowToPage(dest, breakToken, alreadyRendered, source) {
+	addOverflowToPage(dest, breakToken, alreadyRendered) {
 
 		if (!breakToken || !breakToken.overflow.length) {
 			return;

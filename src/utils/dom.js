@@ -190,7 +190,7 @@ export function rebuildTableRow(node, alreadyRendered) {
 		  destColumn.rowSpan = !column.rowSpan ? 0 : rowspan;
 		} else {
 			// Fill the gap with the initial columns (if exists).
-			destColumn = column = initialColumns[nextInitialColumn++]?.cloneNode(false);
+			destColumn = column = initialColumns[nextInitialColumn++]?.cloneNode(true);
 			// The initial column can be undefined if the newly created table has less columns than the original table.
 			destColumn?.removeAttribute("rowspan");
 		}
@@ -254,7 +254,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 
 		if (ancestor.nodeName == "TR") {
 			rebuildTableRow(ancestor, alreadyRendered);
-			container.appendChild(ancestor);
+			container.appendChild(cloneNode(ancestor, true));
 		}
 		else if (dupSiblings) {
 			let sibling = ancestor.parentElement ? ancestor.parentElement.children[0] : ancestor;

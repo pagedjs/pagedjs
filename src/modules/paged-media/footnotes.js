@@ -256,6 +256,15 @@ class Footnotes extends Handler {
 		// Add Id
 		node.id = `note-${node.dataset.ref}`;
 
+		this.adjustPosition(node, noteCall, needsNoteCall);
+	}
+
+	adjustPosition(node, noteCall = undefined, needsNoteCall = false) {
+		let pageArea = node.closest(".pagedjs_area") || fallbackPageArea;
+		let noteArea = pageArea.querySelector(".pagedjs_footnote_area");
+		let noteContent = noteArea.querySelector(".pagedjs_footnote_content");
+		let noteInnerContent = noteContent.querySelector(".pagedjs_footnote_inner_content");
+
 		// Get note content size
 		let height = noteContent.scrollHeight;
 
@@ -384,7 +393,7 @@ class Footnotes extends Handler {
 	}
 
 	debugging() {
-		return false;
+		return true;
 	}
 
 	mightLog(output) {
@@ -477,7 +486,7 @@ class Footnotes extends Handler {
 			this.outputBounds(note.getBoundingClientRect(), `Bounding rectangle for call ${i} is:`);
 			this.mightLog(this.overlapDescription(pageArea, note, "Page area", `footnote content ${i} (${note.dataset.id})`));
 
-			if (this.overlapState(pageArea, note) == FOOTNOTES_CONTAINS) {
+			if (this.overlapState(pageArea, note) !== FOOTNOTES_NO_OVERLAP) {
 				count++;
 			}
 		});
@@ -512,21 +521,16 @@ class Footnotes extends Handler {
 			this.needsLayout = [];
 		}
 
-		this.moveFootnotesToPage(footnoteCalls, pageArea);
-
-		if (footnoteCalls.length) {
+		if (noteInnerContent.children.length) {
 			this.mightLog(`=== Start of getOverflow for page ${pageElement.id.substring(5)} ===`);
 			this.mightLog(`${footnoteCalls.length} calls on the page.`);
-			for (let footnote=0; footnote < noteInnerContent.children.length; footnote++) {
-				if (this.overlapState(pageArea, noteInnerContent.children[footnote]) !== FOOTNOTES_CONTAINS) {
-					noteInnerContent.children[footnote].style.display = 'none';
-				}
-			}
 			for (let numFootnotes=noteInnerContent.children.length; numFootnotes >= 0; numFootnotes--) {
 				this.mightLog(`Number of footnotes: ${numFootnotes}`);
 				if (numFootnotes < noteInnerContent.children.length) {
 					noteInnerContent.children[numFootnotes].style.display = 'none';
 				}
+
+				this.moveFootnotesToPage(footnoteCalls, noteInnerContent.children, pageArea);
 
 				this.mightLog(`>> ${numFootnotes} footnotes visible.`);
 
@@ -648,15 +652,15 @@ class Footnotes extends Handler {
 		}
 	}
 
-	moveFootnotesToPage(footnotes, pageArea) {
-		if (0) {
-			Array.from(footnotes).forEach((node) => {
-				this.moveFootnote(
-					node,
-					true
-				);
-			});
-		}
+	moveFootnotesToPage(calls, footnotes, pageArea) {
+		let callsByRef = [];
+		calls.forEach(call => {
+			callsByRef[call.dataset.ref] = call;
+		});
+		Array.from(footnotes).forEach((node) => {
+			// We need the call if it is on this page.
+			this.adjustPosition(node, callsByRef[node.dataset.ref], !!callsByRef[node.dataset.ref]);
+		});
 	}
 
 	marginsHeight(element, total=true) {

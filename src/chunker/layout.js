@@ -85,7 +85,7 @@ class Layout {
 		let node;
 		let done;
 		let next;
-		let needsBreak;
+		let forcedBreakQueue = [];
 
 		let prevBreakToken = breakToken || new BreakToken(start);
 
@@ -104,7 +104,9 @@ class Layout {
 
 		let hasRenderedContent = !!wrapper.childNodes.length;
 
-		needsBreak = prevBreakToken ? prevBreakToken.needsBreak() : undefined;
+		if (prevBreakToken) {
+			forcedBreakQueue = prevBreakToken.getForcedBreakQueue();
+		}
 
 		while (!done && !newBreakToken) {
 			next = walker.next();
@@ -118,8 +120,8 @@ class Layout {
 				// out the rest of any parent content - this lets a table or divs
 				// side by side still add content to this page before we start a new
 				// one.
-				if (hasRenderedContent && !needsBreak && this.shouldBreak(node)) {
-					needsBreak = node;
+				if (this.shouldBreak(node) && hasRenderedContent) {
+					forcedBreakQueue.push(node);
 				}
 
 				if (node.dataset && node.dataset.page) {
@@ -136,7 +138,7 @@ class Layout {
 			// Check whether we have overflow when we've completed laying out a top
 			// level element. This lets it have multiple children overflowing and
 			// allows us to move all of the overflows onto the next page together.
-			if (!node || !node.parentElement || node.parentElement == firstDivisible) {
+			if (forcedBreakQueue.length || !node || !node.parentElement || node.parentElement == firstDivisible) {
 				this.hooks && this.hooks.layout.trigger(wrapper, this);
 
 				let imgs = wrapper.querySelectorAll("img");
@@ -152,12 +154,12 @@ class Layout {
 					newBreakToken.setFinished();
 				}
 
-				if (needsBreak) {
+				if (forcedBreakQueue.length) {
 					if (newBreakToken) {
-						newBreakToken.setNeedsBreak(needsBreak);
+						newBreakToken.setForcedBreakQueue(forcedBreakQueue);
 					}
 					else {
-						newBreakToken = this.breakAt(needsBreak);
+						newBreakToken = this.breakAt(forcedBreakQueue.shift(), 0, forcedBreakQueue);
 					}
 				}
 
@@ -191,10 +193,11 @@ class Layout {
 		return new RenderResult(newBreakToken);
 	}
 
-	breakAt(node, offset = 0) {
+	breakAt(node, offset = 0, forcedBreakQueue = []) {
 		let newBreakToken = new BreakToken(
 			node,
-			offset
+			offset,
+			forcedBreakQueue
 		);
 		let breakHooks = this.hooks.onBreakToken.triggerSync(newBreakToken, undefined, node, this);
 		breakHooks.forEach((newToken) => {

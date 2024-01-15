@@ -8,7 +8,7 @@ class BreakToken {
 		this.node = node;
 		this.overflow = overflowArray || [];
 		this.finished = false;
-		this.breakNeededAt = undefined;
+		this.breakNeededAt = [];
 	}
 
 	equals(otherBreakToken) {
@@ -25,6 +25,14 @@ class BreakToken {
 				return false;
 			}
 		}
+
+		let otherQueue = otherBreakToken.getForcedBreakQueue();
+		for (const index in this.breakNeededAt) {
+			if (!this.breakNeededAt[index].isEqualNode(otherQueue[index])) {
+				return false;
+			}
+		}
+
 		return true;
 	}
 
@@ -36,14 +44,21 @@ class BreakToken {
 		return this.finished;
 	}
 
-	setNeedsBreak(needsBreak) {
-		this.breakNeededAt = needsBreak;
+	addNeedsBreak(needsBreak) {
+		this.breakNeededAt.push(needsBreak);
 	}
 
-	needsBreak() {
+	getNextNeedsBreak() {
+		return this.breakNeededAt.shift();
+	}
+
+	getForcedBreakQueue() {
 		return this.breakNeededAt;
 	}
 
+	setForcedBreakQueue(queue) {
+		return this.breakNeededAt = queue;
+	}
 }
 
 export default BreakToken;

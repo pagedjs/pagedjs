@@ -517,14 +517,14 @@ class Footnotes extends Handler {
 		if (footnoteCalls.length) {
 			this.mightLog(`=== Start of getOverflow for page ${pageElement.id.substring(5)} ===`);
 			this.mightLog(`${footnoteCalls.length} calls on the page.`);
+			for (let footnote=0; footnote < noteInnerContent.children.length; footnote++) {
+				if (this.overlapState(pageArea, noteInnerContent.children[footnote]) !== FOOTNOTES_CONTAINS) {
+					noteInnerContent.children[footnote].style.display = 'none';
+				}
+			}
 			for (let numFootnotes=noteInnerContent.children.length; numFootnotes >= 0; numFootnotes--) {
 				this.mightLog(`Number of footnotes: ${numFootnotes}`);
 				if (numFootnotes < noteInnerContent.children.length) {
-					if (!noteInnerContent.children[numFootnotes].getBoundingClientRect().height) {
-						this.mightLog(`Footnote ${numFootnotes} has no height.`);
-						continue;
-					}
-
 					noteInnerContent.children[numFootnotes].style.display = 'none';
 				}
 

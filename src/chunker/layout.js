@@ -93,6 +93,10 @@ class Layout {
 
 		// Add overflow, and check that it doesn't have overflow itself.
 		this.addOverflowToPage(wrapper, breakToken, prevPage);
+
+		// Footnotes may change the bounds.
+		bounds = this.element.getBoundingClientRect();
+
 		let newBreakToken = this.findBreakToken(wrapper, source, bounds, prevBreakToken, start);
 
 		if (prevBreakToken.isFinished()) {
@@ -115,6 +119,10 @@ class Layout {
 
 			if (node) {
 				this.hooks && this.hooks.layoutNode.trigger(node);
+
+				// Footnotes may change the bounds.
+				bounds = this.element.getBoundingClientRect();
+
 				// Check if the rendered element has a break set
 				// Remember the node but don't apply the break until we have laid
 				// out the rest of any parent content - this lets a table or divs

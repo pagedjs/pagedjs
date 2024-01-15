@@ -1,12 +1,7 @@
 import Handler from "../handler.js";
 import { isContainer, isElement } from "../../utils/dom.js";
-import { getBoundingClientRect } from "../../utils/utils.js";
-// import Layout from "../../chunker/layout.js";
+import Layout from "../../chunker/layout.js";
 import csstree from "css-tree";
-
-const FOOTNOTES_OVERLAPS_WITH = -1;
-const FOOTNOTES_NO_OVERLAP = 0;
-const FOOTNOTES_CONTAINS = 1;
 
 class Footnotes extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -14,10 +9,6 @@ class Footnotes extends Handler {
 
 		this.footnotes = {};
 		this.needsLayout = [];
-		this.callsDone = 0; this.numDeferredFootnotes = 0;
-		this.deferredFootnotes = [];
-		this.lastPage;
-		this.prevNumDeferredFootnotes = 0;
 	}
 
 	onDeclaration(declaration, dItem, dList, rule) {
@@ -135,32 +126,25 @@ class Footnotes extends Handler {
 		}
 	}
 
-	onPageLayout(wrapper, prevBreakToken, layout) {
-		let pageElement = wrapper.closest(".pagedjs_page");
-		let pageArea = pageElement.querySelector(".pagedjs_area");
-		this.moveDelayedFootnotesToPage(pageArea);
+	afterParsed(parsed) {
+		this.processFootnotes(parsed, this.footnotes);
 	}
 
-	processFootnotes(parsed, notes, pageArea) {
-		if (0) {
-			for (let n in notes) {
-				// Find elements
-				let elements = parsed.querySelectorAll(n);
-				let element;
-				let note = notes[n];
-				for (var i = 0; i < elements.length; i++) {
-					element = elements[i];
-					// Add note type
-					element.setAttribute("data-note", "footnote");
-					element.setAttribute("data-break-before", "avoid");
-					element.setAttribute("data-note-policy", note.policy || "auto");
-					element.setAttribute("data-note-display", note.display || "block");
-					// Mark all parents
-					this.processFootnoteContainer(element);
-
-					// Make the caller.
-					this.moveFootnote(element, true);
-				}
+	processFootnotes(parsed, notes) {
+		for (let n in notes) {
+			// Find elements
+			let elements = parsed.querySelectorAll(n);
+			let element;
+			let note = notes[n];
+			for (var i = 0; i < elements.length; i++) {
+				element = elements[i];
+				// Add note type
+				element.setAttribute("data-note", "footnote");
+				element.setAttribute("data-break-before", "avoid");
+				element.setAttribute("data-note-policy", note.policy || "auto");
+				element.setAttribute("data-note-display", note.display || "block");
+				// Mark all parents
+				this.processFootnoteContainer(element);
 			}
 		}
 	}
@@ -197,39 +181,43 @@ class Footnotes extends Handler {
 				return;
 			}
 
-			for (let noteSelector in this.footnotes) {
-				let note = this.footnotes[noteSelector];
-				let elements = node.querySelectorAll(noteSelector);
-				for (var i = 0; i < elements.length; i++) {
-					let element = elements[i];
-					// Add note type
-					element.setAttribute("data-note", "footnote");
-					element.setAttribute("data-break-before", "avoid");
-					element.setAttribute("data-note-policy", note.policy || "auto");
-					element.setAttribute("data-note-display", note.display || "block");
-					// Mark all parents
-					this.processFootnoteContainer(element);
+			if (node.dataset.note === "footnote") {
+				notes = [node];
+			} else if (node.dataset.hasNotes || node.querySelectorAll("[data-note='footnote']")) {
+				notes = node.querySelectorAll("[data-note='footnote']");
+			}
 
-					// Make the caller.
-					this.moveFootnote(element, true);
-				}
+			if (notes && notes.length) {
+				this.findVisibleFootnotes(notes, node);
 			}
 		}
 	}
 
-	moveFootnote(node, needsNoteCall, fallbackPageArea) {
-		let pageArea = node.closest(".pagedjs_area") || fallbackPageArea;
+	findVisibleFootnotes(notes, node) {
+		let area, size, right;
+		area = node.closest(".pagedjs_page_content");
+		size = area.getBoundingClientRect();
+		right = size.left + size.width;
+
+		for (let i = 0; i < notes.length; ++i) {
+			let currentNote = notes[i];
+			let bounds = currentNote.getBoundingClientRect();
+			let left = bounds.left;
+
+			if (left < right) {
+				// Add call for the note
+				this.moveFootnote(currentNote, node.closest(".pagedjs_area"), true);
+			}
+		}
+	}
+
+	moveFootnote(node, pageArea, needsNoteCall) {
+		// let pageArea = node.closest(".pagedjs_area");
 		let noteArea = pageArea.querySelector(".pagedjs_footnote_area");
 		let noteContent = noteArea.querySelector(".pagedjs_footnote_content");
 		let noteInnerContent = noteContent.querySelector(".pagedjs_footnote_inner_content");
 
 		if (!isElement(node)) {
-			return;
-		}
-
-		// Check if note already exists for overflow
-		let existing = noteInnerContent.querySelector(`[data-ref="${node.dataset.ref}"]`);
-		if (existing) {
 			return;
 		}
 
@@ -241,6 +229,14 @@ class Footnotes extends Handler {
 
 		// Remove the break before attribute for future layout
 		node.removeAttribute("data-break-before");
+
+		// Check if note already exists for overflow
+		let existing = noteInnerContent.querySelector(`[data-ref="${node.dataset.ref}"]`);
+		if (existing) {
+			// Remove the note from the flow but no need to render it again
+			node.remove();
+			return;
+		}
 
 		// Add the note node
 		noteInnerContent.appendChild(node);
@@ -255,15 +251,6 @@ class Footnotes extends Handler {
 
 		// Add Id
 		node.id = `note-${node.dataset.ref}`;
-
-		this.adjustPosition(node, noteCall, needsNoteCall);
-	}
-
-	adjustPosition(node, noteCall = undefined, needsNoteCall = false) {
-		let pageArea = node.closest(".pagedjs_area") || fallbackPageArea;
-		let noteArea = pageArea.querySelector(".pagedjs_footnote_area");
-		let noteContent = noteArea.querySelector(".pagedjs_footnote_content");
-		let noteInnerContent = noteContent.querySelector(".pagedjs_footnote_inner_content");
 
 		// Get note content size
 		let height = noteContent.scrollHeight;
@@ -367,7 +354,6 @@ class Footnotes extends Handler {
 	}
 
 	createFootnoteCall(node) {
-		this.mightLog(`Create footnote call ${node.id}`);
 		let parentElement = node.parentElement;
 		let footnoteCall = document.createElement("a");
 		for (const className of node.classList) {
@@ -388,242 +374,88 @@ class Footnotes extends Handler {
 		return footnoteCall;
 	}
 
-	showBounds() {
-		return true;
-	}
-
-	debugging() {
-		return true;
-	}
-
-	mightLog(output) {
-		if (this.debugging() && output) console.log(output);
-	}
-
-	outputBounds(bounds, description = '') {
-		if (this.showBounds()) return `${description} ${bounds.left}-${bounds.right} / ${bounds.top}-${bounds.bottom}`;
-	}
-
-	outputBoundsOf(element, description) {
-		return this.outputBounds(element.getBoundingClientRect(), description);
-	}
-
-	boundsComparisonDetail(parentElement, potentialChild) {
-		return this.showBounds() ? `(${this.outputBoundsOf(parentElement)} vs ${this.outputBoundsOf(potentialChild)})` : '';
-	}
-
-	entirelyWithin(parentElement, potentialChild) {
-		let parentBounds = parentElement.getBoundingClientRect();
-		let potentialChildBounds = potentialChild.getBoundingClientRect();
-		return (parentBounds.left <= potentialChildBounds.left &&
-			parentBounds.right >= potentialChildBounds.right &&
-			parentBounds.top <= potentialChildBounds.top &&
-			parentBounds.bottom >= potentialChildBounds.bottom);
-	}
-
-	entirelyOutside(parentElement, potentialChild) {
-		let parentBounds = parentElement.getBoundingClientRect();
-		let potentialChildBounds = potentialChild.getBoundingClientRect();
-		return (parentBounds.left >= potentialChildBounds.right ||
-			parentBounds.right <= potentialChildBounds.left ||
-			parentBounds.top >= potentialChildBounds.bottom ||
-			parentBounds.bottom <= potentialChildBounds.top);
-	}
-
-	overlaps(parentBounds, potentialChildBounds) {
-		return !this.entirelyWithin(parentBounds, potentialChildBounds) &&
-			!this.entirelyOutside(parentBounds, potentialChildBounds);
-	}
-
-	overlapState(parentElement, potentialChild) {
-		if (this.entirelyWithin(parentElement, potentialChild)) {
-			return FOOTNOTES_CONTAINS;
-		}
-		else if(this.entirelyOutside(parentElement, potentialChild)) {
-			return FOOTNOTES_NO_OVERLAP;
-		}
-
-		return FOOTNOTES_OVERLAPS_WITH;
-	}
-
-	overlapDescription(parentElement, potentialChild, parentDesc, childDesc) {
-		let outcome = "overlaps with";
-
-		if (this.entirelyWithin(parentElement, potentialChild)) {
-			outcome = "entirely contains";
-		}
-		else if(this.entirelyOutside(parentElement, potentialChild)) {
-			outcome = "has no overlap with";
-		}
-
-		return `${parentDesc} ${outcome} ${childDesc} ${this.boundsComparisonDetail(parentElement, potentialChild)}`;
-	}
-
-	callsInPage(footnoteCalls, contentArea) {
-		let count = 0;
-
-		Array.from(footnoteCalls).forEach((call, i) => {
-			this.mightLog(this.overlapDescription(contentArea, call, `Page area bounds`, `call ${i}`));
-			if (this.overlapState(contentArea, call) == FOOTNOTES_CONTAINS) {
-				count++;
-			}
-		});
-
-		return count;
-	}
-
-	footnotesOnPage(footnoteContent, rendered, pageArea) {
-		let count = 0;
-
-		Array.from(footnoteContent).forEach((note, i) => {
-			let constrainingElement = rendered && rendered.parentNode; // this gets the element, instead of the wrapper for the width workaround
-			if (constrainingElement.classList.contains("pagedjs_page_content")) {
-				constrainingElement = rendered;
-			}
-
-			// Does this note overlap the content?
-			let noteTextBounds = note.getBoundingClientRect();
-			this.outputBounds(note.getBoundingClientRect(), `Bounding rectangle for call ${i} is:`);
-			this.mightLog(this.overlapDescription(pageArea, note, "Page area", `footnote content ${i} (${note.dataset.id})`));
-
-			if (this.overlapState(pageArea, note) !== FOOTNOTES_NO_OVERLAP) {
-				count++;
-			}
-		});
-
-		return count;
-	}
-
-	getOverflow(rendered, bounds, source, layout) {
-		let pageElement = rendered.closest(".pagedjs_page");
-		let pageContent = rendered.closest(".pagedjs_page_content");
+	afterPageLayout(pageElement, page, breakToken, chunker) {
 		let pageArea = pageElement.querySelector(".pagedjs_area");
-		let noteArea = pageElement.querySelector(".pagedjs_footnote_area");
+		let noteArea = page.footnotesArea;
 		let noteContent = noteArea.querySelector(".pagedjs_footnote_content");
 		let noteInnerContent = noteArea.querySelector(".pagedjs_footnote_inner_content");
 
-		let noteContentMargins = this.marginsHeight(noteContent);
-		let noteContentPadding = this.paddingHeight(noteContent);
-		let noteContentBorders = this.borderHeight(noteContent);
+		let noteContentBounds = noteContent.getBoundingClientRect();
+		let { width } = noteContentBounds;
 
-		// I know we're going to need to handle footnotes from a previous page.
-		let origFootnotesOnPage;
+		noteInnerContent.style.columnWidth = Math.round(width) + "px";
+		noteInnerContent.style.columnGap = "calc(var(--pagedjs-margin-right) + var(--pagedjs-margin-left))";
 
-		// Gather footnotes to potentially include on this page.
-		// this.processFootnotes(rendered, this.footnotes, pageArea);
-		let footnoteCalls = pageArea.children[0].querySelectorAll(`[data-footnote-call]`);
+		// Get overflow
+		let layout = new Layout(noteArea, undefined, chunker.settings);
+		let overflow = layout.findOverflow(noteInnerContent, noteContentBounds);
 
-		let callsInPage = 0, footnotesOnPage = 0;
-	  let currentPage = pageElement.id.substring(5);
-		if (!this.lastPage || currentPage !== this.lastPage) {
-			this.prevNumDeferredFootnotes = this.numDeferredFootnotes;
-			this.lastPage = currentPage;
-			this.needsLayout = [];
-		}
-
-		if (noteInnerContent.children.length) {
-			this.mightLog(`=== Start of getOverflow for page ${pageElement.id.substring(5)} ===`);
-			this.mightLog(`${footnoteCalls.length} calls on the page.`);
-			for (let numFootnotes=noteInnerContent.children.length; numFootnotes >= 0; numFootnotes--) {
-				this.mightLog(`Number of footnotes: ${numFootnotes}`);
-				if (numFootnotes < noteInnerContent.children.length) {
-					noteInnerContent.children[numFootnotes].style.display = 'none';
-				}
-
-				this.moveFootnotesToPage(footnoteCalls, noteInnerContent.children, pageArea);
-
-				this.mightLog(`>> ${numFootnotes} footnotes visible.`);
-
-				noteContent.style.removeProperty("height");
-				noteInnerContent.style.removeProperty("height");
-				pageContent.style.removeProperty("height");
-
-				let noteInnerContentBounds = noteInnerContent.getBoundingClientRect();
-				let { height } = noteInnerContentBounds;
-
-				let areaHeight = height + noteContentMargins + noteContentBorders + noteContentPadding;
-				// Get the @footnote margins
-				pageArea.style.setProperty("--pagedjs-footnotes-height", `${areaHeight}px`);
-
-				let pageAreaHeight = pageArea.getBoundingClientRect().height;
-				bounds.height = pageAreaHeight - areaHeight;
-				pageContent.style.height = bounds.height + 'px';
-
-				this.mightLog(`Page content height is page element height (${pageAreaHeight}) - footnote height (${areaHeight}) = ${pageAreaHeight - areaHeight}`);
-
-				// Hide footnote content if empty
-				if (noteInnerContent.childNodes.length === 0) {
-					noteContent.classList.add("pagedjs_footnote_empty");
-				}
-
-				let noteContentBounds = noteContent.getBoundingClientRect();
-				let { width } = noteContentBounds;
-
-				noteInnerContent.style.columnWidth = Math.round(width) + "px";
-				noteInnerContent.style.columnGap = "calc(var(--pagedjs-margin-right) + var(--pagedjs-margin-left))";
-
-				this.mightLog(`Trying to display ${numFootnotes} footnotes.`);
-				this.mightLog(this.outputBoundsOf(pageArea, `Bounding rectangle for page content:`));
-
-				let contentArea = pageArea.children[0];
-				this.mightLog(this.outputBoundsOf(contentArea, `Bounding rectangle for rendered content:`));
-
-				let noteArea = pageArea.children[1];
-				this.mightLog(this.outputBoundsOf(noteArea, `Bounding rectangle for footnote content:`));
-
-				this.mightLog(this.overlapDescription(pageArea, contentArea, "Page area", "the main content"));
-				this.mightLog(this.overlapDescription(contentArea, noteArea, "Main content", "the footnote area"));
-
-				this.mightLog(`${footnoteCalls.length} footnote calls.`);
-
-				callsInPage = this.callsInPage(footnoteCalls, contentArea);
-
-				this.mightLog(`Content area contains ${callsInPage} footnote calls.`);
-
-				footnotesOnPage = this.footnotesOnPage(noteInnerContent.childNodes, rendered, pageArea);
-
-				this.mightLog(`Page contains ${footnotesOnPage} footnotes.`);
-
-				if (origFootnotesOnPage == undefined) {
-					origFootnotesOnPage = footnotesOnPage;
-				}
-
-				// Get overflow.
-				// let layout = new Layout(noteArea, undefined, chunker.settings);
-				// let overflowRanges = layout.findOverflow(noteInnerContent, noteContentBounds);
-				this.mightLog(this.outputBounds(bounds, `Invoking layout.findOverflow for page with bounds`));
-				let overflowRanges = layout.findOverflow(rendered, bounds, source, layout);
-
-				// Don't display footnotes for which the reference hasn't yet been seen.
-				if ((this.prevNumDeferredFootnotes + callsInPage) < footnotesOnPage || !footnotesOnPage) {
-					this.mightLog(`(${this.prevNumDeferredFootnotes} deferred notes + ${callsInPage} calls on the page) < ${footnotesOnPage} footnotes on the page.`);
-					continue;
-				}
-
-				// Fit as many deferred footnotes as possible, allowing main content to shrink to zero.
-
-				break;
+		if (overflow) {
+			let { startContainer, startOffset } = overflow;
+			let startIsNode;
+			if (isElement(startContainer)) {
+				let start = startContainer.childNodes[startOffset];
+				startIsNode = isElement(start) && start.hasAttribute("data-footnote-marker");
 			}
 
-			this.callsDone += (footnotesOnPage - this.prevNumDeferredFootnotes);
-			this.numDeferredFootnotes = callsInPage - (footnotesOnPage - this.prevNumDeferredFootnotes);
-			this.mightLog(`*** New num deferred footnotes is ${callsInPage} - (${footnotesOnPage} - ${this.prevNumDeferredFootnotes}) = ${this.numDeferredFootnotes}`);
+			// Assuming overflow is not multipart.
+			let extracted = overflow[0].extractContents();
 
-			Array.from(noteInnerContent.childNodes).forEach((note, i) => {
-				if (i < footnotesOnPage) {
-					return;
-				}
+			if (!startIsNode) {
+				let splitChild = extracted.firstElementChild;
+				splitChild.dataset.splitFrom = splitChild.dataset.ref;
 
-				let wrapperDiv = document.createElement("div");
-				wrapperDiv.appendChild(note);
-				this.needsLayout.push(wrapperDiv);
-			});
+				this.handleAlignment(noteInnerContent.lastElementChild);
+			}
 
-			noteInnerContent.style.height = "auto";
+			this.needsLayout.push(extracted);
+
 			noteContent.style.removeProperty("height");
 			noteInnerContent.style.removeProperty("height");
-			pageContent.style.removeProperty("height");
+
+			let noteInnerContentBounds = noteInnerContent.getBoundingClientRect();
+			let { height } = noteInnerContentBounds;
+
+			// Get the @footnote margins
+			let noteContentMargins = this.marginsHeight(noteContent);
+			let noteContentPadding = this.paddingHeight(noteContent);
+			let noteContentBorders = this.borderHeight(noteContent);
+			pageArea.style.setProperty(
+				"--pagedjs-footnotes-height",
+				`${height + noteContentMargins + noteContentBorders + noteContentPadding}px`
+			);
+
+			// Hide footnote content if empty
+			if (noteInnerContent.childNodes.length === 0) {
+				noteContent.classList.add("pagedjs_footnote_empty");
+			}
+
+			if (!breakToken) {
+				chunker.clonePage(page);
+			} else {
+				let breakBefore, previousBreakAfter;
+				if (
+					breakToken.node &&
+					typeof breakToken.node.dataset !== "undefined" &&
+					typeof breakToken.node.dataset.previousBreakAfter !== "undefined"
+				) {
+					previousBreakAfter = breakToken.node.dataset.previousBreakAfter;
+				}
+
+				if (
+					breakToken.node &&
+					typeof breakToken.node.dataset !== "undefined" &&
+					typeof breakToken.node.dataset.breakBefore !== "undefined"
+				) {
+					breakBefore = breakToken.node.dataset.breakBefore;
+				}
+
+				if (breakBefore || previousBreakAfter) {
+					chunker.clonePage(page);
+				}
+			}
 		}
+		noteInnerContent.style.height = "auto";
 	}
 
 	handleAlignment(node) {
@@ -637,30 +469,38 @@ class Footnotes extends Handler {
 		}
 	}
 
-	moveDelayedFootnotesToPage(pageArea) {
+	beforePageLayout(page) {
 		while (this.needsLayout.length) {
 			let fragment = this.needsLayout.shift();
 
 			Array.from(fragment.childNodes).forEach((node) => {
-				node.style.removeProperty("display");
 				this.moveFootnote(
 					node,
-					false,
-					pageArea
+					page.element.querySelector(".pagedjs_area"),
+					false
 				);
 			});
 		}
 	}
 
-	moveFootnotesToPage(calls, footnotes, pageArea) {
-		let callsByRef = [];
-		calls.forEach(call => {
-			callsByRef[call.dataset.ref] = call;
-		});
-		Array.from(footnotes).forEach((node) => {
-			// We need the call if it is on this page.
-			this.adjustPosition(node, callsByRef[node.dataset.ref], !!callsByRef[node.dataset.ref]);
-		});
+	afterOverflowRemoved(removed, rendered) {
+		// Find the page area
+		let area = rendered.closest(".pagedjs_area");
+		// Get any rendered footnotes
+		let notes = area.querySelectorAll(".pagedjs_footnote_area [data-note='footnote']");
+		for (let n = 0; n < notes.length; n++) {
+			const note = notes[n];
+			// Check if the call for that footnote has been removed with the overflow
+			let call = removed.querySelector(`[data-footnote-call="${note.dataset.ref}"]`);
+			if (call) {
+				note.remove();
+			}
+		}
+		// Hide footnote content if empty
+		let noteInnerContent = area.querySelector(".pagedjs_footnote_inner_content");
+		if (noteInnerContent && noteInnerContent.childNodes.length === 0) {
+			noteInnerContent.parentElement.classList.add("pagedjs_footnote_empty");
+		}
 	}
 
 	marginsHeight(element, total=true) {

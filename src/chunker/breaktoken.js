@@ -8,6 +8,7 @@ class BreakToken {
 		this.node = node;
 		this.overflow = overflowArray || [];
 		this.finished = false;
+		this.breakNeededAt = undefined;
 	}
 
 	equals(otherBreakToken) {
@@ -33,6 +34,14 @@ class BreakToken {
 
 	isFinished() {
 		return this.finished;
+	}
+
+	setNeedsBreak(needsBreak) {
+		this.breakNeededAt = needsBreak;
+	}
+
+	needsBreak() {
+		return this.breakNeededAt;
 	}
 
 }

@@ -336,8 +336,15 @@ class Chunker {
 
 		while (breakToken !== undefined && (MAX_PAGES ? this.total < MAX_PAGES : true)) {
 
-			if (breakToken && breakToken.node) {
-				await this.handleBreaks(breakToken.node);
+			if (breakToken) {
+				if (breakToken.overflow.length && breakToken.overflow[0].node) {
+					// Overflow.
+					await this.handleBreaks(breakToken.overflow[0].node);
+				}
+				else {
+					// Forced break.
+					await this.handleBreaks(breakToken.node);
+				}
 			} else {
 				await this.handleBreaks(content.firstChild);
 			}
@@ -351,7 +358,7 @@ class Chunker {
 					page.area.firstChild.getBoundingClientRect().height
 				)
 			) {
-				let page = this.addPage();
+				page = this.addPage();
 
 				await this.hooks.beforePageLayout.trigger(page, content, breakToken, this);
 				this.emit("page", page);
@@ -372,8 +379,6 @@ class Chunker {
 				this.recoredCharLength(page.wrapper.textContent.length);
 
 				yield breakToken;
-
-				// Stop if we get undefined, showing we have reached the end of the content
 			}
 		}
 

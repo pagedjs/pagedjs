@@ -87,16 +87,13 @@ class Layout {
 		let next;
 		let needsBreak;
 
-		let hasRenderedContent = false;
-		let newBreakToken;
-
 		let prevBreakToken = breakToken || new BreakToken(start);
 
 		this.hooks && this.hooks.onPageLayout.trigger(wrapper, prevBreakToken, this);
 
 		// Add overflow, and check that it doesn't have overflow itself.
 		this.addOverflowToPage(wrapper, breakToken, prevPage);
-		newBreakToken = this.findBreakToken(wrapper, source, bounds, prevBreakToken, start);
+		let newBreakToken = this.findBreakToken(wrapper, source, bounds, prevBreakToken, start);
 
 		if (prevBreakToken.isFinished()) {
 			if (newBreakToken) {
@@ -104,6 +101,10 @@ class Layout {
 			}
 			return new RenderResult(newBreakToken);
 		}
+
+		let hasRenderedContent = !!wrapper.childNodes.length;
+
+		needsBreak = prevBreakToken ? prevBreakToken.needsBreak() : undefined;
 
 		while (!done && !newBreakToken) {
 			next = walker.next();
@@ -151,8 +152,13 @@ class Layout {
 					newBreakToken.setFinished();
 				}
 
-				if (needsBreak && !newBreakToken) {
-					newBreakToken = this.breakAt(needsBreak);
+				if (needsBreak) {
+					if (newBreakToken) {
+						newBreakToken.setNeedsBreak(needsBreak);
+					}
+					else {
+						newBreakToken = this.breakAt(needsBreak);
+					}
 				}
 
 				if (newBreakToken && newBreakToken.equals(prevBreakToken)) {

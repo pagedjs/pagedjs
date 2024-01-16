@@ -434,20 +434,21 @@ class Footnotes extends Handler {
 				chunker.clonePage(page);
 			} else {
 				let breakBefore, previousBreakAfter;
+				let firstOverflowNode = breakToken.overflow[0].node;
 				if (
-					breakToken.node &&
-					typeof breakToken.node.dataset !== "undefined" &&
-					typeof breakToken.node.dataset.previousBreakAfter !== "undefined"
+					firstOverflowNode &&
+					typeof firstOverflowNode.dataset !== "undefined" &&
+					typeof firstOverflowNode.dataset.previousBreakAfter !== "undefined"
 				) {
-					previousBreakAfter = breakToken.node.dataset.previousBreakAfter;
+					previousBreakAfter = firstOverflowNode.dataset.previousBreakAfter;
 				}
 
 				if (
-					breakToken.node &&
-					typeof breakToken.node.dataset !== "undefined" &&
-					typeof breakToken.node.dataset.breakBefore !== "undefined"
+					firstOverflowNode &&
+					typeof firstOverflowNode.dataset !== "undefined" &&
+					typeof firstOverflowNode.dataset.breakBefore !== "undefined"
 				) {
-					breakBefore = breakToken.node.dataset.breakBefore;
+					breakBefore = firstOverflowNode.dataset.breakBefore;
 				}
 
 				if (breakBefore || previousBreakAfter) {

@@ -353,37 +353,37 @@ class Chunker {
 			// Don't add a page if we have a forced break now and we just
 			// did a break due to overflow but have nothing displayed on
 			// the current page, unless there's overflow and we're finished.
-			if (!page || !breakToken.overflow.length ||
+			if (!page ||
 				(
-					page.area.childElementCount &&
-					page.area.firstChild.getBoundingClientRect().height
+					page.area.firstChild.childElementCount &&
+					page.area.firstChild.firstChild.getBoundingClientRect().height
 				) ||
 				(
 					breakToken.overflow.length && breakToken.finished
 				)
 			) {
 				page = this.addPage();
-
-				await this.hooks.beforePageLayout.trigger(page, content, breakToken, this);
-				this.emit("page", page);
-
-				// Layout content in the page, starting from the breakToken
-				if (breakToken) {
-					// Debugging tool - ensures previously rendered content is visible.
-					// window.scrollTo(0, document.body.scrollHeight);
-				}
-				breakToken = await page.layout(content, breakToken, prevPage);
-
-				await this.hooks.afterPageLayout.trigger(page.element, page, breakToken, this);
-				await this.hooks.finalizePage.trigger(page.element, page, undefined, this);
-				this.emit("renderedPage", page);
-
-				prevPage = page.wrapper;
-
-				this.recoredCharLength(page.wrapper.textContent.length);
-
-				yield breakToken;
 			}
+
+			await this.hooks.beforePageLayout.trigger(page, content, breakToken, this);
+			this.emit("page", page);
+
+			// Layout content in the page, starting from the breakToken
+			if (breakToken) {
+				// Debugging tool - ensures previously rendered content is visible.
+				window.scrollTo(0, document.body.scrollHeight);
+			}
+			breakToken = await page.layout(content, breakToken, prevPage);
+
+			await this.hooks.afterPageLayout.trigger(page.element, page, breakToken, this);
+			await this.hooks.finalizePage.trigger(page.element, page, undefined, this);
+			this.emit("renderedPage", page);
+
+			prevPage = page.wrapper;
+
+			this.recoredCharLength(page.wrapper.textContent.length);
+
+			yield breakToken;
 		}
 
 	}

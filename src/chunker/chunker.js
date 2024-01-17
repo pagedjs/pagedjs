@@ -352,11 +352,14 @@ class Chunker {
 
 			// Don't add a page if we have a forced break now and we just
 			// did a break due to overflow but have nothing displayed on
-			// the current page.
+			// the current page, unless there's overflow and we're finished.
 			if (!page || !breakToken.overflow.length ||
 				(
 					page.area.childElementCount &&
 					page.area.firstChild.getBoundingClientRect().height
+				) ||
+				(
+					breakToken.overflow.length && breakToken.finished
 				)
 			) {
 				page = this.addPage();

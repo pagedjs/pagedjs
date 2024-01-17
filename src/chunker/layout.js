@@ -186,6 +186,7 @@ class Layout {
 			let shallow = isContainer(node);
 
 			this.append(node, wrapper, breakToken, shallow);
+			bounds = this.element.getBoundingClientRect();
 
 			// Check if layout has content yet.
 			if (!hasRenderedContent) {

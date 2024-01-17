@@ -9,6 +9,7 @@ class Footnotes extends Handler {
 
 		this.footnotes = {};
 		this.needsLayout = [];
+		this.overflow = [];
 	}
 
 	onDeclaration(declaration, dItem, dList, rule) {
@@ -495,12 +496,24 @@ class Footnotes extends Handler {
 			let call = removed.querySelector(`[data-footnote-call="${note.dataset.ref}"]`);
 			if (call) {
 				note.remove();
+				this.overflow.push(note);
 			}
 		}
 		// Hide footnote content if empty
 		let noteInnerContent = area.querySelector(".pagedjs_footnote_inner_content");
 		if (noteInnerContent && noteInnerContent.childNodes.length === 0) {
 			noteInnerContent.parentElement.classList.add("pagedjs_footnote_empty");
+		}
+	}
+
+	afterOverflowAdded(rendered) {
+		let area = rendered.closest(".pagedjs_area");
+
+		if (this.overflow.length) {
+			for (let i = 0; i < this.overflow.length; ++i) {
+				this.moveFootnote(this.overflow[i], area, false);
+			}
+			this.overflow = [];
 		}
 	}
 

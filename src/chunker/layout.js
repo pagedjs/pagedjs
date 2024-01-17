@@ -62,6 +62,7 @@ class Layout {
 			this.hooks.beforeOverflow = new Hook();
 			this.hooks.onOverflow = new Hook();
 			this.hooks.afterOverflowRemoved = new Hook();
+			this.hooks.afterOverflowAdded = new Hook();
 			this.hooks.onBreakToken = new Hook();
 			this.hooks.beforeRenderResult = new Hook();
 		}
@@ -310,6 +311,8 @@ class Layout {
 			this.addOverflowNodes(addTo, overflow.content);
 		});
 		dest.appendChild(fragment);
+
+		this.hooks && this.hooks.afterOverflowAdded.trigger(dest);
 	}
 
 	/**

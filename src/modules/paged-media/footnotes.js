@@ -392,7 +392,7 @@ class Footnotes extends Handler {
 		let overflow = layout.findOverflow(noteInnerContent, noteContentBounds);
 
 		if (overflow) {
-			let { startContainer, startOffset } = overflow;
+			let { startContainer, startOffset } = overflow[0];
 			let startIsNode;
 			if (isElement(startContainer)) {
 				let start = startContainer.childNodes[startOffset];

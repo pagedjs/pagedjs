@@ -356,7 +356,7 @@ class Chunker {
 			if (!page ||
 				(
 					page.area.firstChild.childElementCount &&
-					page.area.firstChild.firstChild.getBoundingClientRect().height
+					page.area.firstElementChild.firstElementChild.getBoundingClientRect().height
 				) ||
 				(
 					breakToken.overflow.length && breakToken.finished

@@ -815,9 +815,16 @@ class Layout {
 				}
 
 				if (check.nextElementSibling) {
+					// This is messy. Two siblings might be side by side for a number of reasons:
+					// - TD in a TR (what we're seeking to detect so we get the overflow from other TDs too)
+					// - Divs side by side in a grid (we'd also like to capture overflow here but reflow might be
+					//   complicated ala the next case.
+					// - Footnotes or other content with a fixed height parent making overflow push out to the side
+					//   (best to treat all overflow as one).
 					let siblingBounds = getBoundingClientRect(check.nextElementSibling);
+					let parentHeight = check.parentElement.style.height;
 					let cStyle = check.currentStyle || getComputedStyle(check, "");
-					if (siblingBounds.top == checkBounds.top && siblingBounds.left != checkBounds.left && cStyle.display !== "inline") {
+					if (!parentHeight && siblingBounds.top == checkBounds.top && siblingBounds.left != checkBounds.left && cStyle.display !== "inline") {
 						siblingRangeStart = prev;
 						siblingRangeEnd = check.lastChild;
 						container = check;
@@ -919,6 +926,7 @@ class Layout {
 				} else if (check.nextElementSibling) {
 					let checkBounds = getBoundingClientRect(check);
 					let siblingBounds = getBoundingClientRect(check.nextElementSibling);
+					let parentHeight = check.parentElement.style.height;
 					let cStyle = check.currentStyle || getComputedStyle(check, "");
 					// Possibilities here:
 					// - Two table TD elements: We want the content in the table data
@@ -929,7 +937,7 @@ class Layout {
 					//   This time we want all subsequent children of the parent (the
 					//   portion of the node and its siblings).
 					// We are assuming here that sibling content is level.
-					if (siblingBounds.top == checkBounds.top && siblingBounds.left != checkBounds.left && cStyle.display !== "inline") {
+					if (!parentHeight && siblingBounds.top == checkBounds.top && siblingBounds.left != checkBounds.left && cStyle.display !== "inline") {
 
 						// I didn't want to use the node name to distinguish the above
 						// cases but haven't found a better way.

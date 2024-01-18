@@ -343,7 +343,7 @@ class Footnotes extends Handler {
 				"--pagedjs-footnotes-height",
 				`${height + noteContentMargins + noteContentBorders}px`
 			);
-		} else {
+		} else if (notePolicyDelta > 0) {
 			// set height to just before note call
 			pageArea.style.setProperty(
 				"--pagedjs-footnotes-height",

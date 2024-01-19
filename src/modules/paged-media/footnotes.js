@@ -399,14 +399,26 @@ class Footnotes extends Handler {
 				startIsNode = isElement(start) && start.hasAttribute("data-footnote-marker");
 			}
 
-			// Assuming overflow is not multipart.
-			let extracted = overflow[0].extractContents();
+			let extracted;
+			if (!startIsNode && !startOffset) {
+				// Adjust the range to take the entire footnote.
+				// let newRange = document.createRange();
+				// range.selectNode(startContainer);
+				// range.setEnd(overflow[0].endContainer)
+				// extracted = range.extractContents();
+				overflow[0].selectNode(startContainer);
+				extracted = overflow[0].extractContents();
+			}
+			else {
+				// Assuming overflow is not multipart.
+				extracted = overflow[0].extractContents();
 
-			if (!startIsNode) {
-				let splitChild = extracted.firstElementChild;
-				splitChild.dataset.splitFrom = splitChild.dataset.ref;
+				if (!startIsNode) {
+					let splitChild = extracted.firstElementChild;
+					splitChild.dataset.splitFrom = splitChild.dataset.ref;
 
-				this.handleAlignment(noteInnerContent.lastElementChild);
+					this.handleAlignment(noteInnerContent.lastElementChild);
+				}
 			}
 
 			this.needsLayout.push(extracted);

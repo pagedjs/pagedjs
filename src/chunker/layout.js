@@ -239,6 +239,7 @@ class Layout {
 	getStart(source, breakToken) {
 		let start;
 		let node = breakToken && breakToken.node;
+		let finished = breakToken && breakToken.finished;
 
 		if (node) {
 			start = node;
@@ -246,7 +247,7 @@ class Layout {
 			start = source.firstChild;
 		}
 
-		return start;
+		return finished ? undefined : start;
 	}
 
 	/**

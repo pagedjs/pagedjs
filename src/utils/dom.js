@@ -137,10 +137,8 @@ export function stackChildren(currentNode, stacked) {
 
 export function rebuildTableRow(node, alreadyRendered) {
 	let currentCol = 0, maxCols = 0, nextInitialColumn = 0;
+	let rebuilt = node.cloneNode(false);
 	const initialColumns = Array.from(node.children);
-	while (node.firstChild) {
-		node.firstChild.remove();
-	}
 
 	// Find the max number of columns.
 	let earlierRow = node.parentElement.children[0];
@@ -190,7 +188,7 @@ export function rebuildTableRow(node, alreadyRendered) {
 		  destColumn.rowSpan = !column.rowSpan ? 0 : rowspan;
 		} else {
 			// Fill the gap with the initial columns (if exists).
-			destColumn = column = initialColumns[nextInitialColumn++]?.cloneNode(true);
+			destColumn = column = initialColumns[nextInitialColumn++]?.cloneNode(false);
 			// The initial column can be undefined if the newly created table has less columns than the original table.
 			destColumn?.removeAttribute("rowspan");
 		}
@@ -206,11 +204,12 @@ export function rebuildTableRow(node, alreadyRendered) {
 				destColumn.setAttribute("width", width + "px");
 			}
 			if (destColumn) {
-				node.appendChild(destColumn);
+				rebuilt.appendChild(destColumn);
 			}
 		}
 		currentCol++;
 	}
+	return rebuilt;
 }
 
 export function rebuildTree (node, fragment, alreadyRendered) {
@@ -253,8 +252,8 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 		}
 
 		if (ancestor.nodeName == "TR") {
-			rebuildTableRow(ancestor, alreadyRendered);
-			container.appendChild(cloneNode(ancestor, true));
+			ancestor = rebuildTableRow(ancestor, alreadyRendered);
+			container.appendChild(ancestor);
 		}
 		else if (dupSiblings) {
 			let sibling = ancestor.parentElement ? ancestor.parentElement.children[0] : ancestor;

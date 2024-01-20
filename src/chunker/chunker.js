@@ -333,9 +333,13 @@ class Chunker {
 
 	async *layout(content, startAt) {
 		let breakToken = startAt || false;
-		let page, prevPage;
+		let page, prevPage, prevNumPages;
 
 		while (breakToken !== undefined && (MAX_PAGES ? this.total < MAX_PAGES : true)) {
+
+			let addedExtra = false;
+
+			prevNumPages = this.total;
 
 			if (breakToken) {
 				if (breakToken.overflow.length && breakToken.overflow[0].node) {
@@ -343,27 +347,30 @@ class Chunker {
 					await this.handleBreaks(breakToken.overflow[0].node);
 				}
 				else {
-					// Forced break.
 					await this.handleBreaks(breakToken.node);
 				}
 			} else {
 				await this.handleBreaks(content.firstChild);
 			}
 
+			addedExtra = this.total != prevNumPages;
+
 			// Don't add a page if we have a forced break now and we just
 			// did a break due to overflow but have nothing displayed on
 			// the current page, unless there's overflow and we're finished.
-			if (!page ||
+			if (!page || addedExtra ||
 				(
-					page.area.firstChild.childElementCount &&
+					page.area.firstElementChild.childElementCount &&
 					page.area.firstElementChild.firstElementChild.getBoundingClientRect().height
 				) ||
 				(
 					breakToken.overflow.length && breakToken.finished
 				)
 			) {
-				page = this.addPage();
+				this.addPage();
 			}
+
+			page = this.pages[this.total - 1];
 
 			await this.hooks.beforePageLayout.trigger(page, content, breakToken, this);
 			this.emit("page", page);

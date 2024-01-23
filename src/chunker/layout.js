@@ -188,7 +188,7 @@ class Layout {
 			this.append(node, wrapper, breakToken, shallow);
 			bounds = this.element.getBoundingClientRect();
 
-			// Check if layout has content yet.
+			// Check whether layout has content yet.
 			if (!hasRenderedContent) {
 				hasRenderedContent = hasContent(node);
 			}

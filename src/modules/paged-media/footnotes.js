@@ -222,10 +222,17 @@ class Footnotes extends Handler {
 			return;
 		}
 
-		// Add call for the note
+		// Add call for the note but only if it's not overflow.
+		// If it is overflow, the parentElement will be null.
 		let noteCall;
 		if (needsNoteCall) {
-			noteCall = this.createFootnoteCall(node);
+			if (node.parentElement) {
+				noteCall = this.createFootnoteCall(node);
+			}
+			else {
+				let ref = node.dataset['ref'];
+				noteCall = pageArea.querySelector(`[data-ref="${ref}"]`);
+			}
 		}
 
 		// Remove the break before attribute for future layout
@@ -447,7 +454,7 @@ class Footnotes extends Handler {
 				chunker.clonePage(page);
 			} else {
 				let breakBefore, previousBreakAfter;
-				let firstOverflowNode = breakToken.overflow[0].node;
+				let firstOverflowNode = breakToken.overflow[0]?.node;
 				if (
 					firstOverflowNode &&
 					typeof firstOverflowNode.dataset !== "undefined" &&
@@ -523,7 +530,7 @@ class Footnotes extends Handler {
 
 		if (this.overflow.length) {
 			for (let i = 0; i < this.overflow.length; ++i) {
-				this.moveFootnote(this.overflow[i], area, false);
+				this.moveFootnote(this.overflow[i], area, true);
 			}
 			this.overflow = [];
 		}

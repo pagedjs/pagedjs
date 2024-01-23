@@ -341,16 +341,23 @@ class Chunker {
 
 			prevNumPages = this.total;
 
-			if (breakToken) {
-				if (breakToken.overflow.length && breakToken.overflow[0].node) {
-					// Overflow.
-					await this.handleBreaks(breakToken.overflow[0].node);
+			if (!page ||
+				(
+					page.area.firstElementChild.childElementCount &&
+					page.area.firstElementChild.firstElementChild.getBoundingClientRect().height
+				)
+			) {
+				if (breakToken) {
+					if (breakToken.overflow.length && breakToken.overflow[0].node) {
+						// Overflow.
+						await this.handleBreaks(breakToken.overflow[0].node);
+					}
+					else {
+						await this.handleBreaks(breakToken.node);
+					}
+				} else {
+					await this.handleBreaks(content.firstChild);
 				}
-				else {
-					await this.handleBreaks(breakToken.node);
-				}
-			} else {
-				await this.handleBreaks(content.firstChild);
 			}
 
 			addedExtra = this.total != prevNumPages;

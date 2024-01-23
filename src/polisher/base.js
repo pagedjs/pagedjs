@@ -595,6 +595,8 @@ export default `
 
 .pagedjs_pages > .pagedjs_page > .pagedjs_sheet > .pagedjs_pagebox > .pagedjs_area > div [data-split-from] {
 	text-indent: unset;
+	margin-top: unset;
+	padding-top: unset;
 	initial-letter: unset;
 }
 

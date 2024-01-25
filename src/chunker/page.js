@@ -42,7 +42,7 @@ class Page {
 
 		let size = area.getBoundingClientRect();
 
-
+		area.style.columnWidth = Math.round(size.width) + "px";
 		area.style.columnGap = "calc(var(--pagedjs-margin-right) + var(--pagedjs-margin-left) + var(--pagedjs-bleed-right) + var(--pagedjs-bleed-left) + var(--pagedjs-column-gap-offset))";
 		// area.style.overflow = "scroll";
 

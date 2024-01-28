@@ -15,6 +15,7 @@ import {
 	needsPreviousBreakAfter,
 	nodeAfter,
 	nodeBefore,
+	parentOf,
 	prevValidNode,
 	rebuildTree,
 	validNode,
@@ -724,6 +725,44 @@ class Layout {
 		return [prev, anyOverflowFound];
 	}
 
+	rowspanNeedsBreakAt(tableRow, rendered) {
+		if (tableRow.nodeName !== 'TR') {
+			return;
+		}
+
+		const table = parentOf(tableRow, "TABLE", rendered);
+		if (!table) {
+			return;
+		}
+
+		const rowspan = table.querySelector("[colspan]");
+		if (!rowspan) {
+			return;
+		}
+
+		let columnCount = 0;
+		for (const cell of Array.from(table.rows[0].cells)) {
+			columnCount += parseInt(cell.getAttribute("colspan") || "1");
+		}
+		if (tableRow.cells.length !== columnCount) {
+			let previousRow = tableRow.previousElementSibling;
+			let previousRowColumnCount;
+			while (previousRow !== null) {
+				previousRowColumnCount = 0;
+				for (const cell of Array.from(previousRow.cells)) {
+					previousRowColumnCount += parseInt(cell.getAttribute("colspan") || "1");
+				}
+				if (previousRowColumnCount === columnCount) {
+					break;
+				}
+				previousRow = previousRow.previousElementSibling;
+			}
+			if (previousRowColumnCount === columnCount) {
+				return previousRow;
+			}
+		}
+	}
+
 	getOverflow(rendered, bounds, source) {
 		this.hooks && this.hooks.getOverflow.trigger(rendered, bounds, source, this);
 		return this.findOverflow(rendered, bounds, source);
@@ -794,6 +833,13 @@ class Layout {
 		do {
 			if (isElement(check)) {
 				let checkBounds = getBoundingClientRect(check);
+				let rowspanNeedsBreakAt = this.rowspanNeedsBreakAt(check, rendered);
+				if (rowspanNeedsBreakAt) {
+					// No question - break earlier.
+					siblingRangeEnd = undefined;
+					prev = rowspanNeedsBreakAt;
+				}
+
 				// Width check is for possible Chromium bug.
 				if (checkBounds.height > bounds.height || checkBounds.width > bounds.width) {
 					mustSplit = true;

@@ -848,7 +848,7 @@ class Layout {
 			}
 			lastcheck = check;
 			check = check.parentElement;
-		} while (check);
+		} while (check && check !== rendered);
 
 		let offset;
 
@@ -956,7 +956,7 @@ class Layout {
 			}
 			lastcheck = check;
 			check = check.parentElement;
-		} while (check);
+		} while (check && check !== rendered);
 
 		// Set the start of the range. This will either be node itself or some
 		// text within it if node is a text node and some of its content doesn't

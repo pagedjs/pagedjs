@@ -238,7 +238,7 @@ class Layout {
 
 	getStart(source, breakToken) {
 		let start;
-		let node = breakToken && breakToken.overflow[0]?.node;
+		let node = breakToken && breakToken.node;
 		let finished = breakToken && breakToken.finished;
 
 		if (node) {

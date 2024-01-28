@@ -800,7 +800,7 @@ class Layout {
 				}
 
 				let styles = window.getComputedStyle(check);
-				if (styles.getPropertyValue("break-inside") === "avoid" && !mustSplit) {
+				if (this.avoidBreakInside(check, rendered)) {
 					// If there is a TD with overflow and it is within a break-inside:
 					// avoid, we take the whole container, provided that it will fit
 					// on a page by itself. The normal handling below will take care
@@ -922,7 +922,7 @@ class Layout {
 				// table, treat the table as having an implicit break-inside: avoid
 				// tag so avoid leaving the header all by itself.
 				let styles = window.getComputedStyle(check);
-				if (styles.getPropertyValue("break-inside") === "avoid" && !mustSplit) {
+				if (this.avoidBreakInside(check, rendered) && !mustSplit) {
 					node = check;
 				} else if (check.nextElementSibling) {
 					let checkBounds = getBoundingClientRect(check);

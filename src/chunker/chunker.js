@@ -344,7 +344,7 @@ class Chunker {
 
 			prevNumPages = this.total;
 
-			if (!page || emptyPage) {
+			if (!page || !emptyPage) {
 				if (breakToken) {
 					if (breakToken.overflow.length && breakToken.overflow[0].node) {
 						// Overflow.

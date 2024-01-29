@@ -578,6 +578,18 @@ class Layout {
 					this.hooks && this.hooks.afterOverflowRemoved.trigger(overflow.content, rendered, this);
 				}
 			});
+
+			// After the last overflow is removed, see if we have an empty td that can be removed.
+			let lastChild = rendered.lastElementChild;
+			if (lastChild) {
+				while (lastChild.childElementCount) {
+					lastChild = lastChild.lastElementChild;
+
+					if (lastChild.tagName == 'TR' && lastChild.textContent.trim() == '') {
+						lastChild.parentNode.removeChild(lastChild);
+					}
+				}
+			}
 		}
 		return breakToken;
 	}

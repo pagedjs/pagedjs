@@ -585,7 +585,7 @@ class Layout {
 				while (lastChild.childElementCount) {
 					lastChild = lastChild.lastElementChild;
 
-					if (lastChild.tagName == 'TR' && lastChild.textContent.trim() == '') {
+					if (['TR', 'math'].indexOf(lastChild.tagName) > -1 && lastChild.textContent.trim() == '') {
 						lastChild.parentNode.removeChild(lastChild);
 					}
 				}

@@ -828,12 +828,6 @@ class Layout {
 		do {
 			if (isElement(check)) {
 				let checkBounds = getBoundingClientRect(check);
-				let rowspanNeedsBreakAt = this.rowspanNeedsBreakAt(check, rendered);
-				if (rowspanNeedsBreakAt) {
-					// No question - break earlier.
-					siblingRangeEnd = undefined;
-					prev = rowspanNeedsBreakAt;
-				}
 
 				// Width check is for possible Chromium bug.
 				if (checkBounds.height > bounds.height || checkBounds.width > bounds.width) {
@@ -842,6 +836,14 @@ class Layout {
 
 				let styles = window.getComputedStyle(check);
 				if (this.avoidBreakInside(check, rendered)) {
+					let rowspanNeedsBreakAt = this.rowspanNeedsBreakAt(check, rendered);
+					if (rowspanNeedsBreakAt) {
+						// No question - break earlier.
+						siblingRangeEnd = undefined;
+						prev = rowspanNeedsBreakAt;
+						break;
+					}
+
 					// If there is a TD with overflow and it is within a break-inside:
 					// avoid, we take the whole container, provided that it will fit
 					// on a page by itself. The normal handling below will take care

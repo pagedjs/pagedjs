@@ -135,7 +135,7 @@ export function stackChildren(currentNode, stacked) {
 	return stack;
 }
 
-export function rebuildTableRow(node, alreadyRendered) {
+export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 	let currentCol = 0, maxCols = 0, nextInitialColumn = 0;
 	let rebuilt = node.cloneNode(false);
 	const initialColumns = Array.from(node.children);
@@ -165,7 +165,7 @@ export function rebuildTableRow(node, alreadyRendered) {
 			}
 			else {
 				column = earlierRow.children[currentCol - rowOffsets[nextInitialColumn]];
-				if (column && column.rowSpan !== undefined) {
+				if (column && column.rowSpan !== undefined && column.rowSpan > 1) {
 					rowspan = column.rowSpan;
 				}
 			}
@@ -186,14 +186,16 @@ export function rebuildTableRow(node, alreadyRendered) {
 
 		let destColumn;
 		if (rowspan !== undefined) {
-			destColumn = column.cloneNode(false);
-			// Adjust rowspan value.
-		  destColumn.rowSpan = !column.rowSpan ? 0 : rowspan;
+			if (!existingChildren) {
+				destColumn = column.cloneNode(false);
+				// Adjust rowspan value.
+				destColumn.rowSpan = !column.rowSpan ? 0 : rowspan;
+			}
 		} else {
 			// Fill the gap with the initial columns (if exists).
 			destColumn = column = initialColumns[nextInitialColumn++]?.cloneNode(false);
 		}
-		if (column) {
+		if (column && destColumn) {
 			if (alreadyRendered) {
 				let existing = findElement(column, alreadyRendered);
 				if (existing) {
@@ -253,8 +255,12 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 		}
 
 		if (ancestor.nodeName == "TR") {
-			ancestor = rebuildTableRow(ancestor, alreadyRendered);
-			container.appendChild(ancestor);
+			let use = findElement(ancestor, container);
+			if (!use) {
+				use = rebuildTableRow(ancestor, alreadyRendered, container.childElementCount);
+				container.appendChild(use);
+			}
+			ancestor = use;
 		}
 		else if (dupSiblings) {
 			let sibling = ancestor.parentElement ? ancestor.parentElement.children[0] : ancestor;

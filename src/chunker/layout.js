@@ -134,7 +134,7 @@ class Layout {
 					forcedBreakQueue.push(node);
 				}
 
-				if (node.dataset && node.dataset.page) {
+				if (!forcedBreakQueue.length && node.dataset && node.dataset.page) {
 					let named = node.dataset.page;
 					let page = this.element.closest(".pagedjs_page");
 					page.classList.add("pagejs_named_page");

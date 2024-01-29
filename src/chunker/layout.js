@@ -419,13 +419,7 @@ class Layout {
 	avoidBreakInside(node, limiter) {
 		let breakNode;
 
-		if (node === limiter) {
-			return;
-		}
-
 		while (node.parentNode) {
-			node = node.parentNode;
-
 			if (node === limiter) {
 				break;
 			}
@@ -435,6 +429,7 @@ class Layout {
 				break;
 			}
 
+			node = node.parentNode;
 		}
 		return breakNode;
 	}

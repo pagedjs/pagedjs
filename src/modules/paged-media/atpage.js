@@ -1694,7 +1694,8 @@ class AtPage extends Handler {
 	}
 
 	getStartElement(content, breakToken) {
-		let node = breakToken && breakToken.overflow[0]?.node;
+		// If we have a breaktoken, we want the first node that will be added next.
+		let node = breakToken && (breakToken.overflow[0]?.node || breakToken.node);
 
 		if (!content && !breakToken) {
 			return;

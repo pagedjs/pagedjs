@@ -7,7 +7,7 @@ import {
 	requestIdleCallback
 } from "../utils/utils.js";
 
-const MAX_PAGES = 20;
+const MAX_PAGES = null;
 const MAX_LAYOUTS = false;
 
 const TEMPLATE = `

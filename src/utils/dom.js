@@ -161,10 +161,10 @@ export function rebuildTableRow(node, alreadyRendered) {
 		// Find the nth column we'll duplicate (rowspan) or use.
 		while (earlierRow && earlierRow !== node) {
 			if (rowspan !== undefined) {
-				rowOffsets[earlierRowIndex]++;
+				rowOffsets[nextInitialColumn]++;
 			}
 			else {
-				column = earlierRow.children[currentCol - rowOffsets[earlierRowIndex]];
+				column = earlierRow.children[currentCol - rowOffsets[nextInitialColumn]];
 				if (column && column.rowSpan !== undefined) {
 					rowspan = column.rowSpan;
 				}
@@ -172,9 +172,12 @@ export function rebuildTableRow(node, alreadyRendered) {
 			// If rowspan === 0 the entire remainder of the table row is used.
 			if (rowspan) {
 				// Tracking how many rows in the overflow.
-				rowspan--;
 				if (rowspan < 2) {
 					rowspan = undefined;
+					rowOffsets[nextInitialColumn] = 0;
+				}
+				else {
+					rowspan--;
 				}
 			}
 			earlierRow = earlierRow.nextElementSibling;
@@ -189,8 +192,6 @@ export function rebuildTableRow(node, alreadyRendered) {
 		} else {
 			// Fill the gap with the initial columns (if exists).
 			destColumn = column = initialColumns[nextInitialColumn++]?.cloneNode(false);
-			// The initial column can be undefined if the newly created table has less columns than the original table.
-			destColumn?.removeAttribute("rowspan");
 		}
 		if (column) {
 			if (alreadyRendered) {

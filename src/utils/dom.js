@@ -154,16 +154,13 @@ export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 	let rowOffsets = Array(maxCols).fill(0);
 
 	// Duplicate rowspans and our initial columns.
-	while (nextInitialColumn < initialColumns.length || currentCol < maxCols) {
+	while (currentCol < maxCols) {
 		let earlierRow = node.parentElement.children[0];
 		let earlierRowIndex = 0;
 		let rowspan, column;
 		// Find the nth column we'll duplicate (rowspan) or use.
 		while (earlierRow && earlierRow !== node) {
-			if (rowspan !== undefined) {
-				rowOffsets[nextInitialColumn]++;
-			}
-			else {
+			if (rowspan == undefined) {
 				column = earlierRow.children[currentCol - rowOffsets[nextInitialColumn]];
 				if (column && column.rowSpan !== undefined && column.rowSpan > 1) {
 					rowspan = column.rowSpan;
@@ -174,7 +171,6 @@ export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 				// Tracking how many rows in the overflow.
 				if (rowspan < 2) {
 					rowspan = undefined;
-					rowOffsets[nextInitialColumn] = 0;
 				}
 				else {
 					rowspan--;
@@ -185,7 +181,7 @@ export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 		}
 
 		let destColumn;
-		if (rowspan !== undefined) {
+		if (rowspan) {
 			if (!existingChildren) {
 				destColumn = column.cloneNode(false);
 				// Adjust rowspan value.

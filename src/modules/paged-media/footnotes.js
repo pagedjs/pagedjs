@@ -526,13 +526,9 @@ class Footnotes extends Handler {
 	}
 
 	afterOverflowAdded(rendered) {
-		let area = rendered.closest(".pagedjs_area");
-
-		if (this.overflow.length) {
-			for (let i = 0; i < this.overflow.length; ++i) {
-				this.moveFootnote(this.overflow[i], area, true);
-			}
-			this.overflow = [];
+		let notes = rendered.querySelectorAll("[data-note='footnote']");
+		if (notes && notes.length) {
+			this.findVisibleFootnotes(notes, rendered);
 		}
 	}
 

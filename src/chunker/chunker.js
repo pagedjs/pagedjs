@@ -371,6 +371,8 @@ class Chunker {
 					page.area.firstElementChild.firstElementChild.getBoundingClientRect().height
 				) ||
 				(
+					page.area.firstElementChild.childElementCount &&
+					page.area.firstElementChild.firstElementChild.getBoundingClientRect().height &&
 					breakToken.overflow.length && breakToken.finished
 				)
 			) {

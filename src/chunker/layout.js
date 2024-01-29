@@ -532,63 +532,80 @@ class Layout {
 
 	}
 
-	findBreakToken(rendered, source, bounds = this.bounds, prevBreakToken, node = null, extract = true) {
+	processOverflowResult(ranges, rendered, source, bounds, prevBreakToken, node, extract) {
 		let breakToken, breakLetter;
 
-		let overflowResult = this.getOverflow(rendered, bounds, source);
-		if (overflowResult) {
-			overflowResult.forEach((overflowRange) => {
+		ranges.forEach((overflowRange) => {
 
-				let overflowHooks = this.hooks.onOverflow.triggerSync(overflowRange, rendered, bounds, this);
-				overflowHooks.forEach((newOverflow) => {
-					if (typeof newOverflow != "undefined") {
-						overflowRange = newOverflow;
-					}
-				});
-
-				let overflow = this.createOverflow(overflowRange, rendered, source);
-				if (!breakToken) {
-					breakToken = new BreakToken(node, [overflow]);
-				} else {
-					breakToken.overflow.push(overflow);
-				}
-
-				// breakToken is nullable
-				let breakHooks = this.hooks.onBreakToken.triggerSync(breakToken, overflowRange, rendered, this);
-				breakHooks.forEach((newToken) => {
-					if (typeof newToken != "undefined") {
-						breakToken = newToken;
-					}
-				});
-
-				// Stop removal if we are in a loop
-				if (breakToken.equals(prevBreakToken)) {
-					return;
-				}
-
-				if (overflow?.node && overflow?.offset && overflow?.node?.textContent) {
-					breakLetter = overflow.node.textContent.charAt(overflow.offset);
-				} else {
-					breakLetter = undefined;
-				}
-
-				if (overflow?.node && extract) {
-					overflow.ancestor = findElement(overflow.range.commonAncestorContainer, source);
-					overflow.content = this.removeOverflow(overflowRange, breakLetter);
-					this.hooks && this.hooks.afterOverflowRemoved.trigger(overflow.content, rendered, this);
+			let overflowHooks = this.hooks.onOverflow.triggerSync(overflowRange, rendered, bounds, this);
+			overflowHooks.forEach((newOverflow) => {
+				if (typeof newOverflow != "undefined") {
+					overflowRange = newOverflow;
 				}
 			});
 
-			// After the last overflow is removed, see if we have an empty td that can be removed.
-			let lastChild = rendered.lastElementChild;
-			if (lastChild) {
-				while (lastChild.childElementCount) {
-					lastChild = lastChild.lastElementChild;
+			let overflow = this.createOverflow(overflowRange, rendered, source);
+			if (!breakToken) {
+				breakToken = new BreakToken(node, [overflow]);
+			} else {
+				breakToken.overflow.push(overflow);
+			}
 
-					if (['TR', 'math'].indexOf(lastChild.tagName) > -1 && lastChild.textContent.trim() == '') {
-						lastChild.parentNode.removeChild(lastChild);
-					}
+			// breakToken is nullable
+			let breakHooks = this.hooks.onBreakToken.triggerSync(breakToken, overflowRange, rendered, this);
+			breakHooks.forEach((newToken) => {
+				if (typeof newToken != "undefined") {
+					breakToken = newToken;
 				}
+			});
+
+			// Stop removal if we are in a loop
+			if (breakToken.equals(prevBreakToken)) {
+				return;
+			}
+
+			if (overflow?.node && overflow?.offset && overflow?.node?.textContent) {
+				breakLetter = overflow.node.textContent.charAt(overflow.offset);
+			} else {
+				breakLetter = undefined;
+			}
+
+			if (overflow?.node && extract) {
+				overflow.ancestor = findElement(overflow.range.commonAncestorContainer, source);
+				overflow.content = this.removeOverflow(overflowRange, breakLetter);
+				this.hooks && this.hooks.afterOverflowRemoved.trigger(overflow.content, rendered, this);
+			}
+		});
+
+		// After the last overflow is removed, see if we have an empty td that can be removed.
+		let lastChild = rendered.lastElementChild;
+		if (lastChild) {
+			while (lastChild.childElementCount) {
+				lastChild = lastChild.lastElementChild;
+
+				if (['TR', 'math'].indexOf(lastChild.tagName) > -1 && lastChild.textContent.trim() == '') {
+					lastChild.parentNode.removeChild(lastChild);
+				}
+			}
+		}
+
+		return breakToken;
+	}
+
+	findBreakToken(rendered, source, bounds = this.bounds, prevBreakToken, node = null, extract = true) {
+		let breakToken;
+
+		let overflowResult = this.getOverflow(rendered, bounds, source);
+		if (overflowResult) {
+			breakToken = this.processOverflowResult(overflowResult, rendered, source, bounds, prevBreakToken, node, extract);
+
+			// Hooks (eg footnotes) might alter the flow in response to the above removal of overflow,
+			// potentially resulting in more reflow.
+			let secondOverflow = this.getOverflow(rendered, bounds, source);
+			if (secondOverflow && secondOverflow.length && extract) {
+				let secondToken = this.processOverflowResult(secondOverflow, rendered, source, bounds, prevBreakToken, node, extract);
+				// Prepend.
+				breakToken.overflow = secondToken.overflow.concat(breakToken.overflow);
 			}
 		}
 		return breakToken;

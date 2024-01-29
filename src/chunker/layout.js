@@ -1116,7 +1116,9 @@ class Layout {
 				break;
 			}
 
-			if (right > end || bottom > vEnd) {
+			// The bounds won't be exceeded so we need >= rather than >.
+			// Also below for the letters.
+			if (right >= end || bottom >= vEnd) {
 				let letterwalker = letters(word);
 				let letter, nextLetter, doneLetter;
 
@@ -1135,7 +1137,7 @@ class Layout {
 					right = pos.right;
 					bottom = pos.bottom;
 
-					if (right > end || bottom > vEnd) {
+					if (right >= end || bottom >= vEnd) {
 						offset = letter.startOffset;
 						done = true;
 

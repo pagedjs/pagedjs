@@ -338,15 +338,13 @@ class Chunker {
 		while (breakToken !== undefined && (MAX_PAGES ? this.total < MAX_PAGES : true)) {
 
 			let addedExtra = false;
+			let emptyBody = !page || !page.area.firstElementChild.childElementCount || !page.area.firstElementChild.firstElementChild.getBoundingClientRect().height;
+			let emptyFootnotes = !page || !page.footnotesArea.firstElementChild.childElementCount || !page.footnotesArea.firstElementChild.firstElementChild.getBoundingClientRect().height;
+			let emptyPage = (emptyBody && emptyFootnotes);
 
 			prevNumPages = this.total;
 
-			if (!page ||
-				(
-					page.area.firstElementChild.childElementCount &&
-					page.area.firstElementChild.firstElementChild.getBoundingClientRect().height
-				)
-			) {
+			if (!page || emptyPage) {
 				if (breakToken) {
 					if (breakToken.overflow.length && breakToken.overflow[0].node) {
 						// Overflow.
@@ -365,17 +363,7 @@ class Chunker {
 			// Don't add a page if we have a forced break now and we just
 			// did a break due to overflow but have nothing displayed on
 			// the current page, unless there's overflow and we're finished.
-			if (!page || addedExtra ||
-				(
-					page.area.firstElementChild.childElementCount &&
-					page.area.firstElementChild.firstElementChild.getBoundingClientRect().height
-				) ||
-				(
-					page.area.firstElementChild.childElementCount &&
-					page.area.firstElementChild.firstElementChild.getBoundingClientRect().height &&
-					breakToken.overflow.length && breakToken.finished
-				)
-			) {
+			if (!page || addedExtra || !emptyPage) {
 				this.addPage();
 			}
 

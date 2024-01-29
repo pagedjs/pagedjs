@@ -1735,6 +1735,22 @@ class AtPage extends Handler {
 		// page.element.querySelector('.paged_area').style.color = red;
 	}
 
+	afterPageLayout(page, contents, breakToken, chunker) {
+		let thisPage = chunker.pages[chunker.pages.length - 1];
+		// If only footnotes were added, attribs should be like the previous page.
+		let emptyBody = !thisPage.area.firstElementChild || !thisPage.area.firstElementChild.childElementCount || !thisPage.area.firstElementChild.firstElementChild.getBoundingClientRect().height;
+		let emptyFootnotes = !thisPage.footnotesArea.firstElementChild.childElementCount || !thisPage.footnotesArea.firstElementChild.firstElementChild.getBoundingClientRect().height;
+
+		if (emptyBody && !emptyFootnotes && chunker.pages.length > 1) {
+			// Start element for the previous page.
+			let prevBreakToken = chunker.pages[chunker.pages.length - 2].startToken;
+			let start = this.getStartElement(contents, prevBreakToken);
+			if (start) {
+				this.addPageAttributes(thisPage, start, chunker.pages);
+			}
+		}
+	}
+
 	finalizePage(fragment, page, breakToken, chunker) {
 		for (let m in this.marginalia) {
 			let margin = this.marginalia[m];

@@ -604,8 +604,10 @@ class Layout {
 			let secondOverflow = this.getOverflow(rendered, bounds, source);
 			if (secondOverflow && secondOverflow.length && extract) {
 				let secondToken = this.processOverflowResult(secondOverflow, rendered, source, bounds, prevBreakToken, node, extract);
-				// Prepend.
-				breakToken.overflow = secondToken.overflow.concat(breakToken.overflow);
+				if (!secondToken.equals(breakToken)) {
+					// Prepend.
+					breakToken.overflow = secondToken.overflow.concat(breakToken.overflow);
+				}
 			}
 		}
 		return breakToken;

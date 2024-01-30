@@ -711,16 +711,20 @@ class Layout {
 					//   the start of overflow.
 					// In the former case, we want to ignore this node and take the
 					// sibling. In the later case, we want to move this node.
-					let intrinsicBottom = 0;
+					let intrinsicBottom = 0, intrinsicRight = 0;
 					if (isElement(node)) {
 						let styles = window.getComputedStyle(node);
 
 						if (node.childNodes.length) {
 							let lastChild = node.childNodes[node.childNodes.length - 1];
-							intrinsicBottom = getBoundingClientRect(lastChild).bottom;
+							let childBounds = getBoundingClientRect(lastChild);
+							intrinsicRight = childBounds.right;
+							intrinsicBottom = childBounds.bottom;
 						} else {
 							// Has no children so should have no height, all other things
 							// being equal.
+							let childBounds = getBoundingClientRect(node);
+							intrinsicRight = getBoundingClientRect(node).right;
 							intrinsicBottom = getBoundingClientRect(node).top;
 							let intrinsicLeft = getBoundingClientRect(node).x;
 
@@ -730,11 +734,14 @@ class Layout {
 							}
 						}
 
+						intrinsicRight += parseInt(styles["paddingRight"]) + parseInt(styles["marginRight"]);
 						intrinsicBottom += parseInt(styles["paddingBottom"]) + parseInt(styles["marginBottom"]);
 					} else {
+						let childBounds = getBoundingClientRect(node);
+						intrinsicRight = getBoundingClientRect(node).right;
 						intrinsicBottom = getBoundingClientRect(node).bottom;
 					}
-					if (intrinsicBottom <= bounds.bottom) {
+					if (intrinsicBottom <= bounds.bottom && intrinsicRight <= bounds.right) {
 						node = node.nextElementSibling;
 					} else {
 						// Node is causing the overflow via padding and margin or text content.

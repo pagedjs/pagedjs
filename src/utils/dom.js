@@ -264,8 +264,8 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 			while (sibling) {
 				let existing = findElement(sibling, container), siblingClone;
 				if (!existing) {
-					let wasSplit = findElement(ancestor, alreadyRendered);
-					siblingClone = cloneNodeAncestor(sibling, wasSplit);
+					let split = inIndexOfRefs(ancestor, alreadyRendered);
+					siblingClone = cloneNodeAncestor(sibling, split);
 					if (alreadyRendered) {
 						let originalElement = findElement(sibling, alreadyRendered);
 						if (originalElement) {
@@ -286,8 +286,8 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 		} else {
 			parent = findElement(ancestor, container);
 			if (!parent) {
-				let wasSplit = findElement(ancestor, alreadyRendered);
-				parent = cloneNodeAncestor(ancestor, !!wasSplit);
+				let split = inIndexOfRefs(ancestor, alreadyRendered);
+				parent = cloneNodeAncestor(ancestor, !!split);
 				if (alreadyRendered) {
 					let originalElement = findElement(ancestor, alreadyRendered);
 					if (originalElement) {
@@ -664,6 +664,12 @@ export function isContainer(node) {
 
 export function cloneNode(n, deep=false) {
 	return n.cloneNode(deep);
+}
+
+export function inIndexOfRefs(node, doc) {
+	if (!doc || !doc.indexOfRefs) return;
+	const ref = node.getAttribute("data-ref");
+	return doc.indexOfRefs[ref];
 }
 
 export function findElement(node, doc, forceQuery) {

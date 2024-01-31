@@ -313,6 +313,17 @@ class Layout {
 			let addTo = overflow.ancestor ? findElement(overflow.ancestor, fragment) : fragment;
 			this.addOverflowNodes(addTo, overflow.content);
 		});
+
+		// Record refs.
+		Array.from(fragment.querySelectorAll('[data-ref]')).forEach(ref => {
+			let refId = ref.dataset['ref'];
+			if (!dest.querySelector(`[data-ref='${refId}']`)) {
+				if (!dest.indexOfRefs) {
+					dest.indexOfRefs = {};
+				}
+				dest.indexOfRefs[refId] = ref;
+			}
+		});
 		dest.appendChild(fragment);
 
 		this.hooks && this.hooks.afterOverflowAdded.trigger(dest);
@@ -574,13 +585,6 @@ class Layout {
 				overflow.ancestor = findElement(overflow.range.commonAncestorContainer, source);
 				overflow.content = this.removeOverflow(overflowRange, breakLetter);
 				this.hooks && this.hooks.afterOverflowRemoved.trigger(overflow.content, rendered, this);
-
-				// Remove data-refs in the overflow from the index.
-				if (rendered.indexOfRefs) {
-					Array.from(overflow.content.querySelectorAll('[data-ref]')).forEach(ref => {
-						delete(rendered.indexOfRefs[ref.dataset['ref']]);
-					});
-				}
 			}
 		});
 
@@ -590,9 +594,23 @@ class Layout {
 			while (lastChild.childElementCount) {
 				lastChild = lastChild.lastElementChild;
 
-				if (['TR', 'math'].indexOf(lastChild.tagName) > -1 && lastChild.textContent.trim() == '') {
+				if (['TR', 'math', 'P'].indexOf(lastChild.tagName) > -1 && lastChild.textContent.trim() == '') {
 					lastChild.parentNode.removeChild(lastChild);
 				}
+			}
+		}
+
+		// And then see if the last element has been completely removed and not split.
+		if (rendered.indexOfRefs && extract && breakToken.overflow.length) {
+			let lastOverflow = breakToken.overflow[breakToken.overflow.length - 1];
+			if (lastOverflow?.node && lastOverflow.content) {
+				// Remove data-refs in the overflow from the index.
+				Array.from(lastOverflow.content.querySelectorAll('[data-ref]')).forEach(ref => {
+					let refId = ref.dataset['ref'];
+					if (!rendered.querySelector(`[data-ref='${refId}']`)) {
+						delete(rendered.indexOfRefs[refId]);
+					}
+				});
 			}
 		}
 
@@ -1178,6 +1196,11 @@ class Layout {
 				}
 			}
 
+		}
+
+		// Don't get tricked into doing a split by whitespace at the start of a string.
+		if (node.textContent.substring(0, offset).trim() == '') {
+			return 0;
 		}
 
 		return offset;

@@ -574,6 +574,13 @@ class Layout {
 				overflow.ancestor = findElement(overflow.range.commonAncestorContainer, source);
 				overflow.content = this.removeOverflow(overflowRange, breakLetter);
 				this.hooks && this.hooks.afterOverflowRemoved.trigger(overflow.content, rendered, this);
+
+				// Remove data-refs in the overflow from the index.
+				if (rendered.indexOfRefs) {
+					Array.from(overflow.content.querySelectorAll('[data-ref]')).forEach(ref => {
+						delete(rendered.indexOfRefs[ref.dataset['ref']]);
+					});
+				}
 			}
 		});
 

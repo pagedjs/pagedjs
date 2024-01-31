@@ -264,7 +264,8 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 			while (sibling) {
 				let existing = findElement(sibling, container), siblingClone;
 				if (!existing) {
-					siblingClone = cloneNodeAncestor(sibling);
+					let wasSplit = findElement(ancestor, alreadyRendered);
+					siblingClone = cloneNodeAncestor(sibling, wasSplit);
 					if (alreadyRendered) {
 						let originalElement = findElement(sibling, alreadyRendered);
 						if (originalElement) {
@@ -285,7 +286,8 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 		} else {
 			parent = findElement(ancestor, container);
 			if (!parent) {
-				parent = cloneNodeAncestor(ancestor);
+				let wasSplit = findElement(ancestor, alreadyRendered);
+				parent = cloneNodeAncestor(ancestor, !!wasSplit);
 				if (alreadyRendered) {
 					let originalElement = findElement(ancestor, alreadyRendered);
 					if (originalElement) {
@@ -325,13 +327,15 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 	return fragment;
 }
 
-function cloneNodeAncestor (node) {
+function cloneNodeAncestor (node, wasSplit) {
 	let result = node.cloneNode(false);
 
-	result.setAttribute("data-split-from", result.getAttribute("data-ref"));
+	if (wasSplit) {
+		result.setAttribute("data-split-from", result.getAttribute("data-ref"));
 
-	// This will let us split a table with multiple columns correctly.
-	node.setAttribute("data-split-to", result.getAttribute("data-ref"));
+		// This will let us split a table with multiple columns correctly.
+		node.setAttribute("data-split-to", result.getAttribute("data-ref"));
+	}
 
 	if (result.hasAttribute("id")) {
 		let dataID = result.getAttribute("id");
@@ -663,6 +667,7 @@ export function cloneNode(n, deep=false) {
 }
 
 export function findElement(node, doc, forceQuery) {
+	if (!doc) return;
 	const ref = node.getAttribute("data-ref");
 	return findRef(ref, doc, forceQuery);
 }

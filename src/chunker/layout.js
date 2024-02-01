@@ -803,7 +803,7 @@ class Layout {
 			columnCount += parseInt(cell.getAttribute("colspan") || "1");
 		}
 		if (tableRow.cells.length !== columnCount) {
-			let previousRow = tableRow.previousElementSibling;
+			let previousRow = tableRow;
 			let previousRowColumnCount;
 			while (previousRow !== null) {
 				previousRowColumnCount = 0;

@@ -406,32 +406,26 @@ class Footnotes extends Handler {
 
 		if (overflow) {
 			let { startContainer, startOffset } = overflow[0];
-			let startIsNode;
-			if (isElement(startContainer)) {
-				let start = startContainer.childNodes[startOffset];
-				startIsNode = isElement(start) && start.hasAttribute("data-footnote-marker");
-			}
+			let extracted, parentElement = startContainer.parentElement;
 
-			let extracted;
-			if (!startIsNode && !startOffset) {
+			let isEntireNote = (parentElement.hasAttribute("data-footnote-marker") &&
+				parentElement.childNodes[0] == startContainer && startOffset == 0);
+
+			if (isEntireNote) {
 				// Adjust the range to take the entire footnote.
-				// let newRange = document.createRange();
-				// range.selectNode(startContainer);
-				// range.setEnd(overflow[0].endContainer)
-				// extracted = range.extractContents();
-				overflow[0].selectNode(startContainer);
-				extracted = overflow[0].extractContents();
+				let newRange = document.createRange();
+				range.selectNode(startContainer);
+				range.setEnd(overflow[0].endContainer)
+				extracted = range.extractContents();
 			}
 			else {
 				// Assuming overflow is not multipart.
 				extracted = overflow[0].extractContents();
 
-				if (!startIsNode) {
-					let splitChild = extracted.firstElementChild;
-					splitChild.dataset.splitFrom = splitChild.dataset.ref;
+				let splitChild = extracted.firstElementChild;
+				splitChild.dataset.splitFrom = splitChild.dataset.ref;
 
-					this.handleAlignment(noteInnerContent.lastElementChild);
-				}
+				this.handleAlignment(noteInnerContent.lastElementChild);
 			}
 
 			this.needsLayout.push(extracted);

@@ -413,7 +413,7 @@ class Footnotes extends Handler {
 
 			if (isEntireNote) {
 				// Adjust the range to take the entire footnote.
-				let newRange = document.createRange();
+				let range = document.createRange();
 				range.selectNode(startContainer);
 				range.setEnd(overflow[0].endContainer)
 				extracted = range.extractContents();

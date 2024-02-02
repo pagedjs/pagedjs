@@ -645,13 +645,11 @@ class Layout {
 	 *   The element being constrained.
 	 * @param {array} bounds
 	 *   The bounding element.
-	 * @param {bool} ignoreSides
-	 *   Whether we should ignore overflow on the sides.
 	 *
 	 * @returns {bool}
-	 *   Whether the element is within bounds + slack.
+	 *   Whether the element is within bounds.
 	 */
-	hasOverflow(element, bounds = this.bounds, ignoreSides = false) {
+	hasOverflow(element, bounds = this.bounds) {
 		let constrainingElement = element && element.parentNode; // this gets the element, instead of the wrapper for the width workaround
 		if (constrainingElement.classList.contains("pagedjs_page_content")) {
 			constrainingElement = element;
@@ -659,7 +657,7 @@ class Layout {
 		let { width, height } = element.getBoundingClientRect();
 		let scrollWidth = constrainingElement ? constrainingElement.scrollWidth : 0;
 		let scrollHeight = constrainingElement ? constrainingElement.scrollHeight : 0;
-		return (!ignoreSides && Math.max(Math.ceil(width), scrollWidth) > Math.ceil(bounds.width)) ||
+		return (Math.max(Math.ceil(width), scrollWidth) > Math.ceil(bounds.width)) ||
 			Math.max(Math.ceil(height), scrollHeight) > Math.ceil(bounds.height);
 	}
 
@@ -673,12 +671,10 @@ class Layout {
 	 *   The parent node of the children we are searching.
 	 * @param {array} bounds
 	 *   The bounds of the page area.
-	 * @param {bool} ignoreSides
-	 *   Whether sideways overflow is ignored.
 	 * @returns {ChildNode | null | undefined}
 	 *   The first overflowing child within the node.
 	 */
-	firstOverflowingChild(node, bounds, ignoreSides) {
+	firstOverflowingChild(node, bounds) {
 		let bLeft = Math.ceil(bounds.left);
 		let bRight = Math.floor(bounds.right);
 		let bTop = Math.ceil(bounds.top);
@@ -706,13 +702,13 @@ class Layout {
 				continue;
 			}
 
-			if ((!ignoreSides && (left < bLeft || right > bRight)) || top < bTop || bottom > bBottom) {
+			if (left < bLeft || right > bRight || top < bTop || bottom > bBottom) {
 				return child;
 			}
 		}
 	}
 
-	startOfOverflow(node, bounds, ignoreSides) {
+	startOfOverflow(node, bounds) {
 		let childNode, done = false;
 		let prev;
 		let anyOverflowFound = false;
@@ -720,7 +716,7 @@ class Layout {
 		do {
 			prev = node;
 			do {
-				childNode = this.firstOverflowingChild(node, bounds, ignoreSides);
+				childNode = this.firstOverflowingChild(node, bounds);
 				if (childNode) {
 					anyOverflowFound = true;
 				} else {
@@ -728,12 +724,6 @@ class Layout {
 					// * a sibling div / td / element with height that stretches this
 					//   element
 					// * margin / padding on this element
-					// * a possible bug in Chromium - in seeking to merge upstream,
-					//   an issue was raised in which overflow was getting coordinates
-					//   over to the right but within the page height, when there was
-					//   no apparent CSS to make that happen. If that happens,
-					//   irrespective of ignoreSides, we want to treat such a node as
-					//   the start of overflow.
 					// In the former case, we want to ignore this node and take the
 					// sibling. In the later case, we want to move this node.
 					let intrinsicBottom = 0, intrinsicRight = 0;
@@ -827,9 +817,8 @@ class Layout {
 	}
 
 	findOverflow(rendered, bounds, source) {
-		var ignoreSides = false;
 
-		if (!this.hasOverflow(rendered, bounds, ignoreSides)) {
+		if (!this.hasOverflow(rendered, bounds)) {
 			return;
 		}
 
@@ -848,7 +837,7 @@ class Layout {
 			node = node.nextElementSibling;
 		}
 
-		[prev, anyOverflowFound] = this.startOfOverflow(node, bounds, ignoreSides);
+		[prev, anyOverflowFound] = this.startOfOverflow(node, bounds);
 
 		if (!anyOverflowFound) {
 			return;
@@ -994,7 +983,7 @@ class Layout {
 					do {
 						container = container.nextElementSibling;
 						if (container) {
-							[siblingRangeStart] = this.startOfOverflow(container, bounds, ignoreSides);
+							[siblingRangeStart] = this.startOfOverflow(container, bounds);
 							siblingRangeEnd = container.lastChild;
 						}
 					} while (container && !siblingRangeStart);

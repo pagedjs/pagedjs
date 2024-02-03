@@ -543,6 +543,16 @@ class Layout {
 
 	}
 
+	mightRemoveLastChild(parentElement) {
+		if (parentElement.childElementCount) {
+			this.mightRemoveLastChild(parentElement.lastElementChild);
+		}
+
+		if (['TR', 'math', 'P'].indexOf(parentElement.tagName) > -1 && parentElement.textContent.trim() == '') {
+			parentElement.parentNode.removeChild(parentElement);
+		}
+	}
+
 	processOverflowResult(ranges, rendered, source, bounds, prevBreakToken, node, extract) {
 		let breakToken, breakLetter;
 
@@ -589,16 +599,7 @@ class Layout {
 		});
 
 		// After the last overflow is removed, see if we have an empty td that can be removed.
-		let lastChild = rendered.lastElementChild;
-		if (lastChild) {
-			while (lastChild.childElementCount) {
-				lastChild = lastChild.lastElementChild;
-
-				if (['TR', 'math', 'P'].indexOf(lastChild.tagName) > -1 && lastChild.textContent.trim() == '') {
-					lastChild.parentNode.removeChild(lastChild);
-				}
-			}
-		}
+		this.mightRemoveLastChild(rendered);
 
 		// And then see if the last element has been completely removed and not split.
 		if (rendered.indexOfRefs && extract && breakToken.overflow.length) {

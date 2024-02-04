@@ -1139,6 +1139,28 @@ class Layout {
 		let bottom = 0;
 		let word, next, done, pos;
 		let offset;
+		let marginBottom = 0;
+
+		// Margin bottom is needed when the node is in a block level element
+		// such as a table, grid or flex, where margins don't collapse.
+		// Temporarily add data-split-to as this may change margins too
+		// (It always does in current code but let's not assume that).
+		let parentElement;
+		let immediateParent = parentElement = node.parentElement;
+		immediateParent.setAttribute('data-split-to', 'foo');
+		let parentStyle = window.getComputedStyle(parentElement);
+		while (parentElement &&
+			!parentElement.classList.contains('pagedjs_page_content') &&
+			!parentElement.classList.contains('pagedjs_footnote_area')) {
+			let style = window.getComputedStyle(parentElement);
+			if (style['display'] !== 'block') {
+				marginBottom = parseInt(parentStyle['margin-bottom']);
+				break;
+			}
+
+			parentElement = parentElement.parentElement;
+		}
+
 		while (!done) {
 			next = wordwalker.next();
 			word = next.value;
@@ -1155,14 +1177,14 @@ class Layout {
 			top = pos.top;
 			bottom = pos.bottom;
 
-			if (left >= end || top >= vEnd) {
+			if (left >= end || top >= (vEnd - marginBottom)) {
 				offset = word.startOffset;
 				break;
 			}
 
 			// The bounds won't be exceeded so we need >= rather than >.
 			// Also below for the letters.
-			if (right >= end || bottom >= vEnd) {
+			if (right >= end || bottom >= (vEnd - marginBottom)) {
 				let letterwalker = letters(word);
 				let letter, nextLetter, doneLetter;
 
@@ -1181,7 +1203,7 @@ class Layout {
 					right = pos.right;
 					bottom = pos.bottom;
 
-					if (right >= end || bottom >= vEnd) {
+					if (right >= end || bottom >= (vEnd - marginBottom)) {
 						offset = letter.startOffset;
 						done = true;
 
@@ -1189,8 +1211,9 @@ class Layout {
 					}
 				}
 			}
-
 		}
+
+		immediateParent.removeAttribute('data-split-to');
 
 		// Don't get tricked into doing a split by whitespace at the start of a string.
 		if (node.textContent.substring(0, offset).trim() == '') {

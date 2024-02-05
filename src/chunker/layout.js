@@ -594,7 +594,6 @@ class Layout {
 			if (overflow?.node && extract) {
 				overflow.ancestor = findElement(overflow.range.commonAncestorContainer, source);
 				overflow.content = this.removeOverflow(overflowRange, breakLetter);
-				this.hooks && this.hooks.afterOverflowRemoved.trigger(overflow.content, rendered, this);
 			}
 		});
 
@@ -614,6 +613,11 @@ class Layout {
 				});
 			}
 		}
+
+		breakToken.overflow.forEach((overflow) => {
+				this.hooks && this.hooks.afterOverflowRemoved.trigger(overflow.content, rendered, this);
+		})
+
 
 		return breakToken;
 	}

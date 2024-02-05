@@ -785,6 +785,11 @@ export function indexOfTextNode(node, parent) {
 		return -1;
 	}
 	let nodeTextContent = node.textContent;
+	// Remove hyphenation if necessary.
+	if (nodeTextContent.substring(nodeTextContent.length - 1) == '-') {
+		nodeTextContent = nodeTextContent.substring(0, nodeTextContent.length - 1);
+		console.log(nodeTextContent);
+	}
 	let child;
 	let index = -1;
 	for (var i = 0; i < parent.childNodes.length; i++) {

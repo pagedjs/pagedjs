@@ -543,13 +543,18 @@ class Layout {
 
 	}
 
-	mightRemoveLastChild(parentElement) {
+	lastChildCheck(parentElement, rootElement) {
 		if (parentElement.childElementCount) {
-			this.mightRemoveLastChild(parentElement.lastElementChild);
+			this.lastChildCheck(parentElement.lastElementChild, rootElement);
 		}
+
+		let refId = parentElement.dataset['ref'];
 
 		if (['TR', 'math', 'P'].indexOf(parentElement.tagName) > -1 && parentElement.textContent.trim() == '') {
 			parentElement.parentNode.removeChild(parentElement);
+		}
+		else if (refId && !rootElement.indexOfRefs[refId]) {
+			rootElement.indexOfRefs[refId] = parentElement;
 		}
 	}
 
@@ -597,15 +602,19 @@ class Layout {
 			}
 		});
 
-		// After the last overflow is removed, see if we have an empty td that can be removed.
-		this.mightRemoveLastChild(rendered);
+		// For each overflow that is removed, see if we have an empty td that can be removed.
+		// Also check that the data-ref is set so we get all the split-froms and tos. If a copy
+		// of a node wasn't shallow, the indexOfRefs entry won't be there yet.
+		ranges.forEach((overflowRange) => {
+			this.lastChildCheck(rendered, rendered);
+		});
 
 		// And then see if the last element has been completely removed and not split.
 		if (rendered.indexOfRefs && extract && breakToken.overflow.length) {
-			let lastOverflow = breakToken.overflow[breakToken.overflow.length - 1];
-			if (lastOverflow?.node && lastOverflow.content) {
+			let firstOverflow = breakToken.overflow[0];
+			if (firstOverflow?.node && firstOverflow.content) {
 				// Remove data-refs in the overflow from the index.
-				Array.from(lastOverflow.content.querySelectorAll('[data-ref]')).forEach(ref => {
+				Array.from(firstOverflow.content.querySelectorAll('[data-ref]')).forEach(ref => {
 					let refId = ref.dataset['ref'];
 					if (!rendered.querySelector(`[data-ref='${refId}']`)) {
 						delete(rendered.indexOfRefs[refId]);

@@ -1222,7 +1222,9 @@ class Layout {
 			}
 		}
 
-		immediateParent.removeAttribute('data-split-to');
+		// Don't remove the data-split-to so that subsequent checks for overflow don't see overflow
+		// where it has already been dealt with.
+		// immediateParent.removeAttribute('data-split-to');
 
 		// Don't get tricked into doing a split by whitespace at the start of a string.
 		if (node.textContent.substring(0, offset).trim() == '') {

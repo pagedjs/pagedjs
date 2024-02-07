@@ -138,7 +138,7 @@ class Layout {
 					let named = node.dataset.page;
 					let page = this.element.closest(".pagedjs_page");
 					page.classList.add("pagejs_named_page");
-					page.classList.add("pagedjs__" + named + "_page");
+					page.classList.add("pagedjs_" + named + "_page");
 					if (!node.dataset.splitFrom) {
 						page.classList.add("pagedjs_" + named + "_first_page");
 					}

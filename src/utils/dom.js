@@ -243,7 +243,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 	for (var i = 0; i < ancestors.length; i++) {
 		ancestor = ancestors[i];
 
-		let container;
+		let container, split;
 		if (added.length) {
 			container = added[added.length - 1];
 		} else {
@@ -251,12 +251,11 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 		}
 
 		if (ancestor.nodeName == "TR") {
-			let use = findElement(ancestor, container);
-			if (!use) {
-				use = rebuildTableRow(ancestor, alreadyRendered, container.childElementCount);
-				container.appendChild(use);
+			parent = findElement(ancestor, container);
+			if (!parent) {
+				parent = rebuildTableRow(ancestor, alreadyRendered, container.childElementCount);
+				container.appendChild(parent);
 			}
-			ancestor = use;
 		}
 		else if (dupSiblings) {
 			let sibling = ancestor.parentElement ? ancestor.parentElement.children[0] : ancestor;
@@ -286,8 +285,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 		} else {
 			parent = findElement(ancestor, container);
 			if (!parent) {
-				let split = inIndexOfRefs(ancestor, alreadyRendered);
-				parent = cloneNodeAncestor(ancestor, !!split);
+				parent = cloneNodeAncestor(ancestor);
 				if (alreadyRendered) {
 					let originalElement = findElement(ancestor, alreadyRendered);
 					if (originalElement) {
@@ -306,6 +304,11 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 				}
 				container.appendChild(parent);
 			}
+		}
+
+		split = inIndexOfRefs(ancestor, alreadyRendered);
+		if (split) {
+			setSplit(split, parent);
 		}
 
 		dupSiblings = (ancestor.nodeName !== "TR" && ancestor.dataset.clonesiblings == true);
@@ -327,15 +330,15 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 	return fragment;
 }
 
-function cloneNodeAncestor (node, wasSplit) {
+function setSplit(orig, clone) {
+	clone.setAttribute("data-split-from", clone.getAttribute("data-ref"));
+
+	// This will let us split a table with multiple columns correctly.
+	orig.setAttribute("data-split-to", clone.getAttribute("data-ref"));
+}
+
+function cloneNodeAncestor (node) {
 	let result = node.cloneNode(false);
-
-	if (wasSplit) {
-		result.setAttribute("data-split-from", result.getAttribute("data-ref"));
-
-		// This will let us split a table with multiple columns correctly.
-		node.setAttribute("data-split-to", result.getAttribute("data-ref"));
-	}
 
 	if (result.hasAttribute("id")) {
 		let dataID = result.getAttribute("id");

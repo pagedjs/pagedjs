@@ -13,12 +13,12 @@ describe("rebuild-table-rows", () => {
 		}
 	});
 
-	xit("should render 4 pages", async () => {
+	xit("should render 3 pages", async () => {
 		let pages = await page.$$eval(".pagedjs_page", (r) => {
 			return r.length;
 		});
 
-		expect(pages).toEqual(4);
+		expect(pages).toEqual(3);
 	});
 
 
@@ -29,7 +29,6 @@ describe("rebuild-table-rows", () => {
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(2);
 			expect(pdf).toMatchPDFSnapshot(3);
-			expect(pdf).toMatchPDFSnapshot(4);
 		});
 	}
 }

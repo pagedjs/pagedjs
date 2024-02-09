@@ -1,5 +1,5 @@
 import Handler from "../handler.js";
-import { isContainer, isElement } from "../../utils/dom.js";
+import { isContainer, isElement, isText } from "../../utils/dom.js";
 import Layout from "../../chunker/layout.js";
 import csstree from "css-tree";
 
@@ -407,15 +407,18 @@ class Footnotes extends Handler {
 		if (overflow) {
 			let { startContainer, startOffset } = overflow[0];
 			let extracted, parentElement = startContainer.parentElement;
-
-			let isEntireNote = (parentElement.hasAttribute("data-footnote-marker") &&
-				parentElement.childNodes[0] == startContainer && startOffset == 0);
+			let footnoteContainer = isText(startContainer) ?
+				startContainer.parentElement.closest('[data-footnote-marker]') :
+				startContainer.closest('[data-footnote-marker]');
+			let isEntireNote = (footnoteContainer &&
+				(footnoteContainer == startContainer ||
+					(footnoteContainer.childNodes[0] == startContainer && !startOffset)));
 
 			if (isEntireNote) {
 				// Adjust the range to take the entire footnote.
 				let range = document.createRange();
-				range.selectNode(parentElement);
-				range.setEndAfter(parentElement)
+				range.selectNode(footnoteContainer);
+				range.setEndAfter(footnoteContainer)
 				extracted = range.extractContents();
 			}
 			else {

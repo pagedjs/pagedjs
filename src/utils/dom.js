@@ -791,7 +791,6 @@ export function indexOfTextNode(node, parent) {
 	// Remove hyphenation if necessary.
 	if (nodeTextContent.substring(nodeTextContent.length - 1) == '-') {
 		nodeTextContent = nodeTextContent.substring(0, nodeTextContent.length - 1);
-		console.log(nodeTextContent);
 	}
 	let child;
 	let index = -1;

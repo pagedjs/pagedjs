@@ -198,9 +198,9 @@ export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 					column = existing;
 				}
 			}
-			let width = column.width || getBoundingClientRect(column).width;
-			if (!isNaN(width) && width) {
-				destColumn.setAttribute("width", width + "px");
+			let width = column.width || getBoundingClientRect(column).width + 'px';
+			if (width) {
+				destColumn.setAttribute("width", width);
 			}
 			if (destColumn) {
 				rebuilt.appendChild(destColumn);
@@ -268,9 +268,9 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 					if (alreadyRendered) {
 						let originalElement = findElement(sibling, alreadyRendered);
 						if (originalElement) {
-							let width = originalElement.width || getBoundingClientRect(originalElement).width;
-							if (!isNaN(width) && width) {
-								siblingClone.setAttribute("width", width + "px");
+							let width = originalElement.width || getBoundingClientRect(originalElement).width + 'px';
+							if (width) {
+								siblingClone.setAttribute("width", width);
 							}
 						}
 					}

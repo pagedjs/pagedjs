@@ -783,14 +783,14 @@ export function hasTextContent(node) {
 	return false;
 }
 
-export function indexOfTextNode(node, parent) {
+export function indexOfTextNode(node, parent, hyphen) {
 	if (!isText(node)) {
 		return -1;
 	}
 	let nodeTextContent = node.textContent;
 	// Remove hyphenation if necessary.
-	if (nodeTextContent.substring(nodeTextContent.length - 1) == '-') {
-		nodeTextContent = nodeTextContent.substring(0, nodeTextContent.length - 1);
+	if (nodeTextContent.substring(nodeTextContent.length - hyphen.length) == hyphen) {
+		nodeTextContent = nodeTextContent.substring(0, nodeTextContent.length - hyphen.length);
 	}
 	let child;
 	let index = -1;

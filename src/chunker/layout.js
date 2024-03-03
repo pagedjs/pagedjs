@@ -448,6 +448,7 @@ class Layout {
 		let container = overflow.startContainer;
 		let offset = overflow.startOffset;
 		let node, renderedNode, parent, index, temp;
+		let hyphen = this.settings.hyphenGlyph || "\u2011";
 
 		if (isElement(container)) {
 			if (container.nodeName == "INPUT") {
@@ -496,7 +497,7 @@ class Layout {
 				}
 
 				parent = findElement(renderedNode, source);
-				index = indexOfTextNode(temp, parent);
+				index = indexOfTextNode(temp, parent, hyphen);
 				// No seperatation for the first textNode of an element
 				if (index === 0) {
 					node = parent;
@@ -514,7 +515,7 @@ class Layout {
 			}
 
 			parent = findElement(renderedNode, source);
-			index = indexOfTextNode(container, parent);
+			index = indexOfTextNode(container, parent, hyphen);
 
 			if (index === -1) {
 				return;

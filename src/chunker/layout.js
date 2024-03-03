@@ -529,7 +529,6 @@ class Layout {
 		}
 
 		if (!node) {
-			// console.log(isElement(container), child(container, offset), temp);
 			return;
 		}
 

@@ -453,10 +453,7 @@ class Layout {
 			if (container.nodeName == "INPUT") {
 				temp = container;
 			} else {
-				// Offset can be incorrect in tables spanning multiple pages.
-				// To reproduce, fill a specification composite "prepared by" field
-				// with a ton of lorem ipsum.
-				temp = child(container, offset) || child(container, 0);
+				temp = child(container, offset);
 			}
 
 			if (isElement(temp)) {

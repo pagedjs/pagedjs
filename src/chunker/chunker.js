@@ -371,11 +371,7 @@ class Chunker {
 			await this.hooks.beforePageLayout.trigger(page, content, breakToken, this);
 			this.emit("page", page);
 
-			// Layout content in the page, starting from the breakToken
-			if (breakToken) {
-				// Debugging tool - ensures previously rendered content is visible.
-				window.scrollTo(0, document.body.scrollHeight);
-			}
+			// Layout content in the page, starting from the breakToken.
 			breakToken = await page.layout(content, breakToken, prevPage);
 
 			await this.hooks.afterPageLayout.trigger(page.element, page, breakToken, this);

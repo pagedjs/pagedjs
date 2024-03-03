@@ -59,7 +59,6 @@ class Layout {
 			this.hooks.layout = new Hook();
 			this.hooks.renderNode = new Hook();
 			this.hooks.layoutNode = new Hook();
-			this.hooks.getOverflow = new Hook();
 			this.hooks.beforeOverflow = new Hook();
 			this.hooks.onOverflow = new Hook();
 			this.hooks.afterOverflowRemoved = new Hook();
@@ -634,13 +633,13 @@ class Layout {
 	findBreakToken(rendered, source, bounds = this.bounds, prevBreakToken, node = null, extract = true) {
 		let breakToken;
 
-		let overflowResult = this.getOverflow(rendered, bounds, source);
+		let overflowResult = this.findOverflow(rendered, bounds, source);
 		if (overflowResult) {
 			breakToken = this.processOverflowResult(overflowResult, rendered, source, bounds, prevBreakToken, node, extract);
 
 			// Hooks (eg footnotes) might alter the flow in response to the above removal of overflow,
 			// potentially resulting in more reflow.
-			let secondOverflow = this.getOverflow(rendered, bounds, source);
+			let secondOverflow = this.findOverflow(rendered, bounds, source);
 			if (secondOverflow && secondOverflow.length && extract) {
 				let secondToken = this.processOverflowResult(secondOverflow, rendered, source, bounds, prevBreakToken, node, extract);
 				if (!secondToken.equals(breakToken)) {
@@ -823,11 +822,6 @@ class Layout {
 				return previousRow;
 			}
 		}
-	}
-
-	getOverflow(rendered, bounds, source) {
-		this.hooks && this.hooks.getOverflow.trigger(rendered, bounds, source, this);
-		return this.findOverflow(rendered, bounds, source);
 	}
 
 	findOverflow(rendered, bounds, source) {

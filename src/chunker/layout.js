@@ -545,6 +545,8 @@ class Layout {
 
 		let refId = parentElement.dataset['ref'];
 
+		// A table row, math element or paragraph from which all content has been removed
+		// can itself also be removed. It will be added on the next page.
 		if (['TR', 'math', 'P'].indexOf(parentElement.tagName) > -1 && parentElement.textContent.trim() == '') {
 			parentElement.parentNode.removeChild(parentElement);
 		}

@@ -1,57 +1,64 @@
-import {
-	isElement
-} from "../utils/dom.js";
-
 /**
  * BreakToken
  * @class
  */
 class BreakToken {
 
-	constructor(node, offset) {
+	constructor(node, overflowArray) {
 		this.node = node;
-		this.offset = offset;
+		this.overflow = overflowArray || [];
+		this.finished = false;
+		this.breakNeededAt = [];
 	}
 
 	equals(otherBreakToken) {
-		if (!otherBreakToken) {
+		if (this.node !== otherBreakToken.node) {
 			return false;
 		}
-		if (this["node"] && otherBreakToken["node"] &&
-			this["node"] !== otherBreakToken["node"]) {
+
+		if (otherBreakToken.overflow.length !== this.overflow.length) {
 			return false;
 		}
-		if (this["offset"] && otherBreakToken["offset"] &&
-			this["offset"] !== otherBreakToken["offset"]) {
-			return false;
+
+		for (const index in this.overflow) {
+			if (!this.overflow[index].equals(otherBreakToken.overflow[index])) {
+				return false;
+			}
 		}
+
+		let otherQueue = otherBreakToken.getForcedBreakQueue();
+		for (const index in this.breakNeededAt) {
+			if (!this.breakNeededAt[index].isEqualNode(otherQueue[index])) {
+				return false;
+			}
+		}
+
 		return true;
 	}
 
-	toJSON(hash) {
-		let node;
-		let index = 0;
-		if (!this.node) {
-			return {};
-		}
-		if (isElement(this.node) && this.node.dataset.ref) {
-			node = this.node.dataset.ref;
-		} else if (hash) {
-			node = this.node.parentElement.dataset.ref;
-		}
-
-		if (this.node.parentElement) {
-			const children = Array.from(this.node.parentElement.childNodes);
-			index = children.indexOf(this.node);
-		}
-
-		return JSON.stringify({
-			"node": node,
-			"index" : index,
-			"offset": this.offset
-		});
+	setFinished() {
+		this.finished = true;
 	}
 
+	isFinished() {
+		return this.finished;
+	}
+
+	addNeedsBreak(needsBreak) {
+		this.breakNeededAt.push(needsBreak);
+	}
+
+	getNextNeedsBreak() {
+		return this.breakNeededAt.shift();
+	}
+
+	getForcedBreakQueue() {
+		return this.breakNeededAt;
+	}
+
+	setForcedBreakQueue(queue) {
+		return this.breakNeededAt = queue;
+	}
 }
 
 export default BreakToken;

@@ -1,5 +1,5 @@
 import Handler from "../handler.js";
-import { isContainer, isElement } from "../../utils/dom.js";
+import { isContainer, isElement, isText } from "../../utils/dom.js";
 import Layout from "../../chunker/layout.js";
 import csstree from "css-tree";
 
@@ -9,6 +9,7 @@ class Footnotes extends Handler {
 
 		this.footnotes = {};
 		this.needsLayout = [];
+		this.overflow = [];
 	}
 
 	onDeclaration(declaration, dItem, dList, rule) {
@@ -211,46 +212,11 @@ class Footnotes extends Handler {
 		}
 	}
 
-	moveFootnote(node, pageArea, needsNoteCall) {
-		// let pageArea = node.closest(".pagedjs_area");
-		let noteArea = pageArea.querySelector(".pagedjs_footnote_area");
-		let noteContent = noteArea.querySelector(".pagedjs_footnote_content");
-		let noteInnerContent = noteContent.querySelector(".pagedjs_footnote_inner_content");
-
-		if (!isElement(node)) {
-			return;
-		}
-
-		// Add call for the note
-		let noteCall;
-		if (needsNoteCall) {
-			noteCall = this.createFootnoteCall(node);
-		}
-
-		// Remove the break before attribute for future layout
-		node.removeAttribute("data-break-before");
-
-		// Check if note already exists for overflow
-		let existing = noteInnerContent.querySelector(`[data-ref="${node.dataset.ref}"]`);
-		if (existing) {
-			// Remove the note from the flow but no need to render it again
-			node.remove();
-			return;
-		}
-
-		// Add the note node
-		noteInnerContent.appendChild(node);
-
+	recalcFootnotesHeight(node, noteContent, pageArea, noteCall, needsNoteCall) {
 		// Remove empty class
 		if (noteContent.classList.contains("pagedjs_footnote_empty")) {
 			noteContent.classList.remove("pagedjs_footnote_empty");
 		}
-
-		// Add marker
-		node.dataset.footnoteMarker = node.dataset.ref;
-
-		// Add Id
-		node.id = `note-${node.dataset.ref}`;
 
 		// Get note content size
 		let height = noteContent.scrollHeight;
@@ -264,6 +230,7 @@ class Footnotes extends Handler {
 
 		// Check element sizes
 		let noteCallBounds = noteCall && noteCall.getBoundingClientRect();
+		let noteArea = pageArea.querySelector(".pagedjs_footnote_area");
 		let noteAreaBounds = noteArea.getBoundingClientRect();
 
 		// Get the @footnote margins
@@ -342,15 +309,62 @@ class Footnotes extends Handler {
 				"--pagedjs-footnotes-height",
 				`${height + noteContentMargins + noteContentBorders}px`
 			);
-		} else {
+		} else if (notePolicyDelta > 0) {
 			// set height to just before note call
 			pageArea.style.setProperty(
 				"--pagedjs-footnotes-height",
 				`${noteAreaBounds.height + notePolicyDelta}px`
 			);
+			let noteInnerContent = noteContent.querySelector(".pagedjs_footnote_inner_content");
 			noteInnerContent.style.height =
 				noteAreaBounds.height + notePolicyDelta - total + "px";
 		}
+	}
+
+	moveFootnote(node, pageArea, needsNoteCall) {
+		// let pageArea = node.closest(".pagedjs_area");
+		let noteArea = pageArea.querySelector(".pagedjs_footnote_area");
+		let noteContent = noteArea.querySelector(".pagedjs_footnote_content");
+		let noteInnerContent = noteContent.querySelector(".pagedjs_footnote_inner_content");
+
+		if (!isElement(node)) {
+			return;
+		}
+
+		// Add call for the note but only if it's not overflow.
+		// If it is overflow, the parentElement will be null.
+		let noteCall;
+		if (needsNoteCall) {
+			if (node.parentElement) {
+				noteCall = this.createFootnoteCall(node);
+			}
+			else {
+				let ref = node.dataset['ref'];
+				noteCall = pageArea.querySelector(`[data-ref="${ref}"]`);
+			}
+		}
+
+		// Remove the break before attribute for future layout
+		node.removeAttribute("data-break-before");
+
+		// Check if note already exists for overflow
+		let existing = noteInnerContent.querySelector(`[data-ref="${node.dataset.ref}"]`);
+		if (existing) {
+			// Remove the note from the flow but no need to render it again
+			node.remove();
+			return;
+		}
+
+		// Add the note node
+		noteInnerContent.appendChild(node);
+
+		// Add marker
+		node.dataset.footnoteMarker = node.dataset.ref;
+
+		// Add Id
+		node.id = `note-${node.dataset.ref}`;
+
+		this.recalcFootnotesHeight(node, noteContent, pageArea, noteCall, needsNoteCall);
 	}
 
 	createFootnoteCall(node) {
@@ -391,16 +405,26 @@ class Footnotes extends Handler {
 		let overflow = layout.findOverflow(noteInnerContent, noteContentBounds);
 
 		if (overflow) {
-			let { startContainer, startOffset } = overflow;
-			let startIsNode;
-			if (isElement(startContainer)) {
-				let start = startContainer.childNodes[startOffset];
-				startIsNode = isElement(start) && start.hasAttribute("data-footnote-marker");
+			let { startContainer, startOffset } = overflow[0];
+			let extracted, parentElement = startContainer.parentElement;
+			let footnoteContainer = isText(startContainer) ?
+				startContainer.parentElement.closest('[data-footnote-marker]') :
+				startContainer.closest('[data-footnote-marker]');
+			let isEntireNote = (footnoteContainer &&
+				(footnoteContainer == startContainer ||
+					(footnoteContainer.childNodes[0] == startContainer && !startOffset)));
+
+			if (isEntireNote) {
+				// Adjust the range to take the entire footnote.
+				let range = document.createRange();
+				range.selectNode(footnoteContainer);
+				range.setEndAfter(footnoteContainer)
+				extracted = range.extractContents();
 			}
+			else {
+				// Assuming overflow is not multipart.
+				extracted = overflow[0].extractContents();
 
-			let extracted = overflow.extractContents();
-
-			if (!startIsNode) {
 				let splitChild = extracted.firstElementChild;
 				splitChild.dataset.splitFrom = splitChild.dataset.ref;
 
@@ -433,20 +457,21 @@ class Footnotes extends Handler {
 				chunker.clonePage(page);
 			} else {
 				let breakBefore, previousBreakAfter;
+				let firstOverflowNode = breakToken.overflow[0]?.node;
 				if (
-					breakToken.node &&
-					typeof breakToken.node.dataset !== "undefined" &&
-					typeof breakToken.node.dataset.previousBreakAfter !== "undefined"
+					firstOverflowNode &&
+					typeof firstOverflowNode.dataset !== "undefined" &&
+					typeof firstOverflowNode.dataset.previousBreakAfter !== "undefined"
 				) {
-					previousBreakAfter = breakToken.node.dataset.previousBreakAfter;
+					previousBreakAfter = firstOverflowNode.dataset.previousBreakAfter;
 				}
 
 				if (
-					breakToken.node &&
-					typeof breakToken.node.dataset !== "undefined" &&
-					typeof breakToken.node.dataset.breakBefore !== "undefined"
+					firstOverflowNode &&
+					typeof firstOverflowNode.dataset !== "undefined" &&
+					typeof firstOverflowNode.dataset.breakBefore !== "undefined"
 				) {
-					breakBefore = breakToken.node.dataset.breakBefore;
+					breakBefore = firstOverflowNode.dataset.breakBefore;
 				}
 
 				if (breakBefore || previousBreakAfter) {
@@ -493,12 +518,34 @@ class Footnotes extends Handler {
 			let call = removed.querySelector(`[data-footnote-call="${note.dataset.ref}"]`);
 			if (call) {
 				note.remove();
+				this.overflow.push(note);
 			}
 		}
 		// Hide footnote content if empty
 		let noteInnerContent = area.querySelector(".pagedjs_footnote_inner_content");
 		if (noteInnerContent && noteInnerContent.childNodes.length === 0) {
 			noteInnerContent.parentElement.classList.add("pagedjs_footnote_empty");
+		}
+	}
+
+	afterOverflowAdded(rendered) {
+		let notes = rendered.querySelectorAll("[data-note='footnote']");
+		if (notes && notes.length) {
+			this.findVisibleFootnotes(notes, rendered);
+		}
+
+		let area = rendered.closest(".pagedjs_area");
+		let noteContent = area.querySelector(".pagedjs_footnote_content");
+		let notesInnerContent = area.querySelector(".pagedjs_footnote_inner_content");
+
+		if (this.overflow.length) {
+			this.overflow.forEach((item) => {
+				notesInnerContent.appendChild(item);
+				let call = rendered.querySelector(`[data-ref="${item.dataset['ref']}"]`)
+				this.recalcFootnotesHeight(item, noteContent, area, call, false);
+			});
+
+			this.overflow = [];
 		}
 	}
 

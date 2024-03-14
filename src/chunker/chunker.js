@@ -6,9 +6,8 @@ import Queue from "../utils/queue.js";
 import {
 	requestIdleCallback
 } from "../utils/utils.js";
-import { OverflowContentError } from "./renderresult.js";
 
-const MAX_PAGES = false;
+const MAX_PAGES = null;
 const MAX_LAYOUTS = false;
 
 const TEMPLATE = `
@@ -106,6 +105,7 @@ class Chunker {
 		this.hooks.layoutNode = new Hook(this);
 		this.hooks.onOverflow = new Hook(this);
 		this.hooks.afterOverflowRemoved = new Hook(this);
+		this.hooks.afterOverflowAdded = new Hook(this);
 		this.hooks.onBreakToken = new Hook();
 		this.hooks.beforeRenderResult = new Hook(this);
 		this.hooks.afterPageLayout = new Hook(this);
@@ -332,47 +332,58 @@ class Chunker {
 
 	async *layout(content, startAt) {
 		let breakToken = startAt || false;
-		let tokens = [];
+		let page, prevPage, prevNumPages;
 
 		while (breakToken !== undefined && (MAX_PAGES ? this.total < MAX_PAGES : true)) {
 
-			if (breakToken && breakToken.node) {
-				await this.handleBreaks(breakToken.node);
-			} else {
-				await this.handleBreaks(content.firstChild);
+			let addedExtra = false;
+			let emptyBody = !page || !page.area.firstElementChild.childElementCount || !page.area.firstElementChild.firstElementChild.getBoundingClientRect().height;
+			let emptyFootnotes = !page || !page.footnotesArea.firstElementChild.childElementCount || !page.footnotesArea.firstElementChild.firstElementChild.getBoundingClientRect().height;
+			let emptyPage = (emptyBody && emptyFootnotes);
+
+			prevNumPages = this.total;
+
+			if (!page || !emptyPage) {
+				if (breakToken) {
+					if (breakToken.overflow.length && breakToken.overflow[0].node) {
+						// Overflow.
+						await this.handleBreaks(breakToken.overflow[0].node);
+					}
+					else {
+						await this.handleBreaks(breakToken.node);
+					}
+				} else {
+					await this.handleBreaks(content.firstChild);
+				}
 			}
 
-			let page = this.addPage();
+			addedExtra = this.total != prevNumPages;
+
+			// Don't add a page if we have a forced break now and we just
+			// did a break due to overflow but have nothing displayed on
+			// the current page, unless there's overflow and we're finished.
+			if (!page || addedExtra || !emptyPage) {
+				this.addPage();
+			}
+
+			page = this.pages[this.total - 1];
 
 			await this.hooks.beforePageLayout.trigger(page, content, breakToken, this);
 			this.emit("page", page);
 
-			// Layout content in the page, starting from the breakToken
-			breakToken = await page.layout(content, breakToken, this.maxChars);
-
-			if (breakToken) {
-				let newToken = breakToken.toJSON(true);
-				if (tokens.lastIndexOf(newToken) > -1) {
-					// loop
-					let err = new OverflowContentError("Layout repeated", [breakToken.node]);
-					console.error("Layout repeated at: ", breakToken.node);
-					return err;
-				} else {
-					tokens.push(newToken);
-				}
-			}
+			// Layout content in the page, starting from the breakToken.
+			breakToken = await page.layout(content, breakToken, prevPage);
 
 			await this.hooks.afterPageLayout.trigger(page.element, page, breakToken, this);
 			await this.hooks.finalizePage.trigger(page.element, page, undefined, this);
 			this.emit("renderedPage", page);
 
+			prevPage = page.wrapper;
+
 			this.recoredCharLength(page.wrapper.textContent.length);
 
 			yield breakToken;
-
-			// Stop if we get undefined, showing we have reached the end of the content
 		}
-
 
 	}
 

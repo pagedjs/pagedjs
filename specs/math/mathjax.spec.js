@@ -15,7 +15,7 @@ describe("default", () => {
 	});
 
 	it("mathjax elements should not throw an exception", async () => {
-		let count = await page.$$eval("mjx-container" , (r) => {
+		let count = await page.$$eval("math" , (r) => {
 			// eslint-disable-next-line no-console
 			return r.length;
 		});

@@ -15,7 +15,6 @@ class Page {
 		this.height = undefined;
 
 		this.hooks = hooks;
-
 		this.settings = options || {};
 
 		// this.element = this.create(this.pageTemplate);
@@ -42,7 +41,6 @@ class Page {
 
 
 		let size = area.getBoundingClientRect();
-
 
 		area.style.columnWidth = Math.round(size.width) + "px";
 		area.style.columnGap = "calc(var(--pagedjs-margin-right) + var(--pagedjs-margin-left) + var(--pagedjs-bleed-right) + var(--pagedjs-bleed-left) + var(--pagedjs-column-gap-offset))";
@@ -121,21 +119,20 @@ class Page {
 	}
 	*/
 
-	async layout(contents, breakToken, maxChars) {
+	async layout (contents, breakToken, prevPage) {
 
 		this.clear();
 
 		this.startToken = breakToken;
 
-		let settings = this.settings;
-		if (!settings.maxChars && maxChars) {
-			settings.maxChars = maxChars;
-		}
+		this.layoutMethod = new Layout(this.area, this.hooks, this.settings);
 
-		this.layoutMethod = new Layout(this.area, this.hooks, settings);
-
-		let renderResult = await this.layoutMethod.renderTo(this.wrapper, contents, breakToken);
+		let renderResult = await this.layoutMethod.renderTo(this.wrapper, contents, breakToken, prevPage);
 		let newBreakToken = renderResult.breakToken;
+
+		if (breakToken && newBreakToken && breakToken.equals(newBreakToken)) {
+			return;
+		}
 
 		this.addListeners(contents);
 
@@ -251,7 +248,7 @@ class Page {
 			return;
 		}
 
-		let newBreakToken = this.layoutMethod.findBreakToken(this.wrapper, contents, this.startToken);
+		let newBreakToken = this.layoutMethod.findBreakToken(this.wrapper, contents, undefined, this.startToken);
 
 		if (newBreakToken) {
 			this.endToken = newBreakToken;

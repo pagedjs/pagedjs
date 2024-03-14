@@ -1,9 +1,9 @@
 const TIMEOUT = 10000;
 
-describe("rebuild-table-rows", () => {
+describe("copy-column-widths", () => {
 	let page;
 	beforeAll(async () => {
-		page = await loadPage("tables/rebuild/rebuild.html");
+		page = await loadPage("tables/copy-column-widths/copy-column-widths.html");
 		return page.rendered;
 	}, TIMEOUT);
 

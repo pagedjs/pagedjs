@@ -20,7 +20,7 @@ class Splits extends Handler {
 		let from; // Capture the last from element
 		splits.forEach((split) => {
 			let ref = split.dataset.ref;
-			from = prevPage.querySelector("[data-ref='"+ ref +"']:not([data-split-to])");
+			from = prevPage.querySelector("[data-ref='"+ ref +"']");
 
 			if (from) {
 				from.dataset.splitTo = ref;

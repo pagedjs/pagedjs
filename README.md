@@ -271,7 +271,7 @@ The Coko Foundation has two staff members dedicated part time to Paged.js.  The 
 
 Join those sponsoring this project to support and maintain Paged.js.  If you benefit from the library, or are using it in a commercial product or service, contribute today so that we can continue to deliver a quality tool for web-based document pagination.  If you contribute at least $50 a month, create a pull request to add your name to the project sponsors listed below.
 
-[<img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMTQwJyBoZWlnaHQ9JzYwJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnPjxnPjxyZWN0IGlkPSdzdmdfMScgaGVpZ2h0PSc2MCcgd2lkdGg9JzE0MCcgeT0nMCcgeD0nMCcgc3Ryb2tlLXdpZHRoPScwJyBzdHJva2U9JyMwMDAwMDAnIGZpbGw9JyM0Q0FGNTAnLz48dGV4dCB4bWw6c3BhY2U9J3ByZXNlcnZlJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyBmb250LWZhbWlseT0nSGVsdmV0aWNhLCBBcmlhbCwgc2Fucy1zZXJpZicgZm9udC1zaXplPScyNCcgaWQ9J3N2Z18yJyB5PSczNycgeD0nNzAnIHN0cm9rZS13aWR0aD0nMCcgc3Ryb2tlPScjMDAwMDAwJyBmaWxsPScjZmZmZmZmJz5Eb25hdGU8L3RleHQ+PC9nPjwvc3ZnPgo=">](https://us.commitchange.com/nonprofits/5726/donate?offsite=t&=undefined&offsite=t&custom_amounts=5,10,25,50,100,200,1000&origin=https://pagedjs.org/)
+[<img src="assets/donate.svg" height="50">](https://us.commitchange.com/nonprofits/5726/donate?offsite=t&=undefined&offsite=t&custom_amounts=5,10,25,50,100,200,1000&origin=https://pagedjs.org/)
 
 <a href="https://coko.foundation/"><img src="assets/coko.svg" height="100" /></a>
 

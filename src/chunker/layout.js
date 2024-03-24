@@ -18,6 +18,7 @@ import {
 	parentOf,
 	prevValidNode,
 	rebuildTree,
+	replaceOrAppendElement,
 	validNode,
 	walk,
 	words
@@ -185,7 +186,7 @@ class Layout {
 			// Should the Node be a shallow or deep clone?
 			let shallow = isContainer(node);
 
-			this.append(node, wrapper, breakToken, shallow);
+			this.append(node, wrapper, source, breakToken, shallow);
 			bounds = this.element.getBoundingClientRect();
 
 			// Check whether layout has content yet.
@@ -335,6 +336,8 @@ class Layout {
 	 *   The node being appended to the destination.
 	 * @param {element} dest
 	 *   The destination to which content is being added.
+	 * @param {element} source
+	 *   The source DOM
 	 * @param {breakToken} breakToken
 	 *   The current breakToken.
 	 * @param {bool} shallow
@@ -345,19 +348,18 @@ class Layout {
 	 * @returns {ChildNode}
 	 *   The cloned node.
 	 */
-	append(node, dest, breakToken, shallow = true, rebuild = true) {
+	append(node, dest, source, breakToken, shallow = true, rebuild = true) {
 
 		let clone = cloneNode(node, !shallow);
 
 		if (node.parentNode && isElement(node.parentNode)) {
 			let parent = findElement(node.parentNode, dest);
-			// Rebuild chain
 			if (parent) {
-				parent.appendChild(clone);
+				replaceOrAppendElement(parent, clone);
 			} else if (rebuild) {
-				let fragment = rebuildTree(node.parentElement);
+				let fragment = rebuildTree(node.parentElement, undefined, source);
 				parent = findElement(node.parentNode, fragment);
-				parent.appendChild(clone);
+				replaceOrAppendElement(parent, clone);
 				dest.appendChild(fragment);
 			} else {
 				dest.appendChild(clone);
@@ -384,7 +386,7 @@ class Layout {
 		return clone;
 	}
 
-	rebuildTableFromBreakToken(breakToken, dest) {
+	rebuildTableFromBreakToken(breakToken, dest, source) {
 		if (!breakToken || !breakToken.node) {
 			return;
 		}
@@ -396,7 +398,7 @@ class Layout {
 				return;
 			}
 			while ((td = td.nextElementSibling)) {
-				this.append(td, dest, null, true);
+				this.append(td, dest, source, null, true);
 			}
 		}
 	}
@@ -925,7 +927,7 @@ class Layout {
 					let siblingBounds = getBoundingClientRect(check.nextElementSibling);
 					let parentHeight = check.parentElement.style.height;
 					let cStyle = check.currentStyle || getComputedStyle(check, "");
-					if (!parentHeight && siblingBounds.top == checkBounds.top && siblingBounds.left != checkBounds.left && cStyle.display !== "inline") {
+					if (!parentHeight && siblingBounds.top == checkBounds.top && siblingBounds.left != checkBounds.left && cStyle.display !== "inline" && !siblingRangeEnd) {
 						siblingRangeStart = prev;
 						siblingRangeEnd = check.lastChild;
 						container = check;
@@ -987,9 +989,13 @@ class Layout {
 					ranges.push(range);
 
 					do {
+						let anyOverflow = false;
 						container = container.nextElementSibling;
 						if (container) {
-							[siblingRangeStart] = this.startOfOverflow(container, bounds);
+							[siblingRangeStart, anyOverflow] = this.startOfOverflow(container, bounds);
+							if (!anyOverflow) {
+								siblingRangeStart = undefined;
+							}
 							siblingRangeEnd = container.lastChild;
 						}
 					} while (container && !siblingRangeStart);

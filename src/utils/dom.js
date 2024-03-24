@@ -149,6 +149,11 @@ export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 		earlierRow = earlierRow.nextElementSibling;
 	}
 
+	if (!maxCols) {
+		let existing = findElement(node, alreadyRendered);
+		maxCols = existing.children.length;
+	}
+
 	// The next td to use in each tr.
 	// Doesn't take account of rowspans above that might make extra columns.
 	let rowOffsets = Array(maxCols).fill(0);
@@ -199,7 +204,7 @@ export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 				}
 			}
 			let width = column.width || getBoundingClientRect(column).width + 'px';
-			if (width) {
+			if (width && width !== '0px') {
 				destColumn.setAttribute("width", width);
 			}
 			if (destColumn) {
@@ -673,6 +678,20 @@ export function inIndexOfRefs(node, doc) {
 	if (!doc || !doc.indexOfRefs) return;
 	const ref = node.getAttribute("data-ref");
 	return doc.indexOfRefs[ref];
+}
+
+export function replaceOrAppendElement(parentNode, child) {
+	if (!isText(child)) {
+		let childRef = child.getAttribute("data-ref");
+		for (let index = 0; index < parentNode.children.length; index++) {
+			if (parentNode.children[index].getAttribute("data-ref") == childRef) {
+				parentNode.replaceChild(child, parentNode.childNodes[index]);
+				return;
+			}
+		}
+	}
+
+	parentNode.appendChild(child);
 }
 
 export function findElement(node, doc, forceQuery) {

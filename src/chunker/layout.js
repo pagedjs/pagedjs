@@ -148,7 +148,7 @@ class Layout {
 			// Check whether we have overflow when we've completed laying out a top
 			// level element. This lets it have multiple children overflowing and
 			// allows us to move all of the overflows onto the next page together.
-			if (forcedBreakQueue.length || !node || !node.parentElement || node.parentElement == firstDivisible) {
+			if (forcedBreakQueue.length || !node || !node.parentElement) {
 				this.hooks && this.hooks.layout.trigger(wrapper, this);
 
 				let imgs = wrapper.querySelectorAll("img");
@@ -324,6 +324,18 @@ class Layout {
 				dest.indexOfRefs[refId] = ref;
 			}
 		});
+
+		let tags = [ 'overflow-tagged', 'overflow-partial', 'range-of-children-overflow' ];
+		tags.forEach((tag) => {
+			let camel = tag.replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+				return index == 0 ? word.toLowerCase() : word.toUpperCase();
+			}).replace(/[-\s]+/g, '');
+			let instances = fragment.querySelectorAll(`[data-${tag}]`);
+			instances.forEach((instance) => {
+				delete instance.dataset[camel];
+			})
+		})
+
 		dest.appendChild(fragment);
 
 		this.hooks && this.hooks.afterOverflowAdded.trigger(dest);
@@ -436,7 +448,7 @@ class Layout {
 				break;
 			}
 
-			if (window.getComputedStyle(node)["break-inside"] === "avoid") {
+			if (isElement(node) && window.getComputedStyle(node)["break-inside"] === "avoid") {
 				breakNode = node;
 				break;
 			}
@@ -632,22 +644,38 @@ class Layout {
 	}
 
 	findBreakToken(rendered, source, bounds = this.bounds, prevBreakToken, node = null, extract = true) {
-		let breakToken;
+		let breakToken, overflow = [];
 
 		let overflowResult = this.findOverflow(rendered, bounds, source);
-		if (overflowResult) {
-			breakToken = this.processOverflowResult(overflowResult, rendered, source, bounds, prevBreakToken, node, extract);
-
-			// Hooks (eg footnotes) might alter the flow in response to the above removal of overflow,
-			// potentially resulting in more reflow.
-			let secondOverflow = this.findOverflow(rendered, bounds, source);
-			if (secondOverflow && secondOverflow.length && extract) {
-				let secondToken = this.processOverflowResult(secondOverflow, rendered, source, bounds, prevBreakToken, node, extract);
-				if (!secondToken.equals(breakToken)) {
-					// Prepend.
-					breakToken.overflow = secondToken.overflow.concat(breakToken.overflow);
+		while (overflowResult) {
+			// Check whether overflow already added - multiple overflows might result in the
+			// same range via avoid break rules.
+			let existing = false;
+			overflow.forEach((item) => {
+				if (
+					item.startContainer == overflowResult.startContainer &&
+					item.endContainer == overflowResult.endContainer) {
+					if (item.startOffset >= overflowResult.startOffset &&
+						item.endOffset <= overflowResult.endOffset) {
+						item.setStart(overflowResult.startContainer, overflowResult.startOffset);
+						existing = true;
+					}
+					if (item.endOffset > overflowResult.endOffset &&
+						item.startOffset == overflowResult.startOffset) {
+						item.EndOffset = overflowResult.EndOffset;
+						item.setEnd(overflowResult.endContainer, overflowResult.endOffset);
+						existing = true;
+					}
 				}
+			})
+			if (!existing) {
+				overflow.push(overflowResult);
 			}
+			overflowResult = this.findOverflow(rendered, bounds, source);
+		}
+
+		if (overflow.length) {
+			breakToken = this.processOverflowResult(overflow, rendered, source, bounds, prevBreakToken, node, extract);
 		}
 		return breakToken;
 	}
@@ -693,6 +721,7 @@ class Layout {
 		let bRight = Math.floor(bounds.right);
 		let bTop = Math.ceil(bounds.top);
 		let bBottom = Math.floor(bounds.bottom);
+		let result = undefined;
 
 		for (const child of node.childNodes) {
 			if (child.tagName == "COLGROUP") {
@@ -705,6 +734,15 @@ class Layout {
 			if (isElement(child)) {
 				let styles = window.getComputedStyle(child);
 				bottomMargin = parseInt(styles["margin-bottom"]);
+
+				if (child.dataset['rangeOfChildrenOverflow'] !== undefined) {
+					return null;
+				}
+
+				if (child.dataset['overflowTagged'] !== undefined) {
+					continue;
+				}
+
 			}
 
 			let left = Math.ceil(pos.left);
@@ -720,12 +758,15 @@ class Layout {
 				return child;
 			}
 		}
+
+		return result;
 	}
 
-	startOfOverflow(node, bounds) {
+	startOfNewOverflow(node, rendered, bounds) {
 		let childNode, done = false;
 		let prev;
 		let anyOverflowFound = false;
+		let topNode = node;
 
 		do {
 			prev = node;
@@ -733,7 +774,7 @@ class Layout {
 				childNode = this.firstOverflowingChild(node, bounds);
 				if (childNode) {
 					anyOverflowFound = true;
-				} else {
+				} else if (childNode === undefined) {
 					// The overflow isn't caused by children. It could be caused by:
 					// * a sibling div / td / element with height that stretches this
 					//   element
@@ -770,11 +811,39 @@ class Layout {
 						intrinsicBottom = childBounds.bottom;
 					}
 					if (intrinsicBottom <= bounds.bottom && intrinsicRight <= bounds.right) {
-						node = node.nextElementSibling;
+						let ascended;
+						do {
+							ascended = false;
+							do {
+								node = node.nextElementSibling;
+							} while (node && node.dataset['overflowTagged'])
+							if (!node) {
+								ascended = true;
+								prev = node = prev.parentElement;
+							}
+						} while (ascended && node && node !== topNode);
+						if (!node || node == topNode) {
+							return [null, false];
+						}
 					} else {
 						// Node is causing the overflow via padding and margin or text content.
 						done = true;
 					}
+				} else {
+					// childNode is null. Overflowing children have been ignored and no other
+					// overflowing children were found. Check the node's next sibling or one of
+					// an ancestor.
+					do {
+						while (!node.nextElementSibling) {
+							if (node == rendered) {
+								return [null, false];
+							}
+							node = node.parentElement;
+						}
+						do {
+							node = node.nextElementSibling;
+						} while (node.nextElementSibling && node.dataset['overflowTagged']);
+					} while (node.dataset['overflowTagged']);
 				}
 			} while (node && !childNode && !done);
 
@@ -839,15 +908,21 @@ class Layout {
 		// Find the deepest element that is the first in set of siblings with
 		// overflow. There may be others. We just take the first we find and
 		// are called again to check for additional instances.
-		let node = rendered, prev, startRemainder;
+		let node = rendered, startOfOverflow, check;
 
 		while (isText(node)) {
 			node = node.nextElementSibling;
 		}
 
-		[prev, anyOverflowFound] = this.startOfOverflow(node, bounds);
+		[startOfOverflow, anyOverflowFound] = this.startOfNewOverflow(node, rendered, bounds);
 
 		if (!anyOverflowFound) {
+			return;
+		}
+
+		let startOfOverflowIsText = isText(startOfOverflow);
+		if (startOfOverflowIsText && startOfOverflow.parentElement.dataset['overflowTagged'] ||
+			(!startOfOverflowIsText && startOfOverflow.dataset['overflowTagged'])) {
 			return;
 		}
 
@@ -857,243 +932,129 @@ class Layout {
 		// Resolve those requirements, deciding on a node that will be split in
 		// the following way:
 		// 1) Prefer the smallest node we can (start with the one we ended on).
-		//    While going back up the ancestors, use an ancestor instead if it
-		//    has siblings that will be rendered below this one. (For columns
-		//    or TD side by side, we want to do separate overflows).
-		// 2) Take the shallowest parent asking not to be split that will fit
-		//    within a page.
-		// 3) If that resulting node doesn't fit on this page, it is the start
-		//    of the overflow. If it does fit, following siblings start the range.
-		// The range runs to the end of the list of siblings of the resulting
-		// node. This may not be the end of where we rendered because we render
-		// until the top level element is completed, so that if there is a
-		// container that has multiple children laid out side by side and more
-		// than one of them overflow, all the overflow gets handled correctly.
-		// In this case, this function will get called multiple times, returning
-		// each piece of overflow until nothing overflows the page anymore
-		// (the caller does the removal of the overflow before calling us again).
-		// Lastly, as we go back up the tree, we need to look for parents (or
-		// the original node) having siblings that extend the overflow. They
-		// should be included in this range.
+		//    While going back up the ancestors, check that subsequent children
+		//    of the ancestor are all entirely in overflow too. If they are, we
+		//    can take a range starting at our initial node and going to the end
+		//    of the ancestor's children.
 
-		let check = startRemainder = node = prev, rangeEndNode = check, lastcheck = check;
+		let rangeStart = check = node = startOfOverflow;
 		let mustSplit = false;
-		let siblingRangeStart, siblingRangeEnd, container;
-		let checkIsFirstChild = false, rowCandidate;
+		let rangeEnd;
 
-		// Check whether we have a td with overflow or divs laid out side by side.
-		// If we do and it's within content that can be or must be split, remove
-		// the overflow as our first range, and take the remaining content after
-		// this TR / set of side by side divs as a second range.
 		do {
-			if (isElement(check)) {
-				let checkBounds = getBoundingClientRect(check);
+			let checkBounds = getBoundingClientRect(check);
 
-				if (checkBounds.height > bounds.height) {
-					mustSplit = true;
+			if (checkBounds.height > bounds.height) {
+				mustSplit = true;
+			}
+
+			let rowspanNeedsBreakAt;
+
+			if (this.avoidBreakInside(check, rendered)) {
+				rowspanNeedsBreakAt = this.rowspanNeedsBreakAt(check, rendered);
+				if (rowspanNeedsBreakAt) {
+					// No question - break earlier.
+					rangeStart = rowspanNeedsBreakAt;
+					rangeEnd = check.parentElement.lastChild;
 				}
 
-				let styles = window.getComputedStyle(check);
-				if (this.avoidBreakInside(check, rendered)) {
-					let rowspanNeedsBreakAt = this.rowspanNeedsBreakAt(check, rendered);
-					if (rowspanNeedsBreakAt) {
-						// No question - break earlier.
-						siblingRangeEnd = undefined;
-						prev = rowspanNeedsBreakAt;
-						break;
-					}
-
-					// If there is a TD with overflow and it is within a break-inside:
-					// avoid, we take the whole container, provided that it will fit
-					// on a page by itself. The normal handling below will take care
-					// of that.
-					if (!mustSplit) {
-						siblingRangeStart = siblingRangeEnd = undefined;
-						prev = check;
-					}
-
-					if (!rowCandidate) {
-						rowCandidate = check;
-					}
-				}
-
-				if (check.nextElementSibling) {
-					// This is messy. Two siblings might be side by side for a number of reasons:
-					// - TD in a TR (what we're seeking to detect so we get the overflow from other TDs too)
-					// - Divs side by side in a grid (we'd also like to capture overflow here but reflow might be
-					//   complicated ala the next case.
-					// - Footnotes or other content with a fixed height parent making overflow push out to the side
-					//   (best to treat all overflow as one).
-					let siblingBounds = getBoundingClientRect(check.nextElementSibling);
-					let parentHeight = check.parentElement.style.height;
-					let cStyle = check.currentStyle || getComputedStyle(check, "");
-					if (!parentHeight && siblingBounds.top == checkBounds.top && siblingBounds.left != checkBounds.left && cStyle.display !== "inline" && !siblingRangeEnd) {
-						siblingRangeStart = prev;
-						siblingRangeEnd = check.lastChild;
-						container = check;
-
-						// Get the columns widths and make them attributes so removal of
-						// overflow doesn't do strange things.
-						check.parentElement.childNodes.forEach((childNode) => {
-							if (!isText(childNode)) {
-								childNode.width = getComputedStyle(childNode).width;
-							}
-						});
-
-						// Might be removing all the content?
-						checkIsFirstChild = (check.parentElement.firstChild === check);
-					}
-				}
-				if (Array.from(check.classList).filter(value => ['region-content', 'pagedjs_page_content'].includes(value)).length) {
-					break;
+				// If there is an element with overflow and it is within a break-inside:
+				// avoid, we take the whole container, provided that it will fit
+				// on a page by itself. The normal handling below will take care
+				// of that.
+				else if (!mustSplit) {
+					rangeEnd = undefined;
+					rangeStart = check;
 				}
 			}
-			lastcheck = check;
+
+			if (check.nextSibling) {
+				let siblingBounds = getBoundingClientRect(check.nextSibling);
+				let parentHeight = check.parentElement.style.height;
+				let container = check;
+
+				// Is the sibling entirely in overflow? If yes, so must all following
+				// siblings be - add them to this range; they can't have anything we
+				// want to keep on this page.
+				if ((siblingBounds.left > end || siblingBounds.top > vEnd) && !rowspanNeedsBreakAt) {
+					rangeEnd = check.parentElement.lastChild;
+					container = check;
+				}
+
+				// Get the columns widths and make them attributes so removal of
+				// overflow doesn't do strange things - they may be affecting
+				// widths on this page.
+				container.parentElement.childNodes.forEach((childNode) => {
+					if (!isText(childNode)) {
+						childNode.width = getComputedStyle(childNode).width;
+					}
+				});
+			}
+
+			if (isElement(check) && Array.from(check.classList).filter(value => ['region-content', 'pagedjs_page_content'].includes(value)).length) {
+				break;
+			}
 			check = check.parentElement;
 		} while (check && check !== rendered);
 
-		let offset;
+		let offset = 0;
 
-		if (siblingRangeEnd) {
-			let ranges = [], origSiblingRangeEnd = siblingRangeEnd;
-
-			// Reset to take next row / equivalent as overflow too.
-			startRemainder = origSiblingRangeEnd.parentElement.parentElement.nextElementSibling;
-
-			// Get the overflow for all siblings at once.
-			do {
-				offset = 0;
-				if (isText(siblingRangeStart) && siblingRangeStart.textContent.trim().length) {
-					offset = this.textBreak(siblingRangeStart, start, end, vStart, vEnd);
-				}
-
-				// Is a whole row being removed?
-				// Ignore newlines when deciding this.
-				if (checkIsFirstChild && !siblingRangeStart.textContent.substring(0, offset).trim().length && rowCandidate !== undefined) {
-					startRemainder = container = rowCandidate;
-					siblingRangeStart = undefined;
-				}
-				else {
-					// Set the start of the range and record on node or the previous element
-					// that overflow was moved.
-					range = document.createRange();
-					if (offset) {
-						range.setStart(siblingRangeStart, offset);
-					} else {
-						range.selectNode(siblingRangeStart);
-					}
-
-					// Additional nodes may have been added that will overflow further beyond
-					// node. Include them in the range.
-					range.setEndAfter(siblingRangeEnd || siblingRangeStart);
-					ranges.push(range);
-
-					do {
-						let anyOverflow = false;
-						container = container.nextElementSibling;
-						if (container) {
-							[siblingRangeStart, anyOverflow] = this.startOfOverflow(container, bounds);
-							if (!anyOverflow) {
-								siblingRangeStart = undefined;
-							}
-							siblingRangeEnd = container.lastChild;
-						}
-					} while (container && !siblingRangeStart);
-				}
-
-			} while (container && siblingRangeStart);
-
-			if (startRemainder) {
-				// Everything including and after node is overflow.
-				range = document.createRange();
-				range.selectNode(startRemainder);
-				range.setEndAfter(rendered.childNodes[rendered.childNodes.length - 1]);
-
-				ranges.push(range);
-			}
-			return ranges;
+		if (isText(rangeStart) && rangeStart.textContent.trim().length) {
+			offset = this.textBreak(rangeStart, start, end, vStart, vEnd);
 		}
 
-		node = check = prev;
-
-		do {
-			if (isElement(check)) {
-				let checkBounds = getBoundingClientRect(check);
-				if (checkBounds.bottom > bounds.bottom) {
-					mustSplit = true;
-				}
-
-				// @todo
-				// If this element is the header or the first non-header row in a
-				// table, treat the table as having an implicit break-inside: avoid
-				// tag so avoid leaving the header all by itself.
-				let styles = window.getComputedStyle(check);
-				if (this.avoidBreakInside(check, rendered) && !mustSplit) {
-					node = check;
-				} else if (check.nextElementSibling) {
-					let checkBounds = getBoundingClientRect(check);
-					let siblingBounds = getBoundingClientRect(check.nextElementSibling);
-					let parentHeight = check.parentElement.style.height;
-					let cStyle = check.currentStyle || getComputedStyle(check, "");
-					// Possibilities here:
-					// - Two table TD elements: We want the content in the table data
-					//   including and after the selected node.
-					// - Two divs side by side (flex / grid ): We want the content
-					//   including and after the selected node.
-					// - Two or more elements (eg spans) with text that overflows.
-					//   This time we want all subsequent children of the parent (the
-					//   portion of the node and its siblings).
-					// We are assuming here that sibling content is level.
-					if (!parentHeight && siblingBounds.top == checkBounds.top && siblingBounds.left != checkBounds.left && cStyle.display !== "inline") {
-
-						// I didn't want to use the node name to distinguish the above
-						// cases but haven't found a better way.
-						if (["TD", "TH", "DIV"].indexOf(check.nodeName) == -1) {
-							node = check.parentElement;
-						} else {
-							node = lastcheck;
-						}
-					}
-				}
-				let classes = check.getAttribute("class");
-				if (classes && classes.includes("region-content")) {
-					break;
-				}
+		if (isText(startOfOverflow)) {
+			startOfOverflow.parentElement.dataset['overflowTagged'] = true;
+			if (offset) {
+				startOfOverflow.parentElement.dataset['overflowPartial'] = true;
 			}
-			lastcheck = check;
-			check = check.parentElement;
-		} while (check && check !== rendered);
-
-		// Set the start of the range. This will either be node itself or some
-		// text within it if node is a text node and some of its content doesn't
-		// overflow.
-
-		if (isText(node) && node.textContent.trim().length) {
-			offset = this.textBreak(node, start, end, vStart, vEnd);
 		}
-
-		/**
-		 * To get the content restored in the right order, we need to add overflow
-		 *  to the array in the correct order. If there was overflow removed from
-		 *  after this element, it needs to be added back before that previously
-		 *  removed overflow.
-		 */
-		let rangeEndElement = rangeEndNode.previousElementSibling || rangeEndNode.parentElement;
-		rangeEndElement.dataset.overflow_after = true;
+		else {
+			startOfOverflow.dataset['overflowTagged'] = true;
+		}
 
 		// Set the start of the range and record on node or the previous element
 		// that overflow was moved.
 		range = document.createRange();
-		if (offset) {
-			range.setStart(node, offset);
+		if (isText(rangeStart)) {
+			range.setStart(rangeStart, offset);
+			rangeStart.parentElement.dataset['rangeOfChildrenOverflow'] = true;
 		} else {
-			range.selectNode(node);
+			range.selectNode(rangeStart);
+			rangeStart.dataset['rangeOfChildrenOverflow'] = true;
 		}
 
 		// Additional nodes may have been added that will overflow further beyond
 		// node. Include them in the range.
-		range.setEndAfter(rendered.lastChild);
-		return [range];
+		range.setEndAfter(rangeEnd || rangeStart);
+
+
+		// Tag ancestors in the range so we don't generate additional ranges
+		// that then cause problems when removing the ranges.
+		let position = rangeStart;
+		while (position.parentElement !== range.commonAncestorContainer) {
+			position = position.parentElement;
+			position.dataset['overflowTagged'] = true;
+		}
+		if (isElement(position)) {
+			let stopAt = range.commonAncestorContainer.childNodes[range.endOffset - 1];
+
+			while (position !== stopAt) {
+				position = position.nextElementSibling;
+				position.dataset['overflowTagged'] = true;
+			}
+		}
+		else {
+			position = position.parentElement;
+		}
+		while (position !== rendered) {
+			position.dataset['overflowTagged'] = true;
+			if (position.nextElementSibling) {
+				break;
+			}
+			position = position.parentElement;
+		}
+		return range;
 	}
 
 	findEndToken(rendered, source) {

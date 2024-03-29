@@ -405,8 +405,8 @@ class Footnotes extends Handler {
 		let overflow = layout.findOverflow(noteInnerContent, noteContentBounds);
 
 		if (overflow) {
-			let { startContainer, startOffset } = overflow[0];
-			let extracted, parentElement = startContainer.parentElement;
+			let { startContainer, startOffset } = overflow;
+			let extracted;
 			let footnoteContainer = isText(startContainer) ?
 				startContainer.parentElement.closest('[data-footnote-marker]') :
 				startContainer.closest('[data-footnote-marker]');
@@ -423,10 +423,12 @@ class Footnotes extends Handler {
 			}
 			else {
 				// Assuming overflow is not multipart.
-				extracted = overflow[0].extractContents();
+				extracted = overflow.extractContents();
 
 				let splitChild = extracted.firstElementChild;
-				splitChild.dataset.splitFrom = splitChild.dataset.ref;
+				if (splitChild) {
+					splitChild.dataset.splitFrom = splitChild.dataset.ref;
+				}
 
 				this.handleAlignment(noteInnerContent.lastElementChild);
 			}
@@ -457,7 +459,7 @@ class Footnotes extends Handler {
 				chunker.clonePage(page);
 			} else {
 				let breakBefore, previousBreakAfter;
-				let firstOverflowNode = breakToken.overflow[0]?.node;
+				let firstOverflowNode = breakToken.overflow?.node;
 				if (
 					firstOverflowNode &&
 					typeof firstOverflowNode.dataset !== "undefined" &&

@@ -337,8 +337,8 @@ class Chunker {
 		while (breakToken !== undefined && (MAX_PAGES ? this.total < MAX_PAGES : true)) {
 
 			let addedExtra = false;
-			let emptyBody = !page || !page.area.firstElementChild.childElementCount || !page.area.firstElementChild.firstElementChild.getBoundingClientRect().height;
-			let emptyFootnotes = !page || !page.footnotesArea.firstElementChild.childElementCount || !page.footnotesArea.firstElementChild.firstElementChild.getBoundingClientRect().height;
+			let emptyBody = !page || !page.area.firstElementChild || !page.area.firstElementChild.childElementCount || !page.area.firstElementChild.firstElementChild.getBoundingClientRect().height;
+			let emptyFootnotes = !page || !page.footnotesArea.firstElementChild || !page.footnotesArea.firstElementChild.childElementCount || !page.footnotesArea.firstElementChild.firstElementChild.getBoundingClientRect().height;
 			let emptyPage = (emptyBody && emptyFootnotes);
 
 			prevNumPages = this.total;

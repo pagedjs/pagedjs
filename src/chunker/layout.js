@@ -316,7 +316,7 @@ class Layout {
 
 		// Record refs.
 		Array.from(fragment.querySelectorAll('[data-ref]')).forEach(ref => {
-			let refId = ref.dataset['ref'];
+			let refId = ref.dataset.ref;
 			if (!dest.querySelector(`[data-ref='${refId}']`)) {
 				if (!dest.indexOfRefs) {
 					dest.indexOfRefs = {};
@@ -325,7 +325,7 @@ class Layout {
 			}
 		});
 
-		let tags = [ 'overflow-tagged', 'overflow-partial', 'range-of-children-overflow' ];
+		let tags = [ 'overflow-tagged', 'overflow-partial', 'range-start-overflow', 'range-end-overflow' ];
 		tags.forEach((tag) => {
 			let camel = tag.replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
 				return index == 0 ? word.toLowerCase() : word.toUpperCase();
@@ -558,11 +558,11 @@ class Layout {
 			this.lastChildCheck(parentElement.lastElementChild, rootElement);
 		}
 
-		let refId = parentElement.dataset['ref'];
+		let refId = parentElement.dataset.ref;
 
 		// A table row, math element or paragraph from which all content has been removed
 		// can itself also be removed. It will be added on the next page.
-		if (['TR', 'math', 'P'].indexOf(parentElement.tagName) > -1 && parentElement.textContent.trim() == '') {
+		if (parentElement.dataset.overflowTagged && parentElement.textContent.trim() == '') {
 			parentElement.parentNode.removeChild(parentElement);
 		}
 		else if (refId && !rootElement.indexOfRefs[refId]) {
@@ -627,7 +627,7 @@ class Layout {
 			if (firstOverflow?.node && firstOverflow.content) {
 				// Remove data-refs in the overflow from the index.
 				Array.from(firstOverflow.content.querySelectorAll('[data-ref]')).forEach(ref => {
-					let refId = ref.dataset['ref'];
+					let refId = ref.dataset.ref;
 					if (!rendered.querySelector(`[data-ref='${refId}']`)) {
 						delete(rendered.indexOfRefs[refId]);
 					}
@@ -722,6 +722,7 @@ class Layout {
 		let bTop = Math.ceil(bounds.top);
 		let bBottom = Math.floor(bounds.bottom);
 		let result = undefined;
+		let skipRange = false;
 
 		for (const child of node.childNodes) {
 			if (child.tagName == "COLGROUP") {
@@ -735,14 +736,26 @@ class Layout {
 				let styles = window.getComputedStyle(child);
 				bottomMargin = parseInt(styles["margin-bottom"]);
 
-				if (child.dataset['rangeOfChildrenOverflow'] !== undefined) {
-					return null;
-				}
-
-				if (child.dataset['overflowTagged'] !== undefined) {
+				if (child.dataset.rangeEndOverflow !== undefined) {
+					skipRange = false;
+					result = undefined;
 					continue;
 				}
 
+				if (child.dataset.rangeStartOverflow !== undefined) {
+					skipRange = true;
+					result = null;
+					continue;
+				}
+
+				if (child.dataset.overflowTagged !== undefined) {
+					continue;
+				}
+
+			}
+
+			if (skipRange) {
+				continue;
 			}
 
 			let left = Math.ceil(pos.left);
@@ -784,24 +797,20 @@ class Layout {
 					let intrinsicBottom = 0, intrinsicRight = 0;
 					let childBounds = getBoundingClientRect(node);
 					if (isElement(node)) {
+						// Assume that any height is the result of matching the
+						// height of surrounding content if there's no content.
 						let styles = window.getComputedStyle(node);
 
 						if (node.childNodes.length) {
 							let lastChild = node.childNodes[node.childNodes.length - 1];
-							childBounds = getBoundingClientRect(lastChild);
-							intrinsicRight = childBounds.right;
-							intrinsicBottom = childBounds.bottom;
-						} else {
-							// Has no children so should have no height, all other things
-							// being equal.
-							intrinsicRight = childBounds.right;
-							intrinsicBottom = childBounds.top;
-							let intrinsicLeft = childBounds.x;
-
-							// Check for possible Chromium bug case.
-							if (intrinsicBottom < bounds.bottom && intrinsicLeft > (bounds.x + bounds.width)) {
-								done = true;
-							}
+							if (
+								(isText(lastChild) && !node.dataset.overflowTagged) ||
+								(!isText(lastChild) && !lastChild.dataset.overflowTagged)
+								) {
+									childBounds = getBoundingClientRect(lastChild);
+									intrinsicRight = childBounds.right;
+									intrinsicBottom = childBounds.bottom;
+								}
 						}
 
 						intrinsicRight += parseInt(styles["paddingRight"]) + parseInt(styles["marginRight"]);
@@ -816,7 +825,7 @@ class Layout {
 							ascended = false;
 							do {
 								node = node.nextElementSibling;
-							} while (node && node.dataset['overflowTagged'])
+							} while (node && node.dataset.overflowTagged)
 							if (!node) {
 								ascended = true;
 								prev = node = prev.parentElement;
@@ -842,8 +851,8 @@ class Layout {
 						}
 						do {
 							node = node.nextElementSibling;
-						} while (node.nextElementSibling && node.dataset['overflowTagged']);
-					} while (node.dataset['overflowTagged']);
+						} while (node.nextElementSibling && node.dataset.overflowTagged);
+					} while (node.dataset.overflowTagged);
 				}
 			} while (node && !childNode && !done);
 
@@ -895,7 +904,7 @@ class Layout {
 
 	findOverflow(rendered, bounds, source) {
 
-		if (!this.hasOverflow(rendered, bounds)) {
+		if (!this.hasOverflow(rendered, bounds) || rendered.dataset.overflowTagged) {
 			return;
 		}
 
@@ -921,8 +930,8 @@ class Layout {
 		}
 
 		let startOfOverflowIsText = isText(startOfOverflow);
-		if (startOfOverflowIsText && startOfOverflow.parentElement.dataset['overflowTagged'] ||
-			(!startOfOverflowIsText && startOfOverflow.dataset['overflowTagged'])) {
+		if (startOfOverflowIsText && startOfOverflow.parentElement.dataset.overflowTagged ||
+			(!startOfOverflowIsText && startOfOverflow.dataset.overflowTagged)) {
 			return;
 		}
 
@@ -938,8 +947,8 @@ class Layout {
 		//    of the ancestor's children.
 
 		let rangeStart = check = node = startOfOverflow;
-		let mustSplit = false;
-		let rangeEnd;
+		let mustSplit = false, visibleSiblings = false;
+		let rangeEnd = rendered.lastElementChild;
 
 		do {
 			let checkBounds = getBoundingClientRect(check);
@@ -968,28 +977,34 @@ class Layout {
 				}
 			}
 
-			if (check.nextSibling) {
-				let siblingBounds = getBoundingClientRect(check.nextSibling);
-				let parentHeight = check.parentElement.style.height;
-				let container = check;
+			let sibling = check, siblingBounds;
+			do {
+				sibling = sibling.nextSibling;
+				siblingBounds = sibling ? getBoundingClientRect(sibling) : undefined;
+			} while (sibling && !siblingBounds?.height);
+
+			if (sibling && siblingBounds?.height && !rowspanNeedsBreakAt) {
 
 				// Is the sibling entirely in overflow? If yes, so must all following
 				// siblings be - add them to this range; they can't have anything we
 				// want to keep on this page.
-				if ((siblingBounds.left > end || siblingBounds.top > vEnd) && !rowspanNeedsBreakAt) {
-					rangeEnd = check.parentElement.lastChild;
-					container = check;
-				}
-
-				// Get the columns widths and make them attributes so removal of
-				// overflow doesn't do strange things - they may be affecting
-				// widths on this page.
-				container.parentElement.childNodes.forEach((childNode) => {
-					if (!isText(childNode)) {
-						childNode.width = getComputedStyle(childNode).width;
+				if ((siblingBounds.left > end || siblingBounds.top > vEnd) && !visibleSiblings) {
+					if (!rowspanNeedsBreakAt) {
+						rangeEnd = check.parentElement.lastChild;
 					}
-				});
+				} else {
+					visibleSiblings = true;
+					rangeEnd = undefined;
+				}
 			}
+
+			// Get the columns widths and make them attributes so removal of
+			// overflow doesn't do strange things - they may be affecting
+			// widths on this page.
+			Array.from(check.parentElement.children).forEach((childNode) => {
+				let style = getComputedStyle(childNode);
+				childNode.width = style.width;
+			});
 
 			if (isElement(check) && Array.from(check.classList).filter(value => ['region-content', 'pagedjs_page_content'].includes(value)).length) {
 				break;
@@ -1004,13 +1019,13 @@ class Layout {
 		}
 
 		if (isText(startOfOverflow)) {
-			startOfOverflow.parentElement.dataset['overflowTagged'] = true;
+			startOfOverflow.parentElement.dataset.overflowTagged = true;
 			if (offset) {
-				startOfOverflow.parentElement.dataset['overflowPartial'] = true;
+				startOfOverflow.parentElement.dataset.overflowPartial = true;
 			}
 		}
 		else {
-			startOfOverflow.dataset['overflowTagged'] = true;
+			startOfOverflow.dataset.overflowTagged = true;
 		}
 
 		// Set the start of the range and record on node or the previous element
@@ -1018,16 +1033,21 @@ class Layout {
 		range = document.createRange();
 		if (isText(rangeStart)) {
 			range.setStart(rangeStart, offset);
-			rangeStart.parentElement.dataset['rangeOfChildrenOverflow'] = true;
 		} else {
 			range.selectNode(rangeStart);
-			rangeStart.dataset['rangeOfChildrenOverflow'] = true;
+			rangeStart.dataset.rangeStartOverflow = true;
 		}
 
 		// Additional nodes may have been added that will overflow further beyond
 		// node. Include them in the range.
-		range.setEndAfter(rangeEnd || rangeStart);
-
+		rangeEnd = rangeEnd || rangeStart;
+		range.setEndAfter(rangeEnd);
+		if (isElement(rangeEnd)) {
+			rangeEnd.dataset.rangeEndOverflow = true;
+		}
+		else {
+			rangeEnd.parentElement.dataset.rangeEndOverflow = true;
+		}
 
 		// Tag ancestors in the range so we don't generate additional ranges
 		// that then cause problems when removing the ranges.
@@ -1040,19 +1060,18 @@ class Layout {
 			let stopAt = range.commonAncestorContainer.childNodes[range.endOffset - 1];
 
 			while (position !== stopAt) {
-				position = position.nextElementSibling;
-				position.dataset['overflowTagged'] = true;
+				position = position.nextSibling;
+				if (isElement(position)) {
+					position.dataset.overflowTagged = true;
+				}
 			}
 		}
 		else {
 			position = position.parentElement;
 		}
-		while (position !== rendered) {
-			position.dataset['overflowTagged'] = true;
-			if (position.nextElementSibling) {
-				break;
-			}
+		while (!position.nextElementSibling && position !== rendered) {
 			position = position.parentElement;
+			position.dataset.overflowTagged = true;
 		}
 		return range;
 	}
@@ -1210,7 +1229,7 @@ class Layout {
 			// Add a hyphen if previous character is a letter or soft hyphen
 			if (
 				(breakLetter && /^\w|\u00AD$/.test(prevLetter) && /^\w|\u00AD$/.test(breakLetter)) ||
-				(!breakLetter && /^\w|\u00AD$/.test(prevLetter))
+				(!breakLetter && prevLetter && /^\w|\u00AD$/.test(prevLetter))
 			) {
 				startContainer.parentNode.classList.add("pagedjs_hyphen");
 				startContainer.textContent += this.settings.hyphenGlyph || "\u2011";

@@ -512,6 +512,10 @@ class Footnotes extends Handler {
 	afterOverflowRemoved(removed, rendered) {
 		// Find the page area
 		let area = rendered.closest(".pagedjs_area");
+		if (!area) {
+			return;
+		}
+
 		// Get any rendered footnotes
 		let notes = area.querySelectorAll(".pagedjs_footnote_area [data-note='footnote']");
 		for (let n = 0; n < notes.length; n++) {

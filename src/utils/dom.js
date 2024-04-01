@@ -206,6 +206,7 @@ export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 			let width = column.width || getBoundingClientRect(column).width + 'px';
 			if (width && width !== '0px') {
 				destColumn.setAttribute("width", width);
+				// destColumn.setAttribute("style", "width=" + width);
 			}
 			if (destColumn) {
 				rebuilt.appendChild(destColumn);
@@ -274,8 +275,9 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 						let originalElement = findElement(sibling, alreadyRendered);
 						if (originalElement) {
 							let width = originalElement.width || getBoundingClientRect(originalElement).width + 'px';
-							if (width) {
+							if (width && width !== '0px') {
 								siblingClone.setAttribute("width", width);
+								// siblingClone.setAttribute("style", "width=" + width);
 							}
 						}
 					}
@@ -295,8 +297,9 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 					let originalElement = findElement(ancestor, alreadyRendered);
 					if (originalElement) {
 						let width = originalElement.width || getBoundingClientRect(originalElement).width;
-						if (!isNaN(width) && width) {
+						if (width && width !== '0px') {
 							parent.setAttribute("width", width + "px");
+							// parent.setAttribute("style", "width=" + width);
 						}
 
 						// Colgroup to clone?

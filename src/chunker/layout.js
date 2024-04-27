@@ -1030,9 +1030,14 @@ class Layout {
 
 		// Set the start of the range and record on node or the previous element
 		// that overflow was moved.
+		let position = rangeStart;
 		range = document.createRange();
 		if (isText(rangeStart)) {
 			range.setStart(rangeStart, offset);
+			if (offset) {
+				rangeStart.parentElement.dataset.splitTo = rangeStart.parentElement.dataset.ref;
+			}
+			position = rangeStart.parentElement;
 		} else {
 			range.selectNode(rangeStart);
 			rangeStart.dataset.rangeStartOverflow = true;
@@ -1049,13 +1054,22 @@ class Layout {
 			rangeEnd.parentElement.dataset.rangeEndOverflow = true;
 		}
 
+		// Add splitTo
+		while (position !== rendered) {
+			if (position.previousSibling) {
+				position.parentElement.dataset.splitTo = position.parentElement.dataset.ref;
+			}
+			position = position.parentElement;
+		}
+
 		// Tag ancestors in the range so we don't generate additional ranges
 		// that then cause problems when removing the ranges.
-		let position = rangeStart;
+		position = rangeStart;
 		while (position.parentElement !== range.commonAncestorContainer) {
 			position = position.parentElement;
-			position.dataset['overflowTagged'] = true;
+			position.dataset.overflowTagged = true;
 		}
+
 		if (isElement(position)) {
 			let stopAt = range.commonAncestorContainer.childNodes[range.endOffset - 1];
 
@@ -1134,7 +1148,9 @@ class Layout {
 		// (It always does in current code but let's not assume that).
 		let parentElement;
 		let immediateParent = parentElement = node.parentElement;
+		let immediateParentHadSplitTo = immediateParent.dataset.dataSplitTo;
 		immediateParent.setAttribute('data-split-to', 'foo');
+
 		let parentStyle = window.getComputedStyle(parentElement);
 		while (parentElement &&
 			!parentElement.classList.contains('pagedjs_page_content') &&
@@ -1200,9 +1216,9 @@ class Layout {
 			}
 		}
 
-		// Don't remove the data-split-to so that subsequent checks for overflow don't see overflow
-		// where it has already been dealt with.
-		// immediateParent.removeAttribute('data-split-to');
+		if (!immediateParentHadSplitTo) {
+			immediateParent.removeAttribute('data-split-to');
+		}
 
 		// Don't get tricked into doing a split by whitespace at the start of a string.
 		if (node.textContent.substring(0, offset).trim() == '') {

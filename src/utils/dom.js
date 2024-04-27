@@ -339,7 +339,9 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 }
 
 function setSplit(orig, clone) {
-	clone.setAttribute("data-split-from", clone.getAttribute("data-ref"));
+	if (orig.dataset.splitTo) {
+		clone.setAttribute("data-split-from", clone.getAttribute("data-ref"));
+	}
 
 	// This will let us split a table with multiple columns correctly.
 	orig.setAttribute("data-split-to", clone.getAttribute("data-ref"));

@@ -218,7 +218,7 @@ export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 }
 
 export function rebuildTree (node, fragment, alreadyRendered) {
-	let parent, ancestor;
+	let parent, subject;
 	let ancestors = [];
 	let added = [];
 	let dupSiblings = false;
@@ -247,7 +247,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 	}
 
 	for (var i = 0; i < ancestors.length; i++) {
-		ancestor = ancestors[i];
+		subject = ancestors[i];
 
 		let container, split;
 		if (added.length) {
@@ -256,20 +256,20 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 			container = fragment;
 		}
 
-		if (ancestor.nodeName == "TR") {
-			parent = findElement(ancestor, container);
+		if (subject.nodeName == "TR") {
+			parent = findElement(subject, container);
 			if (!parent) {
-				parent = rebuildTableRow(ancestor, alreadyRendered, container.childElementCount);
+				parent = rebuildTableRow(subject, alreadyRendered, container.childElementCount);
 				container.appendChild(parent);
 			}
 		}
 		else if (dupSiblings) {
-			let sibling = ancestor.parentElement ? ancestor.parentElement.children[0] : ancestor;
+			let sibling = subject.parentElement ? subject.parentElement.children[0] : subject;
 
 			while (sibling) {
 				let existing = findElement(sibling, container), siblingClone;
 				if (!existing) {
-					let split = inIndexOfRefs(ancestor, alreadyRendered);
+					let split = inIndexOfRefs(subject, alreadyRendered);
 					siblingClone = cloneNodeAncestor(sibling);
 					if (alreadyRendered) {
 						let originalElement = findElement(sibling, alreadyRendered);
@@ -284,17 +284,17 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 					container.appendChild(siblingClone);
 				}
 
-				if (sibling == ancestor) {
+				if (sibling == subject) {
 					parent = siblingClone || existing;
 				}
 				sibling = sibling.nextElementSibling;
 			}
 		} else {
-			parent = findElement(ancestor, container);
+			parent = findElement(subject, container);
 			if (!parent) {
-				parent = cloneNodeAncestor(ancestor);
+				parent = cloneNodeAncestor(subject);
 				if (alreadyRendered) {
-					let originalElement = findElement(ancestor, alreadyRendered);
+					let originalElement = findElement(subject, alreadyRendered);
 					if (originalElement) {
 						let width = originalElement.width || getBoundingClientRect(originalElement).width + 'px';
 						if (width && width !== '0px') {
@@ -313,9 +313,9 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 			}
 		}
 
-		if (ancestor.previousElementSibling?.nodeName == 'THEAD') {
+		if (subject.previousElementSibling?.nodeName == 'THEAD') {
 			// Clone the THEAD too.
-			let sibling = ancestor.previousElementSibling;
+			let sibling = subject.previousElementSibling;
 
 			let existing = findElement(sibling, container), siblingClone;
 			if (!existing) {
@@ -361,21 +361,21 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 				container.appendChild(siblingClone);
 			}
 
-			if (sibling == ancestor) {
+			if (sibling == subject) {
 				parent = siblingClone || existing;
 			}
 			sibling = sibling.nextElementSibling;
 		}
 
-		split = inIndexOfRefs(ancestor, alreadyRendered);
+		split = inIndexOfRefs(subject, alreadyRendered);
 		if (split) {
 			setSplit(split, parent);
 		}
 
-		dupSiblings = (ancestor.nodeName !== "TR" && ancestor.dataset.clonesiblings == true);
+		dupSiblings = (subject.nodeName !== "TR" && subject.dataset.clonesiblings == true);
 		added.push(parent);
 
-		if (ancestor.tagName == "LI") {
+		if (subject.tagName == "LI") {
 			numListItems--;
 		}
 

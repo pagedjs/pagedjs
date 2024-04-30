@@ -270,7 +270,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 				let existing = findElement(sibling, container), siblingClone;
 				if (!existing) {
 					let split = inIndexOfRefs(ancestor, alreadyRendered);
-					siblingClone = cloneNodeAncestor(sibling, split);
+					siblingClone = cloneNodeAncestor(sibling);
 					if (alreadyRendered) {
 						let originalElement = findElement(sibling, alreadyRendered);
 						if (originalElement) {
@@ -299,7 +299,6 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 						let width = originalElement.width || getBoundingClientRect(originalElement).width;
 						if (width && width !== '0px') {
 							parent.setAttribute("width", width + "px");
-							// parent.setAttribute("style", "width=" + width);
 						}
 
 						// Colgroup to clone?
@@ -312,6 +311,60 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 				}
 				container.appendChild(parent);
 			}
+		}
+
+		if (ancestor.previousElementSibling?.nodeName == 'THEAD') {
+			// Clone the THEAD too.
+			let sibling = ancestor.previousElementSibling;
+
+			let existing = findElement(sibling, container), siblingClone;
+			if (!existing) {
+				siblingClone = cloneNodeAncestor(sibling, true);
+				if (alreadyRendered) {
+					let originalElement = findElement(sibling, alreadyRendered);
+					if (originalElement) {
+						let walker = walk(siblingClone, siblingClone);
+						let next, pos, done;
+						while (!done) {
+							next = walker.next();
+							pos = next.value;
+							done = next.done;
+
+							if (isElement(pos)) {
+								originalElement = findElement(pos, alreadyRendered);
+								let width = originalElement.width || getBoundingClientRect(originalElement).width + 'px';
+								if (width && width !== '0px') {
+									pos.setAttribute("width", width);
+								}
+
+								// I've tried to make the THEAD invisible; this is the best
+								// I could achieve. It gets a zero height but still somehow
+								// affects the container height by a couple of pixels in my
+								// testing. :(
+								// Next step is to change the "true" below to use a custom
+								// attribute that lets you control whether the header is shown.
+								if (true) {
+									pos.style.visibility = 'collapse';
+									pos.style.marginTop = '0px';
+									pos.style.marginBottom = '0px';
+									pos.style.paddingTop = '0px';
+									pos.style.paddingBottom = '0px';
+									pos.style.borderTop = '0px';
+									pos.style.borderBottom = '0px';
+									pos.style.lineHeight = '0px';
+									pos.style.opacity = 0;
+								}
+							}
+						}
+					}
+				}
+				container.appendChild(siblingClone);
+			}
+
+			if (sibling == ancestor) {
+				parent = siblingClone || existing;
+			}
+			sibling = sibling.nextElementSibling;
 		}
 
 		split = inIndexOfRefs(ancestor, alreadyRendered);
@@ -347,8 +400,8 @@ function setSplit(orig, clone) {
 	orig.setAttribute("data-split-to", clone.getAttribute("data-ref"));
 }
 
-function cloneNodeAncestor (node) {
-	let result = node.cloneNode(false);
+function cloneNodeAncestor (node, deep=false) {
+	let result = node.cloneNode(deep);
 
 	if (result.hasAttribute("id")) {
 		let dataID = result.getAttribute("id");

@@ -296,9 +296,9 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 				if (alreadyRendered) {
 					let originalElement = findElement(ancestor, alreadyRendered);
 					if (originalElement) {
-						let width = originalElement.width || getBoundingClientRect(originalElement).width;
+						let width = originalElement.width || getBoundingClientRect(originalElement).width + 'px';
 						if (width && width !== '0px') {
-							parent.setAttribute("width", width + "px");
+							parent.setAttribute("width", width);
 						}
 
 						// Colgroup to clone?

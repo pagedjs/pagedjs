@@ -151,7 +151,7 @@ export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 
 	if (!maxCols) {
 		let existing = findElement(node, alreadyRendered);
-		maxCols = existing.children.length;
+		maxCols = existing?.children.length || 0;
 	}
 
 	// The next td to use in each tr.

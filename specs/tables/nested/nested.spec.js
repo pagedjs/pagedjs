@@ -1,9 +1,9 @@
 const TIMEOUT = 10000;
 
-describe("stops-rendering-early", () => {
+describe("nested-tables", () => {
 	let page;
 	beforeAll(async () => {
-		page = await loadPage("issues/stops-rendering-early/stops-rendering-early.html");
+		page = await loadPage("tables/nested/nested.html");
 		return page.rendered;
 	}, TIMEOUT);
 
@@ -13,13 +13,14 @@ describe("stops-rendering-early", () => {
 		}
 	});
 
-	it("should render 3 pages", async () => {
+	it("should render 2 pages", async () => {
 		let pages = await page.$$eval(".pagedjs_page", (r) => {
 			return r.length;
 		});
 
-		expect(pages).toEqual(3);
+		expect(pages).toEqual(2);
 	});
+
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
@@ -27,7 +28,6 @@ describe("stops-rendering-early", () => {
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(2);
-			expect(pdf).toMatchPDFSnapshot(3);
 		});
 	}
 }

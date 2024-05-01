@@ -205,8 +205,7 @@ export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 			}
 			let width = getComputedStyle(column).width || getBoundingClientRect(column).width + 'px';
 			if (width && width !== '0px') {
-				destColumn.setAttribute("width", width);
-				// destColumn.setAttribute("style", "width=" + width);
+				destColumn.setAttribute("style", "width:" + width);
 			}
 			if (destColumn) {
 				rebuilt.appendChild(destColumn);
@@ -276,8 +275,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 						if (originalElement) {
 							let width = getComputedStyle(originalElement).width || getBoundingClientRect(originalElement).width + 'px';
 							if (width && width !== '0px') {
-								siblingClone.setAttribute("width", width);
-								// siblingClone.setAttribute("style", "width=" + width);
+								siblingClone.setAttribute("style", "width:" + width);
 							}
 						}
 					}
@@ -298,7 +296,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 					if (originalElement) {
 						let width = getComputedStyle(originalElement).width || getBoundingClientRect(originalElement).width + 'px';
 						if (width && width !== '0px') {
-							parent.setAttribute("width", width);
+							parent.setAttribute("style", "width:" + width);
 						}
 
 						// Colgroup to clone?
@@ -334,7 +332,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 								originalElement = findElement(pos, alreadyRendered);
 								let width = getComputedStyle(originalElement).width || getBoundingClientRect(originalElement).width + 'px';
 								if (width && width !== '0px') {
-									pos.setAttribute("width", width);
+									pos.setAttribute("style", "width:" + width);
 								}
 
 								// I've tried to make the THEAD invisible; this is the best

@@ -203,7 +203,7 @@ export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 					column = existing;
 				}
 			}
-			let width = column.width || getBoundingClientRect(column).width + 'px';
+			let width = getComputedStyle(column).width || getBoundingClientRect(column).width + 'px';
 			if (width && width !== '0px') {
 				destColumn.setAttribute("width", width);
 				// destColumn.setAttribute("style", "width=" + width);
@@ -274,7 +274,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 					if (alreadyRendered) {
 						let originalElement = findElement(sibling, alreadyRendered);
 						if (originalElement) {
-							let width = originalElement.width || getBoundingClientRect(originalElement).width + 'px';
+							let width = getComputedStyle(originalElement).width || getBoundingClientRect(originalElement).width + 'px';
 							if (width && width !== '0px') {
 								siblingClone.setAttribute("width", width);
 								// siblingClone.setAttribute("style", "width=" + width);
@@ -296,7 +296,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 				if (alreadyRendered) {
 					let originalElement = findElement(subject, alreadyRendered);
 					if (originalElement) {
-						let width = originalElement.width || getBoundingClientRect(originalElement).width + 'px';
+						let width = getComputedStyle(originalElement).width || getBoundingClientRect(originalElement).width + 'px';
 						if (width && width !== '0px') {
 							parent.setAttribute("width", width);
 						}
@@ -332,7 +332,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 
 							if (isElement(pos)) {
 								originalElement = findElement(pos, alreadyRendered);
-								let width = originalElement.width || getBoundingClientRect(originalElement).width + 'px';
+								let width = getComputedStyle(originalElement).width || getBoundingClientRect(originalElement).width + 'px';
 								if (width && width !== '0px') {
 									pos.setAttribute("width", width);
 								}

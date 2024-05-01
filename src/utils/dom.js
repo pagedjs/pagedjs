@@ -440,7 +440,6 @@ export function rebuildAncestors (node) {
 		parent = ancestor.cloneNode(false);
 	
 		parent.setAttribute("data-split-from", parent.getAttribute("data-ref"));
-		// ancestor.setAttribute("data-split-to", parent.getAttribute("data-ref"));
 
 		if (parent.hasAttribute("id")) {
 			let dataID = parent.getAttribute("id");

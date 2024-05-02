@@ -265,6 +265,18 @@ The tests and specs can be run within the container by passing a `seccomp` file 
 docker run -it --security-opt 'seccomp=seccomp.json' pagedmedia/pagedjs npm test && npm run specs
 ```
 
+## Sponsorship ✨
+
+The Coko Foundation has two staff members dedicated part time to Paged.js.  The total cost is about 80k USD a year -- this isn't easily maintained by Coko as it is paid via the surplus from custom platform builds (all open source since Coko is a not-for-profit entity).
+
+Join those sponsoring this project to support and maintain Paged.js.  If you benefit from the library, or are using it in a commercial product or service, contribute today so that we can continue to deliver a quality tool for web-based document pagination.  If you contribute at least $50 a month, create a pull request to add your name to the project sponsors listed below.
+
+[<img src="assets/donate.svg" height="50">](https://us.commitchange.com/nonprofits/5726/donate?offsite=t&=undefined&offsite=t&custom_amounts=5,10,25,50,100,200,1000&origin=https://pagedjs.org/)
+
+<a href="https://coko.foundation/"><img src="assets/coko.svg" height="100" /></a>
+
+<a href="https://www.sparkfish.com/open-source/"><img src="assets/sparkfish.svg" height="25" /></a>
+
 ## Contributors
 
 ### Core team

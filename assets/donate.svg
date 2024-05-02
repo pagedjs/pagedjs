@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 140 60" xmlns="http://www.w3.org/2000/svg">
+    <g stroke-width="0">
+        <rect width="140" height="60" fill="#4CAF50" stroke="#000" />
+        <text x="70" y="37" fill="#ffffff" font-family="Helvetica, Arial, sans-serif" font-size="24" stroke="#000000"
+            text-anchor="middle" xml:space="preserve">Donate</text>
+    </g>
+</svg>

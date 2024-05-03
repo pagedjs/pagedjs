@@ -358,7 +358,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 						}
 					}
 				}
-				container.appendChild(siblingClone);
+				container.insertBefore(siblingClone, container.firstChild);
 			}
 
 			if (sibling == subject) {

@@ -448,7 +448,7 @@ class Layout {
 				break;
 			}
 
-			if (isElement(node) && window.getComputedStyle(node)["break-inside"] === "avoid") {
+			if (isElement(node) && node.dataset.originalBreakInside === "avoid") {
 				breakNode = node;
 				break;
 			}

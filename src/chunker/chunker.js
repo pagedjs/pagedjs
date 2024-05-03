@@ -121,10 +121,14 @@ class Chunker {
 
 		this.content = content;
 
+		this.modifiedRules = {};
+		this.recordBreakInsides();
+
 		this.charsPerBreak = [];
 		this.maxChars;
 
 		if (content) {
+			this.disableBreakInsides(content);
 			this.flow(content, renderTo);
 		}
 	}
@@ -142,6 +146,45 @@ class Chunker {
 		this.pageTemplate = document.createElement("template");
 		this.pageTemplate.innerHTML = TEMPLATE;
 
+	}
+
+	recordBreakInsides() {
+		for (var i in document.styleSheets) {
+			let sheet = document.styleSheets[i];
+			for (var j in sheet.cssRules) {
+				let rule = sheet.cssRules.item(j);
+				if (rule && rule.style && rule.style.breakInside) {
+					if (!this.modifiedRules[rule.style.breakInside]) {
+						this.modifiedRules[rule.style.breakInside] = [];
+					}
+					this.modifiedRules[rule.style.breakInside].push(rule);
+				}
+			}
+		}
+	}
+
+	disableBreakInsides(rendered) {
+		for (var i in this.modifiedRules) {
+			for (var j in this.modifiedRules[i]) {
+				this.modifiedRules[i][j].style.breakInside = '';
+				let nodes = rendered.querySelectorAll(this.modifiedRules[i][j].selectorText);
+				nodes.forEach((node) => {
+					node.dataset.originalBreakInside = i;
+				})
+			}
+		}
+	}
+
+	enableBreakInsides(rendered) {
+		for (var i in this.modifiedRules) {
+			for (var j in this.modifiedRules[i]) {
+				this.modifiedRules[i][j].style.breakInside = i;
+				let nodes = rendered.querySelectorAll(this.modifiedRules[i][j].selectorText);
+				nodes.forEach((node) => {
+					delete(node.dataset.originalBreakInside);
+				})
+			}
+		}
 	}
 
 	async flow(content, renderTo) {

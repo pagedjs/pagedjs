@@ -72,6 +72,8 @@ class Layout {
 
 		this.maxChars = this.settings.maxChars || MAX_CHARS_PER_BREAK;
 		this.forceRenderBreak = false;
+
+		this.temporaryIndex = 0;
 	}
 
 	async renderTo(wrapper, source, breakToken, prevPage = null, bounds = this.bounds) {
@@ -704,6 +706,76 @@ class Layout {
 	}
 
 	/**
+	 * Sums padding, borders and margins for bottom/right of parent elements.
+	 *
+	 * Assumes no margin collapsing because we're considering overflow
+	 * on a page.
+	 *
+	 * This and callers need to be extended to handle right-to-left text and
+	 * flow but I'll get LTR going first in the hope that it will simplify
+	 * the task of getting RTL sorted later. Need test cases too.
+	 */
+	getPaddingBorderAndMarginSums(element) {
+		let paddingBorderRight = 0, marginRight = 0;
+		let paddingBorderBottom = 0, marginBottom = 0;
+		while (element &&
+			!element.classList.contains('pagedjs_page_content') &&
+			!element.classList.contains('pagedjs_footnote_inner_content')) {
+			let style = window.getComputedStyle(element);
+			paddingBorderRight += parseInt(style['padding-right']) +
+				parseInt(style['border-right-width']);
+			paddingBorderBottom += parseInt(style['padding-bottom']) +
+				parseInt(style['border-bottom-width']);
+			marginRight += parseInt(style['margin-right']);
+			marginBottom += parseInt(style['margin-bottom']);
+
+			element = element.parentElement;
+		}
+
+		return [paddingBorderBottom, marginBottom, paddingBorderRight, marginRight];
+	}
+
+	/**
+	 * Adds temporary data-split-to attribute where needed.
+	 *
+	 * @param DomElement element
+	 *   The deepest child, from which to start.
+	 */
+	addTemporarySplitTo(element) {
+		this.temporaryIndex++;
+		while (element &&
+			!element.classList.contains('pagedjs_page_content') &&
+			!element.classList.contains('pagedjs_footnote_inner_content')) {
+
+			if (!element.getAttribute('data-split-to')) {
+				element.setAttribute('data-split-to', 'temp-' + this.temporaryIndex);
+			}
+
+			element = element.parentElement;
+		}
+	}
+
+	/**
+	 * Removes temporary data-split-to attribute where added.
+	 *
+	 * @param DomElement element
+	 *   The deepest child, from which to start.
+	 */
+	deleteTemporarySplitTo(element) {
+		while (element &&
+			!element.classList.contains('pagedjs_page_content') &&
+			!element.classList.contains('pagedjs_footnote_inner_content')) {
+
+			let value = element.getAttribute('data-split-to');
+			if (value == 'temp-' + this.temporaryIndex) {
+				element.removeAttribute('data-split-to');
+			}
+
+			element = element.parentElement;
+		}
+	}
+
+	/**
 	 * Returns the first child that overflows the bounds.
 	 *
 	 * There may be no children that overflow (the height might be extended
@@ -723,6 +795,11 @@ class Layout {
 		let bBottom = Math.floor(bounds.bottom);
 		let result = undefined;
 		let skipRange = false;
+		let parentBottomPaddingBorder = 0, parentBottomMargin = 0;
+
+		if (isElement(node)) {
+			[parentBottomPaddingBorder, parentBottomMargin] = this.getPaddingBorderAndMarginSums(node);
+		}
 
 		for (const child of node.childNodes) {
 			if (child.tagName == "COLGROUP") {
@@ -753,6 +830,9 @@ class Layout {
 				}
 
 			}
+			else {
+				bottomMargin = parentBottomMargin;
+			}
 
 			if (skipRange) {
 				continue;
@@ -761,7 +841,8 @@ class Layout {
 			let left = Math.ceil(pos.left);
 			let right = Math.floor(pos.right);
 			let top = Math.ceil(pos.top);
-			let bottom = Math.floor(pos.bottom + bottomMargin);
+			let bottom = Math.floor(pos.bottom + bottomMargin +
+				(node.lastChild == child ? parentBottomPaddingBorder : 0));
 
 			if (!(pos.height + bottomMargin)) {
 				continue;
@@ -784,6 +865,7 @@ class Layout {
 		do {
 			prev = node;
 			do {
+				let parentBottomPaddingBorder, parentBottomMargin;
 				childNode = this.firstOverflowingChild(node, bounds);
 				if (childNode) {
 					anyOverflowFound = true;
@@ -796,13 +878,14 @@ class Layout {
 					// sibling. In the later case, we want to move this node.
 					let intrinsicBottom = 0, intrinsicRight = 0;
 					let childBounds = getBoundingClientRect(node);
+					let styles;
 					if (isElement(node)) {
 						// Assume that any height is the result of matching the
 						// height of surrounding content if there's no content.
-						let styles = window.getComputedStyle(node);
+						[parentBottomPaddingBorder, parentBottomMargin] = this.getPaddingBorderAndMarginSums(node);
 
 						if (node.childNodes.length) {
-							let lastChild = node.childNodes[node.childNodes.length - 1];
+							let lastChild = node.lastChild;
 							if (
 								(isText(lastChild) && !node.dataset.overflowTagged) ||
 								(!isText(lastChild) && !lastChild.dataset.overflowTagged)
@@ -813,12 +896,12 @@ class Layout {
 								}
 						}
 
-						intrinsicRight += parseInt(styles["paddingRight"]) + parseInt(styles["marginRight"]);
-						intrinsicBottom += parseInt(styles["paddingBottom"]) + parseInt(styles["marginBottom"]);
 					} else {
 						intrinsicRight = childBounds.right;
 						intrinsicBottom = childBounds.bottom;
+						[parentBottomPaddingBorder, parentBottomMargin] = this.getPaddingBorderAndMarginSums(node.parentElement);
 					}
+					intrinsicBottom += parentBottomPaddingBorder + parentBottomMargin;
 					if (intrinsicBottom <= bounds.bottom && intrinsicRight <= bounds.right) {
 						let ascended;
 						do {
@@ -1016,6 +1099,15 @@ class Layout {
 
 		if (isText(rangeStart) && rangeStart.textContent.trim().length) {
 			offset = this.textBreak(rangeStart, start, end, vStart, vEnd);
+			if (offset === undefined) {
+				// Adding split-to changed the CSS and meant we don't need to
+				// split this node.
+				let next = rangeStart;
+				while (!next.nextElementSibling) {
+					next = next.parentElement;
+				}
+				startOfOverflow = rangeStart = next.nextElementSibling;
+			}
 		}
 
 		if (isText(startOfOverflow)) {
@@ -1146,23 +1238,14 @@ class Layout {
 		// such as a table, grid or flex, where margins don't collapse.
 		// Temporarily add data-split-to as this may change margins too
 		// (It always does in current code but let's not assume that).
-		let parentElement;
-		let immediateParent = parentElement = node.parentElement;
-		let immediateParentHadSplitTo = immediateParent.dataset.dataSplitTo;
-		immediateParent.setAttribute('data-split-to', 'foo');
+		// With the split-to set, margin might be removed, resulting in us
+		// not actually needing to split this text. In that case, the return
+		// result will be undefined and the split should be done at the next
+		// node. In this case we also keep the data-split-to=foo so the
+		// styling that removes the need for the overflow remains active.
+		this.addTemporarySplitTo(node.parentElement);
 
-		let parentStyle = window.getComputedStyle(parentElement);
-		while (parentElement &&
-			!parentElement.classList.contains('pagedjs_page_content') &&
-			!parentElement.classList.contains('pagedjs_footnote_area')) {
-			let style = window.getComputedStyle(parentElement);
-			if (style['display'] !== 'block') {
-				marginBottom = parseInt(parentStyle['margin-bottom']);
-				break;
-			}
-
-			parentElement = parentElement.parentElement;
-		}
+		[ , marginBottom] = this.getPaddingBorderAndMarginSums(node.parentElement);
 
 		while (!done) {
 			next = wordwalker.next();
@@ -1216,8 +1299,21 @@ class Layout {
 			}
 		}
 
-		if (!immediateParentHadSplitTo) {
-			immediateParent.removeAttribute('data-split-to');
+		// See comment above the addTemporarySplitTo call above for the offset ==
+		// undefined part of why we may leave the temporary split-to attribute in
+		// place. This should be overridden though if a break is to be avoided.
+		// In that case,
+		let avoidBreak =
+			node.parentElement.dataset.breakAfter == 'avoid' ||
+			(node.parentElement.nextElementSibling &&
+				node.parentElement.nextElementSibling.dataset.breakBefore == 'avoid');
+		if (offset != undefined || avoidBreak) {
+			this.deleteTemporarySplitTo(node.parentElement);
+		}
+
+		if (avoidBreak) {
+			// Signal to caller to take the entire text.
+			offset = 0;
 		}
 
 		// Don't get tricked into doing a split by whitespace at the start of a string.

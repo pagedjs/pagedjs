@@ -122,13 +122,11 @@ class Chunker {
 		this.content = content;
 
 		this.modifiedRules = {};
-		this.recordBreakInsides();
 
 		this.charsPerBreak = [];
 		this.maxChars;
 
 		if (content) {
-			this.disableBreakInsides(content);
 			this.flow(content, renderTo);
 		}
 	}
@@ -191,6 +189,11 @@ class Chunker {
 		let parsed;
 
 		await this.hooks.beforeParsed.trigger(content, this);
+
+		if (content) {
+			this.recordBreakInsides();
+			this.disableBreakInsides(content);
+		}
 
 		parsed = new ContentParser(content);
 

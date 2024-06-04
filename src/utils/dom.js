@@ -135,6 +135,15 @@ export function stackChildren(currentNode, stacked) {
 	return stack;
 }
 
+function copyWidth(originalElement, destElement) {
+	let originalStyle = getComputedStyle(originalElement);
+	let bounds = getBoundingClientRect(originalElement);
+	let width = parseInt(originalStyle.width || bounds.width);
+	if (width) {
+		destElement.style.width = width + 'px';
+	}
+}
+
 export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 	let currentCol = 0, maxCols = 0, nextInitialColumn = 0;
 	let rebuilt = node.cloneNode(false);
@@ -203,10 +212,7 @@ export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 					column = existing;
 				}
 			}
-			let width = getComputedStyle(column).width || getBoundingClientRect(column).width + 'px';
-			if (width && width !== '0px') {
-				destColumn.setAttribute("style", "width:" + width);
-			}
+			copyWidth(column, destColumn);
 			if (destColumn) {
 				rebuilt.appendChild(destColumn);
 			}
@@ -273,10 +279,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 					if (alreadyRendered) {
 						let originalElement = findElement(sibling, alreadyRendered);
 						if (originalElement) {
-							let width = getComputedStyle(originalElement).width || getBoundingClientRect(originalElement).width + 'px';
-							if (width && width !== '0px') {
-								siblingClone.setAttribute("style", "width:" + width);
-							}
+							copyWidth(originalElement, siblingClone);
 						}
 					}
 					container.appendChild(siblingClone);
@@ -294,10 +297,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 				if (alreadyRendered) {
 					let originalElement = findElement(subject, alreadyRendered);
 					if (originalElement) {
-						let width = getComputedStyle(originalElement).width || getBoundingClientRect(originalElement).width + 'px';
-						if (width && width !== '0px') {
-							parent.setAttribute("style", "width:" + width);
-						}
+						copyWidth(originalElement, parent);
 
 						// Colgroup to clone?
 						Array.from(originalElement.children).forEach(child => {
@@ -330,10 +330,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 
 							if (isElement(pos)) {
 								originalElement = findElement(pos, alreadyRendered);
-								let width = getComputedStyle(originalElement).width || getBoundingClientRect(originalElement).width + 'px';
-								if (width && width !== '0px') {
-									pos.setAttribute("style", "width:" + width);
-								}
+								copyWidth(originalElement, pos);
 
 								// I've tried to make the THEAD invisible; this is the best
 								// I could achieve. It gets a zero height but still somehow

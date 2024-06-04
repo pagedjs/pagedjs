@@ -463,14 +463,18 @@ class Footnotes extends Handler {
 					}
 					if (isText(pos)) {
 						toDelete = pos;
+						replacePos = pos.parentElement;
 					}
 				}
 
 				if (splitChild) {
 					splitChild.dataset.splitFrom = splitChild.dataset.ref;
+					replacePos.parentNode.replaceChild(extracted, replacePos);
+				}
+				else {
+					replacePos.appendChild(extracted);
 				}
 
-				replacePos.parentNode.replaceChild(extracted, replacePos);
 				extracted = cloned;
 
 				this.handleAlignment(noteInnerContent.lastElementChild);

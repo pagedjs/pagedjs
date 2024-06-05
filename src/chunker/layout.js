@@ -1036,7 +1036,7 @@ class Layout {
 		do {
 			let checkBounds = getBoundingClientRect(check);
 
-			if (checkBounds.height > bounds.height) {
+			if (checkBounds.height > bounds.height || checkBounds.width > bounds.width) {
 				mustSplit = true;
 			}
 

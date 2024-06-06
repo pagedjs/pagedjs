@@ -715,24 +715,56 @@ class Layout {
 	 * flow but I'll get LTR going first in the hope that it will simplify
 	 * the task of getting RTL sorted later. Need test cases too.
 	 */
-	getPaddingBorderAndMarginSums(element) {
-		let paddingBorderRight = 0, marginRight = 0;
-		let paddingBorderBottom = 0, marginBottom = 0;
+	getAncestorPaddingBorderAndMarginSums(element) {
+		let attribs = [
+			'padding-top',
+			'padding-right',
+			'padding-bottom',
+			'padding-left',
+			'border-top-width',
+			'border-right-width',
+			'border-bottom-width',
+			'border-left-width',
+			'margin-top',
+			'margin-right',
+			'margin-bottom',
+			'margin-left',
+		];
+		let result = {};
+		attribs.forEach(attrib => result[attrib] = 0);
+
 		while (element &&
 			!element.classList.contains('pagedjs_page_content') &&
 			!element.classList.contains('pagedjs_footnote_inner_content')) {
 			let style = window.getComputedStyle(element);
-			paddingBorderRight += parseInt(style['padding-right']) +
-				parseInt(style['border-right-width']);
-			paddingBorderBottom += parseInt(style['padding-bottom']) +
-				parseInt(style['border-bottom-width']);
-			marginRight += parseInt(style['margin-right']);
-			marginBottom += parseInt(style['margin-bottom']);
-
+			attribs.forEach(attrib => result[attrib] += parseInt(style[attrib]));
 			element = element.parentElement;
 		}
 
-		return [paddingBorderBottom, marginBottom, paddingBorderRight, marginRight];
+		return result;
+	}
+
+	/**
+	 * Checks whether an element is within a table and gets any THEAD sizes.
+	 */
+	getAncestorTheadSizes(element) {
+		let result = 0;
+
+		while (element &&
+			!element.classList.contains('pagedjs_page_content') &&
+			!element.classList.contains('pagedjs_footnote_inner_content')) {
+			if (element.tagName == 'TABLE') {
+				element.childNodes.forEach(node => {
+					if (node.tagName == 'THEAD') {
+						let style = getComputedStyle(node);
+						result += parseInt(style.height);
+					}
+				});
+			}
+			element = element.parentElement;
+		}
+
+		return result;
 	}
 
 	/**
@@ -798,7 +830,9 @@ class Layout {
 		let parentBottomPaddingBorder = 0, parentBottomMargin = 0;
 
 		if (isElement(node)) {
-			[parentBottomPaddingBorder, parentBottomMargin] = this.getPaddingBorderAndMarginSums(node);
+			let result = this.getAncestorPaddingBorderAndMarginSums(node);
+			parentBottomPaddingBorder = result['border-bottom-width'];
+			parentBottomMargin = result['margin-bottom'];
 		}
 
 		for (const child of node.childNodes) {
@@ -882,7 +916,9 @@ class Layout {
 					if (isElement(node)) {
 						// Assume that any height is the result of matching the
 						// height of surrounding content if there's no content.
-						[parentBottomPaddingBorder, parentBottomMargin] = this.getPaddingBorderAndMarginSums(node);
+						let result = this.getAncestorPaddingBorderAndMarginSums(node);
+						parentBottomPaddingBorder = result['border-bottom-width'];
+						parentBottomMargin = result['margin-bottom'];
 
 						if (node.childNodes.length) {
 							let lastChild = node.lastChild;
@@ -899,7 +935,10 @@ class Layout {
 					} else {
 						intrinsicRight = childBounds.right;
 						intrinsicBottom = childBounds.bottom;
-						[parentBottomPaddingBorder, parentBottomMargin] = this.getPaddingBorderAndMarginSums(node.parentElement);
+
+						let result = this.getAncestorPaddingBorderAndMarginSums(node.parentElement);
+						parentBottomPaddingBorder = result['border-bottom-width'];
+						parentBottomMargin = result['margin-bottom'];
 					}
 					intrinsicBottom += parentBottomPaddingBorder + parentBottomMargin;
 					if (intrinsicBottom <= bounds.bottom && intrinsicRight <= bounds.right) {
@@ -1030,33 +1069,64 @@ class Layout {
 		//    of the ancestor's children.
 
 		let rangeStart = check = node = startOfOverflow;
-		let mustSplit = false, visibleSiblings = false;
+		let visibleSiblings = false;
 		let rangeEnd = rendered.lastElementChild;
 
 		do {
 			let checkBounds = getBoundingClientRect(check);
-
-			if (checkBounds.height > bounds.height || checkBounds.width > bounds.width) {
-				mustSplit = true;
-			}
+			let hasOverflow = (checkBounds.height > bounds.height || checkBounds.width > bounds.width);
 
 			let rowspanNeedsBreakAt;
 
-			if (this.avoidBreakInside(check, rendered)) {
+			if (hasOverflow && this.avoidBreakInside(check, rendered)) {
 				rowspanNeedsBreakAt = this.rowspanNeedsBreakAt(check, rendered);
 				if (rowspanNeedsBreakAt) {
 					// No question - break earlier.
 					rangeStart = rowspanNeedsBreakAt;
 					rangeEnd = check.parentElement.lastChild;
 				}
+				else {
+					// If there is an element with overflow and it is within a
+					// break-inside: avoid, we take the whole container, provided that it
+					// will fit on a page by itself. But calculating whether it will fit
+					// by itself is non-trivial. If it is within a dom structure, the
+					// space available will be reduced by the containers. We can use the
+					// current container (that will get duplicated) but there might be
+					// subtle differences in styling due to the split-from class being
+					// added. We therefore temporary add the split-from to the current
+					// structure and find out how much space we need for the whole thing.
+					//
+					// To calculate whether we must split the element, we need to know its
+					// unconstrained height. If it has been wrapped into another column
+					// by .pagedjs_pagebox's display:grid, we need to temporarily lengthen
+					// the current column to get the maximum width it would take. Go from
+					// check's parent to simplify handling where check is a text node.
+					let unconstrainedHeight;
+					if (checkBounds.width > bounds.width) {
+						let pageBox = check.parentElement.closest('.pagedjs_page');
+						pageBox.style.setProperty('--pagedjs-pagebox-height', '5000px');
+						unconstrainedHeight = getBoundingClientRect(check).height;
+						pageBox.style.removeProperty('--pagedjs-pagebox-height');
 
-				// If there is an element with overflow and it is within a break-inside:
-				// avoid, we take the whole container, provided that it will fit
-				// on a page by itself. The normal handling below will take care
-				// of that.
-				else if (!mustSplit) {
-					rangeEnd = undefined;
-					rangeStart = check;
+						let extra = this.getAncestorPaddingBorderAndMarginSums(check.parentElement);
+						['top', 'bottom'].forEach(direction => {
+						unconstrainedHeight += extra[`padding-${direction}`] +
+								extra[`border-${direction}-width`] +
+								extra[`margin-${direction}`];
+						});
+
+						unconstrainedHeight += this.getAncestorTheadSizes(check.parentElement);
+					}
+					else {
+						unconstrainedHeight = checkBounds.height;
+					}
+
+					let mustSplit = (unconstrainedHeight > bounds.height);
+
+					if (!mustSplit) {
+						// Move the whole thing.
+						rangeStart = check;
+					}
 				}
 			}
 
@@ -1245,7 +1315,7 @@ class Layout {
 		// styling that removes the need for the overflow remains active.
 		this.addTemporarySplitTo(node.parentElement);
 
-		[ , marginBottom] = this.getPaddingBorderAndMarginSums(node.parentElement);
+		marginBottom = this.getAncestorPaddingBorderAndMarginSums(node.parentElement)['margin-bottom'];
 
 		while (!done) {
 			next = wordwalker.next();

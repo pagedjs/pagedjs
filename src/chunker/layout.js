@@ -768,19 +768,20 @@ class Layout {
 	}
 
 	/**
-	 * Adds temporary data-split-to attribute where needed.
+	 * Adds temporary data-split-to/from attribute where needed.
 	 *
 	 * @param DomElement element
 	 *   The deepest child, from which to start.
 	 */
-	addTemporarySplitTo(element) {
+	addTemporarySplit(element, isTo = true) {
 		this.temporaryIndex++;
+		let name = isTo ? 'data-split-to' : 'data-split-from';
 		while (element &&
 			!element.classList.contains('pagedjs_page_content') &&
 			!element.classList.contains('pagedjs_footnote_inner_content')) {
 
-			if (!element.getAttribute('data-split-to')) {
-				element.setAttribute('data-split-to', 'temp-' + this.temporaryIndex);
+			if (!element.getAttribute(name)) {
+				element.setAttribute(name, 'temp-' + this.temporaryIndex);
 			}
 
 			element = element.parentElement;
@@ -788,19 +789,22 @@ class Layout {
 	}
 
 	/**
-	 * Removes temporary data-split-to attribute where added.
+	 * Removes temporary data-split-to/from attribute where added.
 	 *
 	 * @param DomElement element
 	 *   The deepest child, from which to start.
+	 * @param boolean isTo
+	 *   Whether a split-to or -from was added.
 	 */
-	deleteTemporarySplitTo(element) {
+	deleteTemporarySplit(element, isTo = true) {
+		let name = isTo ? 'data-split-to' : 'data-split-from';
 		while (element &&
 			!element.classList.contains('pagedjs_page_content') &&
 			!element.classList.contains('pagedjs_footnote_inner_content')) {
 
-			let value = element.getAttribute('data-split-to');
+			let value = element.getAttribute(name);
 			if (value == 'temp-' + this.temporaryIndex) {
-				element.removeAttribute('data-split-to');
+				element.removeAttribute(name);
 			}
 
 			element = element.parentElement;
@@ -1105,7 +1109,9 @@ class Layout {
 					if (checkBounds.width > bounds.width) {
 						let pageBox = check.parentElement.closest('.pagedjs_page');
 						pageBox.style.setProperty('--pagedjs-pagebox-height', '5000px');
+						this.addTemporarySplit(check.parentElement, false);
 						unconstrainedHeight = getBoundingClientRect(check).height;
+						this.deleteTemporarySplit(check.parentElement, false);
 						pageBox.style.removeProperty('--pagedjs-pagebox-height');
 
 						let extra = this.getAncestorPaddingBorderAndMarginSums(check.parentElement);
@@ -1313,7 +1319,7 @@ class Layout {
 		// result will be undefined and the split should be done at the next
 		// node. In this case we also keep the data-split-to=foo so the
 		// styling that removes the need for the overflow remains active.
-		this.addTemporarySplitTo(node.parentElement);
+		this.addTemporarySplit(node.parentElement);
 
 		marginBottom = this.getAncestorPaddingBorderAndMarginSums(node.parentElement)['margin-bottom'];
 
@@ -1369,7 +1375,7 @@ class Layout {
 			}
 		}
 
-		// See comment above the addTemporarySplitTo call above for the offset ==
+		// See comment above the addTemporarySplit call above for the offset ==
 		// undefined part of why we may leave the temporary split-to attribute in
 		// place. This should be overridden though if a break is to be avoided.
 		// In that case,
@@ -1378,7 +1384,7 @@ class Layout {
 			(node.parentElement.nextElementSibling &&
 				node.parentElement.nextElementSibling.dataset.breakBefore == 'avoid');
 		if (offset != undefined || avoidBreak) {
-			this.deleteTemporarySplitTo(node.parentElement);
+			this.deleteTemporarySplit(node.parentElement);
 		}
 
 		if (avoidBreak) {

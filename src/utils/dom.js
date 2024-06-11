@@ -367,7 +367,8 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 			setSplit(split, parent);
 		}
 
-		dupSiblings = (subject.nodeName !== "TR" && subject.dataset.clonesiblings == true);
+		dupSiblings = (subject.dataset.clonesiblings == true ||
+			['grid', 'flex', 'table-row'].indexOf(subject.style.display) > -1);
 		added.push(parent);
 
 		if (subject.tagName == "LI") {

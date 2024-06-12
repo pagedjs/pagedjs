@@ -990,6 +990,100 @@ class Layout {
 		return [prev, anyOverflowFound];
 	}
 
+	tagAndCreateOverflowRange(startOfOverflow, rangeStart, rangeEnd, bounds, rendered) {
+		let offset = 0;
+		let start = bounds.left;
+		let end = bounds.right;
+		let vStart = bounds.top;
+		let vEnd = bounds.bottom;
+		let range;
+
+		if (isText(rangeStart) && rangeStart.textContent.trim().length) {
+			offset = this.textBreak(rangeStart, start, end, vStart, vEnd);
+			if (offset === undefined) {
+				// Adding split-to changed the CSS and meant we don't need to
+				// split this node.
+				let next = rangeStart;
+				while (!next.nextElementSibling) {
+					next = next.parentElement;
+				}
+				startOfOverflow = rangeStart = next.nextElementSibling;
+			}
+		}
+
+		if (isText(startOfOverflow)) {
+			startOfOverflow.parentElement.dataset.overflowTagged = true;
+			if (offset) {
+				startOfOverflow.parentElement.dataset.overflowPartial = true;
+			}
+		}
+		else {
+			startOfOverflow.dataset.overflowTagged = true;
+		}
+
+		// Set the start of the range and record on node or the previous element
+		// that overflow was moved.
+		let position = rangeStart;
+		range = document.createRange();
+		if (isText(rangeStart)) {
+			range.setStart(rangeStart, offset);
+			if (offset) {
+				rangeStart.parentElement.dataset.splitTo = rangeStart.parentElement.dataset.ref;
+			}
+			position = rangeStart.parentElement;
+		} else {
+			range.selectNode(rangeStart);
+			rangeStart.dataset.rangeStartOverflow = true;
+		}
+
+		// Additional nodes may have been added that will overflow further beyond
+		// node. Include them in the range.
+		rangeEnd = rangeEnd || rangeStart;
+		range.setEndAfter(rangeEnd);
+		if (isElement(rangeEnd)) {
+			rangeEnd.dataset.rangeEndOverflow = true;
+		}
+		else {
+			rangeEnd.parentElement.dataset.rangeEndOverflow = true;
+		}
+
+		// Add splitTo
+		while (position !== rendered) {
+			if (position.previousSibling) {
+				position.parentElement.dataset.splitTo = position.parentElement.dataset.ref;
+			}
+			position = position.parentElement;
+		}
+
+		// Tag ancestors in the range so we don't generate additional ranges
+		// that then cause problems when removing the ranges.
+		position = rangeStart;
+		while (position.parentElement !== range.commonAncestorContainer) {
+			position = position.parentElement;
+			position.dataset.overflowTagged = true;
+		}
+
+		if (isElement(position)) {
+			let stopAt = range.commonAncestorContainer.childNodes[range.endOffset - 1];
+
+			while (position !== stopAt) {
+				position = position.nextSibling;
+				if (isElement(position)) {
+					position.dataset.overflowTagged = true;
+				}
+			}
+		}
+		else {
+			position = position.parentElement;
+		}
+		while (!position.nextElementSibling && position !== rendered) {
+			position = position.parentElement;
+			position.dataset.overflowTagged = true;
+		}
+
+		return range;
+	}
+
 	rowspanNeedsBreakAt(tableRow, rendered) {
 		if (tableRow.nodeName !== 'TR') {
 			return;
@@ -1034,11 +1128,9 @@ class Layout {
 			return;
 		}
 
-		let start = bounds.left;
 		let end = bounds.right;
-		let vStart = bounds.top;
 		let vEnd = bounds.bottom;
-		let range, anyOverflowFound;
+		let anyOverflowFound;
 
 		// Find the deepest element that is the first in set of siblings with
 		// overflow. There may be others. We just take the first we find and
@@ -1171,91 +1263,7 @@ class Layout {
 			check = check.parentElement;
 		} while (check && check !== rendered);
 
-		let offset = 0;
-
-		if (isText(rangeStart) && rangeStart.textContent.trim().length) {
-			offset = this.textBreak(rangeStart, start, end, vStart, vEnd);
-			if (offset === undefined) {
-				// Adding split-to changed the CSS and meant we don't need to
-				// split this node.
-				let next = rangeStart;
-				while (!next.nextElementSibling) {
-					next = next.parentElement;
-				}
-				startOfOverflow = rangeStart = next.nextElementSibling;
-			}
-		}
-
-		if (isText(startOfOverflow)) {
-			startOfOverflow.parentElement.dataset.overflowTagged = true;
-			if (offset) {
-				startOfOverflow.parentElement.dataset.overflowPartial = true;
-			}
-		}
-		else {
-			startOfOverflow.dataset.overflowTagged = true;
-		}
-
-		// Set the start of the range and record on node or the previous element
-		// that overflow was moved.
-		let position = rangeStart;
-		range = document.createRange();
-		if (isText(rangeStart)) {
-			range.setStart(rangeStart, offset);
-			if (offset) {
-				rangeStart.parentElement.dataset.splitTo = rangeStart.parentElement.dataset.ref;
-			}
-			position = rangeStart.parentElement;
-		} else {
-			range.selectNode(rangeStart);
-			rangeStart.dataset.rangeStartOverflow = true;
-		}
-
-		// Additional nodes may have been added that will overflow further beyond
-		// node. Include them in the range.
-		rangeEnd = rangeEnd || rangeStart;
-		range.setEndAfter(rangeEnd);
-		if (isElement(rangeEnd)) {
-			rangeEnd.dataset.rangeEndOverflow = true;
-		}
-		else {
-			rangeEnd.parentElement.dataset.rangeEndOverflow = true;
-		}
-
-		// Add splitTo
-		while (position !== rendered) {
-			if (position.previousSibling) {
-				position.parentElement.dataset.splitTo = position.parentElement.dataset.ref;
-			}
-			position = position.parentElement;
-		}
-
-		// Tag ancestors in the range so we don't generate additional ranges
-		// that then cause problems when removing the ranges.
-		position = rangeStart;
-		while (position.parentElement !== range.commonAncestorContainer) {
-			position = position.parentElement;
-			position.dataset.overflowTagged = true;
-		}
-
-		if (isElement(position)) {
-			let stopAt = range.commonAncestorContainer.childNodes[range.endOffset - 1];
-
-			while (position !== stopAt) {
-				position = position.nextSibling;
-				if (isElement(position)) {
-					position.dataset.overflowTagged = true;
-				}
-			}
-		}
-		else {
-			position = position.parentElement;
-		}
-		while (!position.nextElementSibling && position !== rendered) {
-			position = position.parentElement;
-			position.dataset.overflowTagged = true;
-		}
-		return range;
+		return this.tagAndCreateOverflowRange(startOfOverflow, rangeStart, rangeEnd, bounds, rendered);
 	}
 
 	findEndToken(rendered, source) {

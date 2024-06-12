@@ -40,9 +40,18 @@ export function* walk(start, limiter) {
 	}
 }
 
-export function nodeAfter(node, limiter) {
+export function nodeAfter(node, limiter, descend = false) {
 	if (limiter && node === limiter) {
 		return;
+	}
+	if (descend && node.childNodes.length) {
+		let child = node.firstChild;
+		if (isIgnorable(child)) {
+			child = nextSignificantNode(child);
+		}
+		if (child) {
+			return child;
+		}
 	}
 	let significantNode = nextSignificantNode(node);
 	if (significantNode) {
@@ -61,12 +70,26 @@ export function nodeAfter(node, limiter) {
 	}
 }
 
-export function nodeBefore(node, limiter) {
+export function nodeBefore(node, limiter, descend = false) {
 	if (limiter && node === limiter) {
 		return;
 	}
 	let significantNode = previousSignificantNode(node);
 	if (significantNode) {
+		let done = false;
+		while (descend && done) {
+			let child = significantNode.lastChild;
+			if (isIgnorable(child)) {
+				child = previousSignificantNode(child);
+			}
+			if (child) {
+				done = false;
+				significantNode = child;
+			}
+			else {
+				done = true;
+			}
+		}
 		return significantNode;
 	}
 	if (node.parentNode) {
@@ -82,41 +105,41 @@ export function nodeBefore(node, limiter) {
 	}
 }
 
-export function elementAfter(node, limiter) {
-	let after = nodeAfter(node, limiter);
+export function elementAfter(node, limiter, descend = false) {
+	let after = nodeAfter(node, limiter, descend);
 
 	while (after && after.nodeType !== 1) {
-		after = nodeAfter(after, limiter);
+		after = nodeAfter(after, limiter, descend);
 	}
 
 	return after;
 }
 
-export function elementBefore(node, limiter) {
-	let before = nodeBefore(node, limiter);
+export function elementBefore(node, limiter, descend = false) {
+	let before = nodeBefore(node, limiter, descend);
 
 	while (before && before.nodeType !== 1) {
-		before = nodeBefore(before, limiter);
+		before = nodeBefore(before, limiter, descend);
 	}
 
 	return before;
 }
 
-export function displayedElementAfter(node, limiter) {
-	let after = elementAfter(node, limiter);
+export function displayedElementAfter(node, limiter, descend = false) {
+	let after = elementAfter(node, limiter, descend);
 
 	while (after && after.dataset.undisplayed) {
-		after = elementAfter(after, limiter);
+		after = elementAfter(after, limiter, descend);
 	}
 
 	return after;
 }
 
-export function displayedElementBefore(node, limiter) {
-	let before = elementBefore(node, limiter);
+export function displayedElementBefore(node, limiter, descend = false) {
+	let before = elementBefore(node, limiter, descend);
 
 	while (before && before.dataset.undisplayed) {
-		before = elementBefore(before, limiter);
+		before = elementBefore(before, limiter, descend);
 	}
 
 	return before;

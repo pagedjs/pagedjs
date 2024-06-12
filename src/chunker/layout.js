@@ -894,6 +894,31 @@ class Layout {
 		return result;
 	}
 
+	getUnconstrainedHeight(element) {
+		let pageBox = element.parentElement.closest('.pagedjs_page');
+		pageBox.style.setProperty('--pagedjs-pagebox-height', '5000px');
+		this.addTemporarySplit(element.parentElement, false);
+		let unconstrainedHeight = getBoundingClientRect(element).height;
+		this.deleteTemporarySplit(element.parentElement, false);
+		pageBox.style.removeProperty('--pagedjs-pagebox-height');
+		return unconstrainedHeight;
+	}
+
+	getRange(rangeStart, offset, rangeEnd) {
+		let range = document.createRange();
+		if (isText(rangeStart)) {
+			range.setStart(rangeStart, offset);
+		} else {
+			range.selectNode(rangeStart);
+		}
+
+		// Additional nodes may have been added that will overflow further beyond
+		// node. Include them in the range.
+		rangeEnd = rangeEnd || rangeStart;
+		range.setEndAfter(rangeEnd);
+		return range;
+	}
+
 	startOfNewOverflow(node, rendered, bounds) {
 		let childNode, done = false;
 		let prev;
@@ -1024,22 +1049,17 @@ class Layout {
 		// Set the start of the range and record on node or the previous element
 		// that overflow was moved.
 		let position = rangeStart;
-		range = document.createRange();
+		range = this.getRange(rangeStart, offset, rangeEnd);
 		if (isText(rangeStart)) {
-			range.setStart(rangeStart, offset);
 			if (offset) {
 				rangeStart.parentElement.dataset.splitTo = rangeStart.parentElement.dataset.ref;
 			}
 			position = rangeStart.parentElement;
 		} else {
-			range.selectNode(rangeStart);
 			rangeStart.dataset.rangeStartOverflow = true;
 		}
 
-		// Additional nodes may have been added that will overflow further beyond
-		// node. Include them in the range.
 		rangeEnd = rangeEnd || rangeStart;
-		range.setEndAfter(rangeEnd);
 		if (isElement(rangeEnd)) {
 			rangeEnd.dataset.rangeEndOverflow = true;
 		}
@@ -1199,12 +1219,7 @@ class Layout {
 					// check's parent to simplify handling where check is a text node.
 					let unconstrainedHeight;
 					if (checkBounds.width > bounds.width) {
-						let pageBox = check.parentElement.closest('.pagedjs_page');
-						pageBox.style.setProperty('--pagedjs-pagebox-height', '5000px');
-						this.addTemporarySplit(check.parentElement, false);
-						unconstrainedHeight = getBoundingClientRect(check).height;
-						this.deleteTemporarySplit(check.parentElement, false);
-						pageBox.style.removeProperty('--pagedjs-pagebox-height');
+						unconstrainedHeight = this.getUnconstrainedHeight(check);
 
 						let extra = this.getAncestorPaddingBorderAndMarginSums(check.parentElement);
 						['top', 'bottom'].forEach(direction => {

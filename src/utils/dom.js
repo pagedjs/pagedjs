@@ -70,39 +70,41 @@ export function nodeAfter(node, limiter, descend = false) {
 	}
 }
 
+function findLastSignificantDescendant(node) {
+	let done = false;
+
+	while (!done) {
+		let child = node.lastChild;
+		if (child && isIgnorable(child)) {
+			child = previousSignificantNode(child);
+		}
+		if (child && isElement(child)) {
+			node = child;
+		}
+		else {
+			done = true;
+		}
+	}
+
+	return node;
+}
+
 export function nodeBefore(node, limiter, descend = false) {
-	if (limiter && node === limiter) {
-		return;
-	}
-	let significantNode = previousSignificantNode(node);
-	if (significantNode) {
-		let done = false;
-		while (descend && done) {
-			let child = significantNode.lastChild;
-			if (isIgnorable(child)) {
-				child = previousSignificantNode(child);
-			}
-			if (child) {
-				done = false;
-				significantNode = child;
-			}
-			else {
-				done = true;
-			}
+	do {
+		if (limiter && node === limiter) {
+			return;
 		}
-		return significantNode;
-	}
-	if (node.parentNode) {
-		while ((node = node.parentNode)) {
-			if (limiter && node === limiter) {
-				return;
+
+		let significantNode = previousSignificantNode(node);
+		if (significantNode) {
+			if (descend) {
+				significantNode = findLastSignificantDescendant(significantNode);
 			}
-			significantNode = previousSignificantNode(node);
-			if (significantNode) {
-				return significantNode;
-			}
+			return significantNode;
 		}
-	}
+
+		node = node.parentNode;
+	} while (node);
 }
 
 export function elementAfter(node, limiter, descend = false) {

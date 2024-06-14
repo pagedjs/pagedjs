@@ -3,6 +3,7 @@ import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
 import terser from "@rollup/plugin-terser";
 import license from "rollup-plugin-license";
+import nodePolyfills from 'rollup-plugin-polyfill-node';
 
 import pkg from "./package.json" assert {
   type: 'json'
@@ -13,12 +14,13 @@ const plugins = [
 		extensions: [".cjs",".mjs", ".js"]
 	}),
 	commonjs({
-		include: "node_modules/**"
+		include: "node_modules/**",
 	}),
 	json(),
 	license({
 		banner: "@license Paged.js v<%= pkg.version %> | MIT | https://gitlab.coko.foundation/pagedjs/pagedjs",
-	})
+	}),
+	nodePolyfills( /* options */ )
 ];
 
 export default [

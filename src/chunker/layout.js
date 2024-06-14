@@ -1047,14 +1047,35 @@ class Layout {
 			}
 		}
 
-		if (isText(startOfOverflow)) {
-			startOfOverflow.parentElement.dataset.overflowTagged = true;
-			if (offset) {
-				startOfOverflow.parentElement.dataset.overflowPartial = true;
+		let previousElement = nodeBefore(rangeStart, rendered, true);
+		let shouldContinue = true;
+		let newRangeStart = rangeStart;
+		while (!offset && previousElement && shouldContinue && (
+			(isText(newRangeStart) && (
+				newRangeStart.parentElement.dataset.previousBreakAfter == 'avoid' ||
+				newRangeStart.parentElement.dataset.breakBefore == 'avoid'
+			)) ||
+			(!isText(newRangeStart) && (
+				newRangeStart.dataset.previousBreakAfter == 'avoid' ||
+				newRangeStart.dataset.breakBefore == 'avoid'
+			)))) {
+			// We are trying to avoid putting a break at newRangeStart.
+			// See if we can move some of the content above into the overflow.
+			let newPreviousElement = nodeBefore(previousElement, rendered, true);
+			// Don't go back into stuff already rendered.
+			if (!newPreviousElement || newPreviousElement.dataset.splitFrom) {
+				shouldContinue = false;
+			}
+			else {
+				newRangeStart = previousElement;
+				previousElement = newPreviousElement;
 			}
 		}
-		else {
-			startOfOverflow.dataset.overflowTagged = true;
+
+		if (shouldContinue) {
+			// We found earlier content that doesn't want to avoid having a break after it.
+			// newRangeStart is the next node (new overflow start).
+			rangeStart = newRangeStart;
 		}
 
 		// Set the start of the range and record on node or the previous element
@@ -1062,9 +1083,9 @@ class Layout {
 		let position = rangeStart;
 		range = this.getRange(rangeStart, offset, rangeEnd);
 		if (isText(rangeStart)) {
-			if (offset) {
-				rangeStart.parentElement.dataset.splitTo = rangeStart.parentElement.dataset.ref;
-			}
+			rangeStart.parentElement.dataset.splitTo = rangeStart.parentElement.dataset.ref;
+			rangeStart.parentElement.dataset.rangeStartOverflow = true;
+			rangeStart.parentElement.dataset.overflowTagged = true;
 			position = rangeStart.parentElement;
 		} else {
 			rangeStart.dataset.rangeStartOverflow = true;
@@ -1072,7 +1093,17 @@ class Layout {
 
 		rangeEnd = rangeEnd || rangeStart;
 		if (isElement(rangeEnd)) {
-			rangeEnd.dataset.rangeEndOverflow = true;
+			if (rangeStart.parentElement.closest(`[data-ref='${rangeEnd.dataset.ref}']`)) {
+				let nextNode = nodeAfter(rangeEnd);
+				if (nextNode) {
+					nextNode.dataset.rangeEndOverflow = true;
+					nextNode.dataset.overflowTagged = true;
+				}
+			}
+			else {
+				rangeEnd.dataset.rangeEndOverflow = true;
+				rangeEnd.dataset.overflowTagged = true;
+			}
 		}
 		else {
 			rangeEnd.parentElement.dataset.rangeEndOverflow = true;
@@ -1413,17 +1444,8 @@ class Layout {
 		// undefined part of why we may leave the temporary split-to attribute in
 		// place. This should be overridden though if a break is to be avoided.
 		// In that case,
-		let avoidBreak =
-			node.parentElement.dataset.breakAfter == 'avoid' ||
-			(node.parentElement.nextElementSibling &&
-				node.parentElement.nextElementSibling.dataset.breakBefore == 'avoid');
-		if (offset != undefined || avoidBreak) {
+		if (offset != undefined) {
 			this.deleteTemporarySplit(node.parentElement);
-		}
-
-		if (avoidBreak) {
-			// Signal to caller to take the entire text.
-			offset = 0;
 		}
 
 		// Don't get tricked into doing a split by whitespace at the start of a string.

@@ -1,6 +1,6 @@
 import Handler from "../handler.js";
 import {attr, querySelectorEscape, UUID} from "../../utils/utils.js";
-import csstree from "css-tree";
+import * as csstree from "css-tree";
 
 class TargetCounters extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -15,7 +15,7 @@ class TargetCounters extends Handler {
 		if (funcNode.name === "target-counter") {
 			let selector = csstree.generate(rule.ruleNode.prelude);
 
-			let first = funcNode.children.first();
+			let first = funcNode.children.first;
 			let func = first.name;
 
 			let value = csstree.generate(funcNode);

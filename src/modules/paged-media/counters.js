@@ -1,5 +1,5 @@
 import Handler from "../handler.js";
-import csstree from "css-tree";
+import * as csstree from "css-tree";
 
 class Counters extends Handler {
 	constructor(chunker, polisher, caller) {

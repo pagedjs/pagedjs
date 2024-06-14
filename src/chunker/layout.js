@@ -849,17 +849,19 @@ class Layout {
 
 			if (isElement(child)) {
 				let styles = window.getComputedStyle(child);
+				let skipThis = false;
+
 				bottomMargin = parseInt(styles["margin-bottom"]);
+
+				if (child.dataset.rangeStartOverflow !== undefined) {
+					skipRange = skipThis = true;
+					result = null;
+					// Don't continue. The start may also be the end.
+				}
 
 				if (child.dataset.rangeEndOverflow !== undefined) {
 					skipRange = false;
 					result = undefined;
-					continue;
-				}
-
-				if (child.dataset.rangeStartOverflow !== undefined) {
-					skipRange = true;
-					result = null;
 					continue;
 				}
 

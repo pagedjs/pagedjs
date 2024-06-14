@@ -896,13 +896,22 @@ class Layout {
 		return result;
 	}
 
-	getUnconstrainedHeight(element) {
+	removeHeightConstraint(element) {
 		let pageBox = element.parentElement.closest('.pagedjs_page');
 		pageBox.style.setProperty('--pagedjs-pagebox-height', '5000px');
 		this.addTemporarySplit(element.parentElement, false);
-		let unconstrainedHeight = getBoundingClientRect(element).height;
+	}
+
+	restoreHeightConstraint(element) {
+		let pageBox = element.parentElement.closest('.pagedjs_page');
 		this.deleteTemporarySplit(element.parentElement, false);
 		pageBox.style.removeProperty('--pagedjs-pagebox-height');
+	}
+
+	getUnconstrainedElementHeight(element) {
+		this.removeHeightConstraint(element);
+		let unconstrainedHeight = getBoundingClientRect(element).height;
+		this.restoreHeightConstraint(element);
 		return unconstrainedHeight;
 	}
 
@@ -1221,7 +1230,7 @@ class Layout {
 					// check's parent to simplify handling where check is a text node.
 					let unconstrainedHeight;
 					if (checkBounds.width > bounds.width) {
-						unconstrainedHeight = this.getUnconstrainedHeight(check);
+						unconstrainedHeight = this.getUnconstrainedElementHeight(check);
 
 						let extra = this.getAncestorPaddingBorderAndMarginSums(check.parentElement);
 						['top', 'bottom'].forEach(direction => {

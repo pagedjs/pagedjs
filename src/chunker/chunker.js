@@ -415,8 +415,15 @@ class Chunker {
 
 		while (breakToken !== undefined && (MAX_PAGES ? this.total < MAX_PAGES : true)) {
 
+			let range;
+			if (page && page.area.firstElementChild && page.area.firstElementChild.childElementCount) {
+				range = document.createRange();
+				range.selectNode(page.area.firstElementChild.childNodes[0]);
+				range.setEndAfter(page.area.firstElementChild.lastChild);
+			}
+
 			let addedExtra = false;
-			let emptyBody = !page || !page.area.firstElementChild || !page.area.firstElementChild.childElementCount || !page.area.firstElementChild.firstElementChild.getBoundingClientRect().height;
+			let emptyBody = !range || !range.getBoundingClientRect().height;
 			let emptyFootnotes = !page || !page.footnotesArea.firstElementChild || !page.footnotesArea.firstElementChild.childElementCount || !page.footnotesArea.firstElementChild.firstElementChild.getBoundingClientRect().height;
 			let emptyPage = (emptyBody && emptyFootnotes);
 

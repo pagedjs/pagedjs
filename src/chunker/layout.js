@@ -908,9 +908,20 @@ class Layout {
 		pageBox.style.removeProperty('--pagedjs-pagebox-height');
 	}
 
-	getUnconstrainedElementHeight(element) {
+	getUnconstrainedElementHeight(element, includeAncestors = true, includeTableHead = true) {
 		this.removeHeightConstraint(element);
 		let unconstrainedHeight = getBoundingClientRect(element).height;
+		if (includeAncestors) {
+			let extra = this.getAncestorPaddingBorderAndMarginSums(element.parentElement);
+			['top', 'bottom'].forEach(direction => {
+				unconstrainedHeight += extra[`padding-${direction}`] +
+					extra[`border-${direction}-width`] +
+					extra[`margin-${direction}`];
+			});
+		}
+		if (includeTableHead) {
+			unconstrainedHeight += this.getAncestorTheadSizes(element.parentElement);
+		}
 		this.restoreHeightConstraint(element);
 		return unconstrainedHeight;
 	}
@@ -1262,15 +1273,6 @@ class Layout {
 					let unconstrainedHeight;
 					if (checkBounds.width > bounds.width) {
 						unconstrainedHeight = this.getUnconstrainedElementHeight(check);
-
-						let extra = this.getAncestorPaddingBorderAndMarginSums(check.parentElement);
-						['top', 'bottom'].forEach(direction => {
-						unconstrainedHeight += extra[`padding-${direction}`] +
-								extra[`border-${direction}-width`] +
-								extra[`margin-${direction}`];
-						});
-
-						unconstrainedHeight += this.getAncestorTheadSizes(check.parentElement);
 					}
 					else {
 						unconstrainedHeight = checkBounds.height;

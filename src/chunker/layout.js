@@ -1243,7 +1243,7 @@ class Layout {
 
 		do {
 			let checkBounds = getBoundingClientRect(check);
-			let hasOverflow = (checkBounds.height > bounds.height || checkBounds.width > bounds.width);
+			let hasOverflow = (checkBounds.bottom > bounds.bottom || checkBounds.right > bounds.right);
 
 			let rowspanNeedsBreakAt;
 

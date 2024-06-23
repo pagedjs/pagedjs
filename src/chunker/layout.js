@@ -1137,7 +1137,10 @@ class Layout {
 		}
 
 		if (isElement(position)) {
-			let stopAt = range.commonAncestorContainer.childNodes[range.endOffset - 1];
+			let stopAt = rangeEnd;
+			while (stopAt.parentElement !== range.commonAncestorContainer) {
+				stopAt = stopAt.parentElement;
+			}
 
 			while (position !== stopAt) {
 				position = position.nextSibling;
@@ -1252,7 +1255,8 @@ class Layout {
 				if (rowspanNeedsBreakAt) {
 					// No question - break earlier.
 					rangeStart = rowspanNeedsBreakAt;
-					rangeEnd = check.parentElement.lastChild;
+					rangeEnd = rendered.lastChild;
+					break;
 				}
 				else {
 					// If there is an element with overflow and it is within a

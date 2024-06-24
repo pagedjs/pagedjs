@@ -982,6 +982,14 @@ class Layout {
 									intrinsicBottom = childBounds.bottom;
 								}
 						}
+						else {
+							// Do we count this node even though it has no children?
+							// Seems to only be needed for BR.
+							if (node instanceof HTMLBRElement) {
+								intrinsicRight = childBounds.right;
+								intrinsicBottom = childBounds.bottom;
+							}
+						}
 
 					} else {
 						intrinsicRight = childBounds.right;

@@ -884,6 +884,14 @@ export function indexOfTextNode(node, parent, hyphen) {
 	if (!isText(node)) {
 		return -1;
 	}
+
+	// Use previous element's dataref to match if possible. Matching the text
+	// will potentially return the wrong node.
+	if (node.previousSibling) {
+		let matchingNode = parent.querySelector(`[data-ref='${node.previousSibling.dataset.ref}']`);
+		return Array.prototype.indexOf.call(parent.childNodes, matchingNode) + 1;
+	}
+
 	let nodeTextContent = node.textContent;
 	// Remove hyphenation if necessary.
 	if (nodeTextContent.substring(nodeTextContent.length - hyphen.length) == hyphen) {

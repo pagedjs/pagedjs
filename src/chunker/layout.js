@@ -465,6 +465,7 @@ class Layout {
 		let offset = overflow.startOffset;
 		let node, renderedNode, parent, index, temp;
 		let hyphen = this.settings.hyphenGlyph || "\u2011";
+		let topLevel = false;
 
 		if (isElement(container)) {
 			if (container.nodeName == "INPUT") {
@@ -506,15 +507,21 @@ class Layout {
 					offset = 0;
 				}
 			} else {
-				renderedNode = findElement(container, rendered);
-
-				if (!renderedNode) {
-					renderedNode = findElement(prevValidNode(container), rendered);
+				if (container == rendered) {
+					parent = renderedNode = source;
+					topLevel = true;
 				}
+				else {
+					renderedNode = findElement(container, rendered);
 
-				parent = findElement(renderedNode, source);
+					if (!renderedNode) {
+						renderedNode = findElement(prevValidNode(container), rendered);
+					}
+
+					parent = findElement(renderedNode, source);
+				}
 				index = indexOfTextNode(temp, parent, hyphen);
-				// No seperatation for the first textNode of an element
+				// No seperation for the first textNode of an element
 				if (index === 0) {
 					node = parent;
 					offset = 0;
@@ -550,7 +557,8 @@ class Layout {
 			node,
 			offset,
 			overflow.getBoundingClientRect().height,
-			overflow
+			overflow,
+			topLevel
 		);
 
 	}

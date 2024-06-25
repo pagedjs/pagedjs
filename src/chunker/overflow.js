@@ -4,11 +4,12 @@
  */
 class Overflow {
 
-	constructor(node, offset, overflowHeight, range) {
+	constructor(node, offset, overflowHeight, range, topLevel) {
 		this.node = node;
 		this.offset = offset;
 		this.overflowHeight = overflowHeight;
 		this.range = range;
+		this.topLevel = topLevel;
 	}
 
 	equals(otherOffset) {

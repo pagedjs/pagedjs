@@ -1,7 +1,7 @@
 import Handler from "../handler.js";
 import csstree from "css-tree";
 import pageSizes from "../../polisher/sizes.js";
-import { rebuildAncestors } from "../../utils/dom.js";
+import { findElement, rebuildAncestors } from "../../utils/dom.js";
 import { CSSValueToString } from "../../utils/utils.js";
 
 class AtPage extends Handler {
@@ -1704,6 +1704,10 @@ class AtPage extends Handler {
 		// No break
 		if (!node) {
 			return content.children[0];
+		}
+
+		if (breakToken && breakToken.node && breakToken.overflow[0]?.topLevel) {
+			return findElement(breakToken.node, content);
 		}
 
 		// Top level element

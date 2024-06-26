@@ -976,7 +976,7 @@ class Layout {
 						// Assume that any height is the result of matching the
 						// height of surrounding content if there's no content.
 						let result = this.getAncestorPaddingBorderAndMarginSums(node);
-						parentBottomPaddingBorder = result['border-bottom-width'];
+						parentBottomPaddingBorder = result['border-bottom-width'] + result['padding-bottom'];
 						parentBottomMargin = result['margin-bottom'];
 
 						if (node.childNodes.length) {
@@ -1008,7 +1008,8 @@ class Layout {
 						parentBottomMargin = result['margin-bottom'];
 					}
 					intrinsicBottom += parentBottomPaddingBorder + parentBottomMargin;
-					if (intrinsicBottom <= bounds.bottom && intrinsicRight <= bounds.right) {
+					if (intrinsicBottom <= bounds.bottom &&
+						intrinsicRight <= bounds.right) {
 						let ascended;
 						do {
 							ascended = false;
@@ -1223,6 +1224,15 @@ class Layout {
 			return;
 		}
 
+		// The pattern here is:
+		// Round the bounds towards the smaller rectangle (round up top & left and
+		// round down bottom and right) and round the content towards the larger
+		// rectangle (round down top and left and round up bottom and right). Then
+		// use > and < to check if bounds are exceeded. That way portions of pixels
+		// will be correctly handled - you can't render a fraction of a pixel so
+		// bounds should have any fraction treated like that pixel isn't available
+		// and content should have any fraction of a pixel treated like the whole
+		// pixel is required.
 		let end = bounds.right;
 		let vEnd = bounds.bottom;
 		let anyOverflowFound;
@@ -1265,7 +1275,7 @@ class Layout {
 
 		do {
 			let checkBounds = getBoundingClientRect(check);
-			let hasOverflow = (checkBounds.bottom > bounds.bottom || checkBounds.right > bounds.right);
+			let hasOverflow = (checkBounds.bottom > vEnd || checkBounds.right > end);
 
 			let rowspanNeedsBreakAt;
 
@@ -1398,7 +1408,6 @@ class Layout {
 		let bottom = 0;
 		let word, next, done, pos;
 		let offset;
-		let marginBottom = 0;
 
 		// Margin bottom is needed when the node is in a block level element
 		// such as a table, grid or flex, where margins don't collapse.
@@ -1409,9 +1418,13 @@ class Layout {
 		// result will be undefined and the split should be done at the next
 		// node. In this case we also keep the data-split-to=foo so the
 		// styling that removes the need for the overflow remains active.
+		// "Margin" includes bottom padding and border in this calculation.
+
 		this.addTemporarySplit(node.parentElement);
 
-		marginBottom = this.getAncestorPaddingBorderAndMarginSums(node.parentElement)['margin-bottom'];
+		let parentAdditions = this.getAncestorPaddingBorderAndMarginSums(node.parentElement);
+		parentAdditions = parentAdditions['padding-bottom'] +
+			parentAdditions['border-bottom-width'] + parentAdditions['margin-bottom'];
 
 		while (!done) {
 			next = wordwalker.next();
@@ -1429,14 +1442,14 @@ class Layout {
 			top = pos.top;
 			bottom = pos.bottom;
 
-			if (left >= end || top >= (vEnd - marginBottom)) {
+			if (left > end || top > (vEnd - parentAdditions)) {
 				offset = word.startOffset;
 				break;
 			}
 
 			// The bounds won't be exceeded so we need >= rather than >.
 			// Also below for the letters.
-			if (right >= end || bottom >= (vEnd - marginBottom)) {
+			if (right > end || bottom > (vEnd - parentAdditions)) {
 				let letterwalker = letters(word);
 				let letter, nextLetter, doneLetter;
 
@@ -1455,7 +1468,7 @@ class Layout {
 					right = pos.right;
 					bottom = pos.bottom;
 
-					if (right >= end || bottom >= (vEnd - marginBottom)) {
+					if (right > end || bottom > (vEnd - parentAdditions)) {
 						offset = letter.startOffset;
 						done = true;
 

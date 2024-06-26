@@ -1,0 +1,346 @@
+<head>
+    <script src="../../../dist/paged.polyfill.js"></script>
+    <style>
+      @page {
+        size: letter;
+        margin-top: 50.4pt;
+        margin-right: 50.4pt;
+        margin-bottom: 96pt;
+        margin-left: 50.4pt;
+      }
+  
+      .page-number:after {
+        content: counter(page);
+      }
+  
+      .page-total:after {
+        content: counter(pages);
+      }
+  
+      .pagebreak {
+        break-before: page;
+      }
+  
+      * {
+        font-family: Times New Roman, "Times New Roman", Times, serif, sans-serif;
+      }
+  
+      body {
+        margin: 0;
+        padding: 0;
+      }
+  
+      p,
+      li,
+      td,
+      th {
+        font-size: 11pt;
+        line-height: 1;
+      }
+  
+      h1 {
+        margin-top: 6pt;
+        margin-bottom: 6pt;
+        margin-left: 0pt;
+        margin-right: 0pt;
+        font-weight: bold;
+        font-size: 24pt;
+      }
+  
+      h2 {
+        margin-top: 6pt;
+        margin-bottom: 6pt;
+        margin-left: 0pt;
+        margin-right: 0pt;
+        font-size: 20pt;
+        font-weight: bold;
+      }
+  
+      h3 {
+        margin-top: 6pt;
+        margin-bottom: 6pt;
+        margin-left: 0pt;
+        margin-right: 0pt;
+        font-size: 18pt;
+        font-weight: bold;
+      }
+  
+      h4 {
+        margin-top: 6pt;
+        margin-bottom: 6pt;
+        margin-left: 0pt;
+        margin-right: 0pt;
+        font-size: 16pt;
+        font-weight: bold;
+      }
+  
+      h5 {
+        margin-top: 6pt;
+        margin-bottom: 6pt;
+        margin-left: 0pt;
+        margin-right: 0pt;
+        font-size: 14pt;
+        font-weight: bold;
+      }
+  
+      h6 {
+        margin-top: 6pt;
+        margin-bottom: 6pt;
+        margin-left: 0pt;
+        margin-right: 0pt;
+        font-size: 12pt;
+      }
+  
+      table p {
+        margin-top: 0pt;
+        padding-top: 0pt;
+      }
+  
+      td {
+        vertical-align: top;
+      }
+  
+      li {
+        margin-top: 0pt;
+        margin-bottom: 3.5pt;
+        margin-left: 0pt;
+      }
+  
+      p {
+        margin-top: 0pt;
+        margin-bottom: 6pt;
+      }
+  
+      table {
+        margin-top: 0pt;
+        margin-bottom: 0pt;
+        margin-left: 0pt;
+        margin-right: 0pt;
+      }
+  
+      .footerFirstPage {
+        position: running(footerFirstPage);
+      }
+  
+      .footerAllPages {
+        position: running(footerAllPages);
+      }
+  
+      @page :first {
+        @bottom-center {
+          content: element(footerFirstPage);
+        }
+      }
+  
+      @page {
+        @bottom-center {
+          content: element(footerAllPages);
+        }
+      }
+  
+  
+      hr {
+        height: 0.5px;
+        border: none;
+        background-color: #000;
+      }
+  
+      table {
+        border-spacing: 0;
+        border-collapse: collapse;
+      }
+  
+      img {
+        display: inline-block;
+        height: auto;
+        max-width: 100%
+      }
+  
+      th {
+        text-align: left;
+      }
+  
+      td {
+        vertical-align: top;
+      }
+  
+      .table_zebra_striped tbody tr:nth-child(even) {
+        background-color: #f6f6f6;
+      }
+  
+      .table_title_row {
+        height: 35px;
+      }
+  
+      .table_title_row td {
+        vertical-align: middle;
+      }
+  
+      .table_title_row_compact {
+        height: 17.5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="footerFirstPage">
+      <hr>
+      <p style="text-align: center;">
+        <span style="font-size: 8pt;">adfasdf - <span class="page-number"></span> of <span class="page-total"></span>
+          <br>
+          <br>
+        </span>
+      </p>
+    </div>
+    <div class="footerAllPages">
+      <hr>
+      <p style="text-align: center;">
+        <span style="font-size: 8pt;">adsf asd - <span class="page-number"></span> of <span class="page-total"></span>
+          <br>
+          <br>
+        </span>
+      </p>
+    </div>
+    <p style="text-align: center; text-decoration: underline;">
+      <strong>adsf asdf asdf asdf asdf asdf asdfa sdf asdf asdfa sdf asdf asdfasd <br>
+        <br>
+      </strong>
+    </p>
+    <p style="text-align: center; text-decoration: underline;">&nbsp;</p>
+    <p style="text-align: center; text-decoration: underline;">
+      <strong>asdfa2sdf</strong>
+    </p>
+    <p style="text-align: center; text-decoration: underline;">
+      <strong>asdf</strong>
+    </p>
+    <p style="text-align: center; text-decoration: underline;">
+      <strong>asd</strong>
+    </p>
+    <p style="text-align: center; text-decoration: underline;">
+      <strong>fas</strong>
+    </p>
+    <p style="text-align: center; text-decoration: underline;">
+      <strong>dfa</strong>
+    </p>
+    <p style="text-align: center; text-decoration: underline;">
+      <strong>dfgsdf</strong>
+    </p>
+    <p style="text-align: center; text-decoration: underline;">
+      <strong>fgsd</strong>
+    </p>
+    <p style="text-align: center; text-decoration: underline;">
+      <strong>asdf</strong>
+    </p>
+    <table style="border: none; width: 100%;">
+      <tbody>
+        <tr>
+          <td style="width: 50%; padding-top: 5px; padding-bottom: 5px;">asdf asdfsdf:&nbsp;</td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">&nbsp;</td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;">asdfasdf dfa sdfas df:&nbsp;</td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">&nbsp;</td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;">asdfads:</td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">asdfasdfdfasdo <br>asdf asdf asdf sdfs d </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;">asdfasdf:</td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">asdf asdf asdf asdfa sdfas dfsd</td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;">sdfa sdfasd fasd.</td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">af asdf asdf asdf asdfasdf asd dsfasd</td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;">asdf asdf sdf asdf</td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">
+            <strong>asdf asdf asdf asdf sfs fasdf as asdf asdf s fasdf asdf</strong>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;">asdf asdf asdf asdf asdf sd:</td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">&nbsp;</td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;"> asdf asdf asdf asdf asdf asdf:</td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">
+            <strong>
+              <em>asd fasdf asdf asf sdf asdf asdf</em>&nbsp; </strong>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;">sdf asdf asdfa sdf:</td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">&nbsp;</td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;">s dfasd fasd fasdf asdf:</td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">
+            <strong>, dsf asdf sadf &amp; asdf asdf adsf</strong>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;">asdfasdf s dfasd fasdf:</td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">&nbsp;</td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;">asdf asdf asdf asdfasdf sdfa:</td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">
+            <strong>asd fasd fasdf sdf asdf*</strong>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;">asd fasdf asdfasdfasd:&nbsp;</td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">&nbsp;</td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;">as dfasd fasdf asdfas:&nbsp;</td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">&nbsp;</td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;"> asdfa sdf asdfa sdfa dfas dfa:</td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">
+            <p>afsdf asdf adsf asd</p>
+            <p>&nbsp;</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;">
+            <span style="text-decoration: underline;">asdf asdf asdf asdfasd</span>
+            <br>(asdf asdf asdfa)
+          </td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">asdf asdf asdf sdf asd<br>(asdfasdfasdfasd) </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;">asdf asdf asdf asdf asdf asdfas d:</td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">&nbsp;</td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;">asdf asdf asdf asdfa sdfa sdfs d:&nbsp;</td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">&nbsp;</td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;">asdfasdf asf s:</td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">
+            <p>asdf asdf asdf s</p>
+            <p>&nbsp;</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;">
+            <span style="text-decoration: underline;">(1) </span>
+            <br>(2)
+          </td>
+          <td style="padding-top: 5px; padding-bottom: 5px;"> <br>(3) </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 5px; padding-bottom: 5px;">(4) </td>
+          <td style="padding-top: 5px; padding-bottom: 5px;">
+            <p>&nbsp;(5)</p>
+            <p>&nbsp;(6)</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>&nbsp;</p>
+  </body>

@@ -1069,6 +1069,9 @@ class Layout {
 				let next = rangeStart;
 				while (!next.nextElementSibling) {
 					next = next.parentElement;
+					if (next == rendered) {
+						return;
+					}
 				}
 				startOfOverflow = rangeStart = next.nextElementSibling;
 			}

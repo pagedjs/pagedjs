@@ -1,7 +1,7 @@
 import Handler from "../handler.js";
 import { UUID, attr, querySelectorEscape } from "../../utils/utils.js";
 import { cleanPseudoContent } from "../../utils/css.js";
-import csstree from "css-tree";
+import * as csstree from "css-tree";
 // import { nodeAfter } from "../../utils/dom";
 
 class TargetText extends Handler {
@@ -18,8 +18,8 @@ class TargetText extends Handler {
 	onContent(funcNode, fItem, fList, declaration, rule) {
 		if (funcNode.name === "target-text") {
 			this.selector = csstree.generate(rule.ruleNode.prelude);
-			let first = funcNode.children.first();
-			let last = funcNode.children.last();
+			let first = funcNode.children.first;
+			let last = funcNode.children.last;
 			let func = first.name;
 
 			let value = csstree.generate(funcNode);

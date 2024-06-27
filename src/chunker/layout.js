@@ -314,8 +314,8 @@ class Layout {
 		});
 
 		// Record refs.
-		Array.from(fragment.querySelectorAll('[data-ref]')).forEach(ref => {
-			let refId = ref.dataset['ref'];
+		Array.from(fragment.querySelectorAll("[data-ref]")).forEach(ref => {
+			let refId = ref.dataset["ref"];
 			if (!dest.querySelector(`[data-ref='${refId}']`)) {
 				if (!dest.indexOfRefs) {
 					dest.indexOfRefs = {};
@@ -544,11 +544,11 @@ class Layout {
 			this.lastChildCheck(parentElement.lastElementChild, rootElement);
 		}
 
-		let refId = parentElement.dataset['ref'];
+		let refId = parentElement.dataset["ref"];
 
 		// A table row, math element or paragraph from which all content has been removed
 		// can itself also be removed. It will be added on the next page.
-		if (['TR', 'math', 'P'].indexOf(parentElement.tagName) > -1 && parentElement.textContent.trim() == '') {
+		if (["TR", "math", "P"].indexOf(parentElement.tagName) > -1 && parentElement.textContent.trim() == "") {
 			parentElement.parentNode.removeChild(parentElement);
 		}
 		else if (refId && !rootElement.indexOfRefs[refId]) {
@@ -612,8 +612,8 @@ class Layout {
 			let firstOverflow = breakToken.overflow[0];
 			if (firstOverflow?.node && firstOverflow.content) {
 				// Remove data-refs in the overflow from the index.
-				Array.from(firstOverflow.content.querySelectorAll('[data-ref]')).forEach(ref => {
-					let refId = ref.dataset['ref'];
+				Array.from(firstOverflow.content.querySelectorAll("[data-ref]")).forEach(ref => {
+					let refId = ref.dataset["ref"];
 					if (!rendered.querySelector(`[data-ref='${refId}']`)) {
 						delete(rendered.indexOfRefs[refId]);
 					}
@@ -622,8 +622,8 @@ class Layout {
 		}
 
 		breakToken.overflow.forEach((overflow) => {
-				this.hooks && this.hooks.afterOverflowRemoved.trigger(overflow.content, rendered, this);
-		})
+			this.hooks && this.hooks.afterOverflowRemoved.trigger(overflow.content, rendered, this);
+		});
 
 
 		return breakToken;
@@ -785,7 +785,7 @@ class Layout {
 	}
 
 	rowspanNeedsBreakAt(tableRow, rendered) {
-		if (tableRow.nodeName !== 'TR') {
+		if (tableRow.nodeName !== "TR") {
 			return;
 		}
 
@@ -891,7 +891,6 @@ class Layout {
 					mustSplit = true;
 				}
 
-				let styles = window.getComputedStyle(check);
 				if (this.avoidBreakInside(check, rendered)) {
 					let rowspanNeedsBreakAt = this.rowspanNeedsBreakAt(check, rendered);
 					if (rowspanNeedsBreakAt) {
@@ -942,7 +941,7 @@ class Layout {
 						checkIsFirstChild = (check.parentElement.firstChild === check);
 					}
 				}
-				if (Array.from(check.classList).filter(value => ['region-content', 'pagedjs_page_content'].includes(value)).length) {
+				if (Array.from(check.classList).filter(value => ["region-content", "pagedjs_page_content"].includes(value)).length) {
 					break;
 				}
 			}
@@ -1021,7 +1020,6 @@ class Layout {
 				// If this element is the header or the first non-header row in a
 				// table, treat the table as having an implicit break-inside: avoid
 				// tag so avoid leaving the header all by itself.
-				let styles = window.getComputedStyle(check);
 				if (this.avoidBreakInside(check, rendered) && !mustSplit) {
 					node = check;
 				} else if (check.nextElementSibling) {
@@ -1148,14 +1146,14 @@ class Layout {
 		// (It always does in current code but let's not assume that).
 		let parentElement;
 		let immediateParent = parentElement = node.parentElement;
-		immediateParent.setAttribute('data-split-to', 'foo');
+		immediateParent.setAttribute("data-split-to", "foo");
 		let parentStyle = window.getComputedStyle(parentElement);
 		while (parentElement &&
-			!parentElement.classList.contains('pagedjs_page_content') &&
-			!parentElement.classList.contains('pagedjs_footnote_area')) {
+			!parentElement.classList.contains("pagedjs_page_content") &&
+			!parentElement.classList.contains("pagedjs_footnote_area")) {
 			let style = window.getComputedStyle(parentElement);
-			if (style['display'] !== 'block') {
-				marginBottom = parseInt(parentStyle['margin-bottom']);
+			if (style["display"] !== "block") {
+				marginBottom = parseInt(parentStyle["margin-bottom"]);
 				break;
 			}
 
@@ -1219,7 +1217,7 @@ class Layout {
 		// immediateParent.removeAttribute('data-split-to');
 
 		// Don't get tricked into doing a split by whitespace at the start of a string.
-		if (node.textContent.substring(0, offset).trim() == '') {
+		if (node.textContent.substring(0, offset).trim() == "") {
 			return 0;
 		}
 

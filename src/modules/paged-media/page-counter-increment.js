@@ -1,5 +1,5 @@
 import Handler from "../handler.js";
-import csstree from "css-tree";
+import * as csstree from "css-tree";
 
 class PageCounterIncrement extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -32,7 +32,7 @@ class PageCounterIncrement extends Handler {
 	}
 
 	handleIncrement(declaration, rule) {
-		const identifier = declaration.value.children.first();
+		const identifier = declaration.value.children.first;
 		const number = declaration.value.children.getSize() > 1 ? declaration.value.children.last().value : 1;
 		const name = identifier && identifier.name;
 

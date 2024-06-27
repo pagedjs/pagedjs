@@ -1,5 +1,5 @@
 import Handler from "../handler.js";
-import csstree from "css-tree";
+import * as csstree from "css-tree";
 import {UUID} from "../../utils/utils.js";
 
 class Following extends Handler {

@@ -177,6 +177,7 @@ export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 				}
 			}
 			earlierRow = earlierRow.nextElementSibling;
+			// eslint-disable-next-line no-unused-vars
 			earlierRowIndex++;
 		}
 
@@ -198,7 +199,7 @@ export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 					column = existing;
 				}
 			}
-			let width = column.width || getBoundingClientRect(column).width + 'px';
+			let width = column.width || getBoundingClientRect(column).width + "px";
 			if (width) {
 				destColumn.setAttribute("width", width);
 			}
@@ -268,7 +269,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 					if (alreadyRendered) {
 						let originalElement = findElement(sibling, alreadyRendered);
 						if (originalElement) {
-							let width = originalElement.width || getBoundingClientRect(originalElement).width + 'px';
+							let width = originalElement.width || getBoundingClientRect(originalElement).width + "px";
 							if (width) {
 								siblingClone.setAttribute("width", width);
 							}

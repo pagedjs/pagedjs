@@ -1,5 +1,5 @@
 import Handler from "../handler.js";
-import csstree from "css-tree";
+import * as csstree from "css-tree";
 import { calculateSpecificity } from "clear-cut";
 import { cleanSelector } from "../../utils/css.js";
 
@@ -12,7 +12,7 @@ class UndisplayedFilter extends Handler {
 	onDeclaration(declaration, dItem, dList, rule) {
 		if (declaration.property === "display") {
 			let selector = csstree.generate(rule.ruleNode.prelude);
-			let value = declaration.value.children.first().name;
+			let value = declaration.value.children.first.name;
 
 			selector.split(",").forEach((s) => {
 				this.displayRules[s] = {

@@ -29,6 +29,7 @@ export default [
 	{
 		input: "./src/polyfill/polyfill.js",
 		output: {
+			sourcemap: true,
 			name: "PagedPolyfill",
 			file: "./dist/paged.polyfill.js",
 			format: "umd"

@@ -149,15 +149,6 @@ export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 		earlierRow = earlierRow.nextElementSibling;
 	}
 
-<<<<<<< Updated upstream
-=======
-	if (!maxCols) {
-		let existing = findElement(node, alreadyRendered);
-		// console.log("sfasd")
-		maxCols = existing?.children.length || 0;
-	}
-
->>>>>>> Stashed changes
 	// The next td to use in each tr.
 	// Doesn't take account of rowspans above that might make extra columns.
 	let rowOffsets = Array(maxCols).fill(0);
@@ -685,7 +676,6 @@ export function inIndexOfRefs(node, doc) {
 }
 
 export function findElement(node, doc, forceQuery) {
-	// console.log("new")
 	if (!doc) return;
 	const ref = node.getAttribute("data-ref");
 	return findRef(ref, doc, forceQuery);

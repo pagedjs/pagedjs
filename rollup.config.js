@@ -61,15 +61,16 @@ export default [
 			file: "./dist/paged.min.js",
 			format: "umd"
 		},
-    plugins: [plugins, terser()]
+    plugins: [plugins, terser({sourceMap: true})]
 	},
 	{
 		input: "./src/polyfill/polyfill.js",
 		output: {
 			name: "PagedPolyfill",
 			file: "./dist/paged.polyfill.min.js",
+			
 			format: "umd"
 		},
-		plugins: [plugins, terser()]
+		plugins: [plugins, terser({sourceMap: true})]
 	},
 ];

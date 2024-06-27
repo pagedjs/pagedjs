@@ -784,6 +784,132 @@ class Layout {
 		return [prev, anyOverflowFound];
 	}
 
+<<<<<<< Updated upstream
+=======
+	tagAndCreateOverflowRange(startOfOverflow, rangeStart, rangeEnd, bounds, rendered) {
+		let offset = 0;
+		let start = bounds.left;
+		let end = bounds.right;
+		let vStart = bounds.top;
+		let vEnd = bounds.bottom;
+		let range;
+
+		if (isText(rangeStart) && rangeStart.textContent.trim().length) {
+			offset = this.textBreak(rangeStart, start, end, vStart, vEnd);
+			if (offset === undefined) {
+				// Adding split-to changed the CSS and meant we don't need to
+				// split this node.
+				let next = rangeStart;
+				while (!next.nextElementSibling  ) {
+					next = next.parentElement;
+				}
+				// startOfOverflow = rangeStart = next.nextElementSibling;
+			}
+		}
+
+		let previousElement = nodeBefore(rangeStart, rendered, true);
+		let shouldContinue = true;
+		let newRangeStart = rangeStart;
+		while (!offset && previousElement && shouldContinue && (
+			(isText(newRangeStart) && (
+				newRangeStart.parentElement.dataset.previousBreakAfter == 'avoid' ||
+				newRangeStart.parentElement.dataset.breakBefore == 'avoid'
+			)) ||
+			(!isText(newRangeStart) && (
+				newRangeStart.dataset.previousBreakAfter == 'avoid' ||
+				newRangeStart.dataset.breakBefore == 'avoid'
+			)))) {
+			// We are trying to avoid putting a break at newRangeStart.
+			// See if we can move some of the content above into the overflow.
+			let newPreviousElement = nodeBefore(previousElement, rendered, true);
+			// Don't go back into stuff already rendered.
+			if (!newPreviousElement || newPreviousElement.dataset.splitFrom) {
+				shouldContinue = false;
+			}
+			else {
+				newRangeStart = previousElement;
+				previousElement = newPreviousElement;
+			}
+		}
+
+		if (shouldContinue) {
+			// We found earlier content that doesn't want to avoid having a break after it.
+			// newRangeStart is the next node (new overflow start).
+			rangeStart = newRangeStart;
+		}
+
+		// Set the start of the range and record on node or the previous element
+		// that overflow was moved.
+		let position = rangeStart;
+		range = this.getRange(rangeStart, offset, rangeEnd);
+		if (isText(rangeStart)) {
+			rangeStart.parentElement.dataset.splitTo = rangeStart.parentElement.dataset.ref;
+			rangeStart.parentElement.dataset.rangeStartOverflow = true;
+			rangeStart.parentElement.dataset.overflowTagged = true;
+			position = rangeStart.parentElement;
+		} else {
+			rangeStart.dataset.rangeStartOverflow = true;
+		}
+
+		rangeEnd = rangeEnd || rangeStart;
+		if (isElement(rangeEnd)) {
+			if (rangeStart.parentElement.closest(`[data-ref='${rangeEnd.dataset.ref}']`)) {
+				let nextNode = nodeAfter(rangeEnd);
+				if (nextNode) {
+					nextNode.dataset.rangeEndOverflow = true;
+					nextNode.dataset.overflowTagged = true;
+				}
+			}
+			else {
+				rangeEnd.dataset.rangeEndOverflow = true;
+				rangeEnd.dataset.overflowTagged = true;
+			}
+		}
+		else {
+			rangeEnd.parentElement.dataset.rangeEndOverflow = true;
+		}
+
+		// Add splitTo
+		while (position !== rendered) {
+			if (position.previousSibling) {
+				position.parentElement.dataset.splitTo = position.parentElement.dataset.ref;
+			}
+			position = position.parentElement;
+		}
+
+		// Tag ancestors in the range so we don't generate additional ranges
+		// that then cause problems when removing the ranges.
+		position = rangeStart;
+		while (position.parentElement !== range.commonAncestorContainer) {
+			position = position.parentElement;
+			position.dataset.overflowTagged = true;
+		}
+
+		if (isElement(position)) {
+			let stopAt = rangeEnd;
+			while (stopAt.parentElement !== range.commonAncestorContainer) {
+				stopAt = stopAt.parentElement;
+			}
+
+			while (position !== stopAt) {
+				position = position.nextSibling;
+				if (isElement(position)) {
+					position.dataset.overflowTagged = true;
+				}
+			}
+		}
+		else {
+			position = position.parentElement;
+		}
+		while (!position.nextElementSibling && position !== rendered) {
+			position = position.parentElement;
+			position.dataset.overflowTagged = true;
+		}
+
+		return range;
+	}
+
+>>>>>>> Stashed changes
 	rowspanNeedsBreakAt(tableRow, rendered) {
 		if (tableRow.nodeName !== 'TR') {
 			return;

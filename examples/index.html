@@ -4,15 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width">
     <title>Chunking Test - Moby Dick (1-50)</title>
-    <script>this.ready=new Promise(function($){document.addEventListener('DOMContentLoaded',$,{once:true})})</script>
-    <script src="../dist/paged.js"></script>
+    <script src="https://pagedjs.local/dist/paged.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="assets/styles/preview.css">
-    <link rel="stylesheet" type="text/css" href="assets/styles/moby-dick.css">
-</head>
-<body>
+    <link rel="stylesheet" type="text/css" href="https://pagedjs.local/examples/assets/styles/preview.css">
+    <link rel="stylesheet" type="text/css" href="https://pagedjs.local/examples/assets/styles/moby-dick.css">
   <script>
-    ready.then(async function () {
+		document.addEventListener('DOMContentLoaded', () => {
       let flowText = document.querySelector("#flow");
 
       let t0 = performance.now();
@@ -52,6 +49,8 @@
 
     });
   </script>
+</head>
+<body>
   <template id="flow">
     <section class="body-rw Chapter-rw" epub:type="bodymatter chapter">
     <header>

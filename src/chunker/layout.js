@@ -1016,7 +1016,7 @@ class Layout {
 							do {
 								node = node.nextElementSibling;
 							} while (node && node.dataset.overflowTagged)
-							if (!node) {
+							if (!node && rendered !== prev) {
 								ascended = true;
 								prev = node = prev.parentElement;
 							}

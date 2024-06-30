@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>table</title>
+		<style>
+			.base-footer {
+				text-transform: uppercasse;
+				font-size: 12px;
+			}
+
+			.base-header {
+				height: 100px;
+				text-align: start;
+				position: relative;
+			}
+
+			.base-title {
+				position: absolute;
+				left: 295px;
+				top: 38px;
+				font-size: 16px;
+				font-weight: 500;
+				line-height: 19px;
+			}
+
+			.base-description {
+				margin-top: 6px;
+				width: 100%;
+				border-collapse: collapse;
+			}
+
+			.base-description th,
+			.base-description td {
+				font-size: 12px;
+				padding: 1em;
+				border: 1px solid #dcdcdc;
+			}
+
+			.base-description td:nth-child(odd) {
+				width: 120px;
+				background: #ebedf1;
+			}
+
+			.base-description td:nth-child(even) {
+				width: 249px;
+			}
+
+			.base-evaluation {
+				width: 100%;
+				border-collapse: collapse;
+			}
+
+			.base-evaluation thead tr {
+				background: #ebedf1;
+			}
+
+			.base-evaluation thead tr th {
+				text-align: center;
+			}
+
+			.base-evaluation th,
+			.base-evaluation td {
+				font-size: 12px;
+				border: 1px solid #dcdcdc;
+				padding: 1em;
+			}
+
+			@page {
+				size: A4 portrait;
+				margin: 30px;
+				margin-top: 130px;
+			}
+
+			.mate-pro {
+				page: matePro;
+			}
+
+			.mate-pro-header {
+				position: running(mateproHeaderRunning);
+			}
+
+			.mate-pro-footer {
+				position: running(mateproFooterRunning);
+			}
+
+			@page matePro {
+				@top-center {
+					content: element(mateproHeaderRunning);
+				}
+
+				@bottom-center {
+					content: element(mateproFooterRunning);
+				}
+
+				@bottom-left {
+					content: counter(page) "page, total:" counter(pages) "pages";
+				}
+			}
+		</style>
+
+		<script src="../../../dist/paged.polyfill.js"></script>
+	</head>
+
+	<body>
+		<header class="base-header mate-pro-header">
+			<span class="base-title">HUAWEI Mate 60 Pro</span>
+		</header>
+
+		<footer class="base-footer mate-pro-footer">footer mate 60 pro</footer>
+
+		<section class="mate-pro">
+			<table class="base-description">
+				<tbody>
+					<tr>
+						<td>Product Name</td>
+						<td>HUAWEI Mate 60 Pro</td>
+						<td>Dimensions</td>
+						<td>161mm x 74.5mm x 8.3mm</td>
+					</tr>
+					<tr>
+						<td>Weight</td>
+						<td>Approx. 200 g (including the battery)</td>
+						<td>Size</td>
+						<td>6.67 inches</td>
+					</tr>
+					<tr>
+						<td>Colour</td>
+						<td>1.07 billion colours</td>
+						<td>Type</td>
+						<td>OLED</td>
+					</tr>
+					<tr>
+						<td>Resolution</td>
+						<td>2700 × 1220 Pixels</td>
+						<td>CPU</td>
+						<td>
+							Octa-core, 1 × Cortex-X2@3.2 GHz + 3 × Cortex-A710@2.75 GHz + 4 ×
+							Cortex-A510@2.0 GHz
+						</td>
+					</tr>
+					<tr>
+						<td>Operating System</td>
+						<td>EMUI 13.1</td>
+						<td>Memory</td>
+						<td>RAM + ROM</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<table class="base-evaluation">
+				<thead>
+					<tr>
+						<th rowspan="2" style="width: 6%">序号<br />Item</th>
+						<th rowspan="2" style="width: 51%">项目内容<br />Description</th>
+						<th colspan="5">Hour</th>
+					</tr>
+					<tr>
+						<th>Normal</th>
+						<th>O/T 1</th>
+						<th>O/T 2</th>
+						<th colspan="2">Travel/Waiting</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					<tr>
+						<td>1</td>
+						<td>2</td>
+						<td>3</td>
+						<td>4</td>
+						<td>5</td>
+						<td>6</td>
+						<td>7</td>
+					</tr>
+					<tr>
+						<td>--</td>
+						<td></td>
+						<td colspan="5"></td>
+					</tr>
+					<tr>
+						<td>--</td>
+						<td></td>
+						<td colspan="5"></td>
+					</tr>
+					<tr>
+						<td>--</td>
+						<td></td>
+						<td colspan="5"></td>
+					</tr>
+					<tr>
+						<td>--</td>
+						<td></td>
+						<td colspan="5"></td>
+					</tr>
+					<tr>
+						<td>--</td>
+						<td></td>
+						<td colspan="5"></td>
+					</tr>
+					<tr>
+						<td>--</td>
+						<td></td>
+						<td colspan="5"></td>
+					</tr>
+					<tr>
+						<td>--</td>
+						<td></td>
+						<td colspan="5"></td>
+					</tr>
+					<tr>
+						<td>--</td>
+						<td></td>
+						<td colspan="5"></td>
+					</tr>
+					<tr>
+						<td>--</td>
+						<td></td>
+						<td colspan="5"></td>
+					</tr>
+					<tr>
+						<td>--</td>
+						<td></td>
+						<td colspan="5"></td>
+					</tr>
+					<tr>
+						<td>--</td>
+						<td></td>
+						<td colspan="5"></td>
+					</tr>
+
+					<tr>
+						<td>3</td>
+						<td>fffff</td>
+						<td colspan="5"></td>
+					</tr>
+					<tr>
+						<td>4</td>
+						<td>fffff</td>
+						<td colspan="5">
+							<table>
+								<thead>
+									<tr>
+										<th class="opacity">--</th>
+										<th>总时</th>
+										<th>费率</th>
+										<th>人数</th>
+										<th>合计</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td style="width: 29%; padding: 0 8px 0 0">1</td>
+										<td>2</td>
+										<td>3</td>
+										<td>4</td>
+										<td>5</td>
+									</tr>
+									<tr>
+										<td class="opacity">--</td>
+										<td colspan="3">Sub-Total</td>
+										<td>1</td>
+									</tr>
+								</tbody>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td>5</td>
+						<td>fffff</td>
+						<td colspan="5">
+							<table>
+								<thead>
+									<tr>
+										<th class="opacity">--</th>
+										<th>总时</th>
+										<th>费率</th>
+										<th>人数</th>
+										<th>合计</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td style="width: 29%; padding: 0 8px 0 0">1</td>
+										<td>2</td>
+										<td>3</td>
+										<td>4</td>
+										<td>5</td>
+									</tr>
+									<tr>
+										<td class="opacity">--</td>
+										<td colspan="3">Sub-Total</td>
+										<td>1</td>
+									</tr>
+								</tbody>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td>6</td>
+						<td>fffff</td>
+						<td colspan="5"></td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+	</body>
+</html>
+

@@ -60,25 +60,27 @@ th { background: gray; }
           this.splitTablesRefs = [];
 
           if (breakToken) {
-            const node = breakToken.overflow[0].node;
-            const tables = this.findAllAncestors(node, "table");
-            if (node.tagName === "TABLE") {
-              tables.push(node);
-            }
+						breakToken.overflow.forEach(overflow => {
+							let node = overflow.node;
+							const tables = this.findAllAncestors(node, "table");
+							if (node.tagName === "TABLE") {
+								tables.push(node);
+							}
 
-            if (tables.length > 0) {
-              this.splitTablesRefs = tables.map(t => t.dataset.ref);
+							if (tables.length > 0) {
+								this.splitTablesRefs = tables.map(t => t.dataset.ref);
 
-              //checks if split inside thead and if so, set breakToken to next sibling element
-              let thead = node.tagName === "THEAD" ? node : this.findFirstAncestor(node, "thead");
-              if (thead) {
-                let lastTheadNode = thead.hasChildNodes() ? thead.lastChild : thead;
-                breakToken.node = this.nodeAfter(lastTheadNode, chunker.source);
-              }
+								//checks if split inside thead and if so, set breakToken to next sibling element
+								let thead = node.tagName === "THEAD" ? node : this.findFirstAncestor(node, "thead");
+								if (thead) {
+									let lastTheadNode = thead.hasChildNodes() ? thead.lastChild : thead;
+									overflow.node = this.nodeAfter(lastTheadNode, chunker.source);
+								}
 
-              this.hideEmptyTables(pageElement, node);
-            }
-          }
+								this.hideEmptyTables(pageElement, node);
+							}
+						})
+					}
         }
 
         hideEmptyTables(pageElement, breakTokenNode) {

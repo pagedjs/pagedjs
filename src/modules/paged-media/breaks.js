@@ -91,7 +91,7 @@ class Breaks extends Handler {
 							nodeAfter.setAttribute("data-previous-break-after", prop.value);
 						}
 					} else if (prop.property === "break-before") {
-						let nodeBefore = displayedElementBefore(elements[i], parsed);
+						let nodeBefore = displayedElementBefore(elements[i], parsed, true);
 
 						// Breaks are only allowed between siblings, not between a box and its container.
 						// If we cannot find a node before we should not break!

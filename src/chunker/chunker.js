@@ -121,6 +121,8 @@ class Chunker {
 
 		this.content = content;
 
+		this.modifiedRules = {};
+
 		this.charsPerBreak = [];
 		this.maxChars;
 
@@ -144,10 +146,87 @@ class Chunker {
 
 	}
 
+	rulesToDisable = [
+		'breakInside',
+		'overflow',
+		'overflowX',
+		'overflowY',
+	];
+
+	recordRulesToDisable() {
+		for (var i in document.styleSheets) {
+			let sheet = document.styleSheets[i];
+			for (var j in sheet.cssRules) {
+				let rule = sheet.cssRules.item(j);
+				if (rule && rule.style) {
+					for (var k in this.rulesToDisable) {
+						let skip = false;
+						let disable = this.rulesToDisable[k];
+						let attribName = disable;
+						if (typeof disable == 'object') {
+							attribName = Object.keys(disable)[0];
+							let value = disable[attribName];
+							skip = !rule.style[attribName] || rule.style[attribName] !== value;
+						}
+						else {
+							skip = !rule.style[attribName];
+						}
+						if (!skip) {
+							if (!this.modifiedRules[attribName]) {
+								this.modifiedRules[attribName] = [];
+							}
+							if (!this.modifiedRules[attribName][rule.style[attribName]]) {
+								this.modifiedRules[attribName][rule.style[attribName]] = [];
+							}
+							this.modifiedRules[attribName][rule.style[attribName]].push(rule);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	disableRules(rendered) {
+		for (var i in this.modifiedRules) {
+			for (var j in this.modifiedRules[i]) {
+				for (var k in this.modifiedRules[i][j]) {
+					let rule = this.modifiedRules[i][j][k];
+					rule.style[i] = '';
+					let nodes = rendered.querySelectorAll(rule.selectorText);
+					nodes.forEach((node) => {
+						let attribName = i.substring(0, 1).toUpperCase() + i.substring(1);
+						node.dataset[`original${attribName}`] = j;
+					})
+				}
+			}
+		}
+	}
+
+	enableRules(rendered) {
+		for (var i in this.modifiedRules) {
+			for (var j in this.modifiedRules[i]) {
+				for (var k in this.modifiedRules[i][j]) {
+					let rule = this.modifiedRules[i][j][k];
+					rule.style[i] = j;
+					let nodes = rendered.querySelectorAll(rule.selectorText);
+					nodes.forEach((node) => {
+						let attribName = i.substring(0, 1).toUpperCase() + i.substring(2);
+						delete(node.dataset[`original${attribName}`]);
+					})
+				}
+			}
+		}
+	}
+
 	async flow(content, renderTo) {
 		let parsed;
 
 		await this.hooks.beforeParsed.trigger(content, this);
+
+		if (content) {
+			this.recordRulesToDisable();
+			this.disableRules(content);
+		}
 
 		parsed = new ContentParser(content);
 
@@ -182,7 +261,7 @@ class Chunker {
 
 		this.emit("rendered", this.pages);
 
-
+		this.enableRules(content);
 
 		return this;
 	}
@@ -336,9 +415,16 @@ class Chunker {
 
 		while (breakToken !== undefined && (MAX_PAGES ? this.total < MAX_PAGES : true)) {
 
+			let range;
+			if (page && page.area.firstElementChild && page.area.firstElementChild.childElementCount) {
+				range = document.createRange();
+				range.selectNode(page.area.firstElementChild.childNodes[0]);
+				range.setEndAfter(page.area.firstElementChild.lastChild);
+			}
+
 			let addedExtra = false;
-			let emptyBody = !page || !page.area.firstElementChild.childElementCount || !page.area.firstElementChild.firstElementChild.getBoundingClientRect().height;
-			let emptyFootnotes = !page || !page.footnotesArea.firstElementChild.childElementCount || !page.footnotesArea.firstElementChild.firstElementChild.getBoundingClientRect().height;
+			let emptyBody = !range || !range.getBoundingClientRect().height;
+			let emptyFootnotes = !page || !page.footnotesArea.firstElementChild || !page.footnotesArea.firstElementChild.childElementCount || !page.footnotesArea.firstElementChild.firstElementChild.getBoundingClientRect().height;
 			let emptyPage = (emptyBody && emptyFootnotes);
 
 			prevNumPages = this.total;

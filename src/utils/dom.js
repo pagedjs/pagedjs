@@ -211,7 +211,7 @@ export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 	return rebuilt;
 }
 
-export function rebuildTree (node, fragment, alreadyRendered) {
+export function rebuildTree (node, root, fragment, alreadyRendered) {
 	let parent, ancestor;
 	let ancestors = [];
 	let added = [];
@@ -232,7 +232,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 			numListItems++;
 		}
 	}
-	while (element.parentNode && element.parentNode.nodeType === 1) {
+	while (element.parentNode && element.parentNode.nodeType === 1 && element.parentNode != root) {
 		ancestors.unshift(element.parentNode);
 		if (element.parentNode.tagName == "LI") {
 			numListItems++;

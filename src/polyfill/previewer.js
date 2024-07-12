@@ -44,6 +44,8 @@ class Previewer {
 		this.chunker.on("rendering", () => {
 			this.emit("rendering", this.chunker);
 		});
+
+		this.ready = true
 	}
 
 	initializeHandlers() {
@@ -135,6 +137,10 @@ class Previewer {
 
 	async preview(content, stylesheets, renderTo) {
 
+		if (!this.ready) {
+			throw new Error('The Previewer object cannot be reused')
+		}
+
 		await this.hooks.beforePreview.trigger(content, renderTo);
 
 		if (!content) {
@@ -149,6 +155,7 @@ class Previewer {
 		this.polisher.setup(renderTo?.ownerDocument);
 
 		this.handlers = this.initializeHandlers();
+		this.ready = false // handlers cannot be reused
 
 		await this.polisher.addInto(renderTo?.ownerDocument, ...stylesheets);
 

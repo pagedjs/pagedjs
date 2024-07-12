@@ -99,7 +99,7 @@ class Previewer {
 		return template.content;
 	}
 
-	removeStyles(doc=document) {
+	removeStyles(doc=document, { remove = true } = {}) {
 		// Get all stylesheets
 		const stylesheets = Array.from(doc.querySelectorAll("link[rel='stylesheet']:not([data-pagedjs-ignore], [media~='screen'])"));
 		// Get inline styles
@@ -121,11 +121,11 @@ class Previewer {
 				if (element.nodeName === "STYLE") {
 					const obj = {};
 					obj[window.location.href] = element.textContent;
-					element.remove();
+					if (remove) element.remove();
 					return obj;
 				}
 				if (element.nodeName === "LINK") {
-					element.remove();
+					if (remove) element.remove();
 					return element.href;
 				}
 				// ignore
@@ -142,14 +142,15 @@ class Previewer {
 		}
 
 		if (!stylesheets) {
-			stylesheets = this.removeStyles();
+			let remove = (content.ownerDocument === renderTo?.ownerDocument)
+			stylesheets = this.removeStyles(content.ownerDocument, { remove });
 		}
 
-		this.polisher.setup();
+		this.polisher.setup(renderTo?.ownerDocument);
 
 		this.handlers = this.initializeHandlers();
 
-		await this.polisher.add(...stylesheets);
+		await this.polisher.addInto(renderTo?.ownerDocument, ...stylesheets);
 
 		let startTime = performance.now();
 

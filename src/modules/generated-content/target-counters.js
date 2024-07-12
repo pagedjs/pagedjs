@@ -128,7 +128,7 @@ class TargetCounters extends Handler {
 					}
 
 					// force redraw
-					let el = document.querySelector(`[data-${target.variable}="${selector}"]`);
+					let el = element.ownerDocument.querySelector(`[data-${target.variable}="${selector}"]`);
 					if (el) {
 						el.style.display = "none";
 						el.clientHeight;

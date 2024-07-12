@@ -130,7 +130,7 @@ class Chunker {
 	}
 
 	setup(renderTo) {
-		this.pagesArea = document.createElement("div");
+		this.pagesArea = renderTo.ownerDocument.createElement("div");
 		this.pagesArea.classList.add("pagedjs_pages");
 
 		if (renderTo) {
@@ -139,7 +139,7 @@ class Chunker {
 			document.querySelector("body").appendChild(this.pagesArea);
 		}
 
-		this.pageTemplate = document.createElement("template");
+		this.pageTemplate = renderTo.ownerDocument.createElement("template");
 		this.pageTemplate.innerHTML = TEMPLATE;
 
 	}

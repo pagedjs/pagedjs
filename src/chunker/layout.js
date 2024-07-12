@@ -471,7 +471,7 @@ class Layout {
 					if (!temp.nextSibling) {
 						// We need to ensure that the previous sibling of temp is fully rendered.
 						const renderedNodeFromSource = findElement(renderedNode, source);
-						const walker = document.createTreeWalker(renderedNodeFromSource, NodeFilter.SHOW_ELEMENT);
+						const walker = source.ownersource.ownerDocument.createTreeWalker(renderedNodeFromSource, NodeFilter.SHOW_ELEMENT);
 						const lastChildOfRenderedNodeFromSource = walker.lastChild();
 						const lastChildOfRenderedNodeMatchingFromRendered = findElement(lastChildOfRenderedNodeFromSource, rendered);
 						// Check if we found that the last child in source
@@ -974,7 +974,7 @@ class Layout {
 				else {
 					// Set the start of the range and record on node or the previous element
 					// that overflow was moved.
-					range = document.createRange();
+					range = siblingRangeStart.ownerDocument.createRange();
 					if (offset) {
 						range.setStart(siblingRangeStart, offset);
 					} else {
@@ -999,7 +999,7 @@ class Layout {
 
 			if (startRemainder) {
 				// Everything including and after node is overflow.
-				range = document.createRange();
+				range = startRemainder.ownerDocument.createRange();
 				range.selectNode(startRemainder);
 				range.setEndAfter(rendered.childNodes[rendered.childNodes.length - 1]);
 
@@ -1077,7 +1077,7 @@ class Layout {
 
 		// Set the start of the range and record on node or the previous element
 		// that overflow was moved.
-		range = document.createRange();
+		range = node.ownerDocument.createRange();
 		if (offset) {
 			range.setStart(node, offset);
 		} else {

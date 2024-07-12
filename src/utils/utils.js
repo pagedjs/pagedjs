@@ -6,7 +6,7 @@ export function getBoundingClientRect(element) {
 	if (typeof element.getBoundingClientRect !== "undefined") {
 		rect = element.getBoundingClientRect();
 	} else {
-		let range = document.createRange();
+		let range = element.ownerDocument.createRange();
 		range.selectNode(element);
 		rect = range.getBoundingClientRect();
 	}
@@ -21,7 +21,7 @@ export function getClientRects(element) {
 	if (typeof element.getClientRects !== "undefined") {
 		rect = element.getClientRects();
 	} else {
-		let range = document.createRange();
+		let range = element.ownerDocument.createRange();
 		range.selectNode(element);
 		rect = range.getClientRects();
 	}

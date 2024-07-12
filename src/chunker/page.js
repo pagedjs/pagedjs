@@ -23,7 +23,7 @@ class Page {
 	create(template, after) {
 		//let documentFragment = document.createRange().createContextualFragment( TEMPLATE );
 		//let page = documentFragment.children[0];
-		let clone = document.importNode(this.pageTemplate.content, true);
+		let clone = this.pagesArea.ownerDocument.importNode(this.pageTemplate.content, true);
 
 		let page, index;
 		if (after) {
@@ -58,7 +58,7 @@ class Page {
 	}
 
 	createWrapper() {
-		let wrapper = document.createElement("div");
+		let wrapper = this.area.ownerDocument.createElement("div");
 
 		this.area.appendChild(wrapper);
 

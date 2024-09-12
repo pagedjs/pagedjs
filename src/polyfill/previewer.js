@@ -44,6 +44,8 @@ class Previewer {
 		this.chunker.on("rendering", () => {
 			this.emit("rendering", this.chunker);
 		});
+
+		this.ready = true
 	}
 
 	initializeHandlers() {
@@ -99,7 +101,7 @@ class Previewer {
 		return template.content;
 	}
 
-	removeStyles(doc=document) {
+	removeStyles(doc=document, { remove = true } = {}) {
 		// Get all stylesheets
 		const stylesheets = Array.from(doc.querySelectorAll("link[rel='stylesheet']:not([data-pagedjs-ignore], [media~='screen'])"));
 		// Get inline styles
@@ -121,11 +123,11 @@ class Previewer {
 				if (element.nodeName === "STYLE") {
 					const obj = {};
 					obj[window.location.href] = element.textContent;
-					element.remove();
+					if (remove) element.remove();
 					return obj;
 				}
 				if (element.nodeName === "LINK") {
-					element.remove();
+					if (remove) element.remove();
 					return element.href;
 				}
 				// ignore
@@ -135,6 +137,10 @@ class Previewer {
 
 	async preview(content, stylesheets, renderTo) {
 
+		if (!this.ready) {
+			throw new Error('The Previewer object cannot be reused')
+		}
+
 		await this.hooks.beforePreview.trigger(content, renderTo);
 
 		if (!content) {
@@ -142,14 +148,16 @@ class Previewer {
 		}
 
 		if (!stylesheets) {
-			stylesheets = this.removeStyles();
+			let remove = (content.ownerDocument === renderTo?.ownerDocument)
+			stylesheets = this.removeStyles(content.ownerDocument, { remove });
 		}
 
-		this.polisher.setup();
+		this.polisher.setup(renderTo?.ownerDocument);
 
 		this.handlers = this.initializeHandlers();
+		this.ready = false // handlers cannot be reused
 
-		await this.polisher.add(...stylesheets);
+		await this.polisher.addInto(renderTo?.ownerDocument, ...stylesheets);
 
 		let startTime = performance.now();
 

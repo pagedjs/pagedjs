@@ -293,7 +293,7 @@ class Footnotes extends Handler {
 			// No space to add even the footnote area
 			pageArea.style.setProperty("--pagedjs-footnotes-height", "0px");
 			// Add a wrapper as this div is removed later
-			let wrapperDiv = document.createElement("div");
+			let wrapperDiv = pageArea.ownerDocument.createElement("div");
 			wrapperDiv.appendChild(node);
 			// Push to the layout queue for the next page
 			this.needsLayout.push(wrapperDiv);
@@ -369,7 +369,7 @@ class Footnotes extends Handler {
 
 	createFootnoteCall(node) {
 		let parentElement = node.parentElement;
-		let footnoteCall = document.createElement("a");
+		let footnoteCall = node.ownerDocument.createElement("a");
 		for (const className of node.classList) {
 			footnoteCall.classList.add(`${className}`);
 		}
@@ -416,7 +416,7 @@ class Footnotes extends Handler {
 
 			if (isEntireNote) {
 				// Adjust the range to take the entire footnote.
-				let range = document.createRange();
+				let range = footnoteContainer.ownerDocument.createRange();
 				range.selectNode(footnoteContainer);
 				range.setEndAfter(footnoteContainer)
 				extracted = range.extractContents();

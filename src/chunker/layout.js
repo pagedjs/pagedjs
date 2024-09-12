@@ -93,7 +93,7 @@ class Layout {
 		this.hooks && this.hooks.onPageLayout.trigger(wrapper, prevBreakToken, this);
 
 		// Add overflow, and check that it doesn't have overflow itself.
-		this.addOverflowToPage(wrapper, breakToken, prevPage);
+		this.addOverflowToPage(wrapper, source, breakToken, prevPage);
 
 		// Footnotes may change the bounds.
 		bounds = this.element.getBoundingClientRect();
@@ -185,7 +185,7 @@ class Layout {
 			// Should the Node be a shallow or deep clone?
 			let shallow = isContainer(node);
 
-			this.append(node, wrapper, breakToken, shallow);
+			this.append(source, node, wrapper, breakToken, shallow);
 			bounds = this.element.getBoundingClientRect();
 
 			// Check whether layout has content yet.
@@ -283,6 +283,8 @@ class Layout {
 	 *
 	 * @param {element} dest
 	 *   The page content being built.
+	 * @param {source} source
+	 *   The source root DOM node
 	 * @param {breakToken} breakToken
 	 *   The current break cotent.
 	 * @param {element} alreadyRendered
@@ -290,7 +292,7 @@ class Layout {
 	 *
 	 * @returns {void}
 	 */
-	addOverflowToPage(dest, breakToken, alreadyRendered) {
+	addOverflowToPage(dest, source, breakToken, alreadyRendered) {
 
 		if (!breakToken || !breakToken.overflow.length) {
 			return;
@@ -302,7 +304,7 @@ class Layout {
 			// A handy way to dump the contents of a fragment.
 			// console.log([].map.call(overflow.content.children, e => e.outerHTML).join('\n'));
 
-			fragment = rebuildTree(overflow.node, fragment, alreadyRendered);
+			fragment = rebuildTree(overflow.node, source, fragment, alreadyRendered);
 			// Find the parent to which overflow.content should be added.
 			// Overflow.content can be a much shallower start than
 			// overflow.node, if the range end was outside of the range
@@ -331,6 +333,8 @@ class Layout {
 	/**
 	 * Add text to new page.
 	 *
+	 * @param {element} source
+	 *   The root source DOM Element
 	 * @param {element} node
 	 *   The node being appended to the destination.
 	 * @param {element} dest
@@ -345,17 +349,17 @@ class Layout {
 	 * @returns {ChildNode}
 	 *   The cloned node.
 	 */
-	append(node, dest, breakToken, shallow = true, rebuild = true) {
+	append(source, node, dest, breakToken, shallow = true, rebuild = true) {
 
 		let clone = cloneNode(node, !shallow);
 
-		if (node.parentNode && isElement(node.parentNode)) {
+		if (node.parentNode && isElement(node.parentNode) && node.parentNode != source) {
 			let parent = findElement(node.parentNode, dest);
 			// Rebuild chain
 			if (parent) {
 				parent.appendChild(clone);
 			} else if (rebuild) {
-				let fragment = rebuildTree(node.parentElement);
+				let fragment = rebuildTree(node.parentElement, source);
 				parent = findElement(node.parentNode, fragment);
 				parent.appendChild(clone);
 				dest.appendChild(fragment);
@@ -384,7 +388,8 @@ class Layout {
 		return clone;
 	}
 
-	rebuildTableFromBreakToken(breakToken, dest) {
+	// seems unused
+	rebuildTableFromBreakToken(source, breakToken, dest) {
 		if (!breakToken || !breakToken.node) {
 			return;
 		}
@@ -396,7 +401,7 @@ class Layout {
 				return;
 			}
 			while ((td = td.nextElementSibling)) {
-				this.append(td, dest, null, true);
+				this.append(source, td, dest, null, true);
 			}
 		}
 	}
@@ -471,7 +476,7 @@ class Layout {
 					if (!temp.nextSibling) {
 						// We need to ensure that the previous sibling of temp is fully rendered.
 						const renderedNodeFromSource = findElement(renderedNode, source);
-						const walker = document.createTreeWalker(renderedNodeFromSource, NodeFilter.SHOW_ELEMENT);
+						const walker = source.ownersource.ownerDocument.createTreeWalker(renderedNodeFromSource, NodeFilter.SHOW_ELEMENT);
 						const lastChildOfRenderedNodeFromSource = walker.lastChild();
 						const lastChildOfRenderedNodeMatchingFromRendered = findElement(lastChildOfRenderedNodeFromSource, rendered);
 						// Check if we found that the last child in source
@@ -974,7 +979,7 @@ class Layout {
 				else {
 					// Set the start of the range and record on node or the previous element
 					// that overflow was moved.
-					range = document.createRange();
+					range = siblingRangeStart.ownerDocument.createRange();
 					if (offset) {
 						range.setStart(siblingRangeStart, offset);
 					} else {
@@ -999,7 +1004,7 @@ class Layout {
 
 			if (startRemainder) {
 				// Everything including and after node is overflow.
-				range = document.createRange();
+				range = startRemainder.ownerDocument.createRange();
 				range.selectNode(startRemainder);
 				range.setEndAfter(rendered.childNodes[rendered.childNodes.length - 1]);
 
@@ -1077,7 +1082,7 @@ class Layout {
 
 		// Set the start of the range and record on node or the previous element
 		// that overflow was moved.
-		range = document.createRange();
+		range = node.ownerDocument.createRange();
 		if (offset) {
 			range.setStart(node, offset);
 		} else {

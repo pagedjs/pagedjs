@@ -18,7 +18,7 @@ class ContentParser {
 	}
 
 	parse(markup, mime) {
-		let range = document.createRange();
+		let range = markup.ownerDocument.createRange();
 		let fragment = range.createContextualFragment(markup);
 
 		this.addRefs(fragment);
@@ -41,7 +41,7 @@ class ContentParser {
 	}
 
 	addRefs(content) {
-		var treeWalker = document.createTreeWalker(
+		var treeWalker = content.ownerDocument.createTreeWalker(
 			content,
 			NodeFilter.SHOW_ELEMENT,
 			null,

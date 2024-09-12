@@ -4,7 +4,7 @@ import Hook from "../utils/hook.js";
 import request from "../utils/request.js";
 
 class Polisher {
-	constructor(setup) {
+	constructor(setup, doc = document) {
 		this.sheets = [];
 		this.inserted = [];
 
@@ -25,36 +25,40 @@ class Polisher {
 		this.hooks.afterTreeWalk = new Hook(this);
 
 		if (setup !== false) {
-			this.setup();
+			this.setup(doc);
 		}
 	}
 
-	setup() {
-		this.base = this.insert(baseStyles);
-		this.styleEl = document.createElement("style");
-		document.head.appendChild(this.styleEl);
+	setup(doc = document) {
+		this.base = this.insert(baseStyles, doc);
+		this.styleEl = doc.createElement("style");
+		doc.head.appendChild(this.styleEl);
 		this.styleSheet = this.styleEl.sheet;
 		return this.styleSheet;
 	}
 
 	async add() {
+		return await this.addInto(document, ...arguments)
+	}
+
+	async addInto(doc, ...args) {
 		let fetched = [];
 		let urls = [];
 
-		for (var i = 0; i < arguments.length; i++) {
+		for (var i = 0; i < args.length; i++) {
 			let f;
 
-			if (typeof arguments[i] === "object") {
-				for (let url in arguments[i]) {
-					let obj = arguments[i];
+			if (typeof args[i] === "object") {
+				for (let url in args[i]) {
+					let obj = args[i];
 					f = new Promise(function(resolve, reject) {
 						urls.push(url);
 						resolve(obj[url]);
 					});
 				}
 			} else {
-				urls.push(arguments[i]);
-				f = request(arguments[i]).then((response) => {
+				urls.push(args[i]);
+				f = request(args[i]).then((response) => {
 					return response.text();
 				});
 			}
@@ -67,14 +71,14 @@ class Polisher {
 			.then(async (originals) => {
 				let text = "";
 				for (let index = 0; index < originals.length; index++) {
-					text = await this.convertViaSheet(originals[index], urls[index]);
-					this.insert(text);
+					text = await this.convertViaSheet(originals[index], urls[index], doc);
+					this.insert(text, doc);
 				}
 				return text;
 			});
 	}
 
-	async convertViaSheet(cssStr, href) {
+	async convertViaSheet(cssStr, href, doc = document) {
 		let sheet = new Sheet(href, this.hooks);
 		await sheet.parse(cssStr);
 
@@ -83,8 +87,8 @@ class Polisher {
 			let str = await request(url).then((response) => {
 				return response.text();
 			});
-			let text = await this.convertViaSheet(str, url);
-			this.insert(text);
+			let text = await this.convertViaSheet(str, url, doc);
+			this.insert(text, doc);
 		}
 
 		this.sheets.push(sheet);
@@ -101,12 +105,12 @@ class Polisher {
 		return sheet.toString();
 	}
 
-	insert(text){
-		let head = document.querySelector("head");
-		let style = document.createElement("style");
+	insert(text, doc = document){
+		let head = doc.querySelector("head");
+		let style = doc.createElement("style");
 		style.setAttribute("data-pagedjs-inserted-styles", "true");
 
-		style.appendChild(document.createTextNode(text));
+		style.appendChild(doc.createTextNode(text));
 
 		head.appendChild(style);
 

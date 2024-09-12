@@ -211,7 +211,7 @@ export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 	return rebuilt;
 }
 
-export function rebuildTree (node, fragment, alreadyRendered) {
+export function rebuildTree (node, root, fragment, alreadyRendered) {
 	let parent, ancestor;
 	let ancestors = [];
 	let added = [];
@@ -220,7 +220,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 	let numListItems = 0;
 
 	if (!fragment) {
-		fragment = document.createDocumentFragment();
+		fragment = node.ownerDocument.createDocumentFragment();
 	}
 
 	// Gather all ancestors
@@ -232,7 +232,7 @@ export function rebuildTree (node, fragment, alreadyRendered) {
 			numListItems++;
 		}
 	}
-	while (element.parentNode && element.parentNode.nodeType === 1) {
+	while (element.parentNode && element.parentNode.nodeType === 1 && element.parentNode != root) {
 		ancestors.unshift(element.parentNode);
 		if (element.parentNode.tagName == "LI") {
 			numListItems++;
@@ -363,7 +363,7 @@ export function rebuildAncestors (node) {
 	let ancestors = [];
 	let added = [];
 
-	let fragment = document.createDocumentFragment();
+	let fragment = node.ownerDocument.createDocumentFragment();
 
 	// Gather all ancestors
 	let element = node;
@@ -555,7 +555,7 @@ export function *words(node) {
 		currentLetter = currentText[currentOffset];
 		if (/^[\S\u202F\u00A0]$/.test(currentLetter) || significantWhitespaces) {
 			if (!range) {
-				range = document.createRange();
+				range = node.ownerDocument.createRange();
 				range.setStart(node, currentOffset);
 			}
 		} else {
@@ -585,7 +585,7 @@ export function *letters(wordRange) {
 
 	while(currentOffset < max) {
 		 // currentLetter = currentText[currentOffset];
-		 range = document.createRange();
+		 range = currentText.ownerDocument.createRange();
 		 range.setStart(currentText, currentOffset);
 		 range.setEnd(currentText, currentOffset+1);
 
@@ -932,8 +932,9 @@ export function nextSignificantNode(sib) {
 }
 
 export function filterTree(content, func, what) {
-	const treeWalker = document.createTreeWalker(
-		content || this.dom,
+	const contentNode = content || this.dom
+	const treeWalker = contentNode.ownerDocument.createTreeWalker(
+		contentNode,
 		what || NodeFilter.SHOW_ALL,
 		func ? { acceptNode: func } : null,
 		false

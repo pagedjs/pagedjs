@@ -1,5 +1,5 @@
 import Handler from "../handler.js";
-import csstree from "css-tree";
+import * as csstree from "css-tree";
 import { cleanPseudoContent } from "../../utils/css.js";
 
 class StringSets extends Handler {
@@ -52,7 +52,7 @@ class StringSets extends Handler {
 	onContent(funcNode, fItem, fList, declaration, rule) {
 
 		if (funcNode.name === "string") {
-			let identifier = funcNode.children && funcNode.children.first().name;
+			let identifier = funcNode.children && funcNode.children.first.name;
 			this.type = funcNode.children.last().name;
 			funcNode.name = "var";
 			funcNode.children = new csstree.List();

@@ -1,5 +1,5 @@
 import Handler from "../handler.js";
-import csstree from "css-tree";
+import * as csstree from "css-tree";
 
 class RunningHeaders extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -12,14 +12,14 @@ class RunningHeaders extends Handler {
 	onDeclaration(declaration, dItem, dList, rule) {
 		if (declaration.property === "position") {
 			let selector = csstree.generate(rule.ruleNode.prelude);
-			let identifier = declaration.value.children.first().name;
+			let identifier = declaration.value.children.first.name;
 
 			if (identifier === "running") {
 				let value;
 				csstree.walk(declaration, {
 					visit: "Function",
 					enter: (node, item, list) => {
-						value = node.children.first().name;
+						value = node.children.first.name;
 					}
 				});
 
@@ -43,7 +43,7 @@ class RunningHeaders extends Handler {
 
 						let func = funcNode.name;
 
-						let value = funcNode.children.first().name;
+						let value = funcNode.children.first.name;
 
 						let args = [value];
 
@@ -126,17 +126,17 @@ class RunningHeaders extends Handler {
 	}
 
 	/**
-	* Assign a weight to @page selector classes
-	* 1) page
-	* 2) left & right
-	* 3) blank
-	* 4) first & nth
-	* 5) named page
-	* 6) named left & right
-	* 7) named first & nth
-	* @param {string} [s] selector string
-	* @return {int} weight
-	*/
+	 * Assign a weight to @page selector classes
+	 * 1) page
+	 * 2) left & right
+	 * 3) blank
+	 * 4) first & nth
+	 * 5) named page
+	 * 6) named left & right
+	 * 7) named first & nth
+	 * @param {string} [s] selector string
+	 * @return {int} weight
+	 */
 	pageWeight(s) {
 		let weight = 1;
 		let selector = s.split(" ");
@@ -182,13 +182,13 @@ class RunningHeaders extends Handler {
 	}
 
 	/**
-	* Orders the selectors based on weight
-	*
-	* Does not try to deduplicate base on specifity of the selector
-	* Previous matched selector will just be overwritten
-	* @param {obj} [obj] selectors object
-	* @return {Array} orderedSelectors
-	*/
+	 * Orders the selectors based on weight
+	 *
+	 * Does not try to deduplicate base on specifity of the selector
+	 * Previous matched selector will just be overwritten
+	 * @param {obj} [obj] selectors object
+	 * @return {Array} orderedSelectors
+	 */
 	orderSelectors(obj) {
 		let selectors = Object.keys(obj);
 		let weighted = {

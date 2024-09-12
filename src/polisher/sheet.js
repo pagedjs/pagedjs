@@ -1,4 +1,4 @@
-import csstree from "css-tree";
+import * as csstree from "css-tree";
 import { UUID } from "../utils/utils.js";
 import Hook from "../utils/hook.js";
 
@@ -168,13 +168,14 @@ class Sheet {
 		csstree.walk(ast, {
 			visit: "Url",
 			enter: (node, item, list) => {
-				let content = node.value.value;
-				if ((node.value.type === "Raw" && content.startsWith("data:")) || (node.value.type === "String" && (content.startsWith("\"data:") || content.startsWith("'data:")))) {
+				let content = node.value;
+				console.log(node);
+				if ((node.type === "Raw" && content.startsWith("data:")) || (node.type === "String" && (content.startsWith("\"data:") || content.startsWith("'data:")))) {
 					// data-uri should not be parsed using the URL interface.
 				} else {
 					let href = content.replace(/["']/g, "");
 					let url = new URL(href, this.url);
-					node.value.value = url.toString();
+					node.value = url.toString();
 				}
 			}
 		});
@@ -210,7 +211,7 @@ class Sheet {
 					visit: "Declaration",
 					enter: (declaration, dItem, dList) => {
 						if (declaration.property === "page") {
-							let value = declaration.value.children.first();
+							let value = declaration.value.children.first;
 							let name = value.name;
 							let selector = csstree.generate(node.prelude);
 							namedPageSelectors[name] = {

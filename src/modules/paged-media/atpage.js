@@ -1,5 +1,5 @@
 import Handler from "../handler.js";
-import csstree from "css-tree";
+import * as csstree from "css-tree";
 import pageSizes from "../../polisher/sizes.js";
 import { rebuildAncestors } from "../../utils/dom.js";
 import { CSSValueToString } from "../../utils/utils.js";
@@ -272,7 +272,7 @@ class AtPage extends Handler {
 			visit: "PseudoClassSelector",
 			enter: (node, item, list) => {
 				if (node.name === "nth" && node.children) {
-					let raw = node.children.first();
+					let raw = node.children.first;
 					nth = raw.value;
 				}
 			}
@@ -364,7 +364,7 @@ class AtPage extends Handler {
 							bottom: {}
 						};
 					}
-					parsed.margin[m] = declaration.value.children.first();
+					parsed.margin[m] = declaration.value.children.first;
 					dList.remove(dItem);
 
 				} else if (prop === "padding") {
@@ -381,7 +381,7 @@ class AtPage extends Handler {
 							bottom: {}
 						};
 					}
-					parsed.padding[p] = declaration.value.children.first();
+					parsed.padding[p] = declaration.value.children.first;
 					dList.remove(dItem);
 				}
 
@@ -710,13 +710,13 @@ class AtPage extends Handler {
 
 		let rule = this.createRule(selectors, block);
 
-		this.addMarginVars(page.margin, children, children.first());
-		this.addPaddingVars(page.padding, children, children.first());
-		this.addBorderVars(page.border, children, children.first());
+		this.addMarginVars(page.margin, children, children.first);
+		this.addPaddingVars(page.padding, children, children.first);
+		this.addBorderVars(page.border, children, children.first);
 
 
 		if (page.width) {
-			this.addDimensions(page.width, page.height, page.orientation, children, children.first());
+			this.addDimensions(page.width, page.height, page.orientation, children, children.first);
 		}
 
 		if (page.marginalia) {
@@ -820,7 +820,7 @@ class AtPage extends Handler {
 			let block = csstree.clone(page.marginalia[loc]);
 			let hasContent = false;
 
-			if (block.children.isEmpty()) {
+			if (block.children.isEmpty) {
 				continue;
 			}
 
@@ -828,7 +828,7 @@ class AtPage extends Handler {
 				visit: "Declaration",
 				enter: (node, item, list) => {
 					if (node.property === "content") {
-						if (node.value.children && node.value.children.first().name === "none") {
+						if (node.value.children && node.value.children.first.name === "none") {
 							hasContent = false;
 						} else {
 							hasContent = true;
@@ -910,13 +910,13 @@ class AtPage extends Handler {
 						list.remove(item);
 					}
 
-					if (node.value.children && node.value.children.first().name === "none") {
+					if (node.value.children && node.value.children.first.name === "none") {
 						displayNone = true;
 					}
 				}
 			});
 
-			if (content.children.isEmpty()) {
+			if (content.children.isEmpty) {
 				continue;
 			}
 

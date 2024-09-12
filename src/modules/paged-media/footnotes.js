@@ -1,7 +1,7 @@
 import Handler from "../handler.js";
 import { isContainer, isElement, isText } from "../../utils/dom.js";
 import Layout from "../../chunker/layout.js";
-import csstree from "css-tree";
+import * as csstree from "css-tree";
 
 class Footnotes extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -15,7 +15,7 @@ class Footnotes extends Handler {
 	onDeclaration(declaration, dItem, dList, rule) {
 		let property = declaration.property;
 		if (property === "float") {
-			let identifier = declaration.value.children && declaration.value.children.first();
+			let identifier = declaration.value.children && declaration.value.children.first;
 			let location = identifier && identifier.name;
 			if (location === "footnote") {
 				let selector = csstree.generate(rule.ruleNode.prelude);
@@ -28,7 +28,7 @@ class Footnotes extends Handler {
 			}
 		}
 		if (property === "footnote-policy") {
-			let identifier = declaration.value.children && declaration.value.children.first();
+			let identifier = declaration.value.children && declaration.value.children.first;
 			let policy = identifier && identifier.name;
 			if (policy) {
 				let selector = csstree.generate(rule.ruleNode.prelude);
@@ -39,7 +39,7 @@ class Footnotes extends Handler {
 			}
 		}
 		if (property === "footnote-display") {
-			let identifier = declaration.value.children && declaration.value.children.first();
+			let identifier = declaration.value.children && declaration.value.children.first;
 			let display = identifier && identifier.name;
 			let selector = csstree.generate(rule.ruleNode.prelude);
 			if (display && this.footnotes[selector]) {
@@ -59,7 +59,7 @@ class Footnotes extends Handler {
 			let newPrelude = new csstree.List();
 
 			// Can't get remove to work, so just copying everything else
-			prelude.children.first().children.each((node) => {
+			prelude.children.first.children.each((node) => {
 				if (node.type !== "PseudoElementSelector") {
 					newPrelude.appendData(node);
 				}
@@ -86,7 +86,7 @@ class Footnotes extends Handler {
 				children: null
 			});
 
-			prelude.children.first().children = newPrelude;
+			prelude.children.first.children = newPrelude;
 		}
 
 		if (name === "footnote-call") {
@@ -96,7 +96,7 @@ class Footnotes extends Handler {
 			let newPrelude = new csstree.List();
 
 			// Can't get remove to work, so just copying everything else
-			prelude.children.first().children.each((node) => {
+			prelude.children.first.children.each((node) => {
 				if (node.type !== "PseudoElementSelector") {
 					newPrelude.appendData(node);
 				}
@@ -123,7 +123,7 @@ class Footnotes extends Handler {
 				children: null
 			});
 
-			prelude.children.first().children = newPrelude;
+			prelude.children.first.children = newPrelude;
 		}
 	}
 
@@ -339,7 +339,7 @@ class Footnotes extends Handler {
 				noteCall = this.createFootnoteCall(node);
 			}
 			else {
-				let ref = node.dataset['ref'];
+				let ref = node.dataset["ref"];
 				noteCall = pageArea.querySelector(`[data-ref="${ref}"]`);
 			}
 		}
@@ -406,10 +406,10 @@ class Footnotes extends Handler {
 
 		if (overflow) {
 			let { startContainer, startOffset } = overflow[0];
-			let extracted, parentElement = startContainer.parentElement;
+			let extracted;
 			let footnoteContainer = isText(startContainer) ?
-				startContainer.parentElement.closest('[data-footnote-marker]') :
-				startContainer.closest('[data-footnote-marker]');
+				startContainer.parentElement.closest("[data-footnote-marker]") :
+				startContainer.closest("[data-footnote-marker]");
 			let isEntireNote = (footnoteContainer &&
 				(footnoteContainer == startContainer ||
 					(footnoteContainer.childNodes[0] == startContainer && !startOffset)));
@@ -418,7 +418,7 @@ class Footnotes extends Handler {
 				// Adjust the range to take the entire footnote.
 				let range = document.createRange();
 				range.selectNode(footnoteContainer);
-				range.setEndAfter(footnoteContainer)
+				range.setEndAfter(footnoteContainer);
 				extracted = range.extractContents();
 			}
 			else {
@@ -541,7 +541,7 @@ class Footnotes extends Handler {
 		if (this.overflow.length) {
 			this.overflow.forEach((item) => {
 				notesInnerContent.appendChild(item);
-				let call = rendered.querySelector(`[data-ref="${item.dataset['ref']}"]`)
+				let call = rendered.querySelector(`[data-ref="${item.dataset["ref"]}"]`);
 				this.recalcFootnotesHeight(item, noteContent, area, call, false);
 			});
 

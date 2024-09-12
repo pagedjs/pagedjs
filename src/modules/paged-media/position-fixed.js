@@ -1,5 +1,5 @@
 import Handler from "../handler.js";
-import csstree from "css-tree";
+import * as csstree from "css-tree";
 
 class PositionFixed extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -10,7 +10,7 @@ class PositionFixed extends Handler {
 	}
 
 	onDeclaration(declaration, dItem, dList, rule) {
-		if (declaration.property === "position" && declaration.value.children.first().name === "fixed") {
+		if (declaration.property === "position" && declaration.value.children.first.name === "fixed") {
 			let selector = csstree.generate(rule.ruleNode.prelude);
 			this.fixedElementsSelector.push(selector);
 			dList.remove(dItem);

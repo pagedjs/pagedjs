@@ -1,5 +1,5 @@
 import Handler from "../handler.js";
-import { isContainer, isElement, isText } from "../../utils/dom.js";
+import { isContainer, isElement, isText, walk } from "../../utils/dom.js";
 import Layout from "../../chunker/layout.js";
 import csstree from "css-tree";
 
@@ -405,30 +405,86 @@ class Footnotes extends Handler {
 		let overflow = layout.findOverflow(noteInnerContent, noteContentBounds);
 
 		if (overflow) {
-			let { startContainer, startOffset } = overflow[0];
-			let extracted, parentElement = startContainer.parentElement;
+			let { startContainer, startOffset } = overflow;
+			let extracted;
 			let footnoteContainer = isText(startContainer) ?
 				startContainer.parentElement.closest('[data-footnote-marker]') :
 				startContainer.closest('[data-footnote-marker]');
-			let isEntireNote = (footnoteContainer &&
-				(footnoteContainer == startContainer ||
-					(footnoteContainer.childNodes[0] == startContainer && !startOffset)));
+			let notEntireNote = (!footnoteContainer || startOffset);
+			if (!notEntireNote) {
+				let pos = startContainer;
+				while (pos && pos !== footnoteContainer) {
+					pos = pos.previousSibling || pos.parentNode;
+					if (isText(pos)) {
+						notEntireNote = true;
+						break;
+					}
+				}
+			}
 
-			if (isEntireNote) {
+			if (notEntireNote) {
+				// Assuming overflow is not multipart.
+				extracted = overflow.extractContents();
+
+				let splitChild = extracted.firstElementChild;
+
+				// Add any DOM structure above this node, but remove any text
+				// content from it.
+				// Assumes the footnote content is not anything complicated enough
+				// to need the more complicated handling that we do for the main
+				// content.
+				let parentRange = document.createRange();
+				parentRange.selectNode(footnoteContainer);
+				parentRange.setEndAfter(footnoteContainer);
+				let cloned = parentRange.cloneContents();
+				let walker = walk(cloned.firstChild, cloned);
+
+				let toDelete = undefined;
+				let next, pos, replacePos, done;
+				while (!done) {
+					if (isElement(pos)) {
+						if (pos.dataset.ref == splitChild?.dataset.ref) {
+							replacePos = pos;
+						}
+
+						if (pos.dataset.footnoteMarker) {
+							// Make sure counter isn't incremented and no new marker id rendered.
+							pos.dataset.splitFrom = true;
+							delete(pos.dataset.footnoteMarker);
+						}
+					}
+					next = walker.next();
+					pos = next.value;
+					done = next.done;
+
+					if (toDelete) {
+						toDelete.remove();
+						toDelete = undefined;
+					}
+					if (isText(pos)) {
+						toDelete = pos;
+						replacePos = pos.parentElement;
+					}
+				}
+
+				if (splitChild) {
+					splitChild.dataset.splitFrom = splitChild.dataset.ref;
+					replacePos.parentNode.replaceChild(extracted, replacePos);
+				}
+				else {
+					replacePos.appendChild(extracted);
+				}
+
+				extracted = cloned;
+
+				this.handleAlignment(noteInnerContent.lastElementChild);
+			}
+			else {
 				// Adjust the range to take the entire footnote.
 				let range = document.createRange();
 				range.selectNode(footnoteContainer);
 				range.setEndAfter(footnoteContainer)
 				extracted = range.extractContents();
-			}
-			else {
-				// Assuming overflow is not multipart.
-				extracted = overflow[0].extractContents();
-
-				let splitChild = extracted.firstElementChild;
-				splitChild.dataset.splitFrom = splitChild.dataset.ref;
-
-				this.handleAlignment(noteInnerContent.lastElementChild);
 			}
 
 			this.needsLayout.push(extracted);
@@ -457,7 +513,7 @@ class Footnotes extends Handler {
 				chunker.clonePage(page);
 			} else {
 				let breakBefore, previousBreakAfter;
-				let firstOverflowNode = breakToken.overflow[0]?.node;
+				let firstOverflowNode = breakToken.overflow?.node;
 				if (
 					firstOverflowNode &&
 					typeof firstOverflowNode.dataset !== "undefined" &&
@@ -510,6 +566,10 @@ class Footnotes extends Handler {
 	afterOverflowRemoved(removed, rendered) {
 		// Find the page area
 		let area = rendered.closest(".pagedjs_area");
+		if (!area) {
+			return;
+		}
+
 		// Get any rendered footnotes
 		let notes = area.querySelectorAll(".pagedjs_footnote_area [data-note='footnote']");
 		for (let n = 0; n < notes.length; n++) {

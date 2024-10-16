@@ -32,9 +32,26 @@ class Polisher {
 	setup() {
 		this.base = this.insert(baseStyles);
 		this.styleEl = document.createElement("style");
+
+		const cspNonce = this.getCspNonce();
+		if (this.cspNonce) {
+			this.styleEl.setAttribute("nonce", this.cspNonce);
+		}
+
 		document.head.appendChild(this.styleEl);
 		this.styleSheet = this.styleEl.sheet;
 		return this.styleSheet;
+	}
+
+	getCspNonce() {
+		const cspNonceElement = document.querySelector("meta[name='csp-nonce']");
+		if (cspNonceElement) {
+			// The meta tag SHOULD be storing the nonce in a "nonce" attribute.
+			// Fallback to "content" if that's not the case.
+			const { nonce, content } = cspNonceElement;
+			return nonce == "" ? content : nonce;
+		}
+		return null;
 	}
 
 	async add() {
@@ -105,6 +122,11 @@ class Polisher {
 		let head = document.querySelector("head");
 		let style = document.createElement("style");
 		style.setAttribute("data-pagedjs-inserted-styles", "true");
+
+		const cspNonce = this.getCspNonce();
+		if (cspNonce) {
+			style.setAttribute("nonce", cspNonce);
+		}
 
 		style.appendChild(document.createTextNode(text));
 

@@ -1258,6 +1258,16 @@ class Layout {
 			return;
 		}
 
+		//text Encountering the critical point, next page
+		if(startOfOverflowIsText && startOfOverflow.parentElement.dataset.overflowTextNextPage){
+			startOfOverflow = startOfOverflow.parentElement;
+		}
+
+		//div Encountering the critical point, next page
+		if(startOfOverflow.parentElement.dataset.overflowNextPage){
+			startOfOverflow = startOfOverflow.parentElement;
+		}
+
 		// The node we finished on may be within something asking not to have its
 		// contents split. It - or a parent - may also have to be split because
 		// the content is just too big for the page.

@@ -84,7 +84,7 @@ Examples:
 
 ### CLI
 
-Command line interface to render out PDFs of HTML files using Puppeteer: [https://gitlab.pagedmedia.org/tools/pagedjs-cli](https://gitlab.pagedmedia.org/tools/pagedjs-cli).
+Command line interface to render out PDFs of HTML files using Puppeteer: [https://pagedjs.org/documentation/2-getting-started-with-paged.js/#command-line-version](https://pagedjs.org/documentation/2-getting-started-with-paged.js/#command-line-version).
 
 ## Modules
 
@@ -284,4 +284,4 @@ The core team behind paged.js includes [Adam Hyde](https://adamhyde.net), [Julie
 
 ## Licence
 
-MIT License (MIT), which you can read [here](https://gitlab.pagedmedia.org/tools/pagedjs/blob/master/LICENSE.md)
+MIT License (MIT), which you can read [here](LICENSE.md)

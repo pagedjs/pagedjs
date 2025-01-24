@@ -1346,7 +1346,7 @@ class Layout {
 			// widths on this page.
 			Array.from(check.parentElement.children).forEach((childNode) => {
 				let style = getComputedStyle(childNode);
-				childNode.width = style.width;
+				childNode.setAttribute("width", style.width);
 			});
 
 			if (isElement(check) && Array.from(check.classList).filter(value => ['region-content', 'pagedjs_page_content'].includes(value)).length) {

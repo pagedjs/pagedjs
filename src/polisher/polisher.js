@@ -56,6 +56,9 @@ class Polisher {
 				urls.push(arguments[i]);
 				f = request(arguments[i]).then((response) => {
 					return response.text();
+				}).catch((error) => {
+					console.error(`Failed to fetch URL: ${arguments[i]} - ${error.message}`);
+					return "";
 				});
 			}
 
@@ -63,15 +66,17 @@ class Polisher {
 			fetched.push(f);
 		}
 
-		return await Promise.all(fetched)
-			.then(async (originals) => {
-				let text = "";
-				for (let index = 0; index < originals.length; index++) {
-					text = await this.convertViaSheet(originals[index], urls[index]);
-					this.insert(text);
-				}
-				return text;
-			});
+		const results = await Promise.allSettled(fetched);
+		let text = "";
+		for (let index = 0; index < results.length; index++) {
+			if (results[index].status === "fulfilled") {
+				text = await this.convertViaSheet(results[index].value, urls[index]);
+				this.insert(text);
+			} else {
+				console.error(`Failed to fetch resource: ${urls[index]} - ${results[index].reason}`);
+			}
+		}
+		return text;
 	}
 
 	async convertViaSheet(cssStr, href) {
@@ -82,6 +87,9 @@ class Polisher {
 		for (let url of sheet.imported) {
 			let str = await request(url).then((response) => {
 				return response.text();
+			}).catch((error) => {
+				console.error(`Failed to fetch URL: ${url} - ${error.message}`);
+				return "";
 			});
 			let text = await this.convertViaSheet(str, url);
 			this.insert(text);

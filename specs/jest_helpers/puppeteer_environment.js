@@ -44,13 +44,26 @@ class PuppeteerEnvironment extends TestEnvironment {
 		console.error(error);
 	}
 
-	async loadPage(path) {
+	async loadPage(path, options = {}) {
+		options = {
+			ignoreMissingResources: false,
+			routes: {},
+			...options
+		};
 		let page = await this.global.browser.newPage();
 		let renderedResolve, renderedReject;
 		page.rendered = new Promise(function(resolve, reject) {
 			renderedResolve = resolve;
 			renderedReject = reject;
 		});
+
+		await Promise.all(Object.entries(options.routes).map(([url, handlerOrResponse]) => {
+			let handler = handlerOrResponse;
+			if (typeof handler !== 'function') {
+				handler = route => route.fulfill(handlerOrResponse);
+			}
+			return page.route(url, handler);
+		}));
 
 		page.on("pageerror", (error) => {
 			this.handleError(error);
@@ -62,9 +75,11 @@ class PuppeteerEnvironment extends TestEnvironment {
 			renderedReject(error);
 		});
 
-		page.on("requestfailed", (error) => {
-			this.handleError(error);
-			renderedReject(error);
+		page.on("requestfailed", async (request) => {
+			if (!options.ignoreMissingResources || (await request.response())?.status() !== 404) {
+				this.handleError(request);
+				renderedReject(request);
+			}
 		});
 
 		page.on("console", async (msg) => {

@@ -59,7 +59,7 @@ class PuppeteerEnvironment extends TestEnvironment {
 
 		await Promise.all(Object.entries(options.routes).map(([url, handlerOrResponse]) => {
 			let handler = handlerOrResponse;
-			if (typeof handler !== 'function') {
+			if (typeof handler !== "function") {
 				handler = route => route.fulfill(handlerOrResponse);
 			}
 			return page.route(url, handler);

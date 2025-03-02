@@ -294,11 +294,9 @@ class Chunker {
 	// 	}
 	// }
 
-	// Chunker rendering.
-	// Parsed = preloaded content with data-refs for later use.
-	// startAt = null (chunker breaktoken)
 	/**
-	 * Renders the parsed html into paginated content
+	 * Renders the parsed html into paginated content and adds references (UUID data-ref attributes)
+	 * 
 	 * @param {HTML} parsed - parsed html content with data-refs for later use
 	 * @param {Element} startAt - HTML node to start rendering
 	 * @returns Pages

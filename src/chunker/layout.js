@@ -1054,6 +1054,15 @@ class Layout {
 		return [prev, anyOverflowFound];
 	}
 
+	/**
+	 * Tagging elements and returns range of overflowing elements
+	 * @param {Element} startOfOverflow - Start element of the overflow
+	 * @param {Node} rangeStart 
+	 * @param {Node} rangeEnd
+	 * @param {DOMRect} bounds - page bounds
+	 * @param {Element} rendered - Current rendered page content
+	 * @returns 
+	 */
 	tagAndCreateOverflowRange(startOfOverflow, rangeStart, rangeEnd, bounds, rendered) {
 		let offset = 0;
 		let start = bounds.left;
@@ -1218,6 +1227,14 @@ class Layout {
 		}
 	}
 
+	/**
+	 * Find the next overflow in the current layout. Tags overflowing content and returns the range of the overflowing content
+	 * -> Called by findBreakToken and afterLayout
+	 * @param {Element} rendered - Current page rendered div
+	 * @param {DOMRect} bounds - ClientRect of the page
+	 * @param {HTML} source - Source html content
+	 * @returns {null | Range} range - null if there is no overflow.
+	 */
 	findOverflow(rendered, bounds, source) {
 
 		if (!this.hasOverflow(rendered, bounds) || rendered.dataset.overflowTagged) {

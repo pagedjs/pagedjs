@@ -30,10 +30,10 @@ class Polisher {
 	}
 
 	setup() {
+		this.cspNonce = this.getCspNonce();
 		this.base = this.insert(baseStyles);
 		this.styleEl = document.createElement("style");
 
-		const cspNonce = this.getCspNonce();
 		if (this.cspNonce) {
 			this.styleEl.setAttribute("nonce", this.cspNonce);
 		}
@@ -123,9 +123,8 @@ class Polisher {
 		let style = document.createElement("style");
 		style.setAttribute("data-pagedjs-inserted-styles", "true");
 
-		const cspNonce = this.getCspNonce();
-		if (cspNonce) {
-			style.setAttribute("nonce", cspNonce);
+		if (this.cspNonce) {
+			style.setAttribute("nonce", this.cspNonce);
 		}
 
 		style.appendChild(document.createTextNode(text));

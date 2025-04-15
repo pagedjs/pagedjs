@@ -67,6 +67,35 @@ whenever you want to start.
 </script>
 ```
 
+## Using with a Content Security Policy
+
+In the event you are using a Content Security Policy to lock down what styles and scripts can be used,
+you can configure Paged.js to set a nonce for any style elements it creates.
+
+### NPM Module
+
+When using the NPM Module, you can pass the nonce into the options of the previewer:
+
+```js
+import { Previewer } from 'pagedjs';
+
+let paged = new Previewer({ cspNonce: someNonceValue });
+```
+
+### Polyfill
+
+When using the polyfill, you can set the nonce into the `window.PagedConfig` object:
+
+```html
+<script>
+	window.PagedConfig = {
+		auto: false,
+		after: (flow) => { console.log("after", flow) },
+		settings: { cspNonce: someNonceValue },
+	};
+</script>
+```
+
 ## Chunker
 Chunks up a document into paged media flows and applies print classes.
 

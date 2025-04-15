@@ -4,7 +4,8 @@ import Hook from "../utils/hook.js";
 import request from "../utils/request.js";
 
 class Polisher {
-	constructor(setup) {
+	constructor(setup, cspNonce) {
+		this.cspNonce = cspNonce;
 		this.sheets = [];
 		this.inserted = [];
 
@@ -30,7 +31,6 @@ class Polisher {
 	}
 
 	setup() {
-		this.cspNonce = this.getCspNonce();
 		this.base = this.insert(baseStyles);
 		this.styleEl = document.createElement("style");
 
@@ -41,17 +41,6 @@ class Polisher {
 		document.head.appendChild(this.styleEl);
 		this.styleSheet = this.styleEl.sheet;
 		return this.styleSheet;
-	}
-
-	getCspNonce() {
-		const cspNonceElement = document.querySelector("meta[name='csp-nonce']");
-		if (cspNonceElement) {
-			// The meta tag SHOULD be storing the nonce in a "nonce" attribute.
-			// Fallback to "content" if that's not the case.
-			const { nonce, content } = cspNonceElement;
-			return nonce == "" ? content : nonce;
-		}
-		return null;
 	}
 
 	async add() {

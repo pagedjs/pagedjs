@@ -76,6 +76,15 @@ class Layout {
 		this.temporaryIndex = 0;
 	}
 
+	/**
+	 * Fills the page and check for the first overflow.
+	 * @param {Element} wrapper - current Page's content wrapper
+	 * @param {HTML} source - Html source template content
+	 * @param {BreakToken} breakToken - previous breakToken
+	 * @param {Page} prevPage - previous Page
+	 * @param {DOMRect} bounds - Page bounds
+	 * @returns {BreakToken}
+	 */
 	async renderTo(wrapper, source, breakToken, prevPage = null, bounds = this.bounds) {
 		let start = this.getStart(source, breakToken);
 		let firstDivisible = source;
@@ -563,6 +572,14 @@ class Layout {
 
 	}
 
+	/**
+	 * Recursively removes last child and it's ancestors if the nested parentElement is empty
+	 * 
+	 * In case of empty table rows or similar
+	 * 
+	 * @param {Element} parentElement 
+	 * @param {Element} rootElement 
+	 */
 	lastChildCheck(parentElement, rootElement) {
 		if (parentElement.childElementCount) {
 			this.lastChildCheck(parentElement.lastElementChild, rootElement);
@@ -580,6 +597,15 @@ class Layout {
 		}
 	}
 
+	/**
+	 * Converts overflowresults into a Breaktoken objects
+	 * 
+	 * Proccesses overflow result
+	 * 
+	 * -> Called only from findBreakToken
+	 * @param {List} overflow - overflow ranges
+	 * @param {Element} rendered - page content div
+	 */
 	processOverflowResult(ranges, rendered, source, bounds, prevBreakToken, node, extract) {
 		let breakToken, breakLetter;
 
@@ -653,6 +679,17 @@ class Layout {
 		return breakToken;
 	}
 
+	/**
+	 * Determines overflow of this layout and convert that into a breaktoken
+	 * -> Called by Layout.renderTo
+	 * @param {Element} rendered - page content
+	 * @param {HTML} source - Source content
+	 * @param {DOMRect} bounds - Bounding rect
+	 * @param {BreakToken} prevBreakToken - previous BreakToken
+	 * @param {Element} node - Start node of the breakContent
+	 * @param {*} extract 
+	 * @returns {BreakToken}
+	 */
 	findBreakToken(rendered, source, bounds = this.bounds, prevBreakToken, node = null, extract = true) {
 		let breakToken, overflow = [];
 
@@ -1054,6 +1091,15 @@ class Layout {
 		return [prev, anyOverflowFound];
 	}
 
+	/**
+	 * Tagging elements and returns range of overflowing elements
+	 * @param {Element} startOfOverflow - Start element of the overflow
+	 * @param {Node} rangeStart 
+	 * @param {Node} rangeEnd
+	 * @param {DOMRect} bounds - page bounds
+	 * @param {Element} rendered - Current rendered page content
+	 * @returns 
+	 */
 	tagAndCreateOverflowRange(startOfOverflow, rangeStart, rangeEnd, bounds, rendered) {
 		let offset = 0;
 		let start = bounds.left;
@@ -1218,6 +1264,14 @@ class Layout {
 		}
 	}
 
+	/**
+	 * Find the next overflow in the current layout. Tags overflowing content and returns the range of the overflowing content
+	 * -> Called by findBreakToken and afterLayout
+	 * @param {Element} rendered - Current page rendered div
+	 * @param {DOMRect} bounds - ClientRect of the page
+	 * @param {HTML} source - Source html content
+	 * @returns {null | Range} range - null if there is no overflow.
+	 */
 	findOverflow(rendered, bounds, source) {
 
 		if (!this.hasOverflow(rendered, bounds) || rendered.dataset.overflowTagged) {

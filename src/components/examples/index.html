@@ -5,14 +5,36 @@
     <title>PagedPreview Example</title>
     <link rel="stylesheet" href="./css/styles.css" />
     <script type="module" src="/lib/PagedPreview.js"></script>
+    <style>
+      /* @page { */
+      /*   marks: crop cross; */
+      /*   size: a5;
+      /* } */
+      /* //you can change default behavior through css */
+      /* .mbr { */
+      /*   text-align: center; */
+      /* } */
+      /* @page { */
+      /*   @bottom-left { */
+      /*     width: 1000mm; */
+      /*   } */
+      /* } */
+      /* .mbl { */
+      /*   width: 1000mm; */
+      /* } */
+    </style>
   </head>
   <body>
-    <paged-page name="s" width="200mm" height="200mm">
-      <div>
-        <h2>front matter</h2>
-        <p>whatever</p>
-      </div>
+    <paged-page name="s" width="100mm" height="200mm" marks="crop cross">
+      <div class="croptl"></div>
+      <h2>front matter</h2>
+      <p>whatever</p>
       <!-- //flyer content -->
+
+      <!-- //add something in the margin -->
+      <div slot="mbl" class="mbl">margin bottom left</div>
+      <div slot="mbc" class="mbc">margin bottom center</div>
+      <div slot="mbr" class="mbr">margin bottom right</div>
     </paged-page>
   </body>
 </html>

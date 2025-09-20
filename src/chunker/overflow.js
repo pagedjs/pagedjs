@@ -20,7 +20,7 @@ class Overflow {
 			this["node"] !== otherOffset["node"]) {
 			return false;
 		}
-		if (this["offset"] && otherOffset["offset"] &&
+		if (typeof this["offset"] === "number" && typeof otherOffset["offset"] === "number" &&
 			this["offset"] !== otherOffset["offset"]) {
 			return false;
 		}

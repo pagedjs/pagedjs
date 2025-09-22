@@ -223,12 +223,12 @@ class Chunker {
 
 		await this.hooks.beforeParsed.trigger(content, this);
 
+		parsed = new ContentParser(content);
+
 		if (content) {
 			this.recordRulesToDisable();
-			this.disableRules(content);
+			this.disableRules(parsed);
 		}
-
-		parsed = new ContentParser(content);
 
 		this.hooks.filter.triggerSync(parsed);
 
@@ -261,7 +261,7 @@ class Chunker {
 
 		this.emit("rendered", this.pages);
 
-		this.enableRules(content);
+		this.enableRules(parsed);
 
 		return this;
 	}

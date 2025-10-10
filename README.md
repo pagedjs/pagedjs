@@ -84,7 +84,7 @@ Examples:
 
 ### CLI
 
-Command line interface to render out PDFs of HTML files using Puppeteer: [https://gitlab.pagedmedia.org/tools/pagedjs-cli](https://gitlab.pagedmedia.org/tools/pagedjs-cli).
+Command line interface to render out PDFs of HTML files using Puppeteer: [https://github.com/pagedjs/pagedjs-cli/](https://github.com/pagedjs/pagedjs-cli/)
 
 ## Modules
 

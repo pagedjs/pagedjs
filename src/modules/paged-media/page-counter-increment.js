@@ -9,7 +9,7 @@ class PageCounterIncrement extends Handler {
 		this.pageCounter = {
 			name: "page",
 			increments: {},
-			resets: {}
+			resets: {},
 		};
 	}
 
@@ -27,13 +27,19 @@ class PageCounterIncrement extends Handler {
 	afterParsed(_) {
 		for (const inc in this.pageCounter.increments) {
 			const increment = this.pageCounter.increments[inc];
-			this.insertRule(`${increment.selector} { --pagedjs-page-counter-increment: ${increment.number} }`);
+			console.log(increment);
+			this.insertRule(
+				`${increment.selector} { --pagedjs-page-counter-increment: ${increment.number} }`,
+			);
 		}
 	}
 
 	handleIncrement(declaration, rule) {
 		const identifier = declaration.value.children.first();
-		const number = declaration.value.children.getSize() > 1 ? declaration.value.children.last().value : 1;
+		const number =
+			declaration.value.children.getSize() > 1
+				? declaration.value.children.last().value
+				: 1;
 		const name = identifier && identifier.name;
 
 		if (name && name.indexOf("target-counter-") === 0) {
@@ -50,10 +56,10 @@ class PageCounterIncrement extends Handler {
 			return;
 		}
 		const selector = csstree.generate(rule.ruleNode.prelude);
-		return this.pageCounter.increments[selector] = {
+		return (this.pageCounter.increments[selector] = {
 			selector: selector,
-			number
-		};
+			number,
+		});
 	}
 
 	insertRule(rule) {

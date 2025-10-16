@@ -3,8 +3,11 @@ import * as Paged from "../index.js";
 
 window.Paged = Paged;
 
-let ready = new Promise(function(resolve, reject){
-	if (document.readyState === "interactive" || document.readyState === "complete") {
+let ready = new Promise(function (resolve, reject) {
+	if (
+		document.readyState === "interactive" ||
+		document.readyState === "complete"
+	) {
 		resolve(document.readyState);
 		return;
 	}
@@ -23,7 +26,7 @@ let config = window.PagedConfig || {
 	content: undefined,
 	stylesheets: undefined,
 	renderTo: undefined,
-	settings: undefined
+	settings: undefined,
 };
 
 let previewer = new Previewer(config.settings);
@@ -34,10 +37,13 @@ ready.then(async function () {
 		await config.before();
 	}
 
-	if(config.auto !== false) {
-		done = await previewer.preview(config.content, config.stylesheets, config.renderTo);
+	if (config.auto !== false) {
+		done = await previewer.preview(
+			config.content,
+			config.stylesheets,
+			config.renderTo,
+		);
 	}
-
 
 	if (config.after) {
 		await config.after(done);

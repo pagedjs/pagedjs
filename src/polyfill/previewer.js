@@ -27,14 +27,14 @@ class Previewer {
 		this.size = {
 			width: {
 				value: 8.5,
-				unit: "in"
+				unit: "in",
 			},
 			height: {
 				value: 11,
-				unit: "in"
+				unit: "in",
 			},
 			format: undefined,
-			orientation: undefined
+			orientation: undefined,
 		};
 
 		this.chunker.on("page", (page) => {
@@ -70,8 +70,8 @@ class Previewer {
 		let param;
 		let url = new URL(window.location);
 		let params = new URLSearchParams(url.search);
-		for(var pair of params.entries()) {
-			if(pair[0] === name) {
+		for (var pair of params.entries()) {
+			if (pair[0] === name) {
 				param = pair[1];
 			}
 		}
@@ -85,7 +85,9 @@ class Previewer {
 
 		// Check if a template exists
 		let template;
-		template = body.querySelector(":scope > template[data-ref='pagedjs-content']");
+		template = body.querySelector(
+			":scope > template[data-ref='pagedjs-content']",
+		);
 
 		if (!template) {
 			// Otherwise create one
@@ -99,42 +101,51 @@ class Previewer {
 		return template.content;
 	}
 
-	removeStyles(doc=document) {
+	removeStyles(doc = document) {
 		// Get all stylesheets
-		const stylesheets = Array.from(doc.querySelectorAll("link[rel='stylesheet']:not([data-pagedjs-ignore], [media~='screen'])"));
+		const stylesheets = Array.from(
+			doc.querySelectorAll(
+				"link[rel='stylesheet']:not([data-pagedjs-ignore], [media~='screen'])",
+			),
+		);
 		// Get inline styles
-		const inlineStyles = Array.from(doc.querySelectorAll("style:not([data-pagedjs-inserted-styles], [data-pagedjs-ignore], [media~='screen'])"));
+		const inlineStyles = Array.from(
+			doc.querySelectorAll(
+				"style:not([data-pagedjs-inserted-styles], [data-pagedjs-ignore], [media~='screen'])",
+			),
+		);
 		const elements = [...stylesheets, ...inlineStyles];
-		return elements
-			// preserve order
-			.sort(function (element1, element2) {
-				const position = element1.compareDocumentPosition(element2);
-				if (position === Node.DOCUMENT_POSITION_PRECEDING) {
-					return 1;
-				} else if (position === Node.DOCUMENT_POSITION_FOLLOWING) {
-					return -1;
-				}
-				return 0;
-			})
-			// extract the href
-			.map((element) => {
-				if (element.nodeName === "STYLE") {
-					const obj = {};
-					obj[window.location.href] = element.textContent;
-					element.remove();
-					return obj;
-				}
-				if (element.nodeName === "LINK") {
-					element.remove();
-					return element.href;
-				}
-				// ignore
-				console.warn(`Unable to process: ${element}, ignoring.`);
-			});
+		return (
+			elements
+				// preserve order
+				.sort(function (element1, element2) {
+					const position = element1.compareDocumentPosition(element2);
+					if (position === Node.DOCUMENT_POSITION_PRECEDING) {
+						return 1;
+					} else if (position === Node.DOCUMENT_POSITION_FOLLOWING) {
+						return -1;
+					}
+					return 0;
+				})
+				// extract the href
+				.map((element) => {
+					if (element.nodeName === "STYLE") {
+						const obj = {};
+						obj[window.location.href] = element.textContent;
+						element.remove();
+						return obj;
+					}
+					if (element.nodeName === "LINK") {
+						element.remove();
+						return element.href;
+					}
+					// ignore
+					console.warn(`Unable to process: ${element}, ignoring.`);
+				})
+		);
 	}
 
 	async preview(content, stylesheets, renderTo) {
-
 		await this.hooks.beforePreview.trigger(content, renderTo);
 
 		if (!content) {
@@ -158,7 +169,7 @@ class Previewer {
 
 		let endTime = performance.now();
 
-		flow.performance = (endTime - startTime);
+		flow.performance = endTime - startTime;
 		flow.size = this.size;
 
 		this.emit("rendered", flow);

@@ -1,5 +1,5 @@
 import Handler from "../handler.js";
-import {filterTree} from "../../utils/dom.js";
+import { filterTree } from "../../utils/dom.js";
 
 class CommentsFilter extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -9,7 +9,6 @@ class CommentsFilter extends Handler {
 	filter(content) {
 		filterTree(content, null, NodeFilter.SHOW_COMMENT);
 	}
-
 }
 
 export default CommentsFilter;

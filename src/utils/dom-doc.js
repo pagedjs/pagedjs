@@ -1,12 +1,33 @@
 import { getBoundingClientRect } from "./utils.js";
+
+/**
+ * Checks if a given node is an Element node.
+ *
+ * @param {Node} node - The node to check.
+ * @returns {boolean} True if the node is an Element (nodeType === 1), else false.
+ */
 export function isElement(node) {
 	return node && node.nodeType === 1;
 }
 
+/**
+ * Checks if a given node is a Text node.
+ *
+ * @param {Node} node - The node to check.
+ * @returns {boolean} True if the node is a Text node (nodeType === 3), else false.
+ */
 export function isText(node) {
 	return node && node.nodeType === 3;
 }
 
+/**
+ * Generator function that walks the DOM tree starting from the given node,
+ * traversing depth-first and yielding nodes until the limiter node is reached (if provided).
+ *
+ * @param {Node} start - The starting node for traversal.
+ * @param {Node} [limiter] - Optional node at which traversal stops.
+ * @yields {Node} Nodes in the DOM tree in depth-first order.
+ */
 export function* walk(start, limiter) {
 	let node = start;
 
@@ -37,6 +58,15 @@ export function* walk(start, limiter) {
 	}
 }
 
+/**
+ * Finds the next significant node after the given node, optionally descending into children.
+ * Returns undefined if the limiter node is reached.
+ *
+ * @param {Node} node - The reference node.
+ * @param {Node} [limiter] - Optional node at which traversal stops.
+ * @param {boolean} [descend=false] - Whether to descend into child nodes.
+ * @returns {Node|undefined} The next significant node or undefined if none found.
+ */
 export function nodeAfter(node, limiter, descend = false) {
 	if (limiter && node === limiter) {
 		return;
@@ -67,6 +97,14 @@ export function nodeAfter(node, limiter, descend = false) {
 	}
 }
 
+/**
+ * Finds the last significant descendant of a node.
+ * Descends the last child path, skipping ignorable nodes.
+ *
+ * @param {Node} node - The node to find the last significant descendant for.
+ * @returns {Node} The last significant descendant node.
+ * @private
+ */
 function findLastSignificantDescendant(node) {
 	let done = false;
 
@@ -85,6 +123,15 @@ function findLastSignificantDescendant(node) {
 	return node;
 }
 
+/**
+ * Finds the previous significant node before the given node, optionally descending into children.
+ * Returns undefined if the limiter node is reached.
+ *
+ * @param {Node} node - The reference node.
+ * @param {Node} [limiter] - Optional node at which traversal stops.
+ * @param {boolean} [descend=false] - Whether to descend into child nodes.
+ * @returns {Node|undefined} The previous significant node or undefined if none found.
+ */
 export function nodeBefore(node, limiter, descend = false) {
 	do {
 		if (limiter && node === limiter) {
@@ -103,6 +150,15 @@ export function nodeBefore(node, limiter, descend = false) {
 	} while (node);
 }
 
+/**
+ * Finds the next Element node after the given node.
+ * Skips non-element nodes.
+ *
+ * @param {Node} node - The reference node.
+ * @param {Node} [limiter] - Optional node at which traversal stops.
+ * @param {boolean} [descend=false] - Whether to descend into child nodes.
+ * @returns {Element|undefined} The next Element node or undefined if none found.
+ */
 export function elementAfter(node, limiter, descend = false) {
 	let after = nodeAfter(node, limiter, descend);
 
@@ -113,6 +169,15 @@ export function elementAfter(node, limiter, descend = false) {
 	return after;
 }
 
+/**
+ * Finds the previous Element node before the given node.
+ * Skips non-element nodes.
+ *
+ * @param {Node} node - The reference node.
+ * @param {Node} [limiter] - Optional node at which traversal stops.
+ * @param {boolean} [descend=false] - Whether to descend into child nodes.
+ * @returns {Element|undefined} The previous Element node or undefined if none found.
+ */
 export function elementBefore(node, limiter, descend = false) {
 	let before = nodeBefore(node, limiter, descend);
 
@@ -123,6 +188,15 @@ export function elementBefore(node, limiter, descend = false) {
 	return before;
 }
 
+/**
+ * Finds the next displayed Element node after the given node.
+ * Skips elements marked as undisplayed via `dataset.undisplayed`.
+ *
+ * @param {Node} node - The reference node.
+ * @param {Node} [limiter] - Optional node at which traversal stops.
+ * @param {boolean} [descend=false] - Whether to descend into child nodes.
+ * @returns {Element|undefined} The next displayed Element node or undefined if none found.
+ */
 export function displayedElementAfter(node, limiter, descend = false) {
 	let after = elementAfter(node, limiter, descend);
 
@@ -133,6 +207,15 @@ export function displayedElementAfter(node, limiter, descend = false) {
 	return after;
 }
 
+/**
+ * Finds the previous displayed Element node before the given node.
+ * Skips elements marked as undisplayed via `dataset.undisplayed`.
+ *
+ * @param {Node} node - The reference node.
+ * @param {Node} [limiter] - Optional node at which traversal stops.
+ * @param {boolean} [descend=false] - Whether to descend into child nodes.
+ * @returns {Element|undefined} The previous displayed Element node or undefined if none found.
+ */
 export function displayedElementBefore(node, limiter, descend = false) {
 	let before = elementBefore(node, limiter, descend);
 
@@ -143,6 +226,14 @@ export function displayedElementBefore(node, limiter, descend = false) {
 	return before;
 }
 
+/**
+ * Recursively builds a stack (array) of a node and all its descendant elements,
+ * in depth-first order, starting with the current node at the front.
+ *
+ * @param {Element} currentNode - The current node to add and process.
+ * @param {Element[]} [stacked] - The accumulator array to hold stacked nodes.
+ * @returns {Element[]} An array with the current node and all descendants stacked.
+ */
 export function stackChildren(currentNode, stacked) {
 	let stack = stacked || [];
 
@@ -156,6 +247,15 @@ export function stackChildren(currentNode, stacked) {
 	return stack;
 }
 
+/**-----**/
+
+/**
+ * Copies the width style from an original element to a destination element.
+ * The width is computed using getComputedStyle and fallback bounding rect if needed.
+ *
+ * @param {Element} originalElement - The element to copy width from.
+ * @param {Element} destElement - The element to apply the copied width to.
+ */
 function copyWidth(originalElement, destElement) {
 	let originalStyle = getComputedStyle(originalElement);
 	let bounds = getBoundingClientRect(originalElement);
@@ -165,6 +265,15 @@ function copyWidth(originalElement, destElement) {
 	}
 }
 
+/**
+ * Rebuilds a table row element by cloning and adjusting its columns, including handling rowspans.
+ * Uses an existing rendered DOM tree to maintain styles and structure.
+ *
+ * @param {HTMLTableRowElement} node - The table row element to rebuild.
+ * @param {Element} alreadyRendered - The root element containing the already rendered content for reference.
+ * @param {number} [existingChildren] - Number of existing children in the container (optional).
+ * @returns {HTMLTableRowElement} A new cloned and rebuilt table row element.
+ */
 export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 	let currentCol = 0,
 		maxCols = 0,
@@ -246,6 +355,15 @@ export function rebuildTableRow(node, alreadyRendered, existingChildren) {
 	return rebuilt;
 }
 
+/**
+ * Rebuilds the ancestor tree for a given node, appending clones or existing elements to a document fragment.
+ * Handles table rows, siblings duplication, and other special cases.
+ *
+ * @param {Node} node - The starting node for rebuilding.
+ * @param {DocumentFragment} [fragment] - Optional document fragment to append rebuilt nodes to. Created if omitted.
+ * @param {Element} [alreadyRendered] - Root element with already rendered DOM for reference and style copying.
+ * @returns {DocumentFragment} The fragment containing the rebuilt ancestor tree.
+ */
 export function rebuildTree(node, fragment, alreadyRendered) {
 	let parent, subject;
 	let ancestors = [];
@@ -419,6 +537,303 @@ export function rebuildTree(node, fragment, alreadyRendered) {
 	return fragment;
 }
 
+/**
+ * Copies the width style from an original element to a destination element.
+ * Uses computed styles and falls back to bounding rectangle width.
+ *
+ * @param {Element} originalElement - The element to copy width from.
+ * @param {Element} destElement - The element to apply the copied width to.
+ */
+
+function copyWidth(originalElement, destElement) {
+	let originalStyle = getComputedStyle(originalElement);
+	let bounds = getBoundingClientRect(originalElement);
+	let width = parseInt(originalStyle.width || bounds.width);
+	if (width) {
+		destElement.style.width = width + "px";
+	}
+}
+
+/**
+ * Rebuilds a table row element by cloning its columns, duplicating rowspans,
+ * and adjusting widths based on an already rendered DOM for styling.
+ *
+ * @param {HTMLTableRowElement} node - The table row element to rebuild.
+ * @param {Element} alreadyRendered - The root element containing the already rendered content for reference.
+ * @param {number} [existingChildren] - Number of existing children in the container (optional).
+ * @returns {HTMLTableRowElement} The rebuilt table row element.
+ */
+
+export function rebuildTableRow(node, alreadyRendered, existingChildren) {
+	let currentCol = 0,
+		maxCols = 0,
+		nextInitialColumn = 0;
+	let rebuilt = node.cloneNode(false);
+	const initialColumns = Array.from(node.children);
+
+	// Find the max number of columns.
+	let earlierRow = node.parentElement.children[0];
+	while (earlierRow && earlierRow !== node) {
+		if (earlierRow.children.length > maxCols) {
+			maxCols = earlierRow.children.length;
+		}
+		earlierRow = earlierRow.nextElementSibling;
+	}
+
+	if (!maxCols) {
+		let existing = findElement(node, alreadyRendered);
+		maxCols = existing?.children.length || 0;
+	}
+
+	// The next td to use in each tr.
+	// Doesn't take account of rowspans above that might make extra columns.
+	let rowOffsets = Array(maxCols).fill(0);
+
+	// Duplicate rowspans and our initial columns.
+	while (currentCol < maxCols) {
+		let earlierRow = node.parentElement.children[0];
+		let earlierRowIndex = 0;
+		let rowspan, column;
+		// Find the nth column we'll duplicate (rowspan) or use.
+		while (earlierRow && earlierRow !== node) {
+			if (rowspan == undefined) {
+				column =
+					earlierRow.children[currentCol - rowOffsets[nextInitialColumn]];
+				if (column && column.rowSpan !== undefined && column.rowSpan > 1) {
+					rowspan = column.rowSpan;
+				}
+			}
+			// If rowspan === 0 the entire remainder of the table row is used.
+			if (rowspan) {
+				// Tracking how many rows in the overflow.
+				if (rowspan < 2) {
+					rowspan = undefined;
+				} else {
+					rowspan--;
+				}
+			}
+			earlierRow = earlierRow.nextElementSibling;
+			earlierRowIndex++;
+		}
+
+		let destColumn;
+		if (rowspan) {
+			if (!existingChildren) {
+				destColumn = column.cloneNode(false);
+				// Adjust rowspan value.
+				destColumn.rowSpan = !column.rowSpan ? 0 : rowspan;
+			}
+		} else {
+			// Fill the gap with the initial columns (if exists).
+			destColumn = column =
+				initialColumns[nextInitialColumn++]?.cloneNode(false);
+		}
+		if (column && destColumn) {
+			if (alreadyRendered) {
+				let existing = findElement(column, alreadyRendered);
+				if (existing) {
+					column = existing;
+				}
+			}
+			copyWidth(column, destColumn);
+			if (destColumn) {
+				rebuilt.appendChild(destColumn);
+			}
+		}
+		currentCol++;
+	}
+	return rebuilt;
+}
+
+/**
+ * Rebuilds the ancestor tree for a given node by cloning or reusing elements,
+ * optionally appending to a document fragment. Handles special cases like table rows,
+ * siblings cloning, and list items styling.
+ *
+ * @param {Node} node - The starting node for rebuilding.
+ * @param {DocumentFragment} [fragment] - Optional document fragment to append rebuilt nodes to. Created if omitted.
+ * @param {Element} [alreadyRendered] - Root element with already rendered DOM for reference and style copying.
+ * @returns {DocumentFragment} The fragment containing the rebuilt ancestor tree.
+ */
+export function rebuildTree(node, fragment, alreadyRendered) {
+	let parent, subject;
+	let ancestors = [];
+	let added = [];
+	let dupSiblings = false;
+	let freshPage = !fragment;
+	let numListItems = 0;
+
+	if (!fragment) {
+		fragment = document.createDocumentFragment();
+	}
+
+	// Gather all ancestors
+	let element = node;
+
+	if (!isText(node)) {
+		ancestors.unshift(node);
+		if (node.tagName == "LI") {
+			numListItems++;
+		}
+	}
+	while (element.parentNode && element.parentNode.nodeType === 1) {
+		ancestors.unshift(element.parentNode);
+		if (element.parentNode.tagName == "LI") {
+			numListItems++;
+		}
+		element = element.parentNode;
+	}
+
+	for (var i = 0; i < ancestors.length; i++) {
+		subject = ancestors[i];
+
+		let container, split;
+		if (added.length) {
+			container = added[added.length - 1];
+		} else {
+			container = fragment;
+		}
+
+		if (subject.nodeName == "TR") {
+			parent = findElement(subject, container);
+			if (!parent) {
+				parent = rebuildTableRow(
+					subject,
+					alreadyRendered,
+					container.childElementCount,
+				);
+				container.appendChild(parent);
+			}
+		} else if (dupSiblings) {
+			let sibling = subject.parentElement
+				? subject.parentElement.children[0]
+				: subject;
+
+			while (sibling) {
+				let existing = findElement(sibling, container),
+					siblingClone;
+				if (!existing) {
+					let split = inIndexOfRefs(subject, alreadyRendered);
+					siblingClone = cloneNodeAncestor(sibling);
+					if (alreadyRendered) {
+						let originalElement = findElement(sibling, alreadyRendered);
+						if (originalElement) {
+							copyWidth(originalElement, siblingClone);
+						}
+					}
+					container.appendChild(siblingClone);
+				}
+
+				if (sibling == subject) {
+					parent = siblingClone || existing;
+				}
+				sibling = sibling.nextElementSibling;
+			}
+		} else {
+			parent = findElement(subject, container);
+			if (!parent) {
+				parent = cloneNodeAncestor(subject);
+				if (alreadyRendered) {
+					let originalElement = findElement(subject, alreadyRendered);
+					if (originalElement) {
+						copyWidth(originalElement, parent);
+
+						// Colgroup to clone?
+						Array.from(originalElement.children).forEach((child) => {
+							if (child.tagName == "COLGROUP") {
+								parent.append(child.cloneNode(true));
+							}
+						});
+					}
+				}
+				container.appendChild(parent);
+			}
+		}
+
+		if (subject.previousElementSibling?.nodeName == "THEAD") {
+			// Clone the THEAD too.
+			let sibling = subject.previousElementSibling;
+
+			let existing = findElement(sibling, container),
+				siblingClone;
+			if (!existing) {
+				siblingClone = cloneNodeAncestor(sibling, true);
+				if (alreadyRendered) {
+					let originalElement = findElement(sibling, alreadyRendered);
+					if (originalElement) {
+						let walker = walk(siblingClone, siblingClone);
+						let next, pos, done;
+						while (!done) {
+							next = walker.next();
+							pos = next.value;
+							done = next.done;
+
+							if (isElement(pos)) {
+								originalElement = findElement(pos, alreadyRendered);
+								copyWidth(originalElement, pos);
+
+								// I've tried to make the THEAD invisible; this is the best
+								// I could achieve. It gets a zero height but still somehow
+								// affects the container height by a couple of pixels in my
+								// testing. :(
+								// Next step is to change the "true" below to use a custom
+								// attribute that lets you control whether the header is shown.
+								if (true) {
+									pos.style.visibility = "collapse";
+									pos.style.marginTop = "0px";
+									pos.style.marginBottom = "0px";
+									pos.style.paddingTop = "0px";
+									pos.style.paddingBottom = "0px";
+									pos.style.borderTop = "0px";
+									pos.style.borderBottom = "0px";
+									pos.style.lineHeight = "0px";
+									pos.style.opacity = 0;
+								}
+							}
+						}
+					}
+				}
+				container.insertBefore(siblingClone, container.firstChild);
+			}
+
+			if (sibling == subject) {
+				parent = siblingClone || existing;
+			}
+			sibling = sibling.nextElementSibling;
+		}
+
+		split = inIndexOfRefs(subject, alreadyRendered);
+		if (split) {
+			setSplit(split, parent);
+		}
+
+		dupSiblings =
+			subject.dataset.clonesiblings == true ||
+			["grid", "flex", "table-row"].indexOf(subject.style.display) > -1;
+		added.push(parent);
+
+		if (subject.tagName == "LI") {
+			numListItems--;
+		}
+
+		if (freshPage && (isText(node) || numListItems)) {
+			// Flag the first node on the page so we can suppress list styles on
+			// a continued item and list item numbers except the list one
+			// if an item number should be printed.
+			parent.dataset.suppressListStyle = true;
+		}
+	}
+
+	added = undefined;
+	return fragment;
+}
+
+/**
+ * Sets split attributes between original and clone elements for table splitting.
+ *
+ * @param {HTMLElement} orig The original element to be split.
+ * @param {HTMLElement} clone The cloned element that receives attributes.
+ */
 function setSplit(orig, clone) {
 	if (orig.dataset.splitTo) {
 		clone.setAttribute("data-split-from", clone.getAttribute("data-ref"));
@@ -428,6 +843,13 @@ function setSplit(orig, clone) {
 	orig.setAttribute("data-split-to", clone.getAttribute("data-ref"));
 }
 
+/**
+ * Clones a node and removes certain attributes like 'id' and break-related attributes.
+ *
+ * @param {Node} node The node to clone.
+ * @param {boolean} [deep=false] Whether to perform a deep clone.
+ * @returns {Node} The cloned node with adjusted attributes.
+ */
 function cloneNodeAncestor(node, deep = false) {
 	let result = node.cloneNode(deep);
 
@@ -449,6 +871,12 @@ function cloneNodeAncestor(node, deep = false) {
 	return result;
 }
 
+/**
+ * Rebuilds the ancestor tree of a given node as a document fragment.
+ *
+ * @param {Node} node The node for which ancestors are rebuilt.
+ * @returns {DocumentFragment} A fragment containing cloned ancestors of the node.
+ */
 export function rebuildAncestors(node) {
 	let parent, ancestor;
 	let ancestors = [];
@@ -556,6 +984,12 @@ export function split(bound, cutElement, breakAfter) {
 }
 */
 
+/**
+ * Checks if a node requires a break before it according to dataset.breakBefore attribute.
+ *
+ * @param {Node} node The node to check.
+ * @returns {boolean} True if a break before is needed, false otherwise.
+ */
 export function needsBreakBefore(node) {
 	if (
 		typeof node !== "undefined" &&
@@ -574,6 +1008,12 @@ export function needsBreakBefore(node) {
 	return false;
 }
 
+/**
+ * Checks if a node requires a break before it according to dataset.breakBefore attribute.
+ *
+ * @param {Node} node The node to check.
+ * @returns {boolean} True if a break before is needed, false otherwise.
+ */
 export function needsBreakAfter(node) {
 	if (
 		typeof node !== "undefined" &&
@@ -592,6 +1032,12 @@ export function needsBreakAfter(node) {
 	return false;
 }
 
+/**
+ * Checks if a node's previous sibling requires a break after it according to dataset.previousBreakAfter attribute.
+ *
+ * @param {Node} node The node to check.
+ * @returns {boolean} True if the previous break after is needed, false otherwise.
+ */
 export function needsPreviousBreakAfter(node) {
 	if (
 		typeof node !== "undefined" &&
@@ -610,6 +1056,13 @@ export function needsPreviousBreakAfter(node) {
 	return false;
 }
 
+/**
+ * Determines if a page break is needed between the given node and the previous significant node.
+ *
+ * @param {Node} node The current node.
+ * @param {Node} previousSignificantNode The previous significant node.
+ * @returns {boolean} True if a page break is needed, false otherwise.
+ */
 export function needsPageBreak(node, previousSignificantNode) {
 	if (
 		typeof node === "undefined" ||
@@ -643,6 +1096,12 @@ export function needsPageBreak(node, previousSignificantNode) {
 	return currentNodePage !== previousSignificantNodePage;
 }
 
+/**
+ * Generator function to yield word ranges from a text node.
+ *
+ * @param {Text} node The text node to extract words from.
+ * @yields {Range} A Range object for each word found.
+ */
 export function* words(node) {
 	let currentText = node.nodeValue;
 	let max = currentText.length;
@@ -677,6 +1136,12 @@ export function* words(node) {
 	}
 }
 
+/**
+ * Generator function to yield letter ranges from a word range.
+ *
+ * @param {Range} wordRange The Range object representing a word.
+ * @yields {Range} A Range object for each letter in the word.
+ */
 export function* letters(wordRange) {
 	let currentText = wordRange.startContainer;
 	let max = currentText.length;
@@ -696,7 +1161,12 @@ export function* letters(wordRange) {
 		currentOffset += 1;
 	}
 }
-
+/**
+ * Determines if a node is considered a container (block) element.
+ *
+ * @param {Node} node The node to check.
+ * @returns {boolean} True if the node is a container, false if it is inline or hidden.
+ */
 export function isContainer(node) {
 	let container;
 
@@ -767,16 +1237,37 @@ export function isContainer(node) {
 	return container;
 }
 
+/**
+ * Clones a node.
+ *
+ * @param {Node} n The node to clone.
+ * @param {boolean} [deep=false] Whether to clone deeply.
+ * @returns {Node} The cloned node.
+ */
 export function cloneNode(n, deep = false) {
 	return n.cloneNode(deep);
 }
 
+/**
+ * Retrieves the index of a node's reference in the document's indexOfRefs.
+ *
+ * @param {Node} node The node with a data-ref attribute.
+ * @param {Document} doc The document containing indexOfRefs.
+ * @returns {number|undefined} The index of the reference, or undefined if not found.
+ */
 export function inIndexOfRefs(node, doc) {
 	if (!doc || !doc.indexOfRefs) return;
 	const ref = node.getAttribute("data-ref");
 	return doc.indexOfRefs[ref];
 }
 
+/**
+ * Replaces a child element in the parent node if a child with the same data-ref exists,
+ * otherwise appends the child.
+ *
+ * @param {HTMLElement} parentNode The parent element.
+ * @param {Node} child The child element to replace or append.
+ */
 export function replaceOrAppendElement(parentNode, child) {
 	if (!isText(child)) {
 		let childRef = child.getAttribute("data-ref");
@@ -791,12 +1282,28 @@ export function replaceOrAppendElement(parentNode, child) {
 	parentNode.appendChild(child);
 }
 
+/**
+ * Finds an element in the document by the node's data-ref attribute.
+ *
+ * @param {Node} node The node with a data-ref attribute.
+ * @param {Document} doc The document to search in.
+ * @param {boolean} [forceQuery=false] Whether to force a querySelector search.
+ * @returns {Element|undefined} The found element or undefined.
+ */
 export function findElement(node, doc, forceQuery) {
 	if (!doc) return;
 	const ref = node.getAttribute("data-ref");
 	return findRef(ref, doc, forceQuery);
 }
 
+/**
+ * Finds an element in the document by data-ref value.
+ *
+ * @param {string} ref The data-ref string to find.
+ * @param {Document} doc The document to search in.
+ * @param {boolean} [forceQuery=false] Whether to force querySelector search.
+ * @returns {Element|null} The found element or null.
+ */
 export function findRef(ref, doc, forceQuery) {
 	if (!forceQuery && doc.indexOfRefs && doc.indexOfRefs[ref]) {
 		return doc.indexOfRefs[ref];
@@ -805,6 +1312,12 @@ export function findRef(ref, doc, forceQuery) {
 	}
 }
 
+/**
+ * Validates if a node is either a text node or an element with a data-ref attribute.
+ *
+ * @param {Node} node The node to validate.
+ * @returns {boolean} True if valid, false otherwise.
+ */
 export function validNode(node) {
 	if (isText(node)) {
 		return true;
@@ -817,6 +1330,12 @@ export function validNode(node) {
 	return false;
 }
 
+/**
+ * Finds the previous valid node in the sibling/parent chain.
+ *
+ * @param {Node} node The starting node.
+ * @returns {Node|null} The previous valid node or null.
+ */
 export function prevValidNode(node) {
 	while (!validNode(node)) {
 		if (node.previousSibling) {
@@ -832,7 +1351,12 @@ export function prevValidNode(node) {
 
 	return node;
 }
-
+/**
+ * Finds the next valid node in the sibling/parent chain.
+ *
+ * @param {Node} node The starting node.
+ * @returns {Node|null} The next valid node or null.
+ */
 export function nextValidNode(node) {
 	while (!validNode(node)) {
 		if (node.nextSibling) {
@@ -848,7 +1372,12 @@ export function nextValidNode(node) {
 
 	return node;
 }
-
+/**
+ * Gets the index of a node among its siblings.
+ *
+ * @param {Node} node The node to find the index for.
+ * @returns {number} The index of the node.
+ */
 export function indexOf(node) {
 	let parent = node.parentNode;
 	if (!parent) {
@@ -856,11 +1385,23 @@ export function indexOf(node) {
 	}
 	return Array.prototype.indexOf.call(parent.childNodes, node);
 }
-
+/**
+ * Returns the child node at a specific index.
+ *
+ * @param {Node} node The parent node.
+ * @param {number} index The index of the child.
+ * @returns {Node} The child node.
+ */
 export function child(node, index) {
 	return node.childNodes[index];
 }
 
+/**
+ * Checks if a node is visible (not display:none).
+ *
+ * @param {Node} node The node to check.
+ * @returns {boolean} True if visible, false otherwise.
+ */
 export function isVisible(node) {
 	if (isElement(node) && window.getComputedStyle(node).display !== "none") {
 		return true;
@@ -874,6 +1415,13 @@ export function isVisible(node) {
 	return false;
 }
 
+/**
+ * Checks if a node has any content.
+ * Returns true for element nodes or non-empty text nodes.
+ *
+ * @param {Node} node The node to check.
+ * @returns {boolean} True if the node has content, false otherwise.
+ */
 export function hasContent(node) {
 	if (isElement(node)) {
 		return true;
@@ -883,6 +1431,12 @@ export function hasContent(node) {
 	return false;
 }
 
+/**
+ * Checks if a node or any of its immediate child text nodes have non-empty text content.
+ *
+ * @param {Node} node The node to check.
+ * @returns {boolean} True if the node or any child text node has non-empty text content, false otherwise.
+ */
 export function hasTextContent(node) {
 	if (isElement(node)) {
 		let child;
@@ -898,6 +1452,17 @@ export function hasTextContent(node) {
 	return false;
 }
 
+/**
+ * Finds the index of a text node within its parent's child nodes.
+ * If the text node has a previous sibling, tries to find the matching element by data-ref attribute
+ * and returns its index + 1. Otherwise, matches by text content.
+ * Optionally considers hyphenation removal in the text.
+ *
+ * @param {Node} node The text node to find the index for.
+ * @param {Node} parent The parent node containing the child nodes.
+ * @param {string} hyphen The hyphenation string to remove if present at the end of the text.
+ * @returns {number} The index of the text node within the parent's child nodes, or -1 if not found.
+ */
 export function indexOfTextNode(node, parent, hyphen) {
 	if (!isText(node)) {
 		return -1;
@@ -995,6 +1560,15 @@ export function previousSignificantNode(sib) {
 	return null;
 }
 
+/**
+ * Finds the closest ancestor (including the node itself) that has a dataset.page attribute.
+ * Traverses up the DOM tree until the optional limiter node is reached.
+ *
+ * @param {Node} node - The starting node to search from.
+ * @param {Node} [limiter] - Optional ancestor node to stop the search at (exclusive).
+ * @returns {Node|null|undefined} The closest node with dataset.page, null if none found,
+ *                               or undefined if limiter is reached without finding.
+ */
 function getNodeWithNamedPage(node, limiter) {
 	if (node && node.dataset && node.dataset.page) {
 		return node;
@@ -1012,6 +1586,14 @@ function getNodeWithNamedPage(node, limiter) {
 	return null;
 }
 
+/**
+ * Finds the closest ancestor of a node with a dataset.breakInside attribute equal to "avoid".
+ * Traverses up the DOM tree until such a node is found or root is reached.
+ *
+ * @param {Node} node - The starting node to search from.
+ * @returns {Node|null} The closest ancestor node with dataset.breakInside === "avoid",
+ *                      or null if none found.
+ */
 export function breakInsideAvoidParentNode(node) {
 	while ((node = node.parentNode)) {
 		if (node && node.dataset && node.dataset.breakInside === "avoid") {
@@ -1062,6 +1644,17 @@ export function nextSignificantNode(sib) {
 	return null;
 }
 
+/**
+ * Traverses a DOM subtree and removes nodes that match a filter function.
+ *
+ * @param {Node} content - The root node to start traversal from. If falsy, defaults to `this.dom`.
+ * @param {function(Node): number} [func] - Optional filter function used by the TreeWalker.
+ *        Should return one of the constants from NodeFilter:
+ *        - NodeFilter.FILTER_ACCEPT to keep the node,
+ *        - NodeFilter.FILTER_REJECT or FILTER_SKIP to exclude it.
+ * @param {number} [what=NodeFilter.SHOW_ALL] - Optional mask specifying which node types to show.
+ *        Defaults to all nodes.
+ */
 export function filterTree(content, func, what) {
 	const treeWalker = document.createTreeWalker(
 		content || this.dom,

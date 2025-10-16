@@ -1,164 +1,165 @@
-// https://www.w3.org/TR/css3-page/#page-size-prop
-
+/**
+ * @module a js object that defines the default files size from // https://www.w3.org/TR/css3-page/#page-size-prop
+ */
 export default {
-	"A0": {
+	A0: {
 		width: {
 			value: 841,
-			unit: "mm"
+			unit: "mm",
 		},
 		height: {
 			value: 1189,
-			unit: "mm"
-		}
+			unit: "mm",
+		},
 	},
-	"A1": {
+	A1: {
 		width: {
 			value: 594,
-			unit: "mm"
+			unit: "mm",
 		},
 		height: {
 			value: 841,
-			unit: "mm"
-		}
+			unit: "mm",
+		},
 	},
-	"A2": {
+	A2: {
 		width: {
 			value: 420,
-			unit: "mm"
+			unit: "mm",
 		},
 		height: {
 			value: 594,
-			unit: "mm"
-		}
+			unit: "mm",
+		},
 	},
-	"A3": {
+	A3: {
 		width: {
 			value: 297,
-			unit: "mm"
+			unit: "mm",
 		},
 		height: {
 			value: 420,
-			unit: "mm"
-		}
+			unit: "mm",
+		},
 	},
-	"A4": {
+	A4: {
 		width: {
 			value: 210,
-			unit: "mm"
+			unit: "mm",
 		},
 		height: {
 			value: 297,
-			unit: "mm"
-		}
+			unit: "mm",
+		},
 	},
-	"A5": {
+	A5: {
 		width: {
 			value: 148,
-			unit: "mm"
+			unit: "mm",
 		},
 		height: {
 			value: 210,
-			unit: "mm"
-		}
+			unit: "mm",
+		},
 	},
-	"A6": {
+	A6: {
 		width: {
 			value: 105,
-			unit: "mm"
+			unit: "mm",
 		},
 		height: {
 			value: 148,
-			unit: "mm"
-		}
+			unit: "mm",
+		},
 	},
-	"A7": {
+	A7: {
 		width: {
 			value: 74,
-			unit: "mm"
+			unit: "mm",
 		},
 		height: {
 			value: 105,
-			unit: "mm"
-		}
+			unit: "mm",
+		},
 	},
-	"A8": {
+	A8: {
 		width: {
 			value: 52,
-			unit: "mm"
+			unit: "mm",
 		},
 		height: {
 			value: 74,
-			unit: "mm"
-		}
+			unit: "mm",
+		},
 	},
-	"A9": {
+	A9: {
 		width: {
 			value: 37,
-			unit: "mm"
+			unit: "mm",
 		},
 		height: {
 			value: 52,
-			unit: "mm"
-		}
+			unit: "mm",
+		},
 	},
-	"A10": {
+	A10: {
 		width: {
 			value: 26,
-			unit: "mm"
+			unit: "mm",
 		},
 		height: {
 			value: 37,
-			unit: "mm"
-		}
+			unit: "mm",
+		},
 	},
-	"B4": {
+	B4: {
 		width: {
 			value: 250,
-			unit: "mm"
+			unit: "mm",
 		},
 		height: {
 			value: 353,
-			unit: "mm"
-		}
+			unit: "mm",
+		},
 	},
-	"B5": {
+	B5: {
 		width: {
 			value: 176,
-			unit: "mm"
+			unit: "mm",
 		},
 		height: {
 			value: 250,
-			unit: "mm"
-		}
+			unit: "mm",
+		},
 	},
-	"letter": {
+	letter: {
 		width: {
 			value: 8.5,
-			unit: "in"
+			unit: "in",
 		},
 		height: {
 			value: 11,
-			unit: "in"
-		}
+			unit: "in",
+		},
 	},
-	"legal": {
+	legal: {
 		width: {
 			value: 8.5,
-			unit: "in"
+			unit: "in",
 		},
 		height: {
 			value: 14,
-			unit: "in"
-		}
+			unit: "in",
+		},
 	},
-	"ledger": {
+	ledger: {
 		width: {
 			value: 11,
-			unit: "in"
+			unit: "in",
 		},
 		height: {
 			value: 17,
-			unit: "in"
-		}
-	}
+			unit: "in",
+		},
+	},
 };

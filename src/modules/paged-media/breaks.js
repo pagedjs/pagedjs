@@ -1,14 +1,38 @@
 import Handler from "../handler.js";
 import csstree from "css-tree";
-import { displayedElementAfter, displayedElementBefore, needsPageBreak } from "../../utils/dom.js";
+import {
+	displayedElementAfter,
+	displayedElementBefore,
+	needsPageBreak,
+} from "../../utils/dom.js";
 
 class Breaks extends Handler {
+	/**
+	 * Handles CSS break properties for paged media.
+	 * @param {Object} chunker - The chunker instance managing the pagination.
+	 * @param {Object} polisher - The polisher instance managing CSS and styles.
+	 * @param {Object} caller - The caller instance (optional, context info).
+	 */
 	constructor(chunker, polisher, caller) {
 		super(chunker, polisher, caller);
 
+		/**
+		 * Stores break rules keyed by CSS selector.
+		 * @type {Object.<string, Array.<Object>>}
+		 */
 		this.breaks = {};
 	}
 
+	/**
+	 * Processes a CSS declaration related to breaks.
+	 * Extracts break properties and stores them by selector.
+	 * Removes the declaration from the CSS to avoid duplication.
+	 *
+	 * @param {Object} declaration - The CSS declaration node.
+	 * @param {Object} dItem - The item in the declaration list.
+	 * @param {Object} dList - The list of declarations.
+	 * @param {Object} rule - The CSS rule node containing the declaration.
+	 */
 	onDeclaration(declaration, dItem, dList, rule) {
 		let property = declaration.property;
 
@@ -22,7 +46,7 @@ class Breaks extends Handler {
 				property: property,
 				value: value,
 				selector: selector,
-				name: name
+				name: name,
 			};
 
 			selector.split(",").forEach((s) => {
@@ -36,15 +60,17 @@ class Breaks extends Handler {
 			dList.remove(dItem);
 		}
 
-		if (property === "break-before" ||
-				property === "break-after" ||
-				property === "page-break-before" ||
-				property === "page-break-after"
+		if (
+			property === "break-before" ||
+			property === "break-after" ||
+			property === "page-break-before" ||
+			property === "page-break-after"
 		) {
 			let child = declaration.value.children.first();
 			let value = child.name;
 			let selector = csstree.generate(rule.ruleNode.prelude);
 
+			// Normalize legacy page-break properties
 			if (property === "page-break-before") {
 				property = "break-before";
 			} else if (property === "page-break-after") {
@@ -54,7 +80,7 @@ class Breaks extends Handler {
 			let breaker = {
 				property: property,
 				value: value,
-				selector: selector
+				selector: selector,
 			};
 
 			selector.split(",").forEach((s) => {
@@ -65,23 +91,34 @@ class Breaks extends Handler {
 				}
 			});
 
-			// Remove from CSS -- handle right / left in module
+			// Remove from CSS -- break rules handled by script
 			dList.remove(dItem);
 		}
 	}
 
+	/**
+	 * Called after CSS is parsed.
+	 * Applies break rules to elements in the parsed document.
+	 *
+	 * @param {DocumentFragment} parsed - The parsed DOM fragment.
+	 */
 	afterParsed(parsed) {
 		this.processBreaks(parsed, this.breaks);
 	}
 
+	/**
+	 * Applies stored break rules to matching elements.
+	 *
+	 * @param {DocumentFragment} parsed - The parsed DOM fragment.
+	 * @param {Object.<string, Array.<Object>>} breaks - Break rules keyed by selectors.
+	 */
 	processBreaks(parsed, breaks) {
 		for (let b in breaks) {
-			// Find elements
+			// Find elements matching the selector
 			let elements = parsed.querySelectorAll(b);
-			// Add break data
+
 			for (var i = 0; i < elements.length; i++) {
 				for (let prop of breaks[b]) {
-
 					if (prop.property === "break-after") {
 						let nodeAfter = displayedElementAfter(elements[i], parsed);
 
@@ -97,8 +134,11 @@ class Breaks extends Handler {
 						// If we cannot find a node before we should not break!
 						// https://drafts.csswg.org/css-break-3/#break-propagation
 						if (nodeBefore) {
-							if (prop.value === "page" && needsPageBreak(elements[i], nodeBefore)) {
-								// we ignore this explicit page break because an implicit page break is already needed
+							if (
+								prop.value === "page" &&
+								needsPageBreak(elements[i], nodeBefore)
+							) {
+								// Ignore explicit page break if implicit break already needed
 								continue;
 							}
 							elements[i].setAttribute("data-break-before", prop.value);
@@ -120,6 +160,13 @@ class Breaks extends Handler {
 		}
 	}
 
+	/**
+	 * Merges new break rules into existing break rules.
+	 *
+	 * @param {Object.<string, Array.<Object>>} pageBreaks - Existing break rules.
+	 * @param {Object.<string, Array.<Object>>} newBreaks - New break rules to merge.
+	 * @returns {Object.<string, Array.<Object>>} The merged break rules.
+	 */
 	mergeBreaks(pageBreaks, newBreaks) {
 		for (let b in newBreaks) {
 			if (b in pageBreaks) {
@@ -131,18 +178,32 @@ class Breaks extends Handler {
 		return pageBreaks;
 	}
 
+	/**
+	 * Adds break-related data attributes from elements on the page to the page object.
+	 *
+	 * @param {Element} pageElement - The page DOM element.
+	 * @param {Object} page - The page metadata object to update.
+	 */
 	addBreakAttributes(pageElement, page) {
 		let before = pageElement.querySelector("[data-break-before]");
 		let after = pageElement.querySelector("[data-break-after]");
-		let previousBreakAfter = pageElement.querySelector("[data-previous-break-after]");
+		let previousBreakAfter = pageElement.querySelector(
+			"[data-previous-break-after]",
+		);
 
 		if (before) {
 			if (before.dataset.splitFrom) {
 				page.splitFrom = before.dataset.splitFrom;
 				pageElement.setAttribute("data-split-from", before.dataset.splitFrom);
-			} else if (before.dataset.breakBefore && before.dataset.breakBefore !== "avoid") {
+			} else if (
+				before.dataset.breakBefore &&
+				before.dataset.breakBefore !== "avoid"
+			) {
 				page.breakBefore = before.dataset.breakBefore;
-				pageElement.setAttribute("data-break-before", before.dataset.breakBefore);
+				pageElement.setAttribute(
+					"data-break-before",
+					before.dataset.breakBefore,
+				);
 			}
 		}
 
@@ -150,19 +211,32 @@ class Breaks extends Handler {
 			if (after.dataset.splitTo) {
 				page.splitTo = after.dataset.splitTo;
 				pageElement.setAttribute("data-split-to", after.dataset.splitTo);
-			} else if (after.dataset.breakAfter && after.dataset.breakAfter !== "avoid") {
+			} else if (
+				after.dataset.breakAfter &&
+				after.dataset.breakAfter !== "avoid"
+			) {
 				page.breakAfter = after.dataset.breakAfter;
 				pageElement.setAttribute("data-break-after", after.dataset.breakAfter);
 			}
 		}
 
 		if (previousBreakAfter && previousBreakAfter.dataset) {
-			if (previousBreakAfter.dataset.previousBreakAfter && previousBreakAfter.dataset.previousBreakAfter !== "avoid") {
+			if (
+				previousBreakAfter.dataset.previousBreakAfter &&
+				previousBreakAfter.dataset.previousBreakAfter !== "avoid"
+			) {
 				page.previousBreakAfter = previousBreakAfter.dataset.previousBreakAfter;
 			}
 		}
 	}
 
+	/**
+	 * Hook called after a page layout is finished.
+	 * Adds break-related data attributes from page elements to the page metadata.
+	 *
+	 * @param {Element} pageElement - The page DOM element.
+	 * @param {Object} page - The page metadata object.
+	 */
 	afterPageLayout(pageElement, page) {
 		this.addBreakAttributes(pageElement, page);
 	}

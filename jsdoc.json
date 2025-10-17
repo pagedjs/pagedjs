@@ -1,0 +1,17 @@
+{
+  "plugins": ["plugins/markdown", "plugins/summarize"],
+  "recurseDepth": 10,
+  "source": {
+    "includePattern": ".+\\.js(doc|x)?$",
+    "include": ["./src/"],
+    "exclude": ["node_modules"]
+  },
+  "templates": {
+    "cleverLinks": true,
+    "monospaceLinks": true
+  },
+  "opts": {
+    "destination": "./docs/",
+    "recurse": true
+  }
+}

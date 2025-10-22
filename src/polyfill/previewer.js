@@ -13,7 +13,7 @@ class Previewer {
 		this.settings = options || {};
 
 		// Process styles
-		this.polisher = new Polisher(false);
+		this.polisher = new Polisher(false, this.settings.cspNonce);
 
 		// Chunk contents
 		this.chunker = new Chunker(undefined, undefined, this.settings);

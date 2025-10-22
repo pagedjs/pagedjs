@@ -4,7 +4,8 @@ import Hook from "../utils/hook.js";
 import request from "../utils/request.js";
 
 class Polisher {
-	constructor(setup) {
+	constructor(setup, cspNonce) {
+		this.cspNonce = cspNonce;
 		this.sheets = [];
 		this.inserted = [];
 
@@ -32,6 +33,11 @@ class Polisher {
 	setup() {
 		this.base = this.insert(baseStyles);
 		this.styleEl = document.createElement("style");
+
+		if (this.cspNonce) {
+			this.styleEl.setAttribute("nonce", this.cspNonce);
+		}
+
 		document.head.appendChild(this.styleEl);
 		this.styleSheet = this.styleEl.sheet;
 		return this.styleSheet;
@@ -105,6 +111,10 @@ class Polisher {
 		let head = document.querySelector("head");
 		let style = document.createElement("style");
 		style.setAttribute("data-pagedjs-inserted-styles", "true");
+
+		if (this.cspNonce) {
+			style.setAttribute("nonce", this.cspNonce);
+		}
 
 		style.appendChild(document.createTextNode(text));
 

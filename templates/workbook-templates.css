@@ -1,0 +1,584 @@
+/**
+ * Workbook Templates for Paged.js
+ * Ready-to-use page layouts and components for print-ready workbooks
+ *
+ * Usage:
+ * Import this stylesheet and apply classes to your HTML elements.
+ * Customize by overriding CSS variables in your own stylesheet.
+ */
+
+/* ============================================
+   DESIGN TOKENS
+   ============================================ */
+
+:root {
+  /* Typography Scale */
+  --font-size-display: 24pt;
+  --font-size-h1: 20pt;
+  --font-size-h2: 16pt;
+  --font-size-h3: 14pt;
+  --font-size-h4: 12pt;
+  --font-size-body: 11pt;
+  --font-size-small: 9pt;
+  --font-size-tiny: 8pt;
+
+  /* Spacing Scale */
+  --spacing-xs: 0.25em;
+  --spacing-sm: 0.5em;
+  --spacing-md: 1em;
+  --spacing-lg: 1.5em;
+  --spacing-xl: 2em;
+  --spacing-xxl: 3em;
+
+  /* Colors (Print-optimized) */
+  --color-text: #000000;
+  --color-text-secondary: #333333;
+  --color-text-light: #666666;
+  --color-primary: #0066cc;
+  --color-secondary: #6699cc;
+  --color-accent: #ff6600;
+  --color-background: #ffffff;
+  --color-border: #cccccc;
+  --color-success: #00cc66;
+  --color-warning: #ffcc00;
+  --color-error: #cc0000;
+
+  /* Line Heights */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  --line-height-loose: 2.0;
+
+  /* Font Families */
+  --font-family-body: Georgia, serif;
+  --font-family-heading: Arial, sans-serif;
+  --font-family-monospace: 'Courier New', monospace;
+
+  /* Border Radius */
+  --border-radius-none: 0;
+  --border-radius-sm: 2pt;
+  --border-radius-md: 4pt;
+  --border-radius-lg: 8pt;
+  --border-radius-full: 9999pt;
+
+  /* Border Width */
+  --border-width-thin: 0.5pt;
+  --border-width-medium: 1pt;
+  --border-width-thick: 2pt;
+
+  /* Component Tokens */
+  --worksheet-bg: #f9f9f9;
+  --worksheet-border: var(--color-border);
+  --worksheet-border-width: var(--border-width-medium);
+  --worksheet-border-radius: var(--border-radius-md);
+  --worksheet-padding: 12pt;
+
+  --answer-key-bg: #e8f4f8;
+  --answer-key-border: var(--color-primary);
+  --answer-key-padding: 8pt;
+
+  --icon-container-size: 24pt;
+  --icon-container-bg: var(--color-background);
+  --icon-container-border-radius: var(--border-radius-full);
+  --icon-container-padding: 4pt;
+
+  --infographic-bg: var(--color-background);
+  --infographic-border: #dddddd;
+  --infographic-padding: 16pt;
+  --infographic-margin-top: 12pt;
+  --infographic-margin-bottom: 12pt;
+
+  --callout-bg: #fffdf0;
+  --callout-border-left-width: 4pt;
+  --callout-border-left-color: var(--color-warning);
+  --callout-padding: 12pt;
+
+  --code-block-bg: #f5f5f5;
+  --code-block-border: #dddddd;
+  --code-block-border-radius: var(--border-radius-sm);
+  --code-block-padding: 8pt;
+
+  --table-border: var(--color-border);
+  --table-border-width: var(--border-width-medium);
+  --table-header-bg: #f0f0f0;
+  --table-cell-padding: 6pt;
+  --table-striped-bg: #f9f9f9;
+}
+
+/* ============================================
+   PAGE LAYOUTS
+   ============================================ */
+
+/* A4 Workbook Layout (210mm x 297mm) */
+@page workbook-a4 {
+  size: A4;
+  margin: 20mm;
+  bleed: 3mm;
+  marks: crop cross;
+
+  @top-center {
+    content: string(chapter-title);
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-small);
+    color: var(--color-text-secondary);
+  }
+
+  @bottom-center {
+    content: counter(page);
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-small);
+  }
+}
+
+/* A4 Cover Page (no margins) */
+@page workbook-cover {
+  size: A4;
+  margin: 0;
+  bleed: 3mm;
+  marks: crop cross;
+}
+
+/* A5 Workbook Layout (148mm x 210mm) */
+@page workbook-a5 {
+  size: A5;
+  margin: 15mm;
+  bleed: 3mm;
+  marks: crop cross;
+
+  @top-center {
+    content: string(chapter-title);
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-small);
+    color: var(--color-text-secondary);
+  }
+
+  @bottom-center {
+    content: counter(page);
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-small);
+  }
+}
+
+/* US Letter Workbook Layout (8.5in x 11in) */
+@page workbook-letter {
+  size: letter;
+  margin: 1in;
+  bleed: 0.125in;
+  marks: crop cross;
+
+  @top-center {
+    content: string(chapter-title);
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-small);
+    color: var(--color-text-secondary);
+  }
+
+  @bottom-center {
+    content: counter(page);
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-small);
+  }
+}
+
+/* Left Page Layout (for spreads) */
+@page workbook-left:left {
+  margin-right: 25mm; /* Extra gutter margin */
+  margin-left: 15mm;
+
+  @top-left {
+    content: counter(page);
+  }
+}
+
+/* Right Page Layout (for spreads) */
+@page workbook-right:right {
+  margin-left: 25mm; /* Extra gutter margin */
+  margin-right: 15mm;
+
+  @top-right {
+    content: counter(page);
+  }
+}
+
+/* First Page (no header) */
+@page workbook-first:first {
+  @top-center {
+    content: none;
+  }
+}
+
+/* ============================================
+   BASE TYPOGRAPHY
+   ============================================ */
+
+body {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-normal);
+  color: var(--color-text);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-heading);
+  font-weight: bold;
+  line-height: var(--line-height-tight);
+  margin-top: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  page-break-after: avoid;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  page-break-after: avoid;
+}
+
+h3 {
+  font-size: var(--font-size-h3);
+  page-break-after: avoid;
+}
+
+h4 {
+  font-size: var(--font-size-h4);
+  page-break-after: avoid;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+  orphans: 3;
+  widows: 3;
+}
+
+/* ============================================
+   WORKBOOK COMPONENTS
+   ============================================ */
+
+/* Worksheet/Exercise Box */
+.worksheet {
+  background-color: var(--worksheet-bg);
+  border: var(--worksheet-border-width) solid var(--worksheet-border);
+  border-radius: var(--worksheet-border-radius);
+  padding: var(--worksheet-padding);
+  margin: var(--spacing-lg) 0;
+  page-break-inside: avoid;
+}
+
+.worksheet-title {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-h3);
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-primary);
+}
+
+.worksheet-instructions {
+  font-size: var(--font-size-small);
+  font-style: italic;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Answer Key */
+.answer-key {
+  background-color: var(--answer-key-bg);
+  border: var(--border-width-medium) solid var(--answer-key-border);
+  border-radius: var(--border-radius-md);
+  padding: var(--answer-key-padding);
+  margin: var(--spacing-lg) 0;
+  font-size: var(--font-size-small);
+  page-break-inside: avoid;
+}
+
+.answer-key-title {
+  font-family: var(--font-family-heading);
+  font-weight: bold;
+  color: var(--color-primary);
+  margin-top: 0;
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Icon Container */
+.icon-container {
+  display: inline-block;
+  width: var(--icon-container-size);
+  height: var(--icon-container-size);
+  background-color: var(--icon-container-bg);
+  border-radius: var(--icon-container-border-radius);
+  padding: var(--icon-container-padding);
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Infographic Container */
+.infographic {
+  background-color: var(--infographic-bg);
+  border: var(--border-width-medium) solid var(--infographic-border);
+  border-radius: var(--border-radius-md);
+  padding: var(--infographic-padding);
+  margin-top: var(--infographic-margin-top);
+  margin-bottom: var(--infographic-margin-bottom);
+  page-break-inside: avoid;
+}
+
+.infographic-caption {
+  font-size: var(--font-size-small);
+  font-style: italic;
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin-top: var(--spacing-sm);
+}
+
+/* Callout/Note Box */
+.callout {
+  background-color: var(--callout-bg);
+  border-left: var(--callout-border-left-width) solid var(--callout-border-left-color);
+  padding: var(--callout-padding);
+  margin: var(--spacing-lg) 0;
+  page-break-inside: avoid;
+}
+
+.callout-title {
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-warning);
+}
+
+.callout.info {
+  border-left-color: var(--color-primary);
+}
+
+.callout.info .callout-title {
+  color: var(--color-primary);
+}
+
+.callout.success {
+  border-left-color: var(--color-success);
+}
+
+.callout.success .callout-title {
+  color: var(--color-success);
+}
+
+.callout.error {
+  border-left-color: var(--color-error);
+}
+
+.callout.error .callout-title {
+  color: var(--color-error);
+}
+
+/* Code Block */
+.code-block {
+  background-color: var(--code-block-bg);
+  border: var(--border-width-thin) solid var(--code-block-border);
+  border-radius: var(--code-block-border-radius);
+  padding: var(--code-block-padding);
+  font-family: var(--font-family-monospace);
+  font-size: var(--font-size-small);
+  overflow-x: auto;
+  margin: var(--spacing-md) 0;
+  page-break-inside: avoid;
+}
+
+pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+code {
+  font-family: var(--font-family-monospace);
+  font-size: 0.9em;
+}
+
+/* ============================================
+   TABLES
+   ============================================ */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--spacing-lg) 0;
+  page-break-inside: auto;
+}
+
+thead {
+  display: table-header-group;
+  background-color: var(--table-header-bg);
+}
+
+tr {
+  page-break-inside: avoid;
+  page-break-after: auto;
+}
+
+th, td {
+  border: var(--table-border-width) solid var(--table-border);
+  padding: var(--table-cell-padding);
+  text-align: left;
+}
+
+th {
+  font-weight: bold;
+  font-family: var(--font-family-heading);
+}
+
+tbody tr:nth-child(even) {
+  background-color: var(--table-striped-bg);
+}
+
+/* ============================================
+   LISTS
+   ============================================ */
+
+ul, ol {
+  margin: var(--spacing-md) 0;
+  padding-left: var(--spacing-xl);
+}
+
+li {
+  margin-bottom: var(--spacing-sm);
+  orphans: 2;
+  widows: 2;
+}
+
+/* Checklist Style */
+ul.checklist {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+ul.checklist li:before {
+  content: "☐ ";
+  margin-right: var(--spacing-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ============================================
+   IMAGES & FIGURES
+   ============================================ */
+
+img {
+  max-width: 100%;
+  height: auto;
+  page-break-inside: avoid;
+}
+
+figure {
+  margin: var(--spacing-lg) 0;
+  page-break-inside: avoid;
+}
+
+figcaption {
+  font-size: var(--font-size-small);
+  font-style: italic;
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin-top: var(--spacing-sm);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Page Breaks */
+.page-break-before {
+  page-break-before: always;
+}
+
+.page-break-after {
+  page-break-after: always;
+}
+
+.avoid-break {
+  page-break-inside: avoid;
+}
+
+/* Text Alignment */
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Spacing */
+.mt-sm { margin-top: var(--spacing-sm); }
+.mt-md { margin-top: var(--spacing-md); }
+.mt-lg { margin-top: var(--spacing-lg); }
+.mt-xl { margin-top: var(--spacing-xl); }
+
+.mb-sm { margin-bottom: var(--spacing-sm); }
+.mb-md { margin-bottom: var(--spacing-md); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+.mb-xl { margin-bottom: var(--spacing-xl); }
+
+/* ============================================
+   CHAPTER & SECTION MANAGEMENT
+   ============================================ */
+
+.chapter {
+  page: workbook-a4;
+  page-break-before: always;
+}
+
+.chapter-title {
+  font-size: var(--font-size-display);
+  font-family: var(--font-family-heading);
+  margin-top: 0;
+  margin-bottom: var(--spacing-xl);
+  string-set: chapter-title content();
+}
+
+.section {
+  margin-top: var(--spacing-xxl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.section-title {
+  font-size: var(--font-size-h1);
+  page-break-after: avoid;
+}
+
+/* ============================================
+   COVER PAGE
+   ============================================ */
+
+.cover-page {
+  page: workbook-cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;
+}
+
+.cover-title {
+  font-size: 36pt;
+  font-family: var(--font-family-heading);
+  font-weight: bold;
+  margin-bottom: var(--spacing-lg);
+}
+
+.cover-subtitle {
+  font-size: var(--font-size-h2);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-xxl);
+}
+
+.cover-author {
+  font-size: var(--font-size-h3);
+  font-style: italic;
+}

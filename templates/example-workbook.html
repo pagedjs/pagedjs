@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Example Workbook - Paged.js Template</title>
+
+  <!-- Paged.js Polyfill -->
+  <script src="../dist/paged.polyfill.js"></script>
+
+  <!-- Workbook Template Styles -->
+  <link rel="stylesheet" href="./workbook-templates.css">
+
+  <style>
+    /* Custom overrides for this workbook */
+    :root {
+      --color-primary: #2563eb;
+      --color-accent: #dc2626;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cover Page -->
+  <div class="cover-page">
+    <h1 class="cover-title">Mathematics Workbook</h1>
+    <p class="cover-subtitle">Grade 5 - Advanced Topics</p>
+    <p class="cover-author">By Jane Educator</p>
+  </div>
+
+  <!-- Chapter 1 -->
+  <section class="chapter">
+    <h1 class="chapter-title">Chapter 1: Fractions</h1>
+
+    <p>
+      In this chapter, we'll explore the fundamental concepts of fractions,
+      including addition, subtraction, multiplication, and division.
+    </p>
+
+    <!-- Section -->
+    <div class="section">
+      <h2 class="section-title">1.1 Understanding Fractions</h2>
+
+      <p>
+        A fraction represents a part of a whole. It consists of two numbers:
+        the <strong>numerator</strong> (top number) and the <strong>denominator</strong> (bottom number).
+      </p>
+
+      <!-- Callout Box -->
+      <div class="callout info">
+        <p class="callout-title">Key Concept</p>
+        <p>
+          The denominator tells us how many equal parts the whole is divided into,
+          while the numerator tells us how many of those parts we have.
+        </p>
+      </div>
+
+      <!-- Worksheet/Exercise -->
+      <div class="worksheet">
+        <h3 class="worksheet-title">Exercise 1.1: Identifying Fractions</h3>
+        <p class="worksheet-instructions">
+          Look at each diagram and write the fraction that represents the shaded portion.
+        </p>
+
+        <ol>
+          <li>Circle divided into 4 parts, 1 shaded: _______</li>
+          <li>Rectangle divided into 8 parts, 3 shaded: _______</li>
+          <li>Square divided into 6 parts, 5 shaded: _______</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Section 1.2 -->
+    <div class="section">
+      <h2 class="section-title">1.2 Adding Fractions</h2>
+
+      <p>
+        When adding fractions with the same denominator, we add the numerators
+        and keep the denominator the same.
+      </p>
+
+      <!-- Code Block Example -->
+      <div class="code-block">
+        <pre>
+1/4 + 2/4 = (1 + 2)/4 = 3/4
+
+Step 1: Check that denominators are the same
+Step 2: Add the numerators: 1 + 2 = 3
+Step 3: Keep the denominator: 4
+Step 4: Simplify if needed: 3/4 (already simplified)
+        </pre>
+      </div>
+
+      <!-- Worksheet -->
+      <div class="worksheet">
+        <h3 class="worksheet-title">Exercise 1.2: Adding Fractions</h3>
+        <p class="worksheet-instructions">
+          Solve the following addition problems. Show your work.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Problem</th>
+              <th>Answer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1/5 + 2/5</td>
+              <td>__________</td>
+            </tr>
+            <tr>
+              <td>3/8 + 1/8</td>
+              <td>__________</td>
+            </tr>
+            <tr>
+              <td>2/6 + 3/6</td>
+              <td>__________</td>
+            </tr>
+            <tr>
+              <td>4/10 + 3/10</td>
+              <td>__________</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Warning Callout -->
+      <div class="callout">
+        <p class="callout-title">Common Mistake</p>
+        <p>
+          Don't add the denominators! Only add the numerators when the
+          denominators are the same.
+        </p>
+      </div>
+    </div>
+
+    <!-- Section 1.3 -->
+    <div class="section">
+      <h2 class="section-title">1.3 Practice Problems</h2>
+
+      <!-- Checklist Style List -->
+      <h3>Before You Begin:</h3>
+      <ul class="checklist">
+        <li>Read each problem carefully</li>
+        <li>Show all your work</li>
+        <li>Check your answers</li>
+        <li>Circle any questions you found difficult</li>
+      </ul>
+
+      <!-- Multi-part Worksheet -->
+      <div class="worksheet">
+        <h3 class="worksheet-title">Mixed Practice</h3>
+
+        <h4>Part A: Simple Addition</h4>
+        <ol>
+          <li>1/3 + 1/3 = _______</li>
+          <li>2/7 + 4/7 = _______</li>
+          <li>3/9 + 5/9 = _______</li>
+        </ol>
+
+        <h4>Part B: Word Problems</h4>
+        <ol>
+          <li>
+            Maria ate 2/8 of a pizza and her brother ate 3/8 of the same pizza.
+            How much of the pizza did they eat together?
+            <br><br>
+            Answer: _______
+          </li>
+          <li>
+            A recipe calls for 1/4 cup of sugar in the first step and 2/4 cup
+            in the second step. How much sugar is needed in total?
+            <br><br>
+            Answer: _______
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chapter 2 -->
+  <section class="chapter">
+    <h1 class="chapter-title">Chapter 2: Decimals</h1>
+
+    <p>
+      Decimals are another way to represent parts of a whole. In this chapter,
+      we'll learn how decimals relate to fractions and how to perform operations
+      with them.
+    </p>
+
+    <!-- Infographic Container -->
+    <div class="infographic">
+      <h3 style="text-align: center;">Decimal Place Values</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Place</th>
+            <th>Value</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Ones</td>
+            <td>1</td>
+            <td>5 in 5.234</td>
+          </tr>
+          <tr>
+            <td>Tenths</td>
+            <td>0.1</td>
+            <td>2 in 5.234</td>
+          </tr>
+          <tr>
+            <td>Hundredths</td>
+            <td>0.01</td>
+            <td>3 in 5.234</td>
+          </tr>
+          <tr>
+            <td>Thousandths</td>
+            <td>0.001</td>
+            <td>4 in 5.234</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="infographic-caption">
+        Figure 2.1: Understanding decimal place values
+      </p>
+    </div>
+
+    <!-- Section -->
+    <div class="section">
+      <h2 class="section-title">2.1 Converting Fractions to Decimals</h2>
+
+      <p>
+        To convert a fraction to a decimal, divide the numerator by the denominator.
+      </p>
+
+      <div class="worksheet">
+        <h3 class="worksheet-title">Exercise 2.1: Fraction to Decimal Conversion</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Fraction</th>
+              <th>Division</th>
+              <th>Decimal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1/2</td>
+              <td>1 ÷ 2</td>
+              <td>__________</td>
+            </tr>
+            <tr>
+              <td>3/4</td>
+              <td>3 ÷ 4</td>
+              <td>__________</td>
+            </tr>
+            <tr>
+              <td>1/5</td>
+              <td>1 ÷ 5</td>
+              <td>__________</td>
+            </tr>
+            <tr>
+              <td>7/10</td>
+              <td>7 ÷ 10</td>
+              <td>__________</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Answer Key Section (separate pages) -->
+  <section class="chapter page-break-before">
+    <h1 class="chapter-title">Answer Key</h1>
+
+    <div class="answer-key">
+      <h3 class="answer-key-title">Chapter 1 - Exercise 1.1</h3>
+      <ol>
+        <li>1/4</li>
+        <li>3/8</li>
+        <li>5/6</li>
+      </ol>
+    </div>
+
+    <div class="answer-key">
+      <h3 class="answer-key-title">Chapter 1 - Exercise 1.2</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Problem</th>
+            <th>Answer</th>
+            <th>Explanation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1/5 + 2/5</td>
+            <td>3/5</td>
+            <td>Same denominator, add numerators</td>
+          </tr>
+          <tr>
+            <td>3/8 + 1/8</td>
+            <td>4/8 or 1/2</td>
+            <td>Simplify by dividing by 4</td>
+          </tr>
+          <tr>
+            <td>2/6 + 3/6</td>
+            <td>5/6</td>
+            <td>Already simplified</td>
+          </tr>
+          <tr>
+            <td>4/10 + 3/10</td>
+            <td>7/10</td>
+            <td>Already simplified</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="answer-key">
+      <h3 class="answer-key-title">Chapter 1 - Mixed Practice</h3>
+      <h4>Part A:</h4>
+      <ol>
+        <li>2/3</li>
+        <li>6/7</li>
+        <li>8/9</li>
+      </ol>
+
+      <h4>Part B:</h4>
+      <ol>
+        <li>5/8 of the pizza</li>
+        <li>3/4 cup of sugar (or 6/8 cup)</li>
+      </ol>
+    </div>
+
+    <div class="answer-key">
+      <h3 class="answer-key-title">Chapter 2 - Exercise 2.1</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Fraction</th>
+            <th>Decimal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1/2</td>
+            <td>0.5</td>
+          </tr>
+          <tr>
+            <td>3/4</td>
+            <td>0.75</td>
+          </tr>
+          <tr>
+            <td>1/5</td>
+            <td>0.2</td>
+          </tr>
+          <tr>
+            <td>7/10</td>
+            <td>0.7</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Success Callout -->
+    <div class="callout success mt-xl">
+      <p class="callout-title">Great Work!</p>
+      <p>
+        If you completed all the exercises and checked your answers,
+        you're ready to move on to the next chapter. Keep practicing!
+      </p>
+    </div>
+  </section>
+
+</body>
+</html>

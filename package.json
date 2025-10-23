@@ -1,18 +1,58 @@
 {
   "name": "pagedjs",
   "version": "0.5.0-beta.2",
-  "description": "Chunks up a document into paged media flows and applies print styles",
+  "description": "Chunks up a document into paged media flows and applies print styles. A polyfill for CSS Paged Media and Generated Content for Paged Media specifications, enabling professional print-ready PDF generation from HTML and CSS in the browser.",
+  "keywords": [
+    "paged-media",
+    "print",
+    "pdf",
+    "css-paged-media",
+    "pagination",
+    "page-layout",
+    "print-css",
+    "workbook-generation",
+    "book-design",
+    "typography",
+    "css-polyfill",
+    "page-breaks",
+    "running-headers",
+    "page-numbers",
+    "footnotes",
+    "bleed",
+    "crop-marks",
+    "print-ready",
+    "pdf-generation",
+    "w3c-paged-media",
+    "css3-paged-media",
+    "generated-content",
+    "page-counters",
+    "margin-boxes",
+    "ai-coding",
+    "typescript-definitions",
+    "design-tokens",
+    "design-system",
+    "template-library"
+  ],
   "author": "Fred Chasen",
   "license": "MIT",
   "homepage": "https://pagedmedia.org",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.coko.foundation/pagedjs/pagedjs.git"
+  },
+  "bugs": {
+    "url": "https://gitlab.coko.foundation/pagedjs/pagedjs/issues"
+  },
   "main": "src/index.js",
   "browser": "dist/paged.js",
   "type": "module",
+  "types": "types/index.d.ts",
   "exports": {
     "import": "./src/index.js",
     "require": "./lib/index.cjs",
     "browser": "./dist/paged.js",
     "polyfill": "./dist/paged.polyfill.js",
+    "types": "./types/index.d.ts",
     "default": "./src/index.js"
   },
   "dependencies": {
@@ -61,15 +101,15 @@
     "docker-build": "docker build -t pagedmedia/pagedjs .",
     "docker-test": "docker build -t pagedmedia/pagedjs . && docker run -it --rm --ipc=host --user pwuser --security-opt 'seccomp=seccomp.json' -v $(pwd)/specs:/home/pwuser/pagedjs/specs pagedmedia/pagedjs npm test",
     "docker-specs": "docker build -t pagedmedia/pagedjs . && docker run -it --rm --ipc=host -v $(pwd)/specs:/home/pwuser/pagedjs/specs pagedmedia/pagedjs npm run specs",
-    "docker-update-specs": "docker build -t pagedmedia/pagedjs . && docker run -it --rm --ipc=host -v $(pwd)/specs:/home/pwuser/pagedjs/specs pagedmedia/pagedjs npm run specs -- -u"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://gitlab.coko.foundation/pagedjs/pagedjs.git"
+    "docker-update-specs": "docker build -t pagedmedia/pagedjs . && docker run -it --rm --ipc=host -v $(pwd)/specs:/home/pwuser/pagedjs/specs pagedmedia/pagedjs npm run specs -- -u",
+    "validate": "node -e \"const {PageRuleValidator} = require('./src/validation/page-rule-validator.js'); console.log('Validation module loaded successfully');\""
   },
   "files": [
     "dist",
     "lib",
-    "src"
+    "src",
+    "types",
+    "schemas",
+    "templates"
   ]
 }

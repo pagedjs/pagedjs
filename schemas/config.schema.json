@@ -1,0 +1,117 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pagedmedia.org/schemas/config.schema.json",
+  "title": "Paged.js Configuration Schema",
+  "description": "JSON Schema for PagedConfig configuration objects - enables validation and IDE autocomplete",
+  "type": "object",
+  "properties": {
+    "auto": {
+      "type": "boolean",
+      "default": true,
+      "description": "Automatically initialize the polyfill on DOMContentLoaded"
+    },
+    "before": {
+      "description": "Hook function called before preview starts. Useful for setup, loading fonts, or preparing content.",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "instanceof": "Function"
+        }
+      ]
+    },
+    "after": {
+      "description": "Hook function called after preview completes. Receives the flow object with page information.",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "instanceof": "Function"
+        }
+      ]
+    },
+    "settings": {
+      "type": "object",
+      "description": "Custom settings for chunker behavior",
+      "properties": {
+        "maxPages": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Maximum number of pages to render (useful for testing/debugging)"
+        },
+        "handlers": {
+          "type": "object",
+          "description": "Enable/disable specific handlers",
+          "properties": {
+            "footnotes": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable footnote handling"
+            },
+            "runningHeaders": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable running headers and footers"
+            },
+            "stringSets": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable string-set for dynamic content"
+            },
+            "targetCounters": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable target-counter() function"
+            },
+            "targetText": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable target-text() function"
+            },
+            "counters": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable CSS counters"
+            },
+            "atPage": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable @page rule processing"
+            },
+            "breaks": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable page break handling"
+            },
+            "positionFixed": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable position:fixed element handling"
+            }
+          },
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "auto": true,
+      "before": null,
+      "after": null,
+      "settings": {
+        "maxPages": 100,
+        "handlers": {
+          "footnotes": true,
+          "runningHeaders": true
+        }
+      }
+    }
+  ]
+}

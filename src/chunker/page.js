@@ -122,16 +122,29 @@ class Page {
 		}
 	}
 
+	/*
+	size(width, height) {
+		if (width === this.width && height === this.height) {
+			return;
+		}
+		this.width = width;
+		this.height = height;
+
+		this.element.style.width = Math.round(width) + "px";
+		this.element.style.height = Math.round(height) + "px";
+		this.element.style.columnWidth = Math.round(width) + "px";
+	}
+	*/
+
 	/**
-	 * Performs layout rendering of content within the page.
-	 *
-	 * @async
-	 * @param {DocumentFragment} contents - The contents to render.
-	 * @param {Object} breakToken - The token where content rendering should resume.
-	 * @param {Page} [prevPage] - The previous page, used for continuity.
-	 * @returns {Promise<Object|undefined>} A new breakToken if content overflowed, or undefined.
+	 * Start to layout page
+	 * @param {HTML} contents - HTML content
+	 * @param {BreakToken} breakToken - Previous Breaktoken
+	 * @param {Page} prevPage - Previous Page
+	 * @returns {BreakToken | null} - Null if breaktoken is equal to previous one
 	 */
-	async layout(contents, breakToken, prevPage) {
+	async layout (contents, breakToken, prevPage) {
+
 		this.clear();
 
 		this.startToken = breakToken;

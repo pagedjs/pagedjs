@@ -333,12 +333,11 @@ class Chunker {
 	// }
 
 	/**
-	 * Main loop to handle the rendering lifecycle.
-	 *
-	 * @async
-	 * @param {ContentParser} parsed - Parsed content.
-	 * @param {Object} [startAt] - Break token to resume from.
-	 * @returns {Promise<Object>} - Rendering result.
+	 * Renders the parsed html into paginated content and adds references (UUID data-ref attributes)
+	 * 
+	 * @param {HTML} parsed - parsed html content with data-refs for later use
+	 * @param {Element} startAt - HTML node to start rendering
+	 * @returns Pages
 	 */
 	async render(parsed, startAt) {
 		let renderer = this.layout(parsed, startAt);
@@ -416,12 +415,13 @@ class Chunker {
 			return result;
 		}
 	}
+
 	/**
-	 * Handles forced or conditional page breaks based on node metadata.
-	 *
-	 * @async
-	 * @param {Node} node - The node to inspect for break conditions.
-	 * @param {boolean} force - Force page break regardless of content.
+	 * Handling page breaks and adds new Pages if required
+	 * 
+	 * @param {Element} node - breaking node 
+	 * @param {bool} force - force page break
+	 * @returns {null}
 	 */
 	async handleBreaks(node, force) {
 		let currentPage = this.total + 1;

@@ -144,6 +144,15 @@ afterOverflowRemoved(removed, rendered)
 beforeRenderResult(breakToken, pageWrapper)
 ```
 
+## How Pagedjs processes content
+
+Chunker.flow()\
+└── Chunker.render() -> Looping through all pages\
+└──── Chunker.layout*() -> Handles overflowing pages, adding new ones\
+└────── Page.layout() -> Creates new Layout and waits for new Breaktoken\
+└──────── Layout.renderTo() -> Iterates through nodes\
+└────────── Layout.findBreakToken() -> Tries to find overflow/breaktoken
+
 ## Setup
 Install dependencies
 ```sh

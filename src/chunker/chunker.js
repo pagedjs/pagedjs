@@ -294,6 +294,13 @@ class Chunker {
 	// 	}
 	// }
 
+	/**
+	 * Renders the parsed html into paginated content and adds references (UUID data-ref attributes)
+	 * 
+	 * @param {HTML} parsed - parsed html content with data-refs for later use
+	 * @param {Element} startAt - HTML node to start rendering
+	 * @returns Pages
+	 */
 	async render(parsed, startAt) {
 		let renderer = this.layout(parsed, startAt);
 
@@ -354,6 +361,13 @@ class Chunker {
 		}
 	}
 
+	/**
+	 * Handling page breaks and adds new Pages if required
+	 * 
+	 * @param {Element} node - breaking node 
+	 * @param {bool} force - force page break
+	 * @returns {null}
+	 */
 	async handleBreaks(node, force) {
 		let currentPage = this.total + 1;
 		let currentPosition = currentPage % 2 === 0 ? "left" : "right";
@@ -409,6 +423,12 @@ class Chunker {
 		}
 	}
 
+	/**
+	 * Render the pages
+	 * @param {HTML} content - html source content
+	 * @param {Element} startAt start element
+	 * yields BrakteToken
+	 */
 	async *layout(content, startAt) {
 		let breakToken = startAt || false;
 		let page, prevPage, prevNumPages;

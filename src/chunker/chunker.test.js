@@ -1,11 +1,3 @@
-/**
- * @fileoverview
- * Unit tests for the Chunker class.
- * This test verifies that the Chunker correctly creates a page container element during setup.
- *
- * @module tests/chunker.test.js
- */
-
 import Chunker from "./chunker.js";
 
 describe("Chunker", () => {

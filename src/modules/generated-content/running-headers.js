@@ -90,12 +90,6 @@ class RunningHeaders extends Handler {
 		}
 	}
 
-	/**
-	 * Called after the DOM fragment is parsed.
-	 * Hides running header elements by setting `display: none`.
-	 *
-	 * @param {DocumentFragment} fragment - The parsed DOM fragment.
-	 */
 	afterParsed(fragment) {
 		for (let name of Object.keys(this.runningSelectors)) {
 			let set = this.runningSelectors[name];
@@ -109,12 +103,6 @@ class RunningHeaders extends Handler {
 		}
 	}
 
-	/**
-	 * Called after page layout is complete.
-	 * Inserts cloned running header elements into their target containers.
-	 *
-	 * @param {DocumentFragment} fragment - The DOM fragment for the current page.
-	 */
 	afterPageLayout(fragment) {
 		for (let name of Object.keys(this.runningSelectors)) {
 			let set = this.runningSelectors[name];

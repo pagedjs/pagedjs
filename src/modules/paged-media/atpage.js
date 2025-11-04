@@ -1943,6 +1943,7 @@ class AtPage extends Handler {
 
 	/**
 	 * Parses an nth selector string (e.g., "2n+1") into its components.
+	 *
 	 * @param {string} nth - The nth selector string.
 	 * @returns {object} Parsed nth object in An+B format.
 	 */
@@ -1977,6 +1978,7 @@ class AtPage extends Handler {
 
 	/**
 	 * Adds page-specific classes based on dataset attributes.
+	 *
 	 * @param {object} page - The page object.
 	 * @param {HTMLElement} start - The element marking the start of the page.
 	 * @param {Array} pages - The array of all pages.
@@ -2001,6 +2003,7 @@ class AtPage extends Handler {
 	}
 	/**
 	 * Determines the start element for content on a new page.
+	 *
 	 * @param {HTMLElement} content - The content container.
 	 * @param {object} breakToken - The token representing where the break occurred.
 	 * @returns {HTMLElement|undefined} The starting element.
@@ -2043,13 +2046,6 @@ class AtPage extends Handler {
 		}
 	}
 
-	/**
-	 * Hook called before a page is laid out.
-	 * @param {object} page - The page object.
-	 * @param {HTMLElement} contents - The content container.
-	 * @param {object} breakToken - The token where layout breaks.
-	 * @param {object} chunker - The chunking utility.
-	 */
 	beforePageLayout(page, contents, breakToken, chunker) {
 		let start = this.getStartElement(contents, breakToken);
 		if (start) {
@@ -2057,14 +2053,6 @@ class AtPage extends Handler {
 		}
 		// page.element.querySelector('.paged_area').style.color = red;
 	}
-
-	/**
-	 * Hook called after a page has been laid out.
-	 * @param {object} page - The page object.
-	 * @param {HTMLElement} contents - The content container.
-	 * @param {object} breakToken - The break token for the current page.
-	 * @param {object} chunker - The chunking utility.
-	 */
 	afterPageLayout(page, contents, breakToken, chunker) {
 		let thisPage = chunker.pages[chunker.pages.length - 1];
 		// If only footnotes were added, attribs should be like the previous page.
@@ -2088,13 +2076,6 @@ class AtPage extends Handler {
 		}
 	}
 
-	/**
-	 * Final adjustments to the page after layout including margin styling.
-	 * @param {HTMLElement} fragment - The document fragment.
-	 * @param {object} page - The page object.
-	 * @param {object} breakToken - The break token.
-	 * @param {object} chunker - The chunker object.
-	 */
 	finalizePage(fragment, page, breakToken, chunker) {
 		for (let m in this.marginalia) {
 			let margin = this.marginalia[m];

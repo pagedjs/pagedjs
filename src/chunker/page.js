@@ -138,13 +138,13 @@ class Page {
 
 	/**
 	 * Start to layout page
+	 *
 	 * @param {HTML} contents - HTML content
 	 * @param {BreakToken} breakToken - Previous Breaktoken
 	 * @param {Page} prevPage - Previous Page
 	 * @returns {BreakToken | null} - Null if breaktoken is equal to previous one
 	 */
-	async layout (contents, breakToken, prevPage) {
-
+	async layout(contents, breakToken, prevPage) {
 		this.clear();
 
 		this.startToken = breakToken;

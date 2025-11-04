@@ -61,7 +61,6 @@ class PageCounterIncrement extends Handler {
 	}
 
 	/**
-	 * Hook called after parsing is complete.
 	 * Applies the processed counter-increments as CSS custom properties.
 	 *
 	 * @param {*} _ - Unused parameter (parsed content).

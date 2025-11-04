@@ -251,7 +251,9 @@ class Chunker {
 	/**
 	 * Starts the chunking and rendering process for the given content.
 	 *
+	 *
 	 * @async
+	 *
 	 * @param {HTMLElement|Document} content - Content to be paginated.
 	 * @param {HTMLElement} renderTo - Element to render into.
 	 * @returns {Promise<Chunker>} - Returns itself once rendering is complete.
@@ -334,7 +336,7 @@ class Chunker {
 
 	/**
 	 * Renders the parsed html into paginated content and adds references (UUID data-ref attributes)
-	 * 
+	 *
 	 * @param {HTML} parsed - parsed html content with data-refs for later use
 	 * @param {Element} startAt - HTML node to start rendering
 	 * @returns Pages
@@ -418,8 +420,8 @@ class Chunker {
 
 	/**
 	 * Handling page breaks and adds new Pages if required
-	 * 
-	 * @param {Element} node - breaking node 
+	 *
+	 * @param {Element} node - breaking node
 	 * @param {bool} force - force page break
 	 * @returns {null}
 	 */

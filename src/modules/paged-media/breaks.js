@@ -23,16 +23,6 @@ class Breaks extends Handler {
 		this.breaks = {};
 	}
 
-	/**
-	 * Processes a CSS declaration related to breaks.
-	 * Extracts break properties and stores them by selector.
-	 * Removes the declaration from the CSS to avoid duplication.
-	 *
-	 * @param {Object} declaration - The CSS declaration node.
-	 * @param {Object} dItem - The item in the declaration list.
-	 * @param {Object} dList - The list of declarations.
-	 * @param {Object} rule - The CSS rule node containing the declaration.
-	 */
 	onDeclaration(declaration, dItem, dList, rule) {
 		let property = declaration.property;
 
@@ -96,12 +86,6 @@ class Breaks extends Handler {
 		}
 	}
 
-	/**
-	 * Called after CSS is parsed.
-	 * Applies break rules to elements in the parsed document.
-	 *
-	 * @param {DocumentFragment} parsed - The parsed DOM fragment.
-	 */
 	afterParsed(parsed) {
 		this.processBreaks(parsed, this.breaks);
 	}
@@ -230,13 +214,6 @@ class Breaks extends Handler {
 		}
 	}
 
-	/**
-	 * Hook called after a page layout is finished.
-	 * Adds break-related data attributes from page elements to the page metadata.
-	 *
-	 * @param {Element} pageElement - The page DOM element.
-	 * @param {Object} page - The page metadata object.
-	 */
 	afterPageLayout(pageElement, page) {
 		this.addBreakAttributes(pageElement, page);
 	}

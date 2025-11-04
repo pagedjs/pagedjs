@@ -25,14 +25,6 @@ class Following extends Handler {
 		this.selectors = {};
 	}
 
-	/**
-	 * Processes a CSS rule node. Extracts rules containing adjacent sibling selectors (+)
-	 * and stores them with a unique ID for later processing. Removes processed rules from the list.
-	 *
-	 * @param {Object} ruleNode - The CSS rule node.
-	 * @param {number} ruleItem - The index of the rule in the rule list.
-	 * @param {Array} rulelist - The list of CSS rules.
-	 */
 	onRule(ruleNode, ruleItem, rulelist) {
 		let selector = csstree.generate(ruleNode.prelude);
 		if (selector.match(/\+/)) {
@@ -52,13 +44,6 @@ class Following extends Handler {
 			rulelist.remove(ruleItem);
 		}
 	}
-
-	/**
-	 * Called after the entire CSS has been parsed.
-	 * Starts processing stored selectors to apply attributes and insert CSS rules.
-	 *
-	 * @param {Document} parsed - The parsed document to apply the selectors on.
-	 */
 	afterParsed(parsed) {
 		this.processSelectors(parsed, this.selectors);
 	}

@@ -21,7 +21,7 @@ import {
 	replaceOrAppendElement,
 	validNode,
 	walk,
-	words
+	words,
 } from "../utils/dom.js";
 import BreakToken from "./breaktoken.js";
 import RenderResult from "./renderresult.js";
@@ -36,13 +36,13 @@ const MAX_CHARS_PER_BREAK = 1500;
  * @class
  */
 class Layout {
-
 	constructor(element, hooks, options) {
 		this.element = element;
 
 		this.bounds = this.element.getBoundingClientRect();
-		this.parentBounds = this.element.offsetParent?.getBoundingClientRect() ||
-			{ left: 0 };
+		this.parentBounds = this.element.offsetParent?.getBoundingClientRect() || {
+			left: 0,
+		};
 		let gap = parseFloat(window.getComputedStyle(this.element).columnGap);
 
 		if (gap) {
@@ -78,6 +78,7 @@ class Layout {
 
 	/**
 	 * Fills the page and check for the first overflow.
+	 *
 	 * @param {Element} wrapper - current Page's content wrapper
 	 * @param {HTML} source - Html source template content
 	 * @param {BreakToken} breakToken - previous breakToken
@@ -85,7 +86,13 @@ class Layout {
 	 * @param {DOMRect} bounds - Page bounds
 	 * @returns {BreakToken}
 	 */
-	async renderTo(wrapper, source, breakToken, prevPage = null, bounds = this.bounds) {
+	async renderTo(
+		wrapper,
+		source,
+		breakToken,
+		prevPage = null,
+		bounds = this.bounds,
+	) {
 		let start = this.getStart(source, breakToken);
 		let firstDivisible = source;
 
@@ -102,7 +109,8 @@ class Layout {
 
 		let prevBreakToken = breakToken || new BreakToken(start);
 
-		this.hooks && this.hooks.onPageLayout.trigger(wrapper, prevBreakToken, this);
+		this.hooks &&
+			this.hooks.onPageLayout.trigger(wrapper, prevBreakToken, this);
 
 		// Add overflow, and check that it doesn't have overflow itself.
 		this.addOverflowToPage(wrapper, breakToken, prevPage);
@@ -110,7 +118,13 @@ class Layout {
 		// Footnotes may change the bounds.
 		bounds = this.element.getBoundingClientRect();
 
-		let newBreakToken = this.findBreakToken(wrapper, source, bounds, prevBreakToken, start);
+		let newBreakToken = this.findBreakToken(
+			wrapper,
+			source,
+			bounds,
+			prevBreakToken,
+			start,
+		);
 
 		if (prevBreakToken.isFinished()) {
 			if (newBreakToken) {
@@ -167,7 +181,13 @@ class Layout {
 					await this.waitForImages(imgs);
 				}
 
-				newBreakToken = this.findBreakToken(wrapper, source, bounds, prevBreakToken, node);
+				newBreakToken = this.findBreakToken(
+					wrapper,
+					source,
+					bounds,
+					prevBreakToken,
+					node,
+				);
 
 				if (newBreakToken && node === undefined) {
 					// We have run out of content. Do add the overflow to a new page but
@@ -178,9 +198,12 @@ class Layout {
 				if (forcedBreakQueue.length) {
 					if (newBreakToken) {
 						newBreakToken.setForcedBreakQueue(forcedBreakQueue);
-					}
-					else {
-						newBreakToken = this.breakAt(forcedBreakQueue.shift(), 0, forcedBreakQueue);
+					} else {
+						newBreakToken = this.breakAt(
+							forcedBreakQueue.shift(),
+							0,
+							forcedBreakQueue,
+						);
 					}
 				}
 
@@ -211,17 +234,19 @@ class Layout {
 			}
 		}
 
-		this.hooks && this.hooks.beforeRenderResult.trigger(newBreakToken, wrapper, this);
+		this.hooks &&
+			this.hooks.beforeRenderResult.trigger(newBreakToken, wrapper, this);
 		return new RenderResult(newBreakToken);
 	}
 
 	breakAt(node, offset = 0, forcedBreakQueue = []) {
-		let newBreakToken = new BreakToken(
+		let newBreakToken = new BreakToken(node, offset, forcedBreakQueue);
+		let breakHooks = this.hooks.onBreakToken.triggerSync(
+			newBreakToken,
+			undefined,
 			node,
-			offset,
-			forcedBreakQueue
+			this,
 		);
-		let breakHooks = this.hooks.onBreakToken.triggerSync(newBreakToken, undefined, node, this);
 		breakHooks.forEach((newToken) => {
 			if (typeof newToken != "undefined") {
 				newBreakToken = newToken;
@@ -234,14 +259,23 @@ class Layout {
 	shouldBreak(node, limiter) {
 		let previousNode = nodeBefore(node, limiter);
 		let parentNode = node.parentNode;
-		let parentBreakBefore = needsBreakBefore(node) && parentNode && !previousNode && needsBreakBefore(parentNode);
+		let parentBreakBefore =
+			needsBreakBefore(node) &&
+			parentNode &&
+			!previousNode &&
+			needsBreakBefore(parentNode);
 		let doubleBreakBefore;
 
 		if (parentBreakBefore) {
-			doubleBreakBefore = node.dataset.breakBefore === parentNode.dataset.breakBefore;
+			doubleBreakBefore =
+				node.dataset.breakBefore === parentNode.dataset.breakBefore;
 		}
 
-		return !doubleBreakBefore && needsBreakBefore(node) || needsPreviousBreakAfter(node) || needsPageBreak(node, previousNode);
+		return (
+			(!doubleBreakBefore && needsBreakBefore(node)) ||
+			needsPreviousBreakAfter(node) ||
+			needsPageBreak(node, previousNode)
+		);
 	}
 
 	forceBreak() {
@@ -303,7 +337,6 @@ class Layout {
 	 * @returns {void}
 	 */
 	addOverflowToPage(dest, breakToken, alreadyRendered) {
-
 		if (!breakToken || !breakToken.overflow.length) {
 			return;
 		}
@@ -321,12 +354,14 @@ class Layout {
 			// start part of the tree. For this reason, we use a match against
 			// the parent element of overflow.content if it exists, or fall back
 			// to overflow.node's parent element.
-			let addTo = overflow.ancestor ? findElement(overflow.ancestor, fragment) : fragment;
+			let addTo = overflow.ancestor
+				? findElement(overflow.ancestor, fragment)
+				: fragment;
 			this.addOverflowNodes(addTo, overflow.content);
 		});
 
 		// Record refs.
-		Array.from(fragment.querySelectorAll('[data-ref]')).forEach(ref => {
+		Array.from(fragment.querySelectorAll("[data-ref]")).forEach((ref) => {
 			let refId = ref.dataset.ref;
 			if (!dest.querySelector(`[data-ref='${refId}']`)) {
 				if (!dest.indexOfRefs) {
@@ -336,16 +371,23 @@ class Layout {
 			}
 		});
 
-		let tags = [ 'overflow-tagged', 'overflow-partial', 'range-start-overflow', 'range-end-overflow' ];
+		let tags = [
+			"overflow-tagged",
+			"overflow-partial",
+			"range-start-overflow",
+			"range-end-overflow",
+		];
 		tags.forEach((tag) => {
-			let camel = tag.replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
-				return index == 0 ? word.toLowerCase() : word.toUpperCase();
-			}).replace(/[-\s]+/g, '');
+			let camel = tag
+				.replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+					return index == 0 ? word.toLowerCase() : word.toUpperCase();
+				})
+				.replace(/[-\s]+/g, "");
 			let instances = fragment.querySelectorAll(`[data-${tag}]`);
 			instances.forEach((instance) => {
 				delete instance.dataset[camel];
-			})
-		})
+			});
+		});
 
 		dest.appendChild(fragment);
 
@@ -372,7 +414,6 @@ class Layout {
 	 *   The cloned node.
 	 */
 	append(node, dest, source, breakToken, shallow = true, rebuild = true) {
-
 		let clone = cloneNode(node, !shallow);
 
 		if (node.parentNode && isElement(node.parentNode)) {
@@ -387,7 +428,6 @@ class Layout {
 			} else {
 				dest.appendChild(clone);
 			}
-
 		} else {
 			dest.appendChild(clone);
 		}
@@ -414,7 +454,9 @@ class Layout {
 			return;
 		}
 		let node = breakToken.node;
-		let td = isElement(node) ? node.closest("td") : node.parentElement.closest("td");
+		let td = isElement(node)
+			? node.closest("td")
+			: node.parentElement.closest("td");
 		if (td) {
 			let rendered = findElement(td, dest, true);
 			if (!rendered) {
@@ -434,7 +476,7 @@ class Layout {
 	}
 
 	async awaitImageLoaded(image) {
-		return new Promise(resolve => {
+		return new Promise((resolve) => {
 			if (image.complete !== true) {
 				image.onload = function () {
 					let { width, height } = window.getComputedStyle(image);
@@ -497,9 +539,15 @@ class Layout {
 					if (!temp.nextSibling) {
 						// We need to ensure that the previous sibling of temp is fully rendered.
 						const renderedNodeFromSource = findElement(renderedNode, source);
-						const walker = document.createTreeWalker(renderedNodeFromSource, NodeFilter.SHOW_ELEMENT);
+						const walker = document.createTreeWalker(
+							renderedNodeFromSource,
+							NodeFilter.SHOW_ELEMENT,
+						);
 						const lastChildOfRenderedNodeFromSource = walker.lastChild();
-						const lastChildOfRenderedNodeMatchingFromRendered = findElement(lastChildOfRenderedNodeFromSource, rendered);
+						const lastChildOfRenderedNodeMatchingFromRendered = findElement(
+							lastChildOfRenderedNodeFromSource,
+							rendered,
+						);
 						// Check if we found that the last child in source
 						if (!lastChildOfRenderedNodeMatchingFromRendered) {
 							// Pending content to be rendered before virtual break token
@@ -519,8 +567,7 @@ class Layout {
 				if (container == rendered) {
 					parent = renderedNode = source;
 					topLevel = true;
-				}
-				else {
+				} else {
 					renderedNode = findElement(container, rendered);
 
 					if (!renderedNode) {
@@ -543,7 +590,10 @@ class Layout {
 			renderedNode = findElement(container.parentNode, rendered);
 
 			if (!renderedNode) {
-				renderedNode = findElement(prevValidNode(container.parentNode), rendered);
+				renderedNode = findElement(
+					prevValidNode(container.parentNode),
+					rendered,
+				);
 			}
 
 			parent = findElement(renderedNode, source);
@@ -567,18 +617,17 @@ class Layout {
 			offset,
 			overflow.getBoundingClientRect().height,
 			overflow,
-			topLevel
+			topLevel,
 		);
-
 	}
 
 	/**
 	 * Recursively removes last child and it's ancestors if the nested parentElement is empty
-	 * 
+	 *
 	 * In case of empty table rows or similar
-	 * 
-	 * @param {Element} parentElement 
-	 * @param {Element} rootElement 
+	 *
+	 * @param {Element} parentElement
+	 * @param {Element} rootElement
 	 */
 	lastChildCheck(parentElement, rootElement) {
 		if (parentElement.childElementCount) {
@@ -589,29 +638,44 @@ class Layout {
 
 		// A table row, math element or paragraph from which all content has been removed
 		// can itself also be removed. It will be added on the next page.
-		if (parentElement.dataset.overflowTagged && parentElement.textContent.trim() == '') {
+		if (
+			parentElement.dataset.overflowTagged &&
+			parentElement.textContent.trim() == ""
+		) {
 			parentElement.parentNode.removeChild(parentElement);
-		}
-		else if (refId && !rootElement.indexOfRefs[refId]) {
+		} else if (refId && !rootElement.indexOfRefs[refId]) {
 			rootElement.indexOfRefs[refId] = parentElement;
 		}
 	}
 
 	/**
 	 * Converts overflowresults into a Breaktoken objects
-	 * 
+	 *
 	 * Proccesses overflow result
-	 * 
+	 *
 	 * -> Called only from findBreakToken
+	 *
 	 * @param {List} overflow - overflow ranges
 	 * @param {Element} rendered - page content div
 	 */
-	processOverflowResult(ranges, rendered, source, bounds, prevBreakToken, node, extract) {
+	processOverflowResult(
+		ranges,
+		rendered,
+		source,
+		bounds,
+		prevBreakToken,
+		node,
+		extract,
+	) {
 		let breakToken, breakLetter;
 
 		ranges.forEach((overflowRange) => {
-
-			let overflowHooks = this.hooks.onOverflow.triggerSync(overflowRange, rendered, bounds, this);
+			let overflowHooks = this.hooks.onOverflow.triggerSync(
+				overflowRange,
+				rendered,
+				bounds,
+				this,
+			);
 			overflowHooks.forEach((newOverflow) => {
 				if (typeof newOverflow != "undefined") {
 					overflowRange = newOverflow;
@@ -626,7 +690,12 @@ class Layout {
 			}
 
 			// breakToken is nullable
-			let breakHooks = this.hooks.onBreakToken.triggerSync(breakToken, overflowRange, rendered, this);
+			let breakHooks = this.hooks.onBreakToken.triggerSync(
+				breakToken,
+				overflowRange,
+				rendered,
+				this,
+			);
 			breakHooks.forEach((newToken) => {
 				if (typeof newToken != "undefined") {
 					breakToken = newToken;
@@ -645,7 +714,10 @@ class Layout {
 			}
 
 			if (overflow?.node && extract) {
-				overflow.ancestor = findElement(overflow.range.commonAncestorContainer, source);
+				overflow.ancestor = findElement(
+					overflow.range.commonAncestorContainer,
+					source,
+				);
 				overflow.content = this.removeOverflow(overflowRange, breakLetter);
 			}
 		});
@@ -662,19 +734,25 @@ class Layout {
 			let firstOverflow = breakToken.overflow[0];
 			if (firstOverflow?.node && firstOverflow.content) {
 				// Remove data-refs in the overflow from the index.
-				Array.from(firstOverflow.content.querySelectorAll('[data-ref]')).forEach(ref => {
+				Array.from(
+					firstOverflow.content.querySelectorAll("[data-ref]"),
+				).forEach((ref) => {
 					let refId = ref.dataset.ref;
 					if (!rendered.querySelector(`[data-ref='${refId}']`)) {
-						delete(rendered.indexOfRefs[refId]);
+						delete rendered.indexOfRefs[refId];
 					}
 				});
 			}
 		}
 
 		breakToken.overflow.forEach((overflow) => {
-				this.hooks && this.hooks.afterOverflowRemoved.trigger(overflow.content, rendered, this);
-		})
-
+			this.hooks &&
+				this.hooks.afterOverflowRemoved.trigger(
+					overflow.content,
+					rendered,
+					this,
+				);
+		});
 
 		return breakToken;
 	}
@@ -682,16 +760,25 @@ class Layout {
 	/**
 	 * Determines overflow of this layout and convert that into a breaktoken
 	 * -> Called by Layout.renderTo
+	 *
 	 * @param {Element} rendered - page content
 	 * @param {HTML} source - Source content
 	 * @param {DOMRect} bounds - Bounding rect
 	 * @param {BreakToken} prevBreakToken - previous BreakToken
 	 * @param {Element} node - Start node of the breakContent
-	 * @param {*} extract 
+	 * @param {*} extract
 	 * @returns {BreakToken}
 	 */
-	findBreakToken(rendered, source, bounds = this.bounds, prevBreakToken, node = null, extract = true) {
-		let breakToken, overflow = [];
+	findBreakToken(
+		rendered,
+		source,
+		bounds = this.bounds,
+		prevBreakToken,
+		node = null,
+		extract = true,
+	) {
+		let breakToken,
+			overflow = [];
 
 		let overflowResult = this.findOverflow(rendered, bounds, source);
 		while (overflowResult) {
@@ -701,20 +788,28 @@ class Layout {
 			overflow.forEach((item) => {
 				if (
 					item.startContainer == overflowResult.startContainer &&
-					item.endContainer == overflowResult.endContainer) {
-					if (item.startOffset >= overflowResult.startOffset &&
-						item.endOffset <= overflowResult.endOffset) {
-						item.setStart(overflowResult.startContainer, overflowResult.startOffset);
+					item.endContainer == overflowResult.endContainer
+				) {
+					if (
+						item.startOffset >= overflowResult.startOffset &&
+						item.endOffset <= overflowResult.endOffset
+					) {
+						item.setStart(
+							overflowResult.startContainer,
+							overflowResult.startOffset,
+						);
 						existing = true;
 					}
-					if (item.endOffset > overflowResult.endOffset &&
-						item.startOffset == overflowResult.startOffset) {
+					if (
+						item.endOffset > overflowResult.endOffset &&
+						item.startOffset == overflowResult.startOffset
+					) {
 						item.EndOffset = overflowResult.EndOffset;
 						item.setEnd(overflowResult.endContainer, overflowResult.endOffset);
 						existing = true;
 					}
 				}
-			})
+			});
 			if (!existing) {
 				overflow.push(overflowResult);
 			}
@@ -722,7 +817,15 @@ class Layout {
 		}
 
 		if (overflow.length) {
-			breakToken = this.processOverflowResult(overflow, rendered, source, bounds, prevBreakToken, node, extract);
+			breakToken = this.processOverflowResult(
+				overflow,
+				rendered,
+				source,
+				bounds,
+				prevBreakToken,
+				node,
+				extract,
+			);
 		}
 		return breakToken;
 	}
@@ -745,9 +848,13 @@ class Layout {
 		}
 		let { width, height } = element.getBoundingClientRect();
 		let scrollWidth = constrainingElement ? constrainingElement.scrollWidth : 0;
-		let scrollHeight = constrainingElement ? constrainingElement.scrollHeight : 0;
-		return (Math.max(Math.ceil(width), scrollWidth) > Math.ceil(bounds.width)) ||
-			Math.max(Math.ceil(height), scrollHeight) > Math.ceil(bounds.height);
+		let scrollHeight = constrainingElement
+			? constrainingElement.scrollHeight
+			: 0;
+		return (
+			Math.max(Math.ceil(width), scrollWidth) > Math.ceil(bounds.width) ||
+			Math.max(Math.ceil(height), scrollHeight) > Math.ceil(bounds.height)
+		);
 	}
 
 	/**
@@ -762,27 +869,29 @@ class Layout {
 	 */
 	getAncestorPaddingBorderAndMarginSums(element) {
 		let attribs = [
-			'padding-top',
-			'padding-right',
-			'padding-bottom',
-			'padding-left',
-			'border-top-width',
-			'border-right-width',
-			'border-bottom-width',
-			'border-left-width',
-			'margin-top',
-			'margin-right',
-			'margin-bottom',
-			'margin-left',
+			"padding-top",
+			"padding-right",
+			"padding-bottom",
+			"padding-left",
+			"border-top-width",
+			"border-right-width",
+			"border-bottom-width",
+			"border-left-width",
+			"margin-top",
+			"margin-right",
+			"margin-bottom",
+			"margin-left",
 		];
 		let result = {};
-		attribs.forEach(attrib => result[attrib] = 0);
+		attribs.forEach((attrib) => (result[attrib] = 0));
 
-		while (element &&
-			!element.classList.contains('pagedjs_page_content') &&
-			!element.classList.contains('pagedjs_footnote_inner_content')) {
+		while (
+			element &&
+			!element.classList.contains("pagedjs_page_content") &&
+			!element.classList.contains("pagedjs_footnote_inner_content")
+		) {
 			let style = window.getComputedStyle(element);
-			attribs.forEach(attrib => result[attrib] += parseInt(style[attrib]));
+			attribs.forEach((attrib) => (result[attrib] += parseInt(style[attrib])));
 			element = element.parentElement;
 		}
 
@@ -795,12 +904,14 @@ class Layout {
 	getAncestorTheadSizes(element) {
 		let result = 0;
 
-		while (element &&
-			!element.classList.contains('pagedjs_page_content') &&
-			!element.classList.contains('pagedjs_footnote_inner_content')) {
-			if (element.tagName == 'TABLE') {
-				element.childNodes.forEach(node => {
-					if (node.tagName == 'THEAD') {
+		while (
+			element &&
+			!element.classList.contains("pagedjs_page_content") &&
+			!element.classList.contains("pagedjs_footnote_inner_content")
+		) {
+			if (element.tagName == "TABLE") {
+				element.childNodes.forEach((node) => {
+					if (node.tagName == "THEAD") {
 						let style = getComputedStyle(node);
 						result += parseInt(style.height);
 					}
@@ -820,13 +931,14 @@ class Layout {
 	 */
 	addTemporarySplit(element, isTo = true) {
 		this.temporaryIndex++;
-		let name = isTo ? 'data-split-to' : 'data-split-from';
-		while (element &&
-			!element.classList.contains('pagedjs_page_content') &&
-			!element.classList.contains('pagedjs_footnote_inner_content')) {
-
+		let name = isTo ? "data-split-to" : "data-split-from";
+		while (
+			element &&
+			!element.classList.contains("pagedjs_page_content") &&
+			!element.classList.contains("pagedjs_footnote_inner_content")
+		) {
 			if (!element.getAttribute(name)) {
-				element.setAttribute(name, 'temp-' + this.temporaryIndex);
+				element.setAttribute(name, "temp-" + this.temporaryIndex);
 			}
 
 			element = element.parentElement;
@@ -842,13 +954,14 @@ class Layout {
 	 *   Whether a split-to or -from was added.
 	 */
 	deleteTemporarySplit(element, isTo = true) {
-		let name = isTo ? 'data-split-to' : 'data-split-from';
-		while (element &&
-			!element.classList.contains('pagedjs_page_content') &&
-			!element.classList.contains('pagedjs_footnote_inner_content')) {
-
+		let name = isTo ? "data-split-to" : "data-split-from";
+		while (
+			element &&
+			!element.classList.contains("pagedjs_page_content") &&
+			!element.classList.contains("pagedjs_footnote_inner_content")
+		) {
 			let value = element.getAttribute(name);
-			if (value == 'temp-' + this.temporaryIndex) {
+			if (value == "temp-" + this.temporaryIndex) {
 				element.removeAttribute(name);
 			}
 
@@ -876,12 +989,13 @@ class Layout {
 		let bBottom = Math.floor(bounds.bottom);
 		let result = undefined;
 		let skipRange = false;
-		let parentBottomPaddingBorder = 0, parentBottomMargin = 0;
+		let parentBottomPaddingBorder = 0,
+			parentBottomMargin = 0;
 
 		if (isElement(node)) {
 			let result = this.getAncestorPaddingBorderAndMarginSums(node);
-			parentBottomPaddingBorder = result['border-bottom-width'];
-			parentBottomMargin = result['margin-bottom'];
+			parentBottomPaddingBorder = result["border-bottom-width"];
+			parentBottomMargin = result["margin-bottom"];
 		}
 
 		for (const child of node.childNodes) {
@@ -913,9 +1027,7 @@ class Layout {
 				if (child.dataset.overflowTagged !== undefined) {
 					continue;
 				}
-
-			}
-			else {
+			} else {
 				bottomMargin = parentBottomMargin;
 			}
 
@@ -926,8 +1038,11 @@ class Layout {
 			let left = Math.ceil(pos.left);
 			let right = Math.floor(pos.right);
 			let top = Math.ceil(pos.top);
-			let bottom = Math.floor(pos.bottom + bottomMargin +
-				(node.lastChild == child ? parentBottomPaddingBorder : 0));
+			let bottom = Math.floor(
+				pos.bottom +
+					bottomMargin +
+					(node.lastChild == child ? parentBottomPaddingBorder : 0),
+			);
 
 			if (!(pos.height + bottomMargin)) {
 				continue;
@@ -942,24 +1057,31 @@ class Layout {
 	}
 
 	removeHeightConstraint(element) {
-		let pageBox = element.parentElement.closest('.pagedjs_page');
-		pageBox.style.setProperty('--pagedjs-pagebox-height', '5000px');
+		let pageBox = element.parentElement.closest(".pagedjs_page");
+		pageBox.style.setProperty("--pagedjs-pagebox-height", "5000px");
 		this.addTemporarySplit(element.parentElement, false);
 	}
 
 	restoreHeightConstraint(element) {
-		let pageBox = element.parentElement.closest('.pagedjs_page');
+		let pageBox = element.parentElement.closest(".pagedjs_page");
 		this.deleteTemporarySplit(element.parentElement, false);
-		pageBox.style.removeProperty('--pagedjs-pagebox-height');
+		pageBox.style.removeProperty("--pagedjs-pagebox-height");
 	}
 
-	getUnconstrainedElementHeight(element, includeAncestors = true, includeTableHead = true) {
+	getUnconstrainedElementHeight(
+		element,
+		includeAncestors = true,
+		includeTableHead = true,
+	) {
 		this.removeHeightConstraint(element);
 		let unconstrainedHeight = getBoundingClientRect(element).height;
 		if (includeAncestors) {
-			let extra = this.getAncestorPaddingBorderAndMarginSums(element.parentElement);
-			['top', 'bottom'].forEach(direction => {
-				unconstrainedHeight += extra[`padding-${direction}`] +
+			let extra = this.getAncestorPaddingBorderAndMarginSums(
+				element.parentElement,
+			);
+			["top", "bottom"].forEach((direction) => {
+				unconstrainedHeight +=
+					extra[`padding-${direction}`] +
 					extra[`border-${direction}-width`] +
 					extra[`margin-${direction}`];
 			});
@@ -987,7 +1109,8 @@ class Layout {
 	}
 
 	startOfNewOverflow(node, rendered, bounds) {
-		let childNode, done = false;
+		let childNode,
+			done = false;
 		let prev;
 		let anyOverflowFound = false;
 		let topNode = node;
@@ -1006,28 +1129,29 @@ class Layout {
 					// * margin / padding on this element
 					// In the former case, we want to ignore this node and take the
 					// sibling. In the later case, we want to move this node.
-					let intrinsicBottom = 0, intrinsicRight = 0;
+					let intrinsicBottom = 0,
+						intrinsicRight = 0;
 					let childBounds = getBoundingClientRect(node);
 					let styles;
 					if (isElement(node)) {
 						// Assume that any height is the result of matching the
 						// height of surrounding content if there's no content.
 						let result = this.getAncestorPaddingBorderAndMarginSums(node);
-						parentBottomPaddingBorder = result['border-bottom-width'] + result['padding-bottom'];
-						parentBottomMargin = result['margin-bottom'];
+						parentBottomPaddingBorder =
+							result["border-bottom-width"] + result["padding-bottom"];
+						parentBottomMargin = result["margin-bottom"];
 
 						if (node.childNodes.length) {
 							let lastChild = node.lastChild;
 							if (
 								(isText(lastChild) && !node.dataset.overflowTagged) ||
 								(!isText(lastChild) && !lastChild.dataset.overflowTagged)
-								) {
-									childBounds = getBoundingClientRect(lastChild);
-									intrinsicRight = childBounds.right;
-									intrinsicBottom = childBounds.bottom;
-								}
-						}
-						else {
+							) {
+								childBounds = getBoundingClientRect(lastChild);
+								intrinsicRight = childBounds.right;
+								intrinsicBottom = childBounds.bottom;
+							}
+						} else {
 							// Do we count this node even though it has no children?
 							// Seems to only be needed for BR.
 							if (node instanceof HTMLBRElement) {
@@ -1035,24 +1159,27 @@ class Layout {
 								intrinsicBottom = childBounds.bottom;
 							}
 						}
-
 					} else {
 						intrinsicRight = childBounds.right;
 						intrinsicBottom = childBounds.bottom;
 
-						let result = this.getAncestorPaddingBorderAndMarginSums(node.parentElement);
-						parentBottomPaddingBorder = result['border-bottom-width'];
-						parentBottomMargin = result['margin-bottom'];
+						let result = this.getAncestorPaddingBorderAndMarginSums(
+							node.parentElement,
+						);
+						parentBottomPaddingBorder = result["border-bottom-width"];
+						parentBottomMargin = result["margin-bottom"];
 					}
 					intrinsicBottom += parentBottomPaddingBorder + parentBottomMargin;
-					if (intrinsicBottom <= bounds.bottom &&
-						intrinsicRight <= bounds.right) {
+					if (
+						intrinsicBottom <= bounds.bottom &&
+						intrinsicRight <= bounds.right
+					) {
 						let ascended;
 						do {
 							ascended = false;
 							do {
 								node = node.nextElementSibling;
-							} while (node && node.dataset.overflowTagged)
+							} while (node && node.dataset.overflowTagged);
 							if (!node && rendered !== prev) {
 								ascended = true;
 								prev = node = prev.parentElement;
@@ -1093,14 +1220,21 @@ class Layout {
 
 	/**
 	 * Tagging elements and returns range of overflowing elements
+	 *
 	 * @param {Element} startOfOverflow - Start element of the overflow
-	 * @param {Node} rangeStart 
+	 * @param {Node} rangeStart
 	 * @param {Node} rangeEnd
 	 * @param {DOMRect} bounds - page bounds
 	 * @param {Element} rendered - Current rendered page content
-	 * @returns 
+	 * @returns
 	 */
-	tagAndCreateOverflowRange(startOfOverflow, rangeStart, rangeEnd, bounds, rendered) {
+	tagAndCreateOverflowRange(
+		startOfOverflow,
+		rangeStart,
+		rangeEnd,
+		bounds,
+		rendered,
+	) {
 		let offset = 0;
 		let start = bounds.left;
 		let end = bounds.right;
@@ -1127,23 +1261,24 @@ class Layout {
 		let previousElement = nodeBefore(rangeStart, rendered, true);
 		let shouldContinue = true;
 		let newRangeStart = rangeStart;
-		while (!offset && previousElement && shouldContinue && (
-			(isText(newRangeStart) && (
-				newRangeStart.parentElement.dataset.previousBreakAfter == 'avoid' ||
-				newRangeStart.parentElement.dataset.breakBefore == 'avoid'
-			)) ||
-			(!isText(newRangeStart) && (
-				newRangeStart.dataset.previousBreakAfter == 'avoid' ||
-				newRangeStart.dataset.breakBefore == 'avoid'
-			)))) {
+		while (
+			!offset &&
+			previousElement &&
+			shouldContinue &&
+			((isText(newRangeStart) &&
+				(newRangeStart.parentElement.dataset.previousBreakAfter == "avoid" ||
+					newRangeStart.parentElement.dataset.breakBefore == "avoid")) ||
+				(!isText(newRangeStart) &&
+					(newRangeStart.dataset.previousBreakAfter == "avoid" ||
+						newRangeStart.dataset.breakBefore == "avoid")))
+		) {
 			// We are trying to avoid putting a break at newRangeStart.
 			// See if we can move some of the content above into the overflow.
 			let newPreviousElement = nodeBefore(previousElement, rendered, true);
 			// Don't go back into stuff already rendered.
 			if (!newPreviousElement || newPreviousElement.dataset.splitFrom) {
 				shouldContinue = false;
-			}
-			else {
+			} else {
 				newRangeStart = previousElement;
 				previousElement = newPreviousElement;
 			}
@@ -1160,7 +1295,8 @@ class Layout {
 		let position = rangeStart;
 		range = this.getRange(rangeStart, offset, rangeEnd);
 		if (isText(rangeStart)) {
-			rangeStart.parentElement.dataset.splitTo = rangeStart.parentElement.dataset.ref;
+			rangeStart.parentElement.dataset.splitTo =
+				rangeStart.parentElement.dataset.ref;
 			rangeStart.parentElement.dataset.rangeStartOverflow = true;
 			rangeStart.parentElement.dataset.overflowTagged = true;
 			position = rangeStart.parentElement;
@@ -1170,26 +1306,27 @@ class Layout {
 
 		rangeEnd = rangeEnd || rangeStart;
 		if (isElement(rangeEnd)) {
-			if (rangeStart.parentElement.closest(`[data-ref='${rangeEnd.dataset.ref}']`)) {
+			if (
+				rangeStart.parentElement.closest(`[data-ref='${rangeEnd.dataset.ref}']`)
+			) {
 				let nextNode = nodeAfter(rangeEnd);
 				if (nextNode) {
 					nextNode.dataset.rangeEndOverflow = true;
 					nextNode.dataset.overflowTagged = true;
 				}
-			}
-			else {
+			} else {
 				rangeEnd.dataset.rangeEndOverflow = true;
 				rangeEnd.dataset.overflowTagged = true;
 			}
-		}
-		else {
+		} else {
 			rangeEnd.parentElement.dataset.rangeEndOverflow = true;
 		}
 
 		// Add splitTo
 		while (position !== rendered) {
 			if (position.previousSibling) {
-				position.parentElement.dataset.splitTo = position.parentElement.dataset.ref;
+				position.parentElement.dataset.splitTo =
+					position.parentElement.dataset.ref;
 			}
 			position = position.parentElement;
 		}
@@ -1214,8 +1351,7 @@ class Layout {
 					position.dataset.overflowTagged = true;
 				}
 			}
-		}
-		else {
+		} else {
 			position = position.parentElement;
 		}
 		while (!position.nextElementSibling && position !== rendered) {
@@ -1227,7 +1363,7 @@ class Layout {
 	}
 
 	rowspanNeedsBreakAt(tableRow, rendered) {
-		if (tableRow.nodeName !== 'TR') {
+		if (tableRow.nodeName !== "TR") {
 			return;
 		}
 
@@ -1251,7 +1387,9 @@ class Layout {
 			while (previousRow !== null) {
 				previousRowColumnCount = 0;
 				for (const cell of Array.from(previousRow.cells)) {
-					previousRowColumnCount += parseInt(cell.getAttribute("colspan") || "1");
+					previousRowColumnCount += parseInt(
+						cell.getAttribute("colspan") || "1",
+					);
 				}
 				if (previousRowColumnCount === columnCount) {
 					break;
@@ -1267,14 +1405,17 @@ class Layout {
 	/**
 	 * Find the next overflow in the current layout. Tags overflowing content and returns the range of the overflowing content
 	 * -> Called by findBreakToken and afterLayout
+	 *
 	 * @param {Element} rendered - Current page rendered div
 	 * @param {DOMRect} bounds - ClientRect of the page
 	 * @param {HTML} source - Source html content
 	 * @returns {null | Range} range - null if there is no overflow.
 	 */
 	findOverflow(rendered, bounds, source) {
-
-		if (!this.hasOverflow(rendered, bounds) || rendered.dataset.overflowTagged) {
+		if (
+			!this.hasOverflow(rendered, bounds) ||
+			rendered.dataset.overflowTagged
+		) {
 			return;
 		}
 
@@ -1294,21 +1435,30 @@ class Layout {
 		// Find the deepest element that is the first in set of siblings with
 		// overflow. There may be others. We just take the first we find and
 		// are called again to check for additional instances.
-		let node = rendered, startOfOverflow, check;
+		let node = rendered,
+			startOfOverflow,
+			check;
 
 		while (isText(node)) {
 			node = node.nextElementSibling;
 		}
 
-		[startOfOverflow, anyOverflowFound] = this.startOfNewOverflow(node, rendered, bounds);
+		[startOfOverflow, anyOverflowFound] = this.startOfNewOverflow(
+			node,
+			rendered,
+			bounds,
+		);
 
 		if (!anyOverflowFound) {
 			return;
 		}
 
 		let startOfOverflowIsText = isText(startOfOverflow);
-		if (startOfOverflowIsText && startOfOverflow.parentElement.dataset.overflowTagged ||
-			(!startOfOverflowIsText && startOfOverflow.dataset.overflowTagged)) {
+		if (
+			(startOfOverflowIsText &&
+				startOfOverflow.parentElement.dataset.overflowTagged) ||
+			(!startOfOverflowIsText && startOfOverflow.dataset.overflowTagged)
+		) {
 			return;
 		}
 
@@ -1323,13 +1473,13 @@ class Layout {
 		//    can take a range starting at our initial node and going to the end
 		//    of the ancestor's children.
 
-		let rangeStart = check = node = startOfOverflow;
+		let rangeStart = (check = node = startOfOverflow);
 		let visibleSiblings = false;
 		let rangeEnd = rendered.lastElementChild;
 
 		do {
 			let checkBounds = getBoundingClientRect(check);
-			let hasOverflow = (checkBounds.bottom > vEnd || checkBounds.right > end);
+			let hasOverflow = checkBounds.bottom > vEnd || checkBounds.right > end;
 
 			let rowspanNeedsBreakAt;
 
@@ -1340,8 +1490,7 @@ class Layout {
 					rangeStart = rowspanNeedsBreakAt;
 					rangeEnd = rendered.lastChild;
 					break;
-				}
-				else {
+				} else {
 					// If there is an element with overflow and it is within a
 					// break-inside: avoid, we take the whole container, provided that it
 					// will fit on a page by itself. But calculating whether it will fit
@@ -1360,12 +1509,11 @@ class Layout {
 					let unconstrainedHeight;
 					if (checkBounds.width > bounds.width) {
 						unconstrainedHeight = this.getUnconstrainedElementHeight(check);
-					}
-					else {
+					} else {
 						unconstrainedHeight = checkBounds.height;
 					}
 
-					let mustSplit = (unconstrainedHeight > bounds.height);
+					let mustSplit = unconstrainedHeight > bounds.height;
 
 					if (!mustSplit) {
 						// Move the whole thing.
@@ -1374,18 +1522,21 @@ class Layout {
 				}
 			}
 
-			let sibling = check, siblingBounds;
+			let sibling = check,
+				siblingBounds;
 			do {
 				sibling = sibling.nextSibling;
 				siblingBounds = sibling ? getBoundingClientRect(sibling) : undefined;
 			} while (sibling && !siblingBounds?.height);
 
 			if (sibling && siblingBounds?.height && !rowspanNeedsBreakAt) {
-
 				// Is the sibling entirely in overflow? If yes, so must all following
 				// siblings be - add them to this range; they can't have anything we
 				// want to keep on this page.
-				if ((siblingBounds.left > end || siblingBounds.top > vEnd) && !visibleSiblings) {
+				if (
+					(siblingBounds.left > end || siblingBounds.top > vEnd) &&
+					!visibleSiblings
+				) {
 					if (!rowspanNeedsBreakAt) {
 						rangeEnd = check.parentElement.lastChild;
 					}
@@ -1403,13 +1554,24 @@ class Layout {
 				childNode.width = style.width;
 			});
 
-			if (isElement(check) && Array.from(check.classList).filter(value => ['region-content', 'pagedjs_page_content'].includes(value)).length) {
+			if (
+				isElement(check) &&
+				Array.from(check.classList).filter((value) =>
+					["region-content", "pagedjs_page_content"].includes(value),
+				).length
+			) {
 				break;
 			}
 			check = check.parentElement;
 		} while (check && check !== rendered);
 
-		return this.tagAndCreateOverflowRange(startOfOverflow, rangeStart, rangeEnd, bounds, rendered);
+		return this.tagAndCreateOverflowRange(
+			startOfOverflow,
+			rangeStart,
+			rangeEnd,
+			bounds,
+			rendered,
+		);
 	}
 
 	findEndToken(rendered, source) {
@@ -1434,7 +1596,6 @@ class Layout {
 		}
 
 		if (isText(lastChild)) {
-
 			if (lastChild.parentNode.dataset.ref) {
 				lastNodeIndex = indexOf(lastChild);
 				lastChild = lastChild.parentNode;
@@ -1476,9 +1637,13 @@ class Layout {
 
 		this.addTemporarySplit(node.parentElement);
 
-		let parentAdditions = this.getAncestorPaddingBorderAndMarginSums(node.parentElement);
-		parentAdditions = parentAdditions['padding-bottom'] +
-			parentAdditions['border-bottom-width'] + parentAdditions['margin-bottom'];
+		let parentAdditions = this.getAncestorPaddingBorderAndMarginSums(
+			node.parentElement,
+		);
+		parentAdditions =
+			parentAdditions["padding-bottom"] +
+			parentAdditions["border-bottom-width"] +
+			parentAdditions["margin-bottom"];
 
 		while (!done) {
 			next = wordwalker.next();
@@ -1496,14 +1661,14 @@ class Layout {
 			top = pos.top;
 			bottom = pos.bottom;
 
-			if (left > end || top > (vEnd - parentAdditions)) {
+			if (left > end || top > vEnd - parentAdditions) {
 				offset = word.startOffset;
 				break;
 			}
 
 			// The bounds won't be exceeded so we need >= rather than >.
 			// Also below for the letters.
-			if (right > end || bottom > (vEnd - parentAdditions)) {
+			if (right > end || bottom > vEnd - parentAdditions) {
 				let letterwalker = letters(word);
 				let letter, nextLetter, doneLetter;
 
@@ -1522,7 +1687,7 @@ class Layout {
 					right = pos.right;
 					bottom = pos.bottom;
 
-					if (right > end || bottom > (vEnd - parentAdditions)) {
+					if (right > end || bottom > vEnd - parentAdditions) {
 						offset = letter.startOffset;
 						done = true;
 
@@ -1541,7 +1706,7 @@ class Layout {
 		}
 
 		// Don't get tricked into doing a split by whitespace at the start of a string.
-		if (node.textContent.substring(0, offset).trim() == '') {
+		if (node.textContent.substring(0, offset).trim() == "") {
 			return 0;
 		}
 
@@ -1564,7 +1729,9 @@ class Layout {
 
 			// Add a hyphen if previous character is a letter or soft hyphen
 			if (
-				(breakLetter && /^\w|\u00AD$/.test(prevLetter) && /^\w|\u00AD$/.test(breakLetter)) ||
+				(breakLetter &&
+					/^\w|\u00AD$/.test(prevLetter) &&
+					/^\w|\u00AD$/.test(breakLetter)) ||
 				(!breakLetter && prevLetter && /^\w|\u00AD$/.test(prevLetter))
 			) {
 				startContainer.parentNode.classList.add("pagedjs_hyphen");

@@ -28,14 +28,6 @@ class Counters extends Handler {
 		this.resetCountersMap = new Map();
 	}
 
-	/**
-	 * Handles a CSS declaration related to counters.
-	 * Cleans up declarations once processed.
-	 * @param {Object} declaration - The CSS declaration node.
-	 * @param {Object} dItem - The item in the declaration list.
-	 * @param {Object} dList - The list of declarations.
-	 * @param {Object} rule - The CSS rule node containing the declaration.
-	 */
 	onDeclaration(declaration, dItem, dList, rule) {
 		let property = declaration.property;
 
@@ -67,11 +59,6 @@ class Counters extends Handler {
 		return hasProperties;
 	}
 
-	/**
-	 * Called after the parsed document fragment is ready.
-	 * Processes counters and scopes them appropriately.
-	 * @param {DocumentFragment} parsed - The parsed DOM fragment.
-	 */
 	afterParsed(parsed) {
 		this.processCounters(parsed, this.counters);
 		this.scopeCounters(this.counters);
@@ -491,13 +478,6 @@ class Counters extends Handler {
 			.map(([key, value]) => `${key} ${value}`)
 			.join(" ");
 	}
-
-	/**
-	 * Called after page layout to apply counter-reset and counter-increment CSS rules based on page and footnote resets.
-	 *
-	 * @param {HTMLElement} pageElement - The page element after layout.
-	 * @param {Object} page - The page metadata (not used directly here).
-	 */
 	afterPageLayout(pageElement, page) {
 		let resets = [];
 

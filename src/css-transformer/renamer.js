@@ -71,8 +71,6 @@ export function renameProperty({ property, replacement, ast }) {
     },
   });
 
-  console.log(replacements);
-
   for (const { node, item, list, replacement } of replacements) {
     const newDeclaration = {
       type: "Declaration",
@@ -115,7 +113,6 @@ export function renameAtRule({ name, replacement, ast }) {
   for (const { node, item, list } of replacements) {
     let prelude = {};
     if (node.prelude) {
-      console.log(node.prelude);
       prelude.name = csstree.generate(node.prelude).split(":")[0];
       prelude.pseudo = csstree
         .generate(node.prelude)

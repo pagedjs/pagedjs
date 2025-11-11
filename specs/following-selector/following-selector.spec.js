@@ -3,7 +3,25 @@ const TIMEOUT = 10000; // Some book might take longer than this to renderer
 describe("following-selector", () => {
 	let page;
 	beforeAll(async () => {
-		page = await loadPage("following-selector/following-selector.html");
+		page = await loadPage("following-selector/following-selector.html", {
+			ignoreMissingResources: true,
+			routes: {
+				"**/missing.css": {
+					status: 404,
+					contentType: "text/html",
+					body: `<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <title>Missing</title>
+  </head>
+  <body>
+    <p>Not+found {!}</p>
+  </body>
+</html>
+`
+				}
+			}
+		});
 		return page.rendered;
 	}, TIMEOUT);
 

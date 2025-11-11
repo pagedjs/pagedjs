@@ -13,7 +13,12 @@ export default async function request(url, options={}) {
 		request.onload = () => {
 			// Chrome returns a status code of 0 for local files
 			const status = request.status === 0 && url.startsWith("file://") ? 200 : request.status;
-			resolve(new Response(request.responseText, {status}));
+			if (status === 200) {
+				resolve(new Response(request.responseText, {status}));
+			} else {
+				reject(new Response(request.responseText, {status}));
+			}
+			
 		};
 
 		request.onerror = reject;

@@ -53,9 +53,14 @@ class Polisher {
 					});
 				}
 			} else {
-				urls.push(arguments[i]);
-				f = request(arguments[i]).then((response) => {
+				// Save the URL in a local variable to be able to log it in case the request fails.
+				const url = arguments[i];
+				urls.push(url);
+				f = request(url).then((response) => {
 					return response.text();
+				}).catch(() => {
+					console.warn(`Failed to request ${url}`);
+					return "";
 				});
 			}
 
@@ -80,11 +85,14 @@ class Polisher {
 
 		// Insert the imported sheets first
 		for (let url of sheet.imported) {
-			let str = await request(url).then((response) => {
-				return response.text();
-			});
-			let text = await this.convertViaSheet(str, url);
-			this.insert(text);
+			try {
+				let str = await (await request(url)).text();
+				let text = await this.convertViaSheet(str, url);
+				this.insert(text);
+			} catch (e) {
+				console.warn(`Failed to import ${url}`);
+			}
+
 		}
 
 		this.sheets.push(sheet);

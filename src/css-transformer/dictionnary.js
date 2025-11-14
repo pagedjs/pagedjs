@@ -15,8 +15,8 @@ import { renameAtRule, renameProperty, renameValue } from "./renamer.js";
  * @type {Array<[string, string]>}
  */
 const properties = [
-  ["chaussette", "--paged-chaussette"],
   ["bleed", "--paged-bleed"],
+  ["string-set", "--string-set"],
   ["marks", "--paged-marks"],
 ];
 
@@ -26,8 +26,35 @@ const properties = [
  * @type {Array<[string, string]>}
  */
 const atRules = [
+  //@page
   ["page", "paged-page"],
+
+  //@footnotes
   ["footnotes", ".paged-footnotes"],
+
+  // @top margins
+  ["top-left-corner", "& .top-left-corner"],
+  ["top-left", "& .top-left"],
+  ["top-center", "& .top-center"],
+  ["top-right", "& .top-right"],
+  ["top-right-corner", "& .top-right-corner"],
+
+  // @bottom margins
+  ["bottom-left-corner", "& .bottom-left-corner"],
+  ["bottom-left", "& .bottom-left"],
+  ["bottom-center", "& .bottom-center"],
+  ["bottom-right", "& .bottom-right"],
+  ["bottom-right-corner", "& .bottom-right-corner"],
+
+  // @left margins
+  ["left-top", "& .left-top"],
+  ["left-middle", "& .left-middle"],
+  ["left-bottom", "& .left-bottom"],
+
+  // @right margins
+  ["right-top", "& .right-top"],
+  ["right-middle", "& .right-middle"],
+  ["right-bottom", "& .right-bottom"],
 ];
 
 /**

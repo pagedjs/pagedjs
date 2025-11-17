@@ -7,8 +7,6 @@ import { CSSValueToString } from "../../utils/utils.js";
 /**
  *  A class to do all the @page conversion and update in the css.
  *
- * @classls
- * @classdesc
  */
 class AtPage extends Handler {
 	constructor(chunker, polisher, caller) {

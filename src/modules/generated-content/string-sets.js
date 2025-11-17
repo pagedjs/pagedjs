@@ -3,11 +3,8 @@ import csstree from "css-tree";
 import { cleanPseudoContent } from "../../utils/css.js";
 
 /**
- * Handles CSS string-set properties to create and manage CSS custom properties
- * for first, last, start, and first-except string values on paged content.
- *
- * Parses the `string-set` CSS declaration, transforms `string()` function content,
- * and updates CSS variables on each page after layout.
+ * Handles CSS string-set properties to create and manage CSS custom properties for first, last, start, and first-except string values on paged content.
+ * Parses the `string-set` CSS declaration, transforms `string()` function content, and updates CSS variables on each page after layout.
  *
  * @class
  * @extends Handler

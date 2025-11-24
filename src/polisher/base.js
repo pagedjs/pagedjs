@@ -1,3 +1,6 @@
+/**
+ * @module the default css for pagedjs
+ */
 export default `
 :root {
 	--pagedjs-width: 8.5in;

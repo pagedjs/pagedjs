@@ -6,3 +6,5 @@ __diff_output__
 specs/**/*.pdf
 specs/temp
 .vscode
+docs/
+

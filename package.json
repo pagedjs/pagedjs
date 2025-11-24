@@ -48,6 +48,7 @@
     "rollup-plugin-serve": "^2.0.2"
   },
   "scripts": {
+    "generate-docs": "jsdoc -c ./jsdoc.json",
     "build": "rollup -c",
     "start": "rollup -w -c rollup.server.config.js",
     "test": "npm run lint && jest",

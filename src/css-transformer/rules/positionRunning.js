@@ -33,7 +33,7 @@ export default [
               }
 
               if (name) {
-                const varAst = csstree.parse(`var(--element-${name})`, {
+                const varAst = csstree.parse(`var(--paged-element_${name})`, {
                   context: "value",
                 });
                 fnNode.type = varAst.type;

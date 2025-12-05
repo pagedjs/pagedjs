@@ -4,41 +4,39 @@
     <meta charset="UTF-8" />
     <title>PagedPreview Example</title>
     <link rel="stylesheet" href="./css/styles.css" />
-    <script type="module" src="/lib/PagedPreview.js"></script>
-    <style>
-      /* @page { */
-      /*   marks: crop cross; */
-      /*   size: a5;
-      /* } */
-      /* //you can change default behavior through css */
-      /* .mbr { */
-      /*   text-align: center; */
-      /* } */
-      /* @page { */
-      /*   @bottom-left { */
-      /*     width: 1000mm; */
-      /*   } */
-      /* } */
-      /* .mbl { */  
-      /*   width: 1000mm; */
-      /* } */
-    </style>
+    <script type="module" src="/dist/PagedPreview.js"></script>
   </head>
   <body>
-    <paged-page name="s" width="100mm" height="200mm" marks="crop cross">
-      <div class="croptl"></div>
+    <paged-page width="120mm" height="200mm">
       <h2>front matter</h2>
-      <p>whatever</p>
-      <!-- //flyer content -->
-
-      <!-- //add something in the margin -->
-      <div slot="mbl" class="mbl">margin bottom left</div>
-      <div slot="mbc" class="mbc">margin bottom center</div>
-      <div slot="mbr" class="mbr">margin bottom right</div>
     </paged-page>
-    <paged-page marks="crop cross">
+    <paged-page name="id-of-the-page2" width="210mm" height="120mm">
       <h2>This is a regularly sized page.</h2>
+      <p>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint nihil
+        adipisci, doloremque quidem praesentium error nesciunt veniam facere
+        totam placeat maiores exercitationem aut dignissimos eveniet numquam, in
+        ea temporibus debitis dolores quibusdam aspernatur? Ea soluta porro
+        molestias, dolorum perspiciatis repudiandae quis culpa eaque architecto
+        laudantium et! Voluptatem vel rerum cupiditate aspernatur fuga eos neque
+        quia vero tempore? Explicabo eius at, perspiciatis deleniti nemo sed
+        libero, saepe placeat laborum quaerat provident. Quia eveniet vel,
+        labore reprehenderit necessitatibus quod nobis molestiae rerum? Sunt,
+        dicta ipsum perspiciatis consequatur quaerat expedita, aliquid veniam
+        eos dignissimos modi eveniet recusandae et pariatur, repellat
+        accusantium omnis iusto aperiam quidem dolore. Explicabo aperiam illum
+        possimus doloremque iste error adipisci ipsum sequi animi corrupti
+        nesciunt, doloribus praesentium deserunt tenetur? Sunt tempora adipisci
+        ut ratione veritatis inventore laudantium voluptate nisi maxime
+        recusandae sit, fuga earum molestias! Excepturi aspernatur, hic tenetur
+        porro deserunt enim? Vitae qui veritatis, officiis quisquam dolorum
+        aliquam a, voluptates sint placeat inventore facere nobis ut voluptas
+        fugit praesentium nesciunt. Minima saepe explicabo sequi corrupti ea
+        nisi labore maiores dolorem natus, praesentium consequuntur quisquam id
+        aut fugit dolores dignissimos optio. Voluptate quod delectus incidunt
+        maiores praesentium laboriosam magni necessitatibus maxime possimus
+        consectetur impedit, fugiat ut illo velit qui?
+      </p>
     </paged-page>
   </body>
 </html>
-

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paged Horizontal Margin</title>
+  <script type="module" src="/lib/PagedPreview.js"></script>
+  <style>
+    body style {
+      display: block;
+      white-space: pre;
+      font-family: monospace;
+      max-width: 80ch;
+      background-color: rgb(243, 243, 243);
+      outline: 1px dotted grey;
+    }
+
+    paged-horizontal-margin {
+      outline: 1px dotted red;
+      height: 10mm;
+      margin: 10mm 0;
+      overflow: hidden;
+    }
+
+    paged-margin-box[slot="left"] {
+      background: honeydew;
+    }
+
+    paged-margin-box[slot="center"] {
+      background: lavender;
+    }
+
+    paged-margin-box[slot="right"] {
+      background: papayawhip;
+    }
+  </style>
+</head>
+<body>
+  <h1>
+    <code>&lt;paged-horizontal-margin&gt;</code>
+  </h1>
+  <p>
+    Tests and example usage.
+  </p>
+  <h2>
+    Margin boxes, content inserted with slots, optionally sized with javascript.
+  </h2>
+  <p>
+    Two components <code>&lt;paged-horizontal-margin&gt;</code> & <code>&lt;paged-margin-box&gt;</code>.
+  </p>
+  <p>
+    <code>paged-horizontal-margin</code> offers three slots, <code>left</code>, <code>center</code>, <code>right</code>.
+    It is assumed that only <code>paged-margin-box</code> elements are slotted in.
+  </p>
+  <p>
+    <code>paged-margin-box</code> offers one unnamed slot, for the content of the margin box.
+  </p>
+  <code>
+    <pre>
+&lt;paged-horizontal-margin&gt;
+  &lt;paged-margin-box slot="left"&gt;
+    left
+  &lt;/paged-margin-box&gt;
+  &lt;paged-margin-box slot="center"&gt;
+    center
+  &lt;/paged-margin-box&gt;
+  &lt;paged-margin-box slot="right"&gt;
+    right
+  &lt;/paged-margin-box&gt;
+&lt;/paged-horizontal-margin&gt;
+    </pre>
+  </code>
+  <paged-horizontal-margin>
+    <paged-margin-box slot="left">
+      left
+    </paged-margin-box>
+    <paged-margin-box slot="center">
+      center
+    </paged-margin-box>
+    <paged-margin-box slot="right">
+      right
+    </paged-margin-box>
+  </paged-horizontal-margin>
+
+  <h3>Styling</h3>
+  
+  <p>
+    Margin can be styled through an element selector. Specific boxes van be targeted with an
+    attribute selector.
+  </p>
+  <style>
+    paged-margin-box[slot="left"] {
+      color: green;
+    }
+  </style>
+  <paged-horizontal-margin>
+    <paged-margin-box slot="left">
+      left
+    </paged-margin-box>
+    <paged-margin-box slot="center">
+      center
+    </paged-margin-box>
+    <paged-margin-box slot="right">
+      right
+    </paged-margin-box>
+  </paged-horizontal-margin>
+  <h3>Overwrite alignment</h3>
+  <p>Overwrite the alignment of a single margin box</p>
+  <style>
+    paged-margin-box.left-aligned {
+      justify-content: start;
+      color: brown;
+      font-weight: bold;
+    }
+  </style>
+  <paged-horizontal-margin>
+    <paged-margin-box slot="left">
+      left
+    </paged-margin-box>
+    <paged-margin-box slot="center">
+      center
+    </paged-margin-box>
+    <paged-margin-box slot="right" class="left-aligned">
+      right
+    </paged-margin-box>
+  </paged-horizontal-margin>
+  
+  <h3>Overwrite alignment with an hierarchical selector</h3>
+  <p>Overwrite the alignment of all margin boxes within a <code>paged-horizontal-margin</code>.</p>
+  <style>
+    paged-horizontal-margin.center-aligned paged-margin-box {
+      justify-content: center;
+      color: purple;
+      font-weight: bold;
+    }
+  </style>
+  <paged-horizontal-margin class="center-aligned">
+    <paged-margin-box slot="left">
+      left
+    </paged-margin-box>
+    <paged-margin-box slot="center">
+      center
+    </paged-margin-box>
+    <paged-margin-box slot="right">
+      right
+    </paged-margin-box>
+  </paged-horizontal-margin>
+
+  <h3>Empty slots</h3>
+  <p>Not all slots have to be filled.</p>
+  <paged-horizontal-margin>
+    <paged-margin-box slot="left">
+      left
+    </paged-margin-box>
+    <paged-margin-box slot="right">
+      right
+    </paged-margin-box>
+  </paged-horizontal-margin>
+  <h3>Left & center uneven</h3>
+  <p>
+    On this page, a  simplified version of
+    the <a href="https://github.com/pagedjs/pagedjs/blob/ba1e3c5e4b8d4404b577fbdb0f2b9356a67107e6/src/modules/paged-media/atpage.js#L1771-L1907">existing sizing algorithm</a>
+    calculates and adjust the widths of the grid columns.
+  </p>
+  <paged-horizontal-margin>
+    <paged-margin-box slot="left">
+      Maecenas arcu massa, egestas vel est nec, mollis venenatis tortor. Ut eu finibus libero. Phasellus pharetra ante a purus ornare, eget facilisis sem ultricies.
+    </paged-margin-box>
+    <paged-margin-box slot="center">
+      Maecenas arcu massa, egestas vel est nec, mollis venenatis tortor. Ut eu finibus libero.
+    </paged-margin-box>
+  </paged-horizontal-margin>
+  <h3>Center & Right uneven</h3>
+  <paged-horizontal-margin>
+    <paged-margin-box slot="center">
+      Maecenas arcu massa, egestas vel est nec, mollis venenatis tortor. Ut eu finibus libero.
+    </paged-margin-box>
+    <paged-margin-box slot="right">
+      Maecenas arcu massa, egestas vel est nec, mollis venenatis tortor. Ut eu finibus libero. Phasellus pharetra ante a purus ornare, eget facilisis sem ultricies.
+    </paged-margin-box>
+  </paged-horizontal-margin>
+  <h3>Left & right uneven content</h3>
+  <paged-horizontal-margin>
+    <paged-margin-box slot="left">
+      Maecenas arcu massa, egestas vel est nec, mollis venenatis tortor. Ut eu finibus libero. Phasellus pharetra ante a purus ornare, eget facilisis sem ultricies.
+    </paged-margin-box>
+    <paged-margin-box slot="right">
+      Maecenas arcu massa, egestas vel est nec, mollis venenatis tortor. Ut eu finibus libero.
+    </paged-margin-box>
+  </paged-horizontal-margin>
+  <h3>Left & right even content</h3>
+  <paged-horizontal-margin>
+    <paged-margin-box slot="left">
+      Maecenas arcu massa, egestas vel est nec, mollis venenatis tortor. Ut eu finibus libero.
+    </paged-margin-box>
+    <paged-margin-box slot="right">
+      Maecenas arcu massa, egestas vel est nec, mollis venenatis tortor. Ut eu finibus libero.
+    </paged-margin-box>
+  </paged-horizontal-margin>
+  <h3>Left</h3>
+  <paged-horizontal-margin>
+    <paged-margin-box slot="left">
+      Maecenas arcu massa, egestas vel est nec, mollis venenatis tortor. Ut eu finibus libero. Phasellus pharetra ante a purus ornare, eget facilisis sem ultricies.
+    </paged-margin-box>
+  </paged-horizontal-margin>
+  <h3>Center</h3>
+  <paged-horizontal-margin>
+    <paged-margin-box slot="center">
+      Maecenas arcu massa, egestas vel est nec, mollis venenatis tortor. Ut eu finibus libero.
+    </paged-margin-box>
+  </paged-horizontal-margin>
+  <h3>Right</h3>
+  <paged-horizontal-margin>
+    <paged-margin-box slot="right">
+      Maecenas arcu massa, egestas vel est nec, mollis venenatis tortor. Ut eu finibus libero.
+    </paged-margin-box>
+  </paged-horizontal-margin>
+  <h3>Left & right uneven content, with tags</h3>
+  <p>
+    Content slotted into a <code>paged-margin-box</code> can be tags.
+  </p>
+  <paged-horizontal-margin>
+    <paged-margin-box slot="left">
+      Maecenas arcu massa, egestas vel est nec, mollis venenatis tortor. Ut eu finibus libero. Phasellus pharetra ante a purus ornare, eget facilisis sem ultricies.
+    </paged-margin-box>
+    <paged-margin-box slot="right">
+      <h2>Maecenas arcu massa, egestas vel est nec, mollis venenatis tortor. Ut eu finibus libero.</h2>
+    </paged-margin-box>
+  </paged-horizontal-margin>
+  <h3>Filling a slot twice</h3>
+  <p>
+    Filling a slot twice leads to weird results, as an extra row is created in the grid.
+  </p>
+  <paged-horizontal-margin>
+    <paged-margin-box slot="left">
+      Maecenas arcu massa, egestas vel est nec, mollis venenatis tortor. Ut eu finibus libero.
+    </paged-margin-box>
+    <paged-margin-box slot="left">
+       Phasellus pharetra ante a purus ornare, eget facilisis sem ultricies.
+    </paged-margin-box>
+    <paged-margin-box slot="right">
+      Ut eu finibus libero.
+    </paged-margin-box>
+  </paged-horizontal-margin>
+  <script>
+
+    /**
+     * Measure intrinsic width of content in the slot.
+     * 
+     * @param {Array} nodes Nodes to measure
+     * @returns int
+     */
+    function _measureIntrinsicContentWidth (nodes) {
+      return Array.from(nodes).reduce((width, node) => {
+        node.style.whiteSpace = 'nowrap';
+        const nodeWidth = node.offsetWidth;
+        node.style.removeProperty('white-space');
+        return width + nodeWidth;
+      }, 0);
+    }
+
+    Array.from(document.querySelectorAll('paged-horizontal-margin')).forEach((marginBox) => {
+      /**
+       * Simplified reimplementation of the sizing algorithm.
+       * Does, at the moment not consider whether the margin boxes have a `max-width` value
+       * other than `none` or `auto`.
+       */
+
+      // Find slotted content per box
+      const contentNodesLeft = marginBox.querySelectorAll('[slot="left"]');
+      const contentNodesCenter = marginBox.querySelectorAll('[slot="center"]');
+      const contentNodesRight = marginBox.querySelectorAll('[slot="right"]');
+
+      // Measure instrinsic size
+      const contentWidthLeft = this._measureIntrinsicContentWidth(contentNodesLeft);
+      const contentWidthCenter = this._measureIntrinsicContentWidth(contentNodesCenter);
+      const contentWidthRight = this._measureIntrinsicContentWidth(contentNodesRight);
+
+      let gridTemplateColumnsString = '';
+
+      // Decide on proportions of the grid column.
+      // Based on which boxes have content. And then their 'inherent width'
+      // found by not allowing whitespace and then measuring the size.
+      if (contentNodesCenter.length) {
+        if (contentNodesLeft.length == 0 && contentNodesRight.length == 0) {
+          // only center
+          gridTemplateColumnsString = '0 1fr 0';
+        }
+        else {
+          if (contentNodesLeft.length) {
+            if (contentNodesRight.length) {
+              const outerwidths = contentWidthLeft + contentWidthCenter + contentWidthRight;
+              const newcenterWidth = contentWidthCenter * 100 / outerwidths;
+              if (newcenterWidth > 40) {
+                // left center right
+                gridTemplateColumnsString = "minmax(16.66%, 1fr) minmax(33%, " + newcenterWidth + "%) minmax(16.66%, 1fr)";
+              } else {
+                // left center right
+                gridTemplateColumnsString = "repeat(3, 1fr)";
+              }
+            }
+            else {
+              // left & center
+              let outerwidths = contentWidthLeft + contentWidthCenter;
+              let newcenterWidth = contentWidthCenter * 100 / outerwidths;
+              gridTemplateColumnsString = "minmax(16.66%, 1fr) minmax(33%, " + newcenterWidth + "%) minmax(16.66%, 1fr)";
+            }
+          }
+          else {
+            // center & right
+            const outerwidths = contentWidthRight + contentWidthCenter;
+            const newcenterWidth = contentWidthCenter * 100 / outerwidths;
+            gridTemplateColumnsString = "minmax(16.66%, 1fr) minmax(33%, " + newcenterWidth + "%) minmax(16.66%, 1fr)";
+          }
+        }
+      }
+      else if (contentNodesLeft.length) {
+        if (contentNodesRight.length) {
+          // left & right
+          const outerwidths = contentWidthLeft + contentWidthRight;
+          const newLeftWidth = contentWidthLeft * 100 / outerwidths;
+          gridTemplateColumnsString = "minmax(16.66%, " + newLeftWidth + "%) 0 1fr";							
+        }
+        else {
+          // only left
+          gridTemplateColumnsString = '1fr 0 0';
+        }
+      }
+      else if (contentNodesRight.length) {
+        // only right
+        gridTemplateColumnsString = '0 0 1fr'
+      }
+  
+      marginBox.style.gridTemplateColumns = gridTemplateColumnsString;
+    });
+  </script>
+</body>
+</html>

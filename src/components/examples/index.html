@@ -7,13 +7,13 @@
     <script type="module" src="/dist/PagedPreview.js"></script>
   </head>
   <body>
-    <paged-page name="nope" width="120mm" height="200mm">
-      <h2>front matter</h2>
-    </paged-page>
-
-    <paged-page> no content, a4 used</paged-page>
-
-    <paged-page name="id-of-the-page2" width="210mm" height="120mm">
+    <paged-page
+      name="id-of-the-page2"
+      width="100mm"
+      height="100mm"
+      bleed="5mm"
+      marks="cross crop"
+    >
       <h2>This is a regularly sized page.</h2>
       <p>
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint nihil
@@ -41,5 +41,17 @@
         consectetur impedit, fugiat ut illo velit qui?
       </p>
     </paged-page>
+
+    <paged-page
+      name="testpage"
+      width="100mm"
+      height="200mm"
+      bleed="0"
+      marks="cross crop"
+    >
+      <h2>front matter</h2>
+    </paged-page>
+
+    <paged-page bleed="3mm"><p>nSo page size, we use the Z4</p></paged-page>
   </body>
 </html>

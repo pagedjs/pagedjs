@@ -303,7 +303,7 @@ export class PagedPage extends LitElement {
    * - CSS variables cannot be used in `@page`
    * - browsers do not always apply unnamed @page rules consistently
    *
-   * @privatepaged-margins
+   * @private
    */
   #injectPageStyles() {
     const sheet = new CSSStyleSheet();

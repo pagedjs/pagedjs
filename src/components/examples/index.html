@@ -5,6 +5,24 @@
     <title>PagedPreview Example</title>
     <link rel="stylesheet" href="./css/styles.css" />
     <script type="module" src="/dist/PagedPreview.js"></script>
+    <style>
+      :root {
+        counter-reset: page;
+      }
+
+      paged-page {
+        counter-increment: page;
+      }
+
+      ::part(bottom-center) {
+        background: black;
+        color: white;
+      }
+
+      ::part(bottom-center)::before {
+        content: counter(page);
+      }
+    </style>
   </head>
   <body>
     <paged-page
@@ -50,8 +68,11 @@
       marks="cross crop"
     >
       <h2>front matter</h2>
+      <paged-margins slot="margins">
+        <paged-margin-content slot="top-center">Hello, world!</paged-margin-content>
+      </paged-margins>
     </paged-page>
 
-    <paged-page bleed="3mm"><p>nSo page size, we use the Z4</p></paged-page>
+    <paged-page bleed="3mm"><p>No page size, we use the Z4</p></paged-page>
   </body>
 </html>

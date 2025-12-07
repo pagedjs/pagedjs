@@ -67,33 +67,59 @@ export class PagedMargins extends LitElement {
       --paged-margin-left: 15mm;
 
       display: grid;
+
       grid-template-columns: 
         [margin-left-start] var(--paged-margin-left)
         [margin-left-end page-area-start] 1fr
         [margin-right-start page-area-end] var(--paged-margin-right)
         [margin-right-end];
+      
       grid-template-rows:
         [margin-top-start] var(--paged-margin-top)
-        [margin-top-end page-area-start] 1fr
+        [margin-top-end] 1fr
         [margin-bottom-start page-area-end] var(--paged-margin-bottom)
         [margin-bottom-end];
-      grid-template-areas:
-        "top-left-corner top top-right-corner"
-        "left page-area right"
-        "bottom-left-corner bottom bottom-right-corner";
     }
 
-    #top-left-corner { grid-area: top-left-corner; }
-    #top { grid-area: top;}
-    #top-right-corner { grid-area: top-right-corner; }
+    #top-left-corner {
+      grid-row: margin-top-start;
+      grid-column: margin-left-start;
+    }
 
-    #right { grid-area: right; }
+    #top {
+      grid-row: margin-top-start;
+      grid-column: page-area-start;
+    }
 
-    #bottom-left-corner { grid-area: bottom-left-corner; }
-    #bottom { grid-area: bottom; }
-    #bottom-right-corner { grid-area: bottom-right-corner; }
+    #top-right-corner {
+      grid-row: margin-top-start;
+      grid-column: margin-right-start;
+    }
 
-    #left { grid-area: left; }
+    #right {
+      grid-row: page-area-start;
+      grid-column: margin-right-start;
+    }
+
+    #bottom-left-corner {
+      grid-row: margin-bottom-start;
+      grid-column: margin-left-start;
+    }
+
+    #bottom {
+      grid-row: margin-bottom-start;
+      grid-column: page-area-start;
+    }
+
+    #bottom-right-corner {
+      grid-row: margin-bottom-start;
+      grid-column: margin-right-start;
+    }
+
+    #left {
+      grid-row: page-area-start;
+      grid-column: margin-left-start;
+    }
 
     paged-margin-box {
       flex-grow: 1;

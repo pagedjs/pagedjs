@@ -22,10 +22,10 @@ import { cross } from "../utils/assets";
  * @cssprop --paged-width - Internal CSS width used for layout.
  * @cssprop --paged-height - Internal CSS height used for layout.
  * @cssprop --paged-bleed - Extra print bleed size.
- * @cssprop --margin-top
- * @cssprop --margin-bottom
- * @cssprop --margin-left
- * @cssprop --margin-right
+ * @cssprop --paged-margin-top - Size of the top margin.
+ * @cssprop --paged-margin-bottom - Size of the bottom margin.
+ * @cssprop --paged-margin-left - Size of the left margin.
+ * @cssprop --paged-margin-right - Size of the right margin.
  */
 export class PagedPage extends LitElement {
   /**
@@ -71,36 +71,39 @@ export class PagedPage extends LitElement {
 
     :host {
 
-     --paged-mark-color: black;
+      --paged-mark-color: black;
+      --paged-bleed: 0mm;
+      --paged-width: 210mm;
+      --paged-height: 297mm;
 
-      width: calc(var(--paged-width, 210mm) + var(--paged-bleed, 0mm));
-      height: calc(var(--paged-height, 297mm) + var(--paged-bleed, 0mm));
+      /* margins are part of the geometry */
+      --paged-margin-left: 15mm;
+      --paged-margin-right: 15mm;
+      --paged-margin-top: 15mm;
+      --paged-margin-bottom: 15mm;
+
+      width: calc(var(--paged-bleed) + var(--paged-width) + var(--paged-bleed));
+      height: calc(var(--paged-bleed) + var(--paged-height) + var(--paged-bleed));
       overflow: hidden;
       break-after: page;
       display: grid;
       margin: 0;
       padding: 0;
 
-      /* margins are part of the geometry */
-      --margin-left: 8mm;
-      --margin-right: 10mm;
-      --margin-top: 6mm;
-      --margin-bottom: 12mm;
-
       grid-template-rows:
-        [bleed-top-start] var(--paged-bleed, 0mm)
-        [bleed-top-end margin-top-start] var(--margin-top)
+        [bleed-top-start] var(--paged-bleed)
+        [bleed-top-end margin-top-start] var(--paged-margin-top)
         [margin-top-end page-area-start] minmax(1px, 1fr)
-        [page-area-end margin-bottom-start] var(--margin-bottom)
-        [margin-bottom-end bleed-bottom-start] var(--paged-bleed, 0mm)
+        [page-area-end margin-bottom-start] var(--paged-margin-bottom)
+        [margin-bottom-end bleed-bottom-start] var(--paged-bleed)
         [bleed-bottom-end];
 
       grid-template-columns:
-        [bleed-left-start] var(--paged-bleed, 0mm)
-        [bleed-left-end margin-left-start] var(--margin-left)
+        [bleed-left-start] var(--paged-bleed)
+        [bleed-left-end margin-left-start] var(--paged-margin-left)
         [margin-left-end page-area-start] 1fr
-        [page-area-end margin-right-start] var(--margin-right)
-        [margin-right-end bleed-right-start] var(--paged-bleed, 0mm)
+        [page-area-end margin-right-start] var(--paged-margin-right)
+        [margin-right-end bleed-right-start] var(--paged-bleed)
         [bleed-right-end];
 
       /*  ==> dont need template area with template columns. (we should keep either one or the other
@@ -129,18 +132,24 @@ export class PagedPage extends LitElement {
       }
     }
 
+    .page-margins, 
+    .page-marks {
+      display: contents;
+    }
+
     .paged-crop {
       width: 100%;
       heigth:100%
       background: black;
     }
 
-    #paged-crop-t, #paged-crop-b {
+    #paged-crop-t,
+    #paged-crop-b {
         grid-column: 2/5;
         grid-row: 1;
         height: 10px;
-        border-left:2px solid var(--paged-mark-color);
-        border-right:2px solid var(--paged-mark-color);
+        border-left: 2px solid var(--paged-mark-color);
+        border-right: 2px solid var(--paged-mark-color);
     }
 
     #paged-crop-b {
@@ -148,21 +157,20 @@ export class PagedPage extends LitElement {
       align-self: end;
     }
 
-
     #paged-crop-r,
     #paged-crop-l {
         grid-row: 2/5;
         grid-column: 1;
         width: 10px;
-        height:100%;
-        border-top:2px solid var(--paged-mark-color);
-        border-bottom :2px solid var(--paged-mark-color);
+        height: 100%;
+        border-top: 2px solid var(--paged-mark-color);
+        border-bottom: 2px solid var(--paged-mark-color);
     }
 
     #paged-crop-r {
       grid-column: 5;
-align-self: end;
-justify-self: end;
+      align-self: end;
+      justify-self: end;
     }
 
     .paged-cross {
@@ -191,6 +199,18 @@ justify-self: end;
     #paged-cross-r {
       grid-column: 5;
       grid-row: 3;
+    }
+
+    /*
+      Make slotted content of page-margins, and default content
+      render as a subgrid;
+     */
+    .page-margins slot *,
+    .page-margins ::slotted(*) {
+      grid-template-columns: subgrid;
+      grid-template-rows: subgrid;
+      grid-column: margin-left-start / margin-right-end;
+      grid-row: margin-top-start / margin-bottom-end;
     }
   `;
 
@@ -283,7 +303,7 @@ justify-self: end;
    * - CSS variables cannot be used in `@page`
    * - browsers do not always apply unnamed @page rules consistently
    *
-   * @private
+   * @privatepaged-margins
    */
   #injectPageStyles() {
     const sheet = new CSSStyleSheet();
@@ -291,16 +311,16 @@ justify-self: end;
     sheet.replaceSync(`
       @page ${this.name} {
         margin: 0;
-        size: calc(${this.width} + var(--paged-bleed, 0mm))
-              calc(${this.height} + var(--paged-bleed, 0mm));
+        size: calc(var(--paged-bleed, 0mm) + ${this.width} + var(--paged-bleed, 0mm))
+              calc(var(--paged-bleed, 0mm) + ${this.height} + var(--paged-bleed, 0mm));
       }
 
  
       [name="${this.name}"] {
         page: ${this.name};
         --paged-bleed: ${this.bleed};
-        --paged-width: calc( ${this.width} + var(--paged-bleed, 0mm));
-        --paged-height: calc( ${this.height} + var(--paged-bleed, 0mm));
+        --paged-width: calc(var(--paged-bleed, 0mm) + ${this.width} + var(--paged-bleed, 0mm));
+        --paged-height: calc(var(--paged-bleed, 0mm) + ${this.height} + var(--paged-bleed, 0mm));
       }
     `);
 
@@ -339,7 +359,23 @@ justify-self: end;
     }
 
     return html`
-      ${crossMarks} ${cropMarks}
+      <div class="page-marks">
+        ${crossMarks} ${cropMarks}
+      </div>
+      <div class="page-margins">
+        <slot name="margins">
+          <paged-margins
+            exportparts="margin-box, top, right, bottom, left,
+            margin-box-group, margin-box-group-top, margin-box-group-right,
+            margin-box-group-bottom, margin-box-group-left,
+            top-left-corner, top-left, top-center, top-right, top-right-corner,
+            left-top, left-middle, left-bottom,
+            right-top, right-middle, right-bottom,
+            bottom-left-corner, bottom-left, bottom-center, bottom-right,
+            bottom-right-corner">
+          </paged-margins>
+        </slot>
+      </div>
       <div class="page-area" part="page-area">
         <slot></slot>
       </div>

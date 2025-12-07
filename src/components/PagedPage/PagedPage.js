@@ -123,6 +123,8 @@ export class PagedPage extends LitElement {
     .page-area {
       grid-column: page-area-start / page-area-end;
       grid-row: page-area-start / page-area-end;
+      /*the page-area has an overflow:hidden to follow the W3C specifications, but it can be overriden with the author css.*/
+      overflow:hidden;
     }
 
     @media screen {
@@ -359,9 +361,7 @@ export class PagedPage extends LitElement {
     }
 
     return html`
-      <div class="page-marks">
-        ${crossMarks} ${cropMarks}
-      </div>
+      <div class="page-marks">${crossMarks} ${cropMarks}</div>
       <div class="page-margins">
         <slot name="margins">
           <paged-margins
@@ -372,7 +372,8 @@ export class PagedPage extends LitElement {
             left-top, left-middle, left-bottom,
             right-top, right-middle, right-bottom,
             bottom-left-corner, bottom-left, bottom-center, bottom-right,
-            bottom-right-corner">
+            bottom-right-corner"
+          >
           </paged-margins>
         </slot>
       </div>

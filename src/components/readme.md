@@ -71,10 +71,22 @@ Marks only render when bleed > 0 and marks are crop and/or cross:
 
 ## Page Layout Diagram
 
-Below is an SVG illustrating how `<paged-page>` constructs its layout:  
-**Bleed → Margin → Page-Area**
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="840" viewBox="0 0 600 840">
+  <!-- Bleed area -->
+  <rect x="20" y="20" width="560" height="800" fill="#ffe6e6" stroke="#cc0000" stroke-width="2"/>
+  <text x="300" y="45" text-anchor="middle" font-size="14" fill="#cc0000">Bleed Area</text>
 
-`![](data:image/svg+xml;utf8,%3Csvg%20width%3D%22600%22%20height%3D%22840%22%20viewBox%3D%220%200%20600%20840%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%3C!--%20Bleed%20area%20--%3E%0A%20%20%3Crect%20x%3D%2220%22%20y%3D%2220%22%20width%3D%22560%22%20height%3D%22800%22%20fill%3D%22%23ffe6e6%22%20stroke%3D%22%23cc0000%22%20stroke-width%3D%222%22%3E%3C%2Frect%3E%0A%20%20%3Ctext%20x%3D%22300%22%20y%3D%2245%22%20text-anchor%3D%22middle%22%20font-size%3D%2214%22%20fill%3D%22%23cc0000%22%3EBleed%20Area%3C%2Ftext%3E%0A%0A%20%20%3C!--%20Margin%20area%20--%3E%0A%20%20%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%22480%22%20height%3D%22720%22%20fill%3D%22%23e6f0ff%22%20stroke%3D%22%230052cc%22%20stroke-width%3D%222%22%3E%3C%2Frect%3E%0A%20%20%3Ctext%20x%3D%22300%22%20y%3D%2285%22%20text-anchor%3D%22middle%22%20font-size%3D%2214%22%20fill%3D%22%230052cc%22%3EMargin%20Area%3C%2Ftext%3E%0A%0A%20%20%3C!--%20Page%20area%20--%3E%0A%20%20%3Crect%20x%3D%22100%22%20y%3D%22100%22%20width%3D%22400%22%20height%3D%22640%22%20fill%3D%22%23eaffea%22%20stroke%3D%22%23009933%22%20stroke-width%3D%222%22%3E%3C%2Frect%3E%0A%20%20%3Ctext%20x%3D%22300%22%20y%3D%22125%22%20text-anchor%3D%22middle%22%20font-size%3D%2214%22%20fill%3D%22%23009933%22%3EPage%20Area%20(content)%3C%2Ftext%3E%0A%0A%20%20%3C!--%20Labels%20--%3E%0A%20%20%3Ctext%20x%3D%22300%22%20y%3D%22810%22%20text-anchor%3D%22middle%22%20font-size%3D%2216%22%20fill%3D%22%23333%22%3Epaged-page%20layout%3A%20bleed%20%E2%86%92%20margins%20%E2%86%92%20page-area%3C%2Ftext%3E%0A%3C%2Fsvg%3E%0A)`
+  <!-- Margin area -->
+  <rect x="60" y="60" width="480" height="720" fill="#e6f0ff" stroke="#0052cc" stroke-width="2"/>
+  <text x="300" y="85" text-anchor="middle" font-size="14" fill="#0052cc">Margin Area</text>
+
+  <!-- Page area -->
+  <rect x="100" y="100" width="400" height="640" fill="#eaffea" stroke="#009933" stroke-width="2"/>
+  <text x="300" y="125" text-anchor="middle" font-size="14" fill="#009933">Page Area (content)</text>
+
+  <!-- Labels -->
+  <text x="300" y="810" text-anchor="middle" font-size="16" fill="#333">paged-page layout: bleed → margins → page-area</text>
+</svg>
 
 ---
 

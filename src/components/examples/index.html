@@ -22,10 +22,30 @@
       ::part(bottom-center)::before {
         content: counter(page);
       }
+
+      #oups {
+        h2 {
+          color: black;
+        }
+        .page-area {
+          color: red !important!;
+        }
+        &::part(page-area) {
+          background: yellow;
+        }
+        &::part(bottom-center)::after {
+          content: "we can add more so easily";
+          background: red;
+        }
+      }
+      h2 {
+        color: orange;
+      }
     </style>
   </head>
   <body>
     <paged-page
+      id="oups"
       name="id-of-the-page2"
       width="100mm"
       height="100mm"

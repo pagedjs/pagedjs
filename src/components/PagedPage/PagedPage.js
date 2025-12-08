@@ -308,7 +308,6 @@ export class PagedPage extends LitElement {
 
     // add support for margins from the component?
     if (!this.margin || (this.margin && !CSS.supports("margin", this.margin))) {
-      console.log("arg");
       marginsBlock = css`
         --paged-margin-top: 1in;
         --paged-margin-right: 1in;

@@ -22,14 +22,35 @@
       ::part(bottom-center)::before {
         content: counter(page);
       }
+
+      #oups {
+        h2 {
+          color: black;
+        }
+        .page-area {
+          color: red !important!;
+        }
+        &::part(page-area) {
+          background: yellow;
+        }
+        &::part(bottom-center)::after {
+          content: "we can add more so easily";
+          background: red;
+        }
+      }
+      h2 {
+        color: orange;
+      }
     </style>
   </head>
   <body>
     <paged-page
+      id="oups"
       name="id-of-the-page2"
       width="100mm"
       height="100mm"
       bleed="5mm"
+      margin="8mm 14mm"
       marks="cross crop"
     >
       <h2>This is a regularly sized page.</h2>
@@ -60,19 +81,21 @@
       </p>
     </paged-page>
 
-    <paged-page
-      name="testpage"
-      width="100mm"
-      height="200mm"
-      bleed="0"
-      marks="cross crop"
-    >
-      <h2>front matter</h2>
-      <paged-margins slot="margins">
-        <paged-margin-content slot="top-center">Hello, world!</paged-margin-content>
-      </paged-margins>
-    </paged-page>
-
+    <!-- <paged-page -->
+    <!--   name="testpage" -->
+    <!--   width="100mm" -->
+    <!--   height="200mm" -->
+    <!--   bleed="0" -->
+    <!--   marks="cross crop" -->
+    <!-- > -->
+    <!--   <h2>front matter</h2> -->
+    <!--   <paged-margins slot="margins"> -->
+    <!--     <paged-margin-content slot="top-center" -->
+    <!--       >Hello, world!</paged-margin-content -->
+    <!--     > -->
+    <!--   </paged-margins> -->
+    <!-- </paged-page> -->
+    <!---->
     <paged-page bleed="3mm"><p>No page size, we use the Z4</p></paged-page>
   </body>
 </html>

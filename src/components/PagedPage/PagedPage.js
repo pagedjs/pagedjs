@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, unsafeCSS } from "lit";
 import { cross } from "../utils/assets";
 
 /**
@@ -52,6 +52,7 @@ export class PagedPage extends LitElement {
     width: { type: String, reflect: true },
     height: { type: String, reflect: true },
     bleed: { type: String },
+    margin: { type: String },
     marks: { type: String },
   };
 
@@ -77,10 +78,10 @@ export class PagedPage extends LitElement {
       --paged-height: 297mm;
 
       /* margins are part of the geometry */
-      --paged-margin-left: 15mm;
-      --paged-margin-right: 15mm;
-      --paged-margin-top: 15mm;
-      --paged-margin-bottom: 15mm;
+  /*    // --paged-margin-left: 15mm;
+      // --paged-margin-right: 15mm;
+      // --paged-margin-top: 15mm;
+      // --paged-margin-bottom: 15mm; */
 
       width: calc(var(--paged-bleed) + var(--paged-width) + var(--paged-bleed));
       height: calc(var(--paged-bleed) + var(--paged-height) + var(--paged-bleed));
@@ -123,6 +124,8 @@ export class PagedPage extends LitElement {
     .page-area {
       grid-column: page-area-start / page-area-end;
       grid-row: page-area-start / page-area-end;
+      /*the page-area has an overflow:hidden to follow the W3C specifications, but it can be overriden with the author css.*/
+      overflow:hidden;
     }
 
     @media screen {
@@ -225,6 +228,7 @@ export class PagedPage extends LitElement {
     this.name = ""; // auto-filled in connectedCallback
     this.bleed = "0mm";
     this.marks = "";
+    this.margin = "";
   }
 
   /**
@@ -243,8 +247,6 @@ export class PagedPage extends LitElement {
     }
 
     // validate value for width and height
-    console.log(this.width);
-    console.log(CSS.supports(this.width));
     if ((this.width && !CSS.supports("width", this.width)) || !this.width) {
       console.log("there is no width for the page, using 210mm");
       this.width = "210mm";
@@ -258,10 +260,6 @@ export class PagedPage extends LitElement {
     if (!this.bleed || this.bleed == "0") {
       this.bleed = "0mm";
     }
-
-    // cropsmark
-
-    // check if marks="crop cross"
 
     // Inject the @page rules
     this.#injectPageStyles();
@@ -306,6 +304,21 @@ export class PagedPage extends LitElement {
    * @private
    */
   #injectPageStyles() {
+    let marginsBlock;
+
+    // add support for margins from the component?
+    if (!this.margin || (this.margin && !CSS.supports("margin", this.margin))) {
+      marginsBlock = css`
+        --paged-margin-top: 1in;
+        --paged-margin-right: 1in;
+        --paged-margin-bottom: 1in;
+        --paged-margin-left: 1in;
+      `;
+    } else {
+      marginsBlock = this.margin ? getMargin(this.margin) : "";
+    }
+
+    // console.log(marginsBlock);
     const sheet = new CSSStyleSheet();
 
     sheet.replaceSync(`
@@ -321,6 +334,7 @@ export class PagedPage extends LitElement {
         --paged-bleed: ${this.bleed};
         --paged-width: calc(var(--paged-bleed, 0mm) + ${this.width} + var(--paged-bleed, 0mm));
         --paged-height: calc(var(--paged-bleed, 0mm) + ${this.height} + var(--paged-bleed, 0mm));
+       ${marginsBlock}
       }
     `);
 
@@ -359,9 +373,7 @@ export class PagedPage extends LitElement {
     }
 
     return html`
-      <div class="page-marks">
-        ${crossMarks} ${cropMarks}
-      </div>
+      <div class="page-marks">${crossMarks} ${cropMarks}</div>
       <div class="page-margins">
         <slot name="margins">
           <paged-margins
@@ -372,7 +384,8 @@ export class PagedPage extends LitElement {
             left-top, left-middle, left-bottom,
             right-top, right-middle, right-bottom,
             bottom-left-corner, bottom-left, bottom-center, bottom-right,
-            bottom-right-corner">
+            bottom-right-corner"
+          >
           </paged-margins>
         </slot>
       </div>
@@ -384,3 +397,42 @@ export class PagedPage extends LitElement {
 }
 
 customElements.define("paged-page", PagedPage);
+
+function getMargin(string) {
+  const units = string.split(" ");
+  const margins = [];
+  switch (units.length) {
+    case 4: // top right bottom left
+      margins.push(css`
+        --paged-margin-top: ${unsafeCSS(units[0])};
+        --paged-margin-right: ${unsafeCSS(units[1])};
+        --paged-margin-bottom: ${unsafeCSS(units[2])};
+        --paged-margin-left: ${unsafeCSS(units[3])};
+      `);
+      break;
+    case 3: // top right bottom right
+      margins.push(css` 
+        --paged-margin-top: ${unsafeCSS(units[0])};
+        --paged-margin-right: ${unsafeCSS(units[1])};
+        --paged-margin-bottom: ${unsafeCSS(units[2])};
+        --paged-margin-left: ${unsafeCSS(units[1])};
+      }`);
+      break;
+    case 2: // top right top right
+      margins.push(css` 
+        --paged-margin-top: ${unsafeCSS(units[0])};
+        --paged-margin-right: ${unsafeCSS(units[1])};
+        --paged-margin-bottom: ${unsafeCSS(units[0])};
+        --paged-margin-left: ${unsafeCSS(units[1])};
+      });`);
+      break;
+    default: // top top top top
+      margins.push(css` 
+        --paged-margin-top: ${unsafeCSS(units[0])};
+        --paged-margin-right: ${unsafeCSS(units[0])};
+        --paged-margin-bottom: ${unsafeCSS(units[0])};
+        --paged-margin-left: ${unsafeCSS(units[0])};
+      };`);
+  }
+  return margins;
+}

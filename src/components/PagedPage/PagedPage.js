@@ -16,6 +16,7 @@ import { cross } from "../utils/assets";
  * @element paged-page
  *
  * @slot - Main content of the page, placed inside the page-area grid region.
+ * @slot - Slot to insert custom margins; replaces default paged-margins component. 
  *
  * @csspart page-area - The main printable content area.
  *

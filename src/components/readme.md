@@ -51,11 +51,11 @@ This allows to target this page with CSS:
 
 ### Custom margins
 
-Override the default `<paged-margins>` by providing your own:
+Override the default `<paged-margins>` by providing your own and assign it to the slot `margins`:
 
 ```html
 `<paged-page>
-    <paged-margins slot="margin">
+    <paged-margins slot="margins">
         <paged-margin-content slot="top-center">Header</paged-margin-content>   
     </paged-margins> 
 </paged-page>`
@@ -129,7 +129,7 @@ Note: marks render only when the bleed is bigger than 0.
 | Slot | Type | Default | Description |
 | --- | --- | --- | --- |
 | _(default)_ | Element | — | Main page content, placed inside the page-area. |
-| margins | Element | `<paged-margins>` | Provides custom margins; replaces default margins. |
+| margins | Element | `<paged-margins>` | Slot to insert custom margins; replaces default paged-margins component. |
 
 ---
 

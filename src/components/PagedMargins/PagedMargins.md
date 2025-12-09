@@ -117,6 +117,10 @@ The following sample changes the font-style and background for the bottom-center
     background: black;
     font-weight: bold;
   }
+
+  paged-margins::part(bottom-center)::before {
+    content: "Hello, world!";
+  }
 </style>
 
 <paged-margins></paged-margins>
@@ -147,6 +151,16 @@ The following sample adjusts the grid of the margin-box-group-top to make the to
 
   paged-margins::part(margin-box-group-top) {
     grid-template-columns: 0 1fr 0;
+  }
+
+  paged-margins::part(top-center) {
+    color: white;
+    background: black;
+    font-weight: bold;
+  }
+  
+  paged-margins::part(top-center)::before {
+    content: "Hello, world!";
   }
 </style>
 

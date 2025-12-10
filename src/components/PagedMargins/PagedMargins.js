@@ -1,8 +1,54 @@
 import { LitElement, html, css } from "lit";
 
+
 /**
- * Essentially a no-op wrapper.
- * Should make it easier to style of select with javascript.
+ * `<paged-margin-box>` - private component used within the PagedMargins
+ * Shadow DOM. It exposes two properties giving access to *slotted* content.
+ * 
+ * @element paged-margin-box
+ * 
+ * @slot - The content to be displayed in the margin
+ */
+export class PagedMarginBox extends LitElement {
+  constructor() {
+    super();
+  }
+
+  /**
+   * Returns the nodes slotted in the marginBox.
+   * 
+   * @returns {Node[]|null} - Array of slotted nodes or null
+   */
+  get slottedNodes () {
+    return this.renderRoot.querySelector('slot')
+      .assignedNodes({ flatten: true }) ?? null;
+  }
+
+  /**
+   * Returns the elements slotted in the marginBox.
+   * 
+   * @returns {Element[]|null} - Array of slotted elements or null
+   */
+  get slottedElements () {
+    return this.renderRoot.querySelector('slot')
+      .assignedElements({ flatten: true }) ?? null;
+  }
+
+
+  render () {
+    return html`<slot></slot>`;
+  }
+}
+
+
+/**
+ * `<paged-margin-content>` - Component used to assign text
+ * content to a PagedMarginBox. 
+ * 
+ * 
+ * @element paged-margin-content
+ * 
+ * @slot - The content to be inserted into the margin
  */
 export class PagedMarginContent extends LitElement {
   constructor() {
@@ -16,44 +62,96 @@ export class PagedMarginContent extends LitElement {
 
 
 /**
- * No-op wrapper. Makes the code a little more legible?
- * And easier to write the selector in the component.
+ * Object with references to the PagedMarginBoxes within a PagedMargins component.
+ * 
+ * @typedef {Object} PagedMarginsMarginBoxes
+ * @property {null|PagedMarginBox} topLeftCorner - the top left corner PagedMarginBox, or null
+ * @property {null|PagedMarginBox} topLeft - the top left PagedMarginBox, or null 
+ * @property {null|PagedMarginBox} topCenter - the top center PagedMarginBox, or null 
+ * @property {null|PagedMarginBox} topRight - the top right PagedMarginBox, or null 
+ * @property {null|PagedMarginBox} topRightCorner - the top right corner PagedMarginBox, or null 
+ * @property {null|PagedMarginBox} leftTop - the left top PagedMarginBox, or null 
+ * @property {null|PagedMarginBox} leftMiddle - the left middle PagedMarginBox, or null 
+ * @property {null|PagedMarginBox} leftBottom - the left bottom PagedMarginBox, or null 
+ * @property {null|PagedMarginBox} rightTop - the right top PagedMarginBox, or null 
+ * @property {null|PagedMarginBox} rightMiddle - the right middle PagedMarginBox, or null 
+ * @property {null|PagedMarginBox} rightBottom - the right bottom PagedMarginBox, or null 
+ * @property {null|PagedMarginBox} bottomLeftCorner - the bottom left corner PagedMarginBox, or null 
+ * @property {null|PagedMarginBox} bottomLeft - the bottom left PagedMarginBox, or null 
+ * @property {null|PagedMarginBox} bottomCenter - the bottom center PagedMarginBox, or null 
+ * @property {null|PagedMarginBox} bottomRight - the bottom right PagedMarginBox, or null 
+ * @property {null|PagedMarginBox} bottomRightCorner - the bottom right corner PagedMarginBox, or null 
  */
-export class PagedMarginBox extends LitElement {
-  constructor() {
-    super();
-  }
 
-  /**
-   * Returns the nodes assigned to the slot of the marginBox
-   * 
-   * @returns Array<Node>|null Array of assigned nodes, or null
-   * @question, does it make sens to include this?
-   * 
-   * Convenience, in that it shortens:
-   * marginBox.querySelector('slot').assignedNodes({flatten: true})
-   * 
-   * to:
-   * marginBox.contentNodes
-   * 
-   * But could achieve a comparable result by exposing the slot through a 
-   * shortcut?
-   */
-  get contentNodes () {
-    return this.renderRoot.querySelector('slot').assignedNodes({ flatten: true }) ?? null;
-  }
-
-  get contentElements () {
-    return this.renderRoot.querySelector('slot').assignedElements({ flatten: true }) ?? null;
-  }
-
-
-  render () {
-    return html`<slot></slot>`;
-  }
-}
-
-
+/**
+ * `<paged-margins>` - A css-controlable component the renders the page-margin boxes.
+ * Content can be inserted through the relevant parts and a ::before, or after. Or, by
+ * inserting nodes into the relevant slots. Consider using the `<paged-margin-content>`
+ * to insert text content.
+ * 
+ * @element paged-margins
+ * 
+ * @property {null|PagedMarginBoxes} - References to the PagedMarginBoxes within the component.
+ * 
+ * @slot margin-box - all the page-margin boxes
+ * @slot top - all page-margin boxes on the top side of the page, including top left corner and top right corner
+ * @slot right - all page-margin boxes on the right side of the page, including top right and bottom right corner.
+ * @slot bottom - all page-margin boxes on the bottom side of the page, including bottom left corner and bottom right corner.
+ * @slot left - all page-margin boxes on the left side of the page, including top left corner and bottom left corner
+ * @slot margin-box-group - all the page-margin box groups
+ * @slot margin-box-group-top - top page-margin box group: top-left, top-center & top-right
+ * @slot margin-box-group-right - right page-margin box group: right-top, right-middle & right-bottom
+ * @slot margin-box-group-bottom - bottom page-margin box group: bottom-left, bottom-center & bottom-right
+ * @slot margin-box-group-left - left page-margin box group: left-top, left-middle & left-bottom
+ * @slot top-left-corner - the top left corner page-margin box
+ * @slot top-left - top left page-margin box
+ * @slot top-center - top center page-margin box
+ * @slot top-right - top right page-margin box
+ * @slot top-right-corner - top right corner page-margin box
+ * @slot left-top - the left top page-margin box
+ * @slot left-middle - the left middle page-margin box
+ * @slot left-bottom - the left bottom page-margin box
+ * @slot right-top - the right top page-margin box
+ * @slot right-middle - the right middle page-margin box
+ * @slot right-bottom - the right bottom page-margin box
+ * @slot bottom-left-corner - bottom top left corner page-margin box
+ * @slot bottom-left - bottom left page-margin box
+ * @slot bottom-center - bottom center page-margin box
+ * @slot bottom-right - bottom right page-margin box
+ * @slot bottom-right-corner - bottom right corner page-margin box
+ * 
+ * @csspart margin-box - all the page-margin boxes
+ * @csspart top - all page-margin boxes on the top side of the page, including top left corner and top right corner
+ * @csspart right - all page-margin boxes on the right side of the page, including top right and bottom right corner.
+ * @csspart bottom - all page-margin boxes on the bottom side of the page, including bottom left corner and bottom right corner.
+ * @csspart left - all page-margin boxes on the left side of the page, including top left corner and bottom left corner
+ * @csspart margin-box-group - all the page-margin box groups
+ * @csspart margin-box-group-top - top page-margin box group: top-left, top-center & top-right
+ * @csspart margin-box-group-right - right page-margin box group: right-top, right-middle & right-bottom
+ * @csspart margin-box-group-bottom - bottom page-margin box group: bottom-left, bottom-center & bottom-right
+ * @csspart margin-box-group-left - left page-margin box group: left-top, left-middle & left-bottom
+ * @csspart top-left-corner - the top left corner page-margin box
+ * @csspart top-left - top left page-margin box
+ * @csspart top-center - top center page-margin box
+ * @csspart top-right - top right page-margin box
+ * @csspart top-right-corner - top right corner page-margin box
+ * @csspart left-top - the left top page-margin box
+ * @csspart left-middle - the left middle page-margin box
+ * @csspart left-bottom - the left bottom page-margin box
+ * @csspart right-top - the right top page-margin box
+ * @csspart right-middle - the right middle page-margin box
+ * @csspart right-bottom - the right bottom page-margin box
+ * @csspart bottom-left-corner - bottom top left corner page-margin box
+ * @csspart bottom-left - bottom left page-margin box
+ * @csspart bottom-center - bottom center page-margin box
+ * @csspart bottom-right - bottom right page-margin box
+ * @csspart bottom-right-corner - bottom right corner page-margin box
+ * 
+ * @cssprop {length} --paged-margin-top 15mm Size of the top margin
+ * @cssprop {length} --paged-margin-right 15mm Size of the right margin
+ * @cssprop {length} --paged-margin-bottom 15mm Size of the bottom margin
+ * @cssprop {length} --paged-margin-left 15mm Size of the left margin
+ */
 export class PagedMargins extends LitElement {
   constructor () {
     super();
@@ -163,6 +261,11 @@ export class PagedMargins extends LitElement {
     }
   `
 
+  /**
+   * References to the PagedMarginBoxes within the component.
+   * 
+   * @returns {null|PagedMarginsMarginBoxes} 
+   */
   get marginBoxes () {
     if (this.renderRoot) {
       return {

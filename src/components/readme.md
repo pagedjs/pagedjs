@@ -488,8 +488,8 @@ Component used within the PagedMargins Shadow DOM. It exposed two properties giv
 
 | Property | Attribute | Type | Default | Description |
 | -------- | --------- | ---- | ------- | ----------- |
-| contentNodes | | Node[] \| null | | Returns an array with the nodes assigned to the slot of the page-margin box. |
-| contentElements | | Element[] \| null | | Returns an array with the elements assigned to the slot of the page-margin box. |
+| slottedNodes | | Node[] \| null | | Returns an array with the nodes assigned to the slot of the page-margin box. |
+| slottedElements | | Element[] \| null | | Returns an array with the elements assigned to the slot of the page-margin box. |
 
 
 #### Slots
@@ -501,7 +501,7 @@ Component used within the PagedMargins Shadow DOM. It exposed two properties giv
 
 ### PagedMarginContent `<paged-margin-content>`
 
-Wrapper used to assign content to a PagedMarginBox. Expected to by used within PagedMargins.
+Component used to assign text content to a PagedMarginBox.
 
 #### Slots
 

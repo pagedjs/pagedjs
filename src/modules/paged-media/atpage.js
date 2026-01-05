@@ -1092,9 +1092,10 @@ class AtPage extends Handler {
 	 * @param {Object} sheet - Stylesheet to which rules are inserted.
 	 */
 	addMarginaliaContent(page, list, item, sheet) {
-		let displayNone;
 		// Just content
 		for (let loc in page.marginalia) {
+			let displayNone;
+
 			let content = csstree.clone(page.marginalia[loc]);
 			csstree.walk(content, {
 				visit: "Declaration",

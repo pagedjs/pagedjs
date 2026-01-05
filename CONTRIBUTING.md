@@ -4,20 +4,18 @@ Whether you're contributing to Pagedjs through development, creating examples, f
 
 ## I found a bug!
 
-Please file a bug report on our gitlab issues page: https://gitlab.coko.foundation/pagedjs/pagedjs/-/issues
+Please file a bug report on our github issues page: https://github.com/pagedjs/pagedjs/-/issues
 
 Issues with a HTML file example and correct / incorrect output PDFs are much quicker to debug and very appreciated.
 
 ## I fixed something!
 
-We'll review the code on either a github or gitlab pull request and then merge it into the gitlab repository.
+Open a merge request on github, and explain what you did.
+
 
 ## I need help!
 
-Chat with us on mattermost @ [https://mattermost.coko.foundation](https://mattermost.coko.foundation)
+Open an issue on [github](https://github.com/pagedjs/pagedjs/issues) with any remarks, questions, issues you have
 
-You can also open an issue with the `Question` label: https://gitlab.coko.foundation/pagedjs/pagedjs/-/issues?label_name%5B%5D=Question
+Chat with us on [matrix](https://mattermost.coko.)
 
-## I have a great idea for a feature!
-
-Please open an issue with the `Feature Request` label: https://gitlab.coko.foundation/pagedjs/pagedjs/-/issues?label_name%5B%5D=Feature+Request

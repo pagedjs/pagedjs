@@ -86,7 +86,7 @@ Examples:
 
 Command line interface to render out PDFs of HTML files using Puppeteer: [https://github.com/pagedjs/pagedjs-cli](https://github.com/pagedjs/pagedjs-cli).
 
-## Modules
+## Module
 
 Modules are groups of handlers for that apply the layout and styles of a CSS module, such as Generated Content.
 

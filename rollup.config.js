@@ -4,21 +4,20 @@ import json from "@rollup/plugin-json";
 import terser from "@rollup/plugin-terser";
 import license from "rollup-plugin-license";
 
-import pkg from "./package.json" assert {
-  type: 'json'
-};
+import pkg from "./package.json" assert { type: "json" };
 
 const plugins = [
 	nodeResolve({
-		extensions: [".cjs",".mjs", ".js"]
+		extensions: [".cjs", ".mjs", ".js"],
 	}),
 	commonjs({
-		include: "node_modules/**"
+		include: "node_modules/**",
 	}),
 	json(),
 	license({
-		banner: "@license Paged.js v<%= pkg.version %> | MIT | https://gitlab.coko.foundation/pagedjs/pagedjs",
-	})
+		banner:
+			"@license Paged.js v<%= pkg.version %> | MIT | https://github.com/pagedjs/pagedjs",
+	}),
 ];
 
 export default [
@@ -28,9 +27,9 @@ export default [
 		output: {
 			name: "Paged",
 			file: pkg.browser,
-			format: "umd"
+			format: "umd",
 		},
-		plugins: plugins
+		plugins: plugins,
 	},
 
 	{
@@ -38,9 +37,9 @@ export default [
 		output: {
 			name: "PagedModule",
 			file: "./dist/paged.esm.js",
-			format: "es"
+			format: "es",
 		},
-		plugins: plugins
+		plugins: plugins,
 	},
 
 	{
@@ -48,28 +47,28 @@ export default [
 		output: {
 			name: "PagedPolyfill",
 			file: "./dist/paged.polyfill.js",
-			format: "umd"
+			format: "umd",
 		},
-		plugins: plugins
+		plugins: plugins,
 	},
 
-  // minified 
+	// minified
 	{
 		input: pkg.main,
 		output: {
 			name: "PagedModule",
 			file: "./dist/paged.min.js",
-			format: "umd"
+			format: "umd",
 		},
-    plugins: [plugins, terser()]
+		plugins: [plugins, terser()],
 	},
 	{
 		input: "./src/polyfill/polyfill.js",
 		output: {
 			name: "PagedPolyfill",
 			file: "./dist/paged.polyfill.min.js",
-			format: "umd"
+			format: "umd",
 		},
-		plugins: [plugins, terser()]
+		plugins: [plugins, terser()],
 	},
 ];

@@ -84,7 +84,7 @@ Examples:
 
 ### CLI
 
-Command line interface to render out PDFs of HTML files using Puppeteer: [https://gitlab.pagedmedia.org/tools/pagedjs-cli](https://gitlab.pagedmedia.org/tools/pagedjs-cli).
+Command line interface to render out PDFs of HTML files using Puppeteer: [https://github.com/pagedjs/pagedjs-cli](https://github.com/pagedjs/pagedjs-cli).
 
 ## Modules
 
@@ -277,4 +277,4 @@ docker run -it --security-opt 'seccomp=seccomp.json' pagedmedia/pagedjs npm test
 
 ## Licence
 
-MIT License (MIT), which you can read [here](https://gitlab.pagedmedia.org/tools/pagedjs/blob/master/LICENSE.md)
+MIT License (MIT), which you can read [here](https://github.com/pagedjs/pagedjs-cli?tab=MIT-1-ov-file)

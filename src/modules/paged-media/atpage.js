@@ -1103,7 +1103,7 @@ class AtPage extends Handler {
 						list.remove(item);
 					}
 
-					if (
+					else if (
 						node.value.children &&
 						node.value.children.first().name === "none"
 					) {

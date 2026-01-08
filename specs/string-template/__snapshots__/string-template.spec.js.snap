@@ -1,0 +1,83 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`string-template should generate preview from string template 1`] = `
+"<div class="pagedjs_pages" style="--pagedjs-page-count:1;">
+<div class="pagedjs_page pagedjs_first_page pagedjs_right_page" data-page-number="1" id="page-1">
+	<div class="pagedjs_sheet">
+		<div class="pagedjs_bleed pagedjs_bleed-top">
+			<div class="pagedjs_marks-crop"></div>
+			<div class="pagedjs_marks-middle">
+				<div class="pagedjs_marks-cross"></div>
+			</div>
+			<div class="pagedjs_marks-crop"></div>
+		</div>
+		<div class="pagedjs_bleed pagedjs_bleed-bottom">
+			<div class="pagedjs_marks-crop"></div>
+			<div class="pagedjs_marks-middle">
+				<div class="pagedjs_marks-cross"></div>
+			</div>		<div class="pagedjs_marks-crop"></div>
+		</div>
+		<div class="pagedjs_bleed pagedjs_bleed-left">
+			<div class="pagedjs_marks-crop"></div>
+			<div class="pagedjs_marks-middle">
+				<div class="pagedjs_marks-cross"></div>
+			</div>		<div class="pagedjs_marks-crop"></div>
+		</div>
+		<div class="pagedjs_bleed pagedjs_bleed-right">
+			<div class="pagedjs_marks-crop"></div>
+			<div class="pagedjs_marks-middle">
+				<div class="pagedjs_marks-cross"></div>
+			</div>
+			<div class="pagedjs_marks-crop"></div>
+		</div>
+		<div class="pagedjs_pagebox">
+			<div class="pagedjs_margin-top-left-corner-holder">
+				<div class="pagedjs_margin pagedjs_margin-top-left-corner"><div class="pagedjs_margin-content"></div></div>
+			</div>
+			<div class="pagedjs_margin-top">
+				<div class="pagedjs_margin pagedjs_margin-top-left"><div class="pagedjs_margin-content"></div></div>
+				<div class="pagedjs_margin pagedjs_margin-top-center"><div class="pagedjs_margin-content"></div></div>
+				<div class="pagedjs_margin pagedjs_margin-top-right"><div class="pagedjs_margin-content"></div></div>
+			</div>
+			<div class="pagedjs_margin-top-right-corner-holder">
+				<div class="pagedjs_margin pagedjs_margin-top-right-corner"><div class="pagedjs_margin-content"></div></div>
+			</div>
+			<div class="pagedjs_margin-right">
+				<div class="pagedjs_margin pagedjs_margin-right-top"><div class="pagedjs_margin-content"></div></div>
+				<div class="pagedjs_margin pagedjs_margin-right-middle"><div class="pagedjs_margin-content"></div></div>
+				<div class="pagedjs_margin pagedjs_margin-right-bottom"><div class="pagedjs_margin-content"></div></div>
+			</div>
+			<div class="pagedjs_margin-left">
+				<div class="pagedjs_margin pagedjs_margin-left-top"><div class="pagedjs_margin-content"></div></div>
+				<div class="pagedjs_margin pagedjs_margin-left-middle"><div class="pagedjs_margin-content"></div></div>
+				<div class="pagedjs_margin pagedjs_margin-left-bottom"><div class="pagedjs_margin-content"></div></div>
+			</div>
+			<div class="pagedjs_margin-bottom-left-corner-holder">
+				<div class="pagedjs_margin pagedjs_margin-bottom-left-corner"><div class="pagedjs_margin-content"></div></div>
+			</div>
+			<div class="pagedjs_margin-bottom">
+				<div class="pagedjs_margin pagedjs_margin-bottom-left"><div class="pagedjs_margin-content"></div></div>
+				<div class="pagedjs_margin pagedjs_margin-bottom-center"><div class="pagedjs_margin-content"></div></div>
+				<div class="pagedjs_margin pagedjs_margin-bottom-right"><div class="pagedjs_margin-content"></div></div>
+			</div>
+			<div class="pagedjs_margin-bottom-right-corner-holder">
+				<div class="pagedjs_margin pagedjs_margin-bottom-right-corner"><div class="pagedjs_margin-content"></div></div>
+			</div>
+			<div class="pagedjs_area">
+				<div class="pagedjs_page_content" style="column-width: 378px; column-gap: calc(var(--pagedjs-margin-right) + var(--pagedjs-margin-left) + var(--pagedjs-bleed-right) + var(--pagedjs-bleed-left) + var(--pagedjs-column-gap-offset));"><div><section data-ref="500e5dbe-c6fe-4a23-9cc1-581a0faf2b0e"><b data-ref="d6a6fd80-9f36-4ddb-95b4-b0fdc3aa5141">Title</b><h1 data-ref="9cbf3eac-4229-4b8c-a817-aab6509ccfdd">aaa</h1><p data-ref="44bc64ee-50cb-464a-a2b6-23a731ea32bf">
+							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi non suscipit odio. Aenean ut ligula id mauris
+							efficitur tincidunt vitae non leo.
+						</p><h1 data-ref="fa730b5d-f1af-4cdf-a7d5-ee044a7a254e">bbb</h1><p data-ref="69e1b11a-8d8f-4a38-9a8c-1fdcf0b7f67d">
+							Nulla dignissim pellentesque magna ac maximus. Integer id tincidunt erat. Sed elementum posuere augue, quis pharetra
+							mi vehicula in.
+						</p></section></div></div>
+				<div class="pagedjs_footnote_area">
+					<div class="pagedjs_footnote_content pagedjs_footnote_empty">
+						<div class="pagedjs_footnote_inner_content" style="column-width: 0px; column-gap: calc(var(--pagedjs-margin-right) + var(--pagedjs-margin-left)); height: auto;"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div></div>"
+`;

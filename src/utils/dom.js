@@ -991,13 +991,13 @@ export function replaceOrAppendElement(parentNode, child) {
 /**
  * Finds an element in the document by the node's data-ref attribute.
  *
- * @param {Node} node The node with a data-ref attribute.
+ * @param {Node|undefined} node The node with a data-ref attribute.
  * @param {Document} doc The document to search in.
  * @param {boolean} [forceQuery=false] Whether to force a querySelector search.
  * @returns {Element|undefined} The found element or undefined.
  */
 export function findElement(node, doc, forceQuery) {
-	if (!doc) return;
+	if (!node || !doc) return;
 	const ref = node.getAttribute("data-ref");
 	return findRef(ref, doc, forceQuery);
 }

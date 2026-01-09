@@ -1,0 +1,193 @@
+:root {
+  --color-background: whitesmoke;
+  --color-pageSheet: #cfcfcf;
+  --color-pageBox: violet;
+  --color-paper: white;
+  --color-marginBox: transparent;
+  --pagedjs-crop-color: black;
+  --pagedjs-crop-shadow: white;
+  --pagedjs-crop-stroke: 1px;
+}
+
+@media screen, pagedjs-ignore {
+  body {
+    background-color: var(--color-background);
+  }
+
+  .pagedjs_pages {
+    width: calc(var(--pagedjs-width) * 2);
+    flex-wrap: wrap;
+    flex: 0;
+    margin: 0 auto;
+    display: flex;
+  }
+
+  .pagedjs_page {
+    background-color: var(--color-paper);
+    box-shadow: 0 0 0 1px var(--color-pageSheet);
+    flex-grow: 0;
+    flex-shrink: 0;
+    margin: 10mm 0 0;
+  }
+
+  .pagedjs_first_page {
+    margin-left: var(--pagedjs-width);
+  }
+
+  .pagedjs_page:last-of-type {
+    margin-bottom: 10mm;
+  }
+
+  .pagedjs_pagebox {
+    box-shadow: 0 0 0 1px var(--color-pageBox);
+  }
+
+  .pagedjs_left_page {
+    z-index: 20;
+    width: calc(
+      var(--pagedjs-bleed-left) + var(--pagedjs-pagebox-width)
+    ) !important;
+  }
+
+  .pagedjs_left_page .pagedjs_bleed-right .pagedjs_marks-crop {
+    border-color: transparent;
+  }
+
+  .pagedjs_left_page .pagedjs_bleed-right .pagedjs_marks-middle {
+    width: 0;
+  }
+
+  .pagedjs_right_page {
+    z-index: 10;
+    left: calc(var(--pagedjs-bleed-left) * -1);
+    position: relative;
+  }
+
+  .pagedjs_margin-top-left-corner-holder,
+  .pagedjs_margin-top,
+  .pagedjs_margin-top-left,
+  .pagedjs_margin-top-center,
+  .pagedjs_margin-top-right,
+  .pagedjs_margin-top-right-corner-holder,
+  .pagedjs_margin-bottom-left-corner-holder,
+  .pagedjs_margin-bottom,
+  .pagedjs_margin-bottom-left,
+  .pagedjs_margin-bottom-center,
+  .pagedjs_margin-bottom-right,
+  .pagedjs_margin-bottom-right-corner-holder,
+  .pagedjs_margin-right,
+  .pagedjs_margin-right-top,
+  .pagedjs_margin-right-middle,
+  .pagedjs_margin-right-bottom,
+  .pagedjs_margin-left,
+  .pagedjs_margin-left-top,
+  .pagedjs_margin-left-middle,
+  .pagedjs_margin-left-bottom {
+    box-shadow: 0 0 0 1px inset var(--color-marginBox);
+  }
+
+  .pagedjs_pagebox {
+    --pagedjs-baseline: 22px;
+    --pagedjs-baseline-position: 62px;
+    --pagedjs-baseline-color: lightskyblue;
+    background:
+      linear-gradient(
+        transparent 0%,
+        transparent calc(var(--pagedjs-baseline) - 1px),
+        var(--pagedjs-baseline-color) calc(var(--pagedjs-baseline) - 1px),
+        var(--pagedjs-baseline-color) var(--pagedjs-baseline)
+      ),
+      transparent;
+    background-size: 100% var(--pagedjs-baseline);
+    background-repeat: repeat-y;
+    background-position-y: var(--pagedjs-baseline-position);
+  }
+
+  .controls pre {
+    border: 1px solid #000;
+    padding: 1em;
+    font-size: 0.8em;
+  }
+
+  .controls .preview {
+    max-width: 100px;
+    position: relative;
+  }
+
+  .controls .preview img {
+    width: 100%;
+    height: auto;
+  }
+
+  .minimap {
+    width: var(--imgWidth);
+    height: var(--imgHeight);
+    left: var(--imgX);
+    top: var(--imgY);
+    z-index: 2000;
+    border: 1px solid red;
+    display: block;
+    position: absolute;
+  }
+
+  .move {
+    width: 30px;
+    position: absolute;
+    top: 2px;
+    right: 2px;
+  }
+
+  .controls {
+    z-index: 3000;
+    background: #fff;
+    border: 2px solid red;
+    padding: 2em;
+    position: fixed;
+    top: 2em;
+    left: 2em;
+  }
+
+  .editImg {
+    box-shadow: 0 0 0 2px gray;
+  }
+
+  label {
+    display: block;
+  }
+
+  input {
+    position: relative;
+  }
+
+  input:after {
+    content: attr(value);
+    position: absolute;
+    right: 0;
+  }
+}
+
+.pagedjs_marks-crop {
+  z-index: 2147483647;
+}
+
+.pagedjs_bleed-top .pagedjs_marks-crop,
+.pagedjs_bleed-bottom .pagedjs_marks-crop {
+  box-shadow: 1px 0px 0px 0px var(--pagedjs-crop-shadow);
+}
+
+.pagedjs_bleed-top .pagedjs_marks-crop:last-child,
+.pagedjs_bleed-bottom .pagedjs_marks-crop:last-child {
+  box-shadow: -1px 0px 0px 0px var(--pagedjs-crop-shadow);
+}
+
+.pagedjs_bleed-left .pagedjs_marks-crop,
+.pagedjs_bleed-right .pagedjs_marks-crop {
+  box-shadow: 0px 1px 0px 0px var(--pagedjs-crop-shadow);
+}
+
+.pagedjs_bleed-left .pagedjs_marks-crop:last-child,
+.pagedjs_bleed-right .pagedjs_marks-crop:last-child {
+  box-shadow: 0px -1px 0px 0px var(--pagedjs-crop-shadow);
+}
+
+/*# sourceMappingURL=./interface.map */

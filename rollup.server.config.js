@@ -6,10 +6,10 @@ import livereload from "rollup-plugin-livereload";
 
 const plugins = [
 	nodeResolve({
-		extensions: [".cjs",".mjs", ".js"]
+		extensions: [".cjs", ".mjs", ".js"],
 	}),
 	commonjs({
-		include: ["node_modules/**"]
+		include: ["node_modules/**"],
 	}),
 	json(),
 	serve({
@@ -18,21 +18,22 @@ const plugins = [
 		headers: {
 			"Access-Control-Allow-Origin": "*",
 			"Service-Worker-Allowed": "/",
-		}
+		},
 	}),
 	livereload({
-		watch: ["dist", "examples"]
-	})
+		watch: ["dist", "examples"],
+	}),
 ];
 
 export default [
 	{
 		input: "./src/polyfill/polyfill.js",
 		output: {
+			sourcemap: true,
 			name: "PagedPolyfill",
 			file: "./dist/paged.polyfill.js",
-			format: "umd"
+			format: "umd",
 		},
-		plugins: plugins
-	}
+		plugins: plugins,
+	},
 ];

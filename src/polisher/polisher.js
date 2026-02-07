@@ -119,13 +119,10 @@ class Polisher {
 		}
 
 		return await Promise.all(fetched).then(async (originals) => {
-			console.log(originals.length);
-			console.log(originals);
 			let text = "";
 
 			for (let index = 0; index < originals.length; index++) {
 				text = await this.convertViaSheet(originals[index], urls[index]);
-				console.log(text);
 				this.insert(text);
 			}
 			return text;

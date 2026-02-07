@@ -55,6 +55,13 @@ class Polisher {
 	 * Adds and processes one or more CSS sources (URLs or inline CSS).
 	 * @param {...(string|Object<string, string>)} sources - URLs or object maps of URLs to CSS strings.
 	 * @returns {Promise<string>} - The final processed CSS text.
+	 *
+	 *
+	 * those are possible styles setup:
+	 *   let style = "./css/default.css";
+	 *   let style = "body { color: red; } @page {size: 200mm 200mm}";
+	 *   let style = [ "h1{text-decoration: underline;}", "./css/default.css", { nothing: "body { color: red; } @page {size: 200mm 200mm}" }, { z: "h1{color:green}" } ];
+	 *
 	 */
 
 	async add(sources) {

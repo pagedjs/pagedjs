@@ -56,31 +56,69 @@ class Polisher {
 	 * @param {...(string|Object<string, string>)} sources - URLs or object maps of URLs to CSS strings.
 	 * @returns {Promise<string>} - The final processed CSS text.
 	 */
-	async add(...sources) {
+
+	async add(sources) {
 		let fetched = [];
 		let urls = [];
 
-		for (let source of sources) {
-			let f;
-
-			if (typeof source === "object") {
-				for (let url in source) {
-					let css = source[url];
-					urls.push(url);
-					f = Promise.resolve(css);
-				}
+		// if the css is a string, just use the string
+		// but don’t assume it’s a url, it can be other things
+		if (typeof sources == "string") {
+			if (this.isCssUrl(sources)) {
+				urls.push(sources);
+				let f = request(sources).then((response) => {
+					return response.text();
+				});
+				urls.push(undefined);
+				fetched.push(f);
 			} else {
-				urls.push(source);
-				f = request(source).then((response) => response.text());
+				urls.push(undefined);
+				fetched.push(sources);
 			}
+		} else if (Symbol.iterator in Object(sources)) {
+			//if source is an object, for each entry check type and if it’s a url?
+			// check it the string is a url for a css file, if so, move it ot url
+			// else move the content to a fetch
 
-			fetched.push(f);
+			for (let source of sources) {
+				let f;
+				if (typeof source == "string") {
+					if (this.isCssUrl(source)) {
+						urls.push(source);
+						let f = request(source).then((response) => {
+							return response.text();
+						});
+						fetched.push(f);
+					} else {
+						urls.push(undefined);
+						fetched.push(source);
+					}
+				} else if (typeof source === "object") {
+					// if the element in an object {url: "css"}
+					for (let url in source) {
+						let css = source[url];
+						if (this.isCssUrl(css)) {
+							urls.push(url);
+							f = Promise.resolve(css);
+							fetched.push(f);
+						} else {
+							urls.push(undefined);
+							fetched.push(css);
+						}
+					}
+				}
+			}
+			console.log(fetched, urls);
 		}
 
 		return await Promise.all(fetched).then(async (originals) => {
+			console.log(originals.length);
+			console.log(originals);
 			let text = "";
+
 			for (let index = 0; index < originals.length; index++) {
 				text = await this.convertViaSheet(originals[index], urls[index]);
+				console.log(text);
 				this.insert(text);
 			}
 			return text;
@@ -144,6 +182,13 @@ class Polisher {
 			s.remove();
 		});
 		this.sheets = [];
+	}
+
+	/**
+	 * check if the string is a url for a css file
+	 */
+	isCssUrl(string) {
+		return /\.css(\?|#|$)/i.test(string);
 	}
 }
 

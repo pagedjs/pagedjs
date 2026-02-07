@@ -198,6 +198,7 @@ class Previewer {
 	 * @returns {Promise<Object>} - Resolves to the rendered flow object with performance and size metadata.
 	 */
 	async preview(content, stylesheets, renderTo) {
+		}
 		await this.hooks.beforePreview.trigger(content, renderTo);
 
 		// the content will be removed from the content
@@ -211,15 +212,8 @@ class Previewer {
 		this.polisher.setup();
 		this.handlers = this.initializeHandlers();
 
-		if (typeof stylesheets == "string") {
-			console.log("styles are a string ");
-			await this.polisher.add([stylesheets]);
-		} else if (typeof stylesheets == "array") {
-			console.log("styles are an array  ");
-			await this.polisher.add(...stylesheets);
-		} else if (typeof stylesheets == "object") {
-			console.log("styles are an object  ");
-			await this.polisher.add(...stylesheets);
+		if (stylesheets) {
+			await this.polisher.add(stylesheets);
 		}
 
 		let startTime = performance.now();

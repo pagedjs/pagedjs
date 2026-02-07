@@ -106,20 +106,43 @@ class Previewer {
 	 *
 	 * @returns {DocumentFragment} - The wrapped content.
 	 */
-	wrapContent() {
+
+	wrapContent(content) {
 		let body = document.querySelector("body");
 		let template = body.querySelector(
 			":scope > template[data-ref='pagedjs-content']",
 		);
-
+		// if there is no :scope > template[data-ref="pagedjs-content"]
+		// create the template and put the content of the body html
 		if (!template) {
 			template = document.createElement("template");
-			template.dataset.ref = "pagedjs-content";
-			template.innerHTML = body.innerHTML;
-			body.innerHTML = "";
-			body.appendChild(template);
-		}
 
+			template.dataset.ref = "pagedjs-content";
+
+			// if there is a content, check the type of content. if it’s an object, assume an innerHTML
+			// otherwise just use it as a string;
+			if (content) {
+				switch (typeof content) {
+					case "string":
+						template.innerHTML = content;
+						content = "";
+						break;
+					case "object":
+						template.innerHTML = content.outerHTML;
+						content.innerHTML = "";
+						break;
+					default:
+						template.innerHTML = content;
+						content = "";
+						break;
+				}
+			} else {
+				template.innerHTML = body.innerHTML;
+				body.innerHTML = "";
+			}
+
+			body.insertAdjacentElement("afterbegin", template);
+		}
 		return template.content;
 	}
 
@@ -169,18 +192,18 @@ class Previewer {
 	 * Main method for rendering content into paged preview.
 	 * Triggers hooks and events, applies stylesheets, chunks the content, and returns the flow result.
 	 *
-	 * @param {HTMLElement|DocumentFragment|string} [content] - The content to render.
-	 * @param {Array<string|Object>} [stylesheets] - List of stylesheet hrefs or inline styles to apply.
+	 * @param {HTMLElement|DocumentFragment|string} [content] - The content to render, with a innerHTML property;
+	 * @param {Array<string|Object>} [stylesheets] - List of stylesheet hrefs, or CSS string.
 	 * @param {HTMLElement|string} [renderTo] - Element or selector where rendered content will be inserted.
 	 * @returns {Promise<Object>} - Resolves to the rendered flow object with performance and size metadata.
 	 */
 	async preview(content, stylesheets, renderTo) {
 		await this.hooks.beforePreview.trigger(content, renderTo);
 
-		if (!content) {
-			content = this.wrapContent();
-		}
+		// the content will be removed from the content
+		content = this.wrapContent(content);
 
+		// the stylesheet
 		if (!stylesheets) {
 			stylesheets = this.removeStyles();
 		}
@@ -188,7 +211,16 @@ class Previewer {
 		this.polisher.setup();
 		this.handlers = this.initializeHandlers();
 
-		await this.polisher.add(...stylesheets);
+		if (typeof stylesheets == "string") {
+			console.log("styles are a string ");
+			await this.polisher.add([stylesheets]);
+		} else if (typeof stylesheets == "array") {
+			console.log("styles are an array  ");
+			await this.polisher.add(...stylesheets);
+		} else if (typeof stylesheets == "object") {
+			console.log("styles are an object  ");
+			await this.polisher.add(...stylesheets);
+		}
 
 		let startTime = performance.now();
 

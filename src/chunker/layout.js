@@ -1717,26 +1717,33 @@ class Layout {
 		let { startContainer } = overflow;
 		let extracted = overflow.extractContents();
 
-		this.hyphenateAtBreak(startContainer, breakLetter);
+		// only hyphenate if there is some hyphenation needed?
+		//  check if the computed value of the hyphens property for the parent if the start continaer is actually a text node
+		if (
+			isText(startContainer) &&
+			window.getComputedStyle(startContainer.parentNode).hyphens == "auto"
+		) {
+			this.hyphenateAtBreak(startContainer, breakLetter);
+		}
 
 		return extracted;
 	}
 
-	hyphenateAtBreak(startContainer, breakLetter) {
-		if (isText(startContainer)) {
-			let startText = startContainer.textContent;
-			let prevLetter = startText[startText.length - 1];
+	//TODO: change the hyphenation method: apply the hyphenation, then check for the breaktoken position again, to avoid the missing text sometimes, or force the styles for the .pagedjs_hyphens to be a position absolute.
 
-			// Add a hyphen if previous character is a letter or soft hyphen
-			if (
-				(breakLetter &&
-					/^\w|\u00AD$/.test(prevLetter) &&
-					/^\w|\u00AD$/.test(breakLetter)) ||
-				(!breakLetter && prevLetter && /^\w|\u00AD$/.test(prevLetter))
-			) {
-				startContainer.parentNode.classList.add("pagedjs_hyphen");
-				startContainer.textContent += this.settings.hyphenGlyph || "\u2011";
-			}
+	hyphenateAtBreak(startContainer, breakLetter) {
+		let startText = startContainer.textContent;
+		let prevLetter = startText[startText.length - 1];
+
+		// Add a hyphen if previous character is a letter or soft hyphen
+		if (
+			(breakLetter &&
+				/^\w|\u00AD$/.test(prevLetter) &&
+				/^\w|\u00AD$/.test(breakLetter)) ||
+			(!breakLetter && prevLetter && /^\w|\u00AD$/.test(prevLetter))
+		) {
+			startContainer.parentNode.classList.add("pagedjs_hyphen");
+			startContainer.textContent += this.settings.hyphenGlyph || "\u2011";
 		}
 	}
 

@@ -115,7 +115,6 @@ class Polisher {
 					}
 				}
 			}
-			console.log(fetched, urls);
 		}
 
 		return await Promise.all(fetched).then(async (originals) => {

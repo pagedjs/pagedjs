@@ -1,0 +1,1593 @@
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<meta http-equiv="Content-Style-Type" content="text/css" />
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="../../../dist/paged.polyfill.js"></script>
+		<title>Document</title>
+		<style>
+			@page:first {
+				background: grey;
+			}
+			#title {
+				/* // if title isn’t minimum 1px, the pages mixes */
+				/* min-height: 1px; */
+			}
+			#toc {
+				page: toc;
+			}
+		</style>
+	</head>
+	<body>
+		<section class="empty" id="title"></section>
+		<section id="toc">
+			<ul id="visible-toc">
+				<li>
+					<span class="toc-title">Why is printf better than echo?</span
+					><a class="toclink" href="#title-0" id="goto-title-0">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Why not use "which"? What to use then?</span
+					><a class="toclink" href="#title-1" id="goto-title-1">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How do I trim leading and trailing whitespace from each line of
+						some output?</span
+					><a class="toclink" href="#title-2" id="goto-title-2">000</a>
+				</li>
+				<li>
+					<span class="toc-title">What does "LC_ALL=C" do?</span
+					><a class="toclink" href="#title-3" id="goto-title-3">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Why not use "which"? What to use then?</span
+					><a class="toclink" href="#title-4" id="goto-title-4">000</a>
+				</li>
+				<li>
+					<span class="toc-title">How to export variables from a file?</span
+					><a class="toclink" href="#title-5" id="goto-title-5">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why is using a shell loop to process text considered bad
+						practice?</span
+					><a class="toclink" href="#title-6" id="goto-title-6">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>ssh-add complains: Could not open a connection to your
+						authentication agent</span
+					><a class="toclink" href="#title-7" id="goto-title-7">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why do I need a tty to run sudo if I can sudo without a
+						password?</span
+					><a class="toclink" href="#title-8" id="goto-title-8">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Security implications of forgetting to quote a variable in
+						bash/POSIX shells</span
+					><a class="toclink" href="#title-9" id="goto-title-9">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to determine where an environment variable came from?</span
+					><a class="toclink" href="#title-10" id="goto-title-10">000</a>
+				</li>
+				<li>
+					<span class="toc-title">How to tell gzip to keep original file?</span
+					><a class="toclink" href="#title-11" id="goto-title-11">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Security implications of forgetting to quote a variable in
+						bash/POSIX shells</span
+					><a class="toclink" href="#title-12" id="goto-title-12">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Sort based on the third column</span
+					><a class="toclink" href="#title-13" id="goto-title-13">000</a>
+				</li>
+				<li>
+					<span class="toc-title">How to make `sudo` preserve $PATH?</span
+					><a class="toclink" href="#title-14" id="goto-title-14">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to stop the find command after first match?</span
+					><a class="toclink" href="#title-15" id="goto-title-15">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Find and remove large files that are open but have been
+						deleted</span
+					><a class="toclink" href="#title-16" id="goto-title-16">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>When was the shellshock (CVE-2014-6271/7169) bug introduced, and
+						what is the patch that fully fixes it?</span
+					><a class="toclink" href="#title-17" id="goto-title-17">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Simple way to create a tunnel from one local port to another?</span
+					><a class="toclink" href="#title-18" id="goto-title-18">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How do you use the command coproc in various shells?</span
+					><a class="toclink" href="#title-19" id="goto-title-19">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>`find` with multiple `-name` and `-exec` executes only the last
+						matches of `-name`</span
+					><a class="toclink" href="#title-20" id="goto-title-20">000</a>
+				</li>
+				<li>
+					<span class="toc-title">List all available ssl ca certificates</span
+					><a class="toclink" href="#title-21" id="goto-title-21">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Understanding "IFS= read -r line"</span
+					><a class="toclink" href="#title-22" id="goto-title-22">000</a>
+				</li>
+				<li>
+					<span class="toc-title">The result of ls * , ls ** and ls ***</span
+					><a class="toclink" href="#title-23" id="goto-title-23">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Remove last character from line</span
+					><a class="toclink" href="#title-24" id="goto-title-24">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What is the difference between "cat file | ./binary" and "./binary
+						&lt; file"?</span
+					><a class="toclink" href="#title-25" id="goto-title-25">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How can I use column to delimit on tabs and not spaces?</span
+					><a class="toclink" href="#title-26" id="goto-title-26">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to run grep with multiple AND patterns?</span
+					><a class="toclink" href="#title-27" id="goto-title-27">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Copy the contents of a file into the clipboard without displaying
+						its contents</span
+					><a class="toclink" href="#title-28" id="goto-title-28">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>remove particular characters from a variable using bash</span
+					><a class="toclink" href="#title-29" id="goto-title-29">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How can I remove the BOM from a UTF-8 file?</span
+					><a class="toclink" href="#title-30" id="goto-title-30">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What is the purpose of the "do" keyword in Bash for loops?</span
+					><a class="toclink" href="#title-31" id="goto-title-31">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Why does Ctrl-D (EOF) exit the shell?</span
+					><a class="toclink" href="#title-32" id="goto-title-32">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>On what systems is //foo/bar different from /foo/bar?</span
+					><a class="toclink" href="#title-33" id="goto-title-33">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why is looping over find's output bad practice?</span
+					><a class="toclink" href="#title-34" id="goto-title-34">000</a>
+				</li>
+				<li>
+					<span class="toc-title">The problem</span
+					><a class="toclink" href="#title-35" id="goto-title-35">000</a>
+				</li>
+				<li>
+					<span class="toc-title">More correct alternatives</span
+					><a class="toclink" href="#title-36" id="goto-title-36">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Other reliability/security considerations</span
+					><a class="toclink" href="#title-37" id="goto-title-37">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Notes</span
+					><a class="toclink" href="#title-38" id="goto-title-38">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to list files in a zip without extra information in command
+						line</span
+					><a class="toclink" href="#title-39" id="goto-title-39">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Redirecting the content of a file to the command "echo"</span
+					><a class="toclink" href="#title-40" id="goto-title-40">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Why is nullglob not default?</span
+					><a class="toclink" href="#title-41" id="goto-title-41">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to get execution time of a script effectively?</span
+					><a class="toclink" href="#title-42" id="goto-title-42">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to convert floating point number to integer?</span
+					><a class="toclink" href="#title-43" id="goto-title-43">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What is the min and max values of exit codes in Linux?</span
+					><a class="toclink" href="#title-44" id="goto-title-44">000</a>
+				</li>
+				<li>
+					<span class="toc-title">How can I get the tac command on OS X?</span
+					><a class="toclink" href="#title-45" id="goto-title-45">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Recursive grep vs find / -type f -exec grep {} \; Which is more
+						efficient/faster?</span
+					><a class="toclink" href="#title-46" id="goto-title-46">000</a>
+				</li>
+				<li>
+					<span class="toc-title">I deleted /bin/rm. How do I recover it?</span
+					><a class="toclink" href="#title-47" id="goto-title-47">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>On what systems is //foo/bar different from /foo/bar?</span
+					><a class="toclink" href="#title-48" id="goto-title-48">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Symbolic link recursion - what makes it "reset"?</span
+					><a class="toclink" href="#title-49" id="goto-title-49">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How do I automatically answer y in bash script?</span
+					><a class="toclink" href="#title-50" id="goto-title-50">000</a>
+				</li>
+				<li>
+					<span class="toc-title">$@ except the 1st argument</span
+					><a class="toclink" href="#title-51" id="goto-title-51">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Why is printf "shrinking" umlaut?</span
+					><a class="toclink" href="#title-52" id="goto-title-52">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How do I set an environment variable on the command line and have
+						it appear in commands?</span
+					><a class="toclink" href="#title-53" id="goto-title-53">000</a>
+				</li>
+				<li>
+					<span class="toc-title">BASH base conversion from decimal to hex</span
+					><a class="toclink" href="#title-54" id="goto-title-54">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why is 'H' / 72 / 0x48 the second most common byte in
+						executables?</span
+					><a class="toclink" href="#title-55" id="goto-title-55">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What are the responsibilities of each Pseudo-Terminal (PTY)
+						component (software, master side, slave side)?</span
+					><a class="toclink" href="#title-56" id="goto-title-56">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Terminal emulators</span
+					><a class="toclink" href="#title-57" id="goto-title-57">000</a>
+				</li>
+				<li>
+					<span class="toc-title">The tty line discipline</span
+					><a class="toclink" href="#title-58" id="goto-title-58">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to show the filesystem type via the terminal?</span
+					><a class="toclink" href="#title-59" id="goto-title-59">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Unzip file contents, but without creating archive folder</span
+					><a class="toclink" href="#title-60" id="goto-title-60">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Where do I find a list of terminal key codes to remap shortcuts in
+						bash?</span
+					><a class="toclink" href="#title-61" id="goto-title-61">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Delete files and directories by their names. No such file or
+						directory</span
+					><a class="toclink" href="#title-62" id="goto-title-62">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What is the point of the `cd` external command?</span
+					><a class="toclink" href="#title-63" id="goto-title-63">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Syntax highlighting in the terminal</span
+					><a class="toclink" href="#title-64" id="goto-title-64">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What's the fastest way to generate a 1 GB text file containing
+						random digits?</span
+					><a class="toclink" href="#title-65" id="goto-title-65">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Default exit code when process is terminated?</span
+					><a class="toclink" href="#title-66" id="goto-title-66">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What is the difference between "du -sh *" and "du -sh ./*"?</span
+					><a class="toclink" href="#title-67" id="goto-title-67">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What's the difference between single and double equal signs (=) in
+						shell comparisons?</span
+					><a class="toclink" href="#title-68" id="goto-title-68">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Is it possible to use `find -exec sh -c` safely?</span
+					><a class="toclink" href="#title-69" id="goto-title-69">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to run string with values as a command in bash?</span
+					><a class="toclink" href="#title-70" id="goto-title-70">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Is there a way to pause a running process on Linux systems and
+						resume later?</span
+					><a class="toclink" href="#title-71" id="goto-title-71">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why is this binary file transferred over "ssh -t" being
+						changed?</span
+					><a class="toclink" href="#title-72" id="goto-title-72">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Is &gt;&amp;- more efficient than &gt;/dev/null?</span
+					><a class="toclink" href="#title-73" id="goto-title-73">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why do many commands provide a "quiet" option?</span
+					><a class="toclink" href="#title-74" id="goto-title-74">000</a>
+				</li>
+				<li>
+					<span class="toc-title">How to recover from a chmod -R 000 /bin?</span
+					><a class="toclink" href="#title-75" id="goto-title-75">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Setting a shell variable in a null coalescing fashion</span
+					><a class="toclink" href="#title-76" id="goto-title-76">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to expand ext4 partition size using command-line?</span
+					><a class="toclink" href="#title-77" id="goto-title-77">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Delete the last character of a string using string manipulation in
+						shell script</span
+					><a class="toclink" href="#title-78" id="goto-title-78">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Bash scripting - loop until return value is 0</span
+					><a class="toclink" href="#title-79" id="goto-title-79">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What's wrong with var=$(&lt;/dev/stdin) to read stdin into a
+						variable?</span
+					><a class="toclink" href="#title-80" id="goto-title-80">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Difference between help, info and man command</span
+					><a class="toclink" href="#title-81" id="goto-title-81">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Why does sort say that ɛ = e?</span
+					><a class="toclink" href="#title-82" id="goto-title-82">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Why not use "which"? What to use then?</span
+					><a class="toclink" href="#title-83" id="goto-title-83">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Arrays in Unix Bourne Shell</span
+					><a class="toclink" href="#title-84" id="goto-title-84">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Create a test file with lots of zero bytes</span
+					><a class="toclink" href="#title-85" id="goto-title-85">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Generate random numbers in specific range</span
+					><a class="toclink" href="#title-86" id="goto-title-86">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What does ${1+"$@"} mean in a shell script, and how does it differ
+						from "$@"?</span
+					><a class="toclink" href="#title-87" id="goto-title-87">000</a>
+				</li>
+				<li>
+					<span class="toc-title">determine shell in script during runtime</span
+					><a class="toclink" href="#title-88" id="goto-title-88">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Does 'rm .*' ever delete the parent directory?</span
+					><a class="toclink" href="#title-89" id="goto-title-89">000</a>
+				</li>
+				<li>
+					<span class="toc-title">How exactly does "/bin/[" work?</span
+					><a class="toclink" href="#title-90" id="goto-title-90">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Bash shell script output alignment</span
+					><a class="toclink" href="#title-91" id="goto-title-91">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Which is more idiomatic in a bash script: `|| true` or `||
+						:`?</span
+					><a class="toclink" href="#title-92" id="goto-title-92">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Who's got the other end of this unix socketpair?</span
+					><a class="toclink" href="#title-93" id="goto-title-93">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to use arguments like $1 $2 ... in a for loop?</span
+					><a class="toclink" href="#title-94" id="goto-title-94">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to find out namespace of a particular process?</span
+					><a class="toclink" href="#title-95" id="goto-title-95">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why ZSH ends a line with a highlighted percent symbol?</span
+					><a class="toclink" href="#title-96" id="goto-title-96">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What is the difference between "sort -u" and "sort | uniq"?</span
+					><a class="toclink" href="#title-97" id="goto-title-97">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to tail multiple files using tail -0f in Linux/AIX</span
+					><a class="toclink" href="#title-98" id="goto-title-98">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Which file compression software for Linux offers the highest size
+						reduction for source code?</span
+					><a class="toclink" href="#title-99" id="goto-title-99">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Does ~ always equal $HOME</span
+					><a class="toclink" href="#title-100" id="goto-title-100">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Does the Bash star * wildcard always produce an (ascending) sorted
+						list?</span
+					><a class="toclink" href="#title-101" id="goto-title-101">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why did {} start appearing as äå in Terminal.app?</span
+					><a class="toclink" href="#title-102" id="goto-title-102">000</a>
+				</li>
+				<li>
+					<span class="toc-title">How to sort big files?</span
+					><a class="toclink" href="#title-103" id="goto-title-103">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why the "-" in the "#! /bin/sh -" shebang?</span
+					><a class="toclink" href="#title-104" id="goto-title-104">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Exit vim more quickly</span
+					><a class="toclink" href="#title-105" id="goto-title-105">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to retrieve a webpage's title using the command-line?</span
+					><a class="toclink" href="#title-106" id="goto-title-106">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Record every keystroke and store in a file</span
+					><a class="toclink" href="#title-107" id="goto-title-107">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Setting IFS for a single statement</span
+					><a class="toclink" href="#title-108" id="goto-title-108">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Are quotes needed for local variable assignment?</span
+					><a class="toclink" href="#title-109" id="goto-title-109">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why is `sort &lt; "$f1" ` preferred over `sort -- "$f1"`, and why
+						is this preferred over `sort "$f1"`?</span
+					><a class="toclink" href="#title-110" id="goto-title-110">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Can a command line program prevent its output being
+						redirected?</span
+					><a class="toclink" href="#title-111" id="goto-title-111">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Is there a way to add a directory to my PATH in zsh only if it's
+						not already present?</span
+					><a class="toclink" href="#title-112" id="goto-title-112">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Is there a command to see where a disk is mounted?</span
+					><a class="toclink" href="#title-113" id="goto-title-113">000</a>
+				</li>
+				<li>
+					<span class="toc-title">When to use grep, less, awk, sed</span
+					><a class="toclink" href="#title-114" id="goto-title-114">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How do I check whether a zsh array contains a given value?</span
+					><a class="toclink" href="#title-115" id="goto-title-115">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>echo or print /dev/stdin /dev/stdout /dev/stderr</span
+					><a class="toclink" href="#title-116" id="goto-title-116">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Reusing ssh session for repeated rsync commands</span
+					><a class="toclink" href="#title-117" id="goto-title-117">000</a>
+				</li>
+				<li>
+					<span class="toc-title">When was a process started</span
+					><a class="toclink" href="#title-118" id="goto-title-118">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How can I use variables in the LHS and RHS of a sed
+						substitution?</span
+					><a class="toclink" href="#title-119" id="goto-title-119">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>ASCII to Binary and Binary to ASCII conversion tools?</span
+					><a class="toclink" href="#title-120" id="goto-title-120">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Is there a reason why the first element of a Zsh array is indexed
+						by 1 instead of 0?</span
+					><a class="toclink" href="#title-121" id="goto-title-121">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Bash to check if directory exist. If not create with an array</span
+					><a class="toclink" href="#title-122" id="goto-title-122">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Test if there are files matching a pattern in order to execute a
+						script</span
+					><a class="toclink" href="#title-123" id="goto-title-123">000</a>
+				</li>
+				<li>
+					<span class="toc-title">cp hidden files with glob patterns</span
+					><a class="toclink" href="#title-124" id="goto-title-124">000</a>
+				</li>
+				<li>
+					<span class="toc-title">How to use shell wildcards with sudo?</span
+					><a class="toclink" href="#title-125" id="goto-title-125">000</a>
+				</li>
+				<li>
+					<span class="toc-title">What does "while :;" mean?</span
+					><a class="toclink" href="#title-126" id="goto-title-126">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How can I list all user names and/or home directories?</span
+					><a class="toclink" href="#title-127" id="goto-title-127">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How does a program know if stdout is connected to a terminal or a
+						pipe?</span
+					><a class="toclink" href="#title-128" id="goto-title-128">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Can I create a user-specific hosts file to complement
+						/etc/hosts?</span
+					><a class="toclink" href="#title-129" id="goto-title-129">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to check whether a particular directory is a mount point?</span
+					><a class="toclink" href="#title-130" id="goto-title-130">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to read the whole shell script before executing it?</span
+					><a class="toclink" href="#title-131" id="goto-title-131">000</a>
+				</li>
+				<li>
+					<span class="toc-title">grep: memory exhausted</span
+					><a class="toclink" href="#title-132" id="goto-title-132">000</a>
+				</li>
+				<li>
+					<span class="toc-title">How to extract files from uImage?</span
+					><a class="toclink" href="#title-133" id="goto-title-133">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Can bash write to its own input stream?</span
+					><a class="toclink" href="#title-134" id="goto-title-134">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How can I get the size of a file in a bash script?</span
+					><a class="toclink" href="#title-135" id="goto-title-135">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What's wrong with var=$(&lt;/dev/stdin) to read stdin into a
+						variable?</span
+					><a class="toclink" href="#title-136" id="goto-title-136">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How do I check if a variable exists in an 'if' statement?</span
+					><a class="toclink" href="#title-137" id="goto-title-137">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>ESC + { : What is it and where I can know more about it?</span
+					><a class="toclink" href="#title-138" id="goto-title-138">000</a>
+				</li>
+				<li>
+					<span class="toc-title">In <code>zsh</code></span
+					><a class="toclink" href="#title-139" id="goto-title-139">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Is ~/Mary a relative path?</span
+					><a class="toclink" href="#title-140" id="goto-title-140">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Find file names that don't contain a specified string</span
+					><a class="toclink" href="#title-141" id="goto-title-141">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to make tr aware of non-ascii(unicode) characters?</span
+					><a class="toclink" href="#title-142" id="goto-title-142">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What is the use of the -f option for `touch`?</span
+					><a class="toclink" href="#title-143" id="goto-title-143">000</a>
+				</li>
+				<li>
+					<span class="toc-title">What does ;; do in sh?</span
+					><a class="toclink" href="#title-144" id="goto-title-144">000</a>
+				</li>
+				<li>
+					<span class="toc-title">exit shell script from a subshell</span
+					><a class="toclink" href="#title-145" id="goto-title-145">000</a>
+				</li>
+				<li>
+					<span class="toc-title">How to sort by multiple columns?</span
+					><a class="toclink" href="#title-146" id="goto-title-146">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why is opening a file faster than reading variable content?</span
+					><a class="toclink" href="#title-147" id="goto-title-147">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What is the difference between '.' and 'source' in shells?</span
+					><a class="toclink" href="#title-148" id="goto-title-148">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>difference between "function foo() {}" and "foo() {}"</span
+					><a class="toclink" href="#title-149" id="goto-title-149">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Understand the meaning of `$_`</span
+					><a class="toclink" href="#title-150" id="goto-title-150">000</a>
+				</li>
+				<li>
+					<span class="toc-title">1. At shell startup,</span
+					><a class="toclink" href="#title-151" id="goto-title-151">000</a>
+				</li>
+				<li>
+					<span class="toc-title">2. Subsequently</span
+					><a class="toclink" href="#title-152" id="goto-title-152">000</a>
+				</li>
+				<li>
+					<span class="toc-title">3. When Bash executes a command</span
+					><a class="toclink" href="#title-153" id="goto-title-153">000</a>
+				</li>
+				<li>
+					<span class="toc-title">4. When checking mail</span
+					><a class="toclink" href="#title-154" id="goto-title-154">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why does awk print the whole line when I want it to print a
+						variable?</span
+					><a class="toclink" href="#title-155" id="goto-title-155">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why doesn't alias foo='echo "This is a quote: \'"' work?</span
+					><a class="toclink" href="#title-156" id="goto-title-156">000</a>
+				</li>
+				<li>
+					<span class="toc-title">How to run a script every 64 hours?</span
+					><a class="toclink" href="#title-157" id="goto-title-157">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why the "-" in the "#! /bin/sh -" shebang?</span
+					><a class="toclink" href="#title-158" id="goto-title-158">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How can I copy a /tmp/ directory that is created &amp; deleted by a
+						process?</span
+					><a class="toclink" href="#title-159" id="goto-title-159">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Executing user defined function in a find -exec call</span
+					><a class="toclink" href="#title-160" id="goto-title-160">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why is sort changing the order of lines with identical sort
+						keys?</span
+					><a class="toclink" href="#title-161" id="goto-title-161">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Sort only on the second column</span
+					><a class="toclink" href="#title-162" id="goto-title-162">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What makes a Unix process die with Broken pipe?</span
+					><a class="toclink" href="#title-163" id="goto-title-163">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Parenthesis in expr arithmetic: 3 * (2 + 1)</span
+					><a class="toclink" href="#title-164" id="goto-title-164">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How can two files in one of my folders have the same name?</span
+					><a class="toclink" href="#title-165" id="goto-title-165">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Get the date of last month's last day in a shell script</span
+					><a class="toclink" href="#title-166" id="goto-title-166">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Unset an environment variable for one command</span
+					><a class="toclink" href="#title-167" id="goto-title-167">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Using sed to extract text between 2 tags</span
+					><a class="toclink" href="#title-168" id="goto-title-168">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Find which process is modifying a file</span
+					><a class="toclink" href="#title-169" id="goto-title-169">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Extract file name from path in awk program</span
+					><a class="toclink" href="#title-170" id="goto-title-170">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Unix-portable way to get script's absolute path in zsh?</span
+					><a class="toclink" href="#title-171" id="goto-title-171">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>If chown can change groups, why was chgrp created?</span
+					><a class="toclink" href="#title-172" id="goto-title-172">000</a>
+				</li>
+				<li>
+					<span class="toc-title">The difference between -r and -R</span
+					><a class="toclink" href="#title-173" id="goto-title-173">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Determining if a file is a hard link or symbolic link?</span
+					><a class="toclink" href="#title-174" id="goto-title-174">000</a>
+				</li>
+				<li>
+					<span class="toc-title">How to create a large file in UNIX?</span
+					><a class="toclink" href="#title-175" id="goto-title-175">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Rename images to exif time: Make unique filenames</span
+					><a class="toclink" href="#title-176" id="goto-title-176">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What is the difference between [[ $a == z* ]] and [ $a == z*
+						]?</span
+					><a class="toclink" href="#title-177" id="goto-title-177">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to do a continous 'wc -l' with gnu texttools?</span
+					><a class="toclink" href="#title-178" id="goto-title-178">000</a>
+				</li>
+				<li>
+					<span class="toc-title">ps: full command is too long</span
+					><a class="toclink" href="#title-179" id="goto-title-179">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to show only installed packages by executing "aptitude
+						search"?</span
+					><a class="toclink" href="#title-180" id="goto-title-180">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to take the absolute value using awk?</span
+					><a class="toclink" href="#title-181" id="goto-title-181">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Spaces in variable assignments in shell scripts</span
+					><a class="toclink" href="#title-182" id="goto-title-182">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What does "--" (double dash / double hyphen) mean?</span
+					><a class="toclink" href="#title-183" id="goto-title-183">000</a>
+				</li>
+				<li>
+					<span class="toc-title">⚠️ Important</span
+					><a class="toclink" href="#title-184" id="goto-title-184">000</a>
+				</li>
+				<li>
+					<span class="toc-title">How to reduce Volume Group size in LVM?</span
+					><a class="toclink" href="#title-185" id="goto-title-185">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>shell: keep trailing newlines ('\n') in command substitution</span
+					><a class="toclink" href="#title-186" id="goto-title-186">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>List of shells that support `local` keyword for defining local
+						variables</span
+					><a class="toclink" href="#title-187" id="goto-title-187">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why are &lt; or &gt; required to use /dev/tcp</span
+					><a class="toclink" href="#title-188" id="goto-title-188">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Is there any limit on line length when pasting to a terminal in
+						Linux?</span
+					><a class="toclink" href="#title-189" id="goto-title-189">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why do I need to quote variable for if, but not for echo?</span
+					><a class="toclink" href="#title-190" id="goto-title-190">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Regex for all 10 letter words, with unique letters</span
+					><a class="toclink" href="#title-191" id="goto-title-191">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What's the difference between running a program as a daemon and
+						forking it into background with '&amp;'?</span
+					><a class="toclink" href="#title-192" id="goto-title-192">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to ensure that string interpolated into `sed` substitution
+						escapes all metachars</span
+					><a class="toclink" href="#title-193" id="goto-title-193">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Security implications of running perl -ne '...' *</span
+					><a class="toclink" href="#title-194" id="goto-title-194">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Security Implications of using unsanitized data in Shell Arithmetic
+						evaluation</span
+					><a class="toclink" href="#title-195" id="goto-title-195">000</a>
+				</li>
+				<li>
+					<span class="toc-title">find common lines between multiple files</span
+					><a class="toclink" href="#title-196" id="goto-title-196">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Unable to stop a bash script with Ctrl+C</span
+					><a class="toclink" href="#title-197" id="goto-title-197">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Are there any single character bash aliases to be avoided?</span
+					><a class="toclink" href="#title-198" id="goto-title-198">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to move all files and folders via mv command</span
+					><a class="toclink" href="#title-199" id="goto-title-199">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to use a special character as a normal one in Unix
+						shells?</span
+					><a class="toclink" href="#title-200" id="goto-title-200">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Bourne-like shells</span
+					><a class="toclink" href="#title-201" id="goto-title-201">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Csh family</span
+					><a class="toclink" href="#title-202" id="goto-title-202">000</a>
+				</li>
+				<li>
+					<span class="toc-title"><code>rc</code> family</span
+					><a class="toclink" href="#title-203" id="goto-title-203">000</a>
+				</li>
+				<li>
+					<span class="toc-title">fish</span
+					><a class="toclink" href="#title-204" id="goto-title-204">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Does the syntax of not equal matter?</span
+					><a class="toclink" href="#title-205" id="goto-title-205">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Download big file over bad connection</span
+					><a class="toclink" href="#title-206" id="goto-title-206">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>tee + cat: use an output several times and then concatenate
+						results</span
+					><a class="toclink" href="#title-207" id="goto-title-207">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Convert newlines to null-delimited when using tail</span
+					><a class="toclink" href="#title-208" id="goto-title-208">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What is the portable (POSIX) way to achieve process
+						substitution?</span
+					><a class="toclink" href="#title-209" id="goto-title-209">000</a>
+				</li>
+				<li>
+					<span class="toc-title">how is whence different than which?</span
+					><a class="toclink" href="#title-210" id="goto-title-210">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why does my X11 forwarding attempt fail with "connect
+						/tmp/.X11-unix/X0: No such file or directory"?</span
+					><a class="toclink" href="#title-211" id="goto-title-211">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Remove all files created before a certain date</span
+					><a class="toclink" href="#title-212" id="goto-title-212">000</a>
+				</li>
+				<li>
+					<span class="toc-title">How many shells deep I am?</span
+					><a class="toclink" href="#title-213" id="goto-title-213">000</a>
+				</li>
+				<li>
+					<span class="toc-title">How do I trace library loading?</span
+					><a class="toclink" href="#title-214" id="goto-title-214">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How do I start all shell sessions in a directory other than
+						$HOME?</span
+					><a class="toclink" href="#title-215" id="goto-title-215">000</a>
+				</li>
+				<li>
+					<span class="toc-title">set tab width for less output</span
+					><a class="toclink" href="#title-216" id="goto-title-216">000</a>
+				</li>
+				<li>
+					<span class="toc-title">bash find: get directory of found file</span
+					><a class="toclink" href="#title-217" id="goto-title-217">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How create a temporary file in shell script?</span
+					><a class="toclink" href="#title-218" id="goto-title-218">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Why pipe to cat only to redirect?</span
+					><a class="toclink" href="#title-219" id="goto-title-219">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why is echo $SHELL always showing /bin/bash?</span
+					><a class="toclink" href="#title-220" id="goto-title-220">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How do I parse out just the date from 2017-03-08T19:41:26Z?</span
+					><a class="toclink" href="#title-221" id="goto-title-221">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Who decides which application receives the signal from
+						keyboard?</span
+					><a class="toclink" href="#title-222" id="goto-title-222">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Grep: unexpected results when searching for words in heading from
+						man page</span
+					><a class="toclink" href="#title-223" id="goto-title-223">000</a>
+				</li>
+				<li>
+					<span class="toc-title">How to pipe html into w3m?</span
+					><a class="toclink" href="#title-224" id="goto-title-224">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why does piping `mysql` to 'tail' change the output format?</span
+					><a class="toclink" href="#title-225" id="goto-title-225">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Bash "for" loop without a "in foo bar..." part</span
+					><a class="toclink" href="#title-226" id="goto-title-226">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What is the difference between $path and $PATH (lowercase versus
+						uppercase) with zsh?</span
+					><a class="toclink" href="#title-227" id="goto-title-227">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Delete line if next line is the same</span
+					><a class="toclink" href="#title-228" id="goto-title-228">000</a>
+				</li>
+				<li>
+					<span class="toc-title">What does kill 0 do actually?</span
+					><a class="toclink" href="#title-229" id="goto-title-229">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to terminate remotely called "tail -f" when connection is
+						closed?</span
+					><a class="toclink" href="#title-230" id="goto-title-230">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why does exporting vim as EDITOR in zsh disable keyboard
+						shortcuts?</span
+					><a class="toclink" href="#title-231" id="goto-title-231">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Bash variable substitution in a JSON string</span
+					><a class="toclink" href="#title-232" id="goto-title-232">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Bash add trailing spaces to justify string</span
+					><a class="toclink" href="#title-233" id="goto-title-233">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Moved /bin contents to /usr/bin, possible to undo?</span
+					><a class="toclink" href="#title-234" id="goto-title-234">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Does POSIX guarantee the paths to any standard utilities?</span
+					><a class="toclink" href="#title-235" id="goto-title-235">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How can I prevent the second command in a chain while keeping the
+						first one running?</span
+					><a class="toclink" href="#title-236" id="goto-title-236">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How can I change the umask for one command only?</span
+					><a class="toclink" href="#title-237" id="goto-title-237">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How can one run multiple programs in the background with single
+						command?</span
+					><a class="toclink" href="#title-238" id="goto-title-238">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How do I extract the content of quoted strings from the output of a
+						command?</span
+					><a class="toclink" href="#title-239" id="goto-title-239">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Is there a way to modify a file in-place?</span
+					><a class="toclink" href="#title-240" id="goto-title-240">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Shell: is it possible to delay a command without using
+						`sleep`?</span
+					><a class="toclink" href="#title-241" id="goto-title-241">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Escape a variable for use as content of another script</span
+					><a class="toclink" href="#title-242" id="goto-title-242">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Security implications of running perl -ne '...' *</span
+					><a class="toclink" href="#title-243" id="goto-title-243">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to make bidirectional pipe between two programs?</span
+					><a class="toclink" href="#title-244" id="goto-title-244">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How can I find which process sends data to a specific port?</span
+					><a class="toclink" href="#title-245" id="goto-title-245">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Is it recommended to use zsh instead of bash scripts?</span
+					><a class="toclink" href="#title-246" id="goto-title-246">000</a>
+				</li>
+				<li>
+					<span class="toc-title">When should I use input redirection?</span
+					><a class="toclink" href="#title-247" id="goto-title-247">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to input / start a new line in bash terminal?</span
+					><a class="toclink" href="#title-248" id="goto-title-248">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to remove blank lines from a file (including tab and
+						spaces)?</span
+					><a class="toclink" href="#title-249" id="goto-title-249">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Exclude files that have very long lines of text from grep
+						output</span
+					><a class="toclink" href="#title-250" id="goto-title-250">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Rsync Error 23: Can I tell which files were not transferred?</span
+					><a class="toclink" href="#title-251" id="goto-title-251">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How can I kill a process and be sure the PID hasn't been
+						reused</span
+					><a class="toclink" href="#title-252" id="goto-title-252">000</a>
+				</li>
+				<li>
+					<span class="toc-title">How can I pipe only stderr in zsh?</span
+					><a class="toclink" href="#title-253" id="goto-title-253">000</a>
+				</li>
+				<li>
+					<span class="toc-title">How does a shell know home(s)?</span
+					><a class="toclink" href="#title-254" id="goto-title-254">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Read a line-oriented file which may not end with a newline</span
+					><a class="toclink" href="#title-255" id="goto-title-255">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What does “Case sensitivity is a function of the Linux filesystem
+						not the Linux operating system” mean?</span
+					><a class="toclink" href="#title-256" id="goto-title-256">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What's the POSIX-compliant way to get the epoch timestamp in a
+						shell?</span
+					><a class="toclink" href="#title-257" id="goto-title-257">000</a>
+				</li>
+				<li>
+					<span class="toc-title">/dev/tcp listen instead of nc listen</span
+					><a class="toclink" href="#title-258" id="goto-title-258">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>What is the difference between virbr# and vnet#?</span
+					><a class="toclink" href="#title-259" id="goto-title-259">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Convert ls -l output format to chmod format</span
+					><a class="toclink" href="#title-260" id="goto-title-260">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Bash subshell creation with curly braces</span
+					><a class="toclink" href="#title-261" id="goto-title-261">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How can I trick a process into thinking a file doesn't exist?</span
+					><a class="toclink" href="#title-262" id="goto-title-262">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Unpack file compressed in .txz and .tar with one command</span
+					><a class="toclink" href="#title-263" id="goto-title-263">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to copy a directory recursively using hardlinks for each
+						file</span
+					><a class="toclink" href="#title-264" id="goto-title-264">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why some shells `read` builtin fail to read the whole line from
+						file in `/proc`?</span
+					><a class="toclink" href="#title-265" id="goto-title-265">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Since when do the POSIX and GNU rm not delete /?</span
+					><a class="toclink" href="#title-266" id="goto-title-266">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>In bash, how is it that a file redirected for input can be written
+						to, and can it be prevented?</span
+					><a class="toclink" href="#title-267" id="goto-title-267">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Are there security consequences from not giving printf a format to
+						use?</span
+					><a class="toclink" href="#title-268" id="goto-title-268">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>bash - can I do : find .... -exec this &amp;&amp; that?</span
+					><a class="toclink" href="#title-269" id="goto-title-269">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>zsh: How to check if an option is enabled</span
+					><a class="toclink" href="#title-270" id="goto-title-270">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Negative arguments to head / tail</span
+					><a class="toclink" href="#title-271" id="goto-title-271">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to find total filesize grouped by extension</span
+					><a class="toclink" href="#title-272" id="goto-title-272">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Who renamed a directory?</span
+					><a class="toclink" href="#title-273" id="goto-title-273">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Apply brace expansion in "reverse order"</span
+					><a class="toclink" href="#title-274" id="goto-title-274">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Split two concatenated files</span
+					><a class="toclink" href="#title-275" id="goto-title-275">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How can we know who's at the other end of a pseudo-terminal
+						device?</span
+					><a class="toclink" href="#title-276" id="goto-title-276">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Change working directory</span
+					><a class="toclink" href="#title-277" id="goto-title-277">000</a>
+				</li>
+				<li>
+					<span class="toc-title">bash variables in for loop range</span
+					><a class="toclink" href="#title-278" id="goto-title-278">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Run two commands on one argument (without scripting)</span
+					><a class="toclink" href="#title-279" id="goto-title-279">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Is it possible to use multiple here-docs in bash?</span
+					><a class="toclink" href="#title-280" id="goto-title-280">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How can I find the common name for a particular glyph?</span
+					><a class="toclink" href="#title-281" id="goto-title-281">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Ask for a password in POSIX-compliant shell?</span
+					><a class="toclink" href="#title-282" id="goto-title-282">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Should I care about unnecessary cats?</span
+					><a class="toclink" href="#title-283" id="goto-title-283">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Process not closing when stdin is closed</span
+					><a class="toclink" href="#title-284" id="goto-title-284">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Test for function's existence that can work on both bash and
+						zsh?</span
+					><a class="toclink" href="#title-285" id="goto-title-285">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>find and echo file names only with pattern found</span
+					><a class="toclink" href="#title-286" id="goto-title-286">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Grep slow to exit after finding match?</span
+					><a class="toclink" href="#title-287" id="goto-title-287">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Understanding Bash's Read-a-File Command Substitution</span
+					><a class="toclink" href="#title-288" id="goto-title-288">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to partially extract zipped huge plain text file?</span
+					><a class="toclink" href="#title-289" id="goto-title-289">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why does chmod +w not give write permission to other(o)</span
+					><a class="toclink" href="#title-290" id="goto-title-290">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Bash negation of -a (file exists) does not change result, whereas
+						for ! -e changes result</span
+					><a class="toclink" href="#title-291" id="goto-title-291">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Significance of `[...] &amp; wait $!`</span
+					><a class="toclink" href="#title-292" id="goto-title-292">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to safely use gawk's -i option or @include directive?</span
+					><a class="toclink" href="#title-293" id="goto-title-293">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to execute an arbitrary simple command over ssh without knowing
+						the login shell of the remote user?</span
+					><a class="toclink" href="#title-294" id="goto-title-294">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to safely use gawk's -i option or @include directive?</span
+					><a class="toclink" href="#title-295" id="goto-title-295">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Can sed remove successive newline characters?</span
+					><a class="toclink" href="#title-296" id="goto-title-296">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to make zsh completion show the first guess on the same line
+						(like fish's)?</span
+					><a class="toclink" href="#title-297" id="goto-title-297">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why do hard links seem to take the same space as the
+						originals?</span
+					><a class="toclink" href="#title-298" id="goto-title-298">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How would I detect a non-login shell? (In Zsh)</span
+					><a class="toclink" href="#title-299" id="goto-title-299">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Difference between UUID from blkid and mdadm?</span
+					><a class="toclink" href="#title-300" id="goto-title-300">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why doesn't the tilde (~) expand inside double quotes?</span
+					><a class="toclink" href="#title-301" id="goto-title-301">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Bracket expression (without ranges) matching unexpected character
+						in bash</span
+					><a class="toclink" href="#title-302" id="goto-title-302">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Tell socat to listen to connections from a single IP address</span
+					><a class="toclink" href="#title-303" id="goto-title-303">000</a>
+				</li>
+				<li>
+					<span class="toc-title">Replace string after last dot in bash</span
+					><a class="toclink" href="#title-304" id="goto-title-304">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why did find with -delete erase the files in my /save/ directory
+						when find without delete was not able to locate them?</span
+					><a class="toclink" href="#title-305" id="goto-title-305">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to restore the value of shell options like `set -x`?</span
+					><a class="toclink" href="#title-306" id="goto-title-306">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Suppress the bash execution trace (set -x) from the outside of the
+						script</span
+					><a class="toclink" href="#title-307" id="goto-title-307">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Is for(( ... )){ ... ;} a valid shell syntax? In which
+						shells?</span
+					><a class="toclink" href="#title-308" id="goto-title-308">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>How to use associative arrays safely inside arithmetic
+						expressions?</span
+					><a class="toclink" href="#title-309" id="goto-title-309">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Why is echo -e behaving weird in a Makefile?</span
+					><a class="toclink" href="#title-310" id="goto-title-310">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>find . -print0 | xargs -0 cmd vs find . -exec cmd {} +</span
+					><a class="toclink" href="#title-311" id="goto-title-311">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Splitting string by the first occurrence of a delimiter</span
+					><a class="toclink" href="#title-312" id="goto-title-312">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>GNU/Linux: overlay block device / stackable block device</span
+					><a class="toclink" href="#title-313" id="goto-title-313">000</a>
+				</li>
+				<li>
+					<span class="toc-title"
+						>Reading from /dev/random does not produce any data</span
+					><a class="toclink" href="#title-314" id="goto-title-314">000</a>
+				</li>
+				<li>
+					<span class="toc-title">List all binaries from $PATH</span
+					><a class="toclink" href="#title-315" id="goto-title-315">000</a>
+				</li>
+			</ul>
+		</section>
+	</body>
+</html>

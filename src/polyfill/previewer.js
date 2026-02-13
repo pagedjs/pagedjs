@@ -198,7 +198,6 @@ class Previewer {
 	 * @returns {Promise<Object>} - Resolves to the rendered flow object with performance and size metadata.
 	 */
 	async preview(content, stylesheets, renderTo) {
-		}
 		await this.hooks.beforePreview.trigger(content, renderTo);
 
 		// the content will be removed from the content

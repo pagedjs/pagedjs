@@ -1102,9 +1102,10 @@ class AtPage extends Handler {
 				enter: (node, item, list) => {
 					if (node.property !== "content") {
 						list.remove(item);
+						return;
 					}
 
-					else if (
+					if (
 						node.value.children &&
 						node.value.children.first().name === "none"
 					) {

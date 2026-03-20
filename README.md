@@ -255,6 +255,6 @@ docker run -it --security-opt 'seccomp=seccomp.json' pagedmedia/pagedjs npm test
 ### Core team
 The core team behind paged.js includes [Adam Hyde](https://adamhyde.net), [Julie Blanc](http://julie-blanc.fr/), [Fred Chasen](http://fchasen.com/) & Julien Taquet.
 
-## Licence
+## License
 
 MIT License (MIT), which you can read [here](https://gitlab.pagedmedia.org/tools/pagedjs/blob/master/LICENSE.md)

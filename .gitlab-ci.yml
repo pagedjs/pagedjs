@@ -7,7 +7,7 @@ npm-test:
   before_script:
     - docker build -t pagedmedia/pagedjs .
   script:
-    - docker run --security-opt 'seccomp=seccomp.json' pagedmedia/pagedjs npm test
+    - docker run --security-opt 'seccomp=docker/seccomp.json' pagedmedia/pagedjs npm test
 
 # This job requires to setup GitLab the following way:
 # 1. On https://www.npmjs.com/settings/tokens/create

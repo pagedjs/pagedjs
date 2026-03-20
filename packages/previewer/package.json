@@ -1,0 +1,22 @@
+{
+  "name": "@pagedjs/previewer",
+  "version": "0.2.0",
+  "description": "Preview interface and handler modules for pagedjs",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.js",
+    "./previewer": "./src/previewer.js",
+    "./handlers": "./src/handlers.js"
+  },
+  "dependencies": {
+    "@pagedjs/utils": "^0.2.0",
+    "@pagedjs/chunker": "^0.2.0",
+    "@pagedjs/polisher": "^0.2.0",
+    "clear-cut": "^2.0.2",
+    "css-tree": "^1.1.3",
+    "event-emitter": "^0.3.5"
+  },
+  "files": ["src", "modules"]
+}

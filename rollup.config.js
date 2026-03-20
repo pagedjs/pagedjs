@@ -39,7 +39,7 @@ export default [
 	},
 
 	{
-		input: "./src/polyfill/polyfill.js",
+		input: "./src/polyfill.js",
 		output: {
 			name: "PagedPolyfill",
 			file: "./dist/paged.polyfill.js",

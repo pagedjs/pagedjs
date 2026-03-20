@@ -1,0 +1,24 @@
+{
+  "name": "@pagedjs/chunker",
+  "version": "0.2.0",
+  "description": "Page chunking and pagination engine for pagedjs",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.js",
+    "./layout": "./src/layout.js",
+    "./page": "./src/page.js",
+    "./parser": "./src/parser.js",
+    "./breaktoken": "./src/breaktoken.js",
+    "./renderresult": "./src/renderresult.js"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@pagedjs/utils": "^0.2.0",
+    "event-emitter": "^0.3.5"
+  },
+  "files": ["src"]
+}

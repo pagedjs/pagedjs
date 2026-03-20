@@ -4,7 +4,6 @@ describe("style-order-simple", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("styles/simple.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -15,7 +14,7 @@ describe("style-order-simple", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("styles/simple.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 		});
@@ -26,7 +25,6 @@ describe("style-order-consecutive", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("styles/consecutive.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -37,7 +35,7 @@ describe("style-order-consecutive", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("styles/consecutive.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 		});
@@ -48,7 +46,6 @@ describe("style-order-scattered", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("styles/scattered.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -59,7 +56,7 @@ describe("style-order-scattered", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("styles/scattered.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 		});

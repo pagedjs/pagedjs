@@ -4,7 +4,6 @@ describe("combined", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("page-rules/combined/combined.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -22,7 +21,7 @@ describe("combined", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("page-rules/combined/combined.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 		});

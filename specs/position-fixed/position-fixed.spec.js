@@ -4,7 +4,6 @@ describe("element with position: fixed", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("position-fixed/position-fixed.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -55,7 +54,7 @@ describe("element with position: fixed", () => {
 	});
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("position-fixed/position-fixed.html");
 
 			expect(pdf).toMatchPDFSnapshot(2);
 		});

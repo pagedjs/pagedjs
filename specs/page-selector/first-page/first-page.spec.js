@@ -4,7 +4,6 @@ describe("first-page", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("page-selector/first-page/first-page.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -31,7 +30,7 @@ describe("first-page", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("page-selector/first-page/first-page.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(2);

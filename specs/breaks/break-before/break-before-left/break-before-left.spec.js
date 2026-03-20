@@ -4,7 +4,6 @@ describe("break-before-left", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("breaks/break-before/break-before-left/break-before-left.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -66,7 +65,7 @@ describe("break-before-left", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("breaks/break-before/break-before-left/break-before-left.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(2);

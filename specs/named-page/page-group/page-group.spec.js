@@ -4,7 +4,6 @@ describe("page-group", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("named-page/page-group/page-group.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -56,7 +55,7 @@ describe("page-group", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("named-page/page-group/page-group.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(1);

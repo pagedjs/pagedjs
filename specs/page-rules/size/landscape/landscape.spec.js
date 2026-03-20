@@ -4,7 +4,6 @@ describe("landscape", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("page-rules/size/landscape/landscape.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -39,7 +38,7 @@ describe("landscape", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("page-rules/size/landscape/landscape.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 		});

@@ -4,7 +4,6 @@ describe("target-text", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("target/target-text/target-text.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -39,7 +38,7 @@ describe("target-text", () => {
 	});
 	// if (!DEBUG) {
 	// 	it('should create a pdf', async () => {
-	// 		let pdf = await page.pdf(PDF_SETTINGS);
+	// 		let pdf = await generatePdf("target/target-text/target-text.html");
 	// 		// no need to check the pdf with those test
 	// 		// expect(pdf).toMatchPDFSnapshot(1);
 	// 	})

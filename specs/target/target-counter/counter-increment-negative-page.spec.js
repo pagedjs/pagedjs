@@ -4,7 +4,6 @@ describe("counter-increment-negative-page", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("target/target-counter/counter-increment-negative-page.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -20,7 +19,7 @@ describe("counter-increment-negative-page", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			const pdf = await page.pdf(PDF_SETTINGS);
+			const pdf = await generatePdf("target/target-counter/counter-increment-negative-page.html");
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(2);
 			expect(pdf).toMatchPDFSnapshot(4);

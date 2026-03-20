@@ -4,7 +4,6 @@ describe("following-selector", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("following-selector/following-selector.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -25,7 +24,7 @@ describe("following-selector", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("following-selector/following-selector.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(2);

@@ -4,7 +4,6 @@ describe("padding-0", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("page-rules/size/padding/padding-0.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -20,7 +19,7 @@ describe("padding-0", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("page-rules/size/padding/padding-0.html");
 			expect(pdf).toMatchPDFSnapshot(1);
 		});
 	}

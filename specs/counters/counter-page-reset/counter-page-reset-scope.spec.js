@@ -4,7 +4,6 @@ describe("counter-page-reset-scope", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("counters/counter-page-reset/counter-page-reset-scope.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -15,7 +14,7 @@ describe("counter-page-reset-scope", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("counters/counter-page-reset/counter-page-reset-scope.html");
 
 			expect(pdf).toMatchPDFSnapshot(3);
 			expect(pdf).toMatchPDFSnapshot(4);

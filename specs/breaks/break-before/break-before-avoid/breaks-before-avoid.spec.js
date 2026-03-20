@@ -4,7 +4,6 @@ describe("break-before-avoid", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("breaks/break-before/break-before-avoid/break-before-avoid.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -29,7 +28,7 @@ describe("break-before-avoid", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("breaks/break-before/break-before-avoid/break-before-avoid.html");
 
 			expect(pdf).toMatchPDFSnapshot(3);
 		});

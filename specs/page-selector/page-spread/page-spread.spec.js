@@ -4,7 +4,6 @@ describe("page-spread", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("page-selector/page-spread/page-spread.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -41,7 +40,7 @@ describe("page-spread", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("page-selector/page-spread/page-spread.html");
 
 			expect(pdf).toMatchPDFSnapshot(3);
 		});

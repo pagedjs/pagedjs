@@ -6,7 +6,6 @@ describe("whitespaces", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("whitespaces/whitespaces.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {

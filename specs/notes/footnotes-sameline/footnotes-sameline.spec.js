@@ -4,7 +4,6 @@ describe("footnotes-sameline", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("notes/footnotes-sameline/footnotes-sameline.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -34,7 +33,7 @@ describe("footnotes-sameline", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("notes/footnotes-sameline/footnotes-sameline.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(2);

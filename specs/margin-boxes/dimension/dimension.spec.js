@@ -4,7 +4,6 @@ describe("margin-box-dimension", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("margin-boxes/dimension/dimension.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -15,8 +14,8 @@ describe("margin-box-dimension", () => {
 
 
 	if (!DEBUG) {
-		xit("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+		it.skip("should create a pdf", async () => {
+			let pdf = await generatePdf("margin-boxes/dimension/dimension.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 		});

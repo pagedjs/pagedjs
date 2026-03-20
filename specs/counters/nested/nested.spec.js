@@ -4,7 +4,6 @@ describe("counter-pages", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("counters/nested/nested.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -45,7 +44,7 @@ describe("counter-pages", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("counters/nested/nested.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(8);

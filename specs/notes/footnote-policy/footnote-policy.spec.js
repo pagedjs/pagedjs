@@ -4,7 +4,6 @@ describe("footnote-policy", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("notes/footnote-policy/footnote-policy.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -54,7 +53,7 @@ describe("footnote-policy", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("notes/footnote-policy/footnote-policy.html");
 
 			expect(pdf).toMatchPDFSnapshot(2);
 			expect(pdf).toMatchPDFSnapshot(3);

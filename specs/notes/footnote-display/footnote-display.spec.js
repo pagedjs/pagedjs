@@ -4,7 +4,6 @@ describe("footnote-display", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("notes/footnote-display/footnote-display.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -24,7 +23,7 @@ describe("footnote-display", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("notes/footnote-display/footnote-display.html");
 
 			expect(pdf).toMatchPDFSnapshot(2);
 			expect(pdf).toMatchPDFSnapshot(3);

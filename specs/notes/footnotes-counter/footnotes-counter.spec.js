@@ -4,7 +4,6 @@ describe("footnotes counter content", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("notes/footnotes-counter/footnotes-counter.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -24,7 +23,7 @@ describe("footnotes counter content", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("notes/footnotes-counter/footnotes-counter.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 		});

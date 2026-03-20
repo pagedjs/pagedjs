@@ -4,7 +4,6 @@ describe("break-before-container-propagation", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("breaks/child-parent-propagation/break-before-container-propagation.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -23,7 +22,7 @@ describe("break-before-container-propagation", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("breaks/child-parent-propagation/break-before-container-propagation.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(2);

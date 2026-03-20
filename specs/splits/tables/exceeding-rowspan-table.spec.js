@@ -4,7 +4,6 @@ describe("rowspan uneven table", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("splits/tables/exceeding-rowspan-table.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -15,7 +14,7 @@ describe("rowspan uneven table", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("splits/tables/exceeding-rowspan-table.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(2);

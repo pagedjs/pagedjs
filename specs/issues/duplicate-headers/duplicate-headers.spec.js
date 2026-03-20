@@ -4,7 +4,6 @@ describe("duplicate-headers", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("issues/duplicate-headers/duplicate-headers.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -41,7 +40,7 @@ describe("duplicate-headers", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("issues/duplicate-headers/duplicate-headers.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(3);

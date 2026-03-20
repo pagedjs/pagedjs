@@ -4,7 +4,6 @@ describe("default", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("string/string-default.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -30,7 +29,6 @@ describe("first", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("string/string-first.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -56,7 +54,6 @@ describe("last", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("string/string-last.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -82,7 +79,6 @@ describe("first-except", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("string/string-first-except.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -108,7 +104,6 @@ describe("string-start", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("string/string-start.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -141,7 +136,6 @@ describe("string-multiple", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("string/string-multiple.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {

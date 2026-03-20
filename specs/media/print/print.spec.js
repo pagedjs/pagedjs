@@ -4,7 +4,6 @@ describe("print-media", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("media/print/print.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -20,7 +19,7 @@ describe("print-media", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("media/print/print.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 		});

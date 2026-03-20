@@ -4,7 +4,6 @@ describe("counter-page", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("counters/counter-page/counter-page.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -14,7 +13,7 @@ describe("counter-page", () => {
 	});
 
 	// Unable to read counter values
-	xit("should have a page number for all pages", async () => {
+	it.skip("should have a page number for all pages", async () => {
 		let text1 = await page.$eval("[data-page-number='1'] .pagedjs_margin-bottom-left > .pagedjs_margin-content", (r) => window.getComputedStyle(r, "::after").content);
 		expect(text1).toContain("1");
 
@@ -36,7 +35,7 @@ describe("counter-page", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("counters/counter-page/counter-page.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(6);

@@ -4,7 +4,6 @@ describe("text-align-last", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("splits/text-align-last/text-align-last.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -50,7 +49,7 @@ describe("text-align-last", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("splits/text-align-last/text-align-last.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(2);

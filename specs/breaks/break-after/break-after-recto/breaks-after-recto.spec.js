@@ -4,7 +4,6 @@ describe("break-after-recto", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("breaks/break-after/break-after-recto/break-after-recto.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -95,7 +94,7 @@ describe("break-after-recto", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("breaks/break-after/break-after-recto/break-after-recto.html");
 
 			expect(pdf).toMatchPDFSnapshot(2);
 			expect(pdf).toMatchPDFSnapshot(3);

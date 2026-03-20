@@ -4,7 +4,6 @@ describe("break-inside-avoid-table-cell", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("breaks/break-inside/break-inside-avoid/break-inside-avoid-table-cell.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -23,7 +22,7 @@ describe("break-inside-avoid-table-cell", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("breaks/break-inside/break-inside-avoid/break-inside-avoid-table-cell.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(2);

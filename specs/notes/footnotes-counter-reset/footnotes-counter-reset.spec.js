@@ -4,7 +4,6 @@ describe("footnotes-counter-reset", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("notes/footnotes-counter-reset/footnotes-counter-reset.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -24,7 +23,7 @@ describe("footnotes-counter-reset", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("notes/footnotes-counter-reset/footnotes-counter-reset.html");
 
 			expect(pdf).toMatchPDFSnapshot(2);
 			expect(pdf).toMatchPDFSnapshot(4);

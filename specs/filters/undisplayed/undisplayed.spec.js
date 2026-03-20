@@ -5,7 +5,6 @@ describe("undisplayed", () => {
 
 	beforeAll(async () => {
 		page = await loadPage("filters/undisplayed/undisplayed.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {

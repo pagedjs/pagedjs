@@ -4,7 +4,6 @@ describe("infinite-loop", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("infinite-loop/infinite-loop.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -20,7 +19,7 @@ describe("infinite-loop", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("infinite-loop/infinite-loop.html");
 			expect(pdf).toMatchPDFSnapshot(1);
 		});
 	}

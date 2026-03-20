@@ -4,7 +4,6 @@ describe("breaks", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("breaks/breaks.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -83,7 +82,7 @@ describe("breaks", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("breaks/breaks.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(4);

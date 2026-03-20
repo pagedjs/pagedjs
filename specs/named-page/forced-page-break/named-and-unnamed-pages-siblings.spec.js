@@ -4,7 +4,6 @@ describe("named-and-unnamed-pages-siblings", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("named-page/forced-page-break/named-and-unnamed-pages-siblings.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -23,7 +22,7 @@ describe("named-and-unnamed-pages-siblings", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("named-page/forced-page-break/named-and-unnamed-pages-siblings.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(2);

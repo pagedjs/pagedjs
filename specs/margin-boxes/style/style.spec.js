@@ -4,7 +4,6 @@ describe("text-align", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("margin-boxes/style/style.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -32,7 +31,7 @@ describe("text-align", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("margin-boxes/style/style.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 		});

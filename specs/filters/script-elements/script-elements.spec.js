@@ -5,7 +5,6 @@ describe("undisplayed", () => {
 
 	beforeAll(async () => {
 		page = await loadPage("filters/script-elements/script-elements.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {

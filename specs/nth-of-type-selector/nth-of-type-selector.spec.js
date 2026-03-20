@@ -4,7 +4,6 @@ describe("nth-of-type-selector", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("nth-of-type-selector/nth-of-type-selector.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -25,7 +24,7 @@ describe("nth-of-type-selector", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("nth-of-type-selector/nth-of-type-selector.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(2);

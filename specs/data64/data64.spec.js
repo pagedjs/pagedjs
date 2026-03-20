@@ -5,7 +5,6 @@ describe("default", () => {
 
 	beforeAll(async () => {
 		page = await loadPage("data64/data64.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {

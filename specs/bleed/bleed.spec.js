@@ -4,7 +4,6 @@ describe("bleed", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("bleed/bleed.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -25,7 +24,7 @@ describe("bleed", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("bleed/bleed.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 		});

@@ -4,7 +4,6 @@ describe("length", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("page-rules/size/length/length.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -39,7 +38,7 @@ describe("length", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("page-rules/size/length/length.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 		});

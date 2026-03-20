@@ -4,7 +4,6 @@ describe("imports", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("issues/imports/imports.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -38,7 +37,7 @@ describe("imports", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("issues/imports/imports.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 		});

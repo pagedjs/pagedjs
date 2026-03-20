@@ -4,7 +4,6 @@ describe("roman-numerals", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("issues/roman-numerals/roman-numerals.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -33,7 +32,7 @@ describe("roman-numerals", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("issues/roman-numerals/roman-numerals.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(4);

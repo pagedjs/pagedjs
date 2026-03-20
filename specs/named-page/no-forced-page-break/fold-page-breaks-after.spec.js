@@ -4,7 +4,6 @@ describe("fold-page-breaks-after", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("named-page/no-forced-page-break/fold-page-breaks-after.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -23,7 +22,7 @@ describe("fold-page-breaks-after", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("named-page/no-forced-page-break/fold-page-breaks-after.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(2);

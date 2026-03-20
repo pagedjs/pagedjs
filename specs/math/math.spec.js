@@ -5,7 +5,6 @@ describe("default", () => {
 
 	beforeAll(async () => {
 		page = await loadPage("math/math.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {

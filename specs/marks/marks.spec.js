@@ -4,7 +4,6 @@ describe("marks", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("marks/marks.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -25,7 +24,7 @@ describe("marks", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("marks/marks.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 		});

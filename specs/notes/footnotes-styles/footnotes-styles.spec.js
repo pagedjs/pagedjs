@@ -4,7 +4,6 @@ describe("footnotes-styles", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("notes/footnotes-styles/footnotes-styles.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -38,7 +37,7 @@ describe("footnotes-styles", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("notes/footnotes-styles/footnotes-styles.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 		});

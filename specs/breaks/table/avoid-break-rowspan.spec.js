@@ -4,7 +4,6 @@ describe("breaks-table-avoid-break-rowspan", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("breaks/table/avoid-break-rowspan.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -15,7 +14,7 @@ describe("breaks-table-avoid-break-rowspan", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("breaks/table/avoid-break-rowspan.html");
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(2);
 		});

@@ -4,7 +4,6 @@ describe("numbering", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("splits/numbering/numbering.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -40,7 +39,7 @@ describe("numbering", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("splits/numbering/numbering.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(2);

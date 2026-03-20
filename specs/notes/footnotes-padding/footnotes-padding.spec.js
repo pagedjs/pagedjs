@@ -4,7 +4,6 @@ describe("footnotes padding", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("notes/footnotes-padding/footnotes-padding.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -30,7 +29,7 @@ describe("footnotes padding", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("notes/footnotes-padding/footnotes-padding.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 			expect(pdf).toMatchPDFSnapshot(2);

@@ -4,7 +4,6 @@ describe("vertical-align", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("margin-boxes/vertical-align/vertical-align.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -24,7 +23,7 @@ describe("vertical-align", () => {
 
 	if (!DEBUG) {
 		it("should create a pdf", async () => {
-			let pdf = await page.pdf(PDF_SETTINGS);
+			let pdf = await generatePdf("margin-boxes/vertical-align/vertical-align.html");
 
 			expect(pdf).toMatchPDFSnapshot(1);
 		});

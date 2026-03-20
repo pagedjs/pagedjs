@@ -5,7 +5,6 @@ describe("target-counter", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("target/target-counter/target-counter.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {
@@ -27,7 +26,7 @@ describe("target-counter", () => {
 
 	// if (!DEBUG) {
 	// 	it('should create a pdf', async () => {
-	// 		let pdf = await page.pdf(PDF_SETTINGS);
+	// 		let pdf = await generatePdf("target/target-counter/target-counter.html");
 
 	// 		expect(pdf).toMatchPDFSnapshot(1);
 	// 	})

@@ -4,7 +4,6 @@ describe("long table", () => {
 	let page;
 	beforeAll(async () => {
 		page = await loadPage("splits/tables/long-table.html");
-		return page.rendered;
 	}, TIMEOUT);
 
 	afterAll(async () => {

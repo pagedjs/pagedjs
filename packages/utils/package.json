@@ -1,0 +1,19 @@
+{
+  "name": "@pagedjs/utils",
+  "version": "0.2.0",
+  "description": "Shared utilities for pagedjs",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.js",
+    "./hook": "./src/hook.js",
+    "./queue": "./src/queue.js",
+    "./utils": "./src/utils.js",
+    "./css": "./src/css.js",
+    "./dom": "./src/dom.js",
+    "./request": "./src/request.js",
+    "./sizes": "./src/sizes.js"
+  },
+  "files": ["src"]
+}

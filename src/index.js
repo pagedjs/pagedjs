@@ -1,19 +1,12 @@
-import Chunker from "./chunker/chunker.js";
-import Polisher from "./polisher/polisher.js";
-import Previewer from "./polyfill/previewer.js";
-import Handler from "./modules/handler.js";
-import {
-	registeredHandlers,
-	registerHandlers,
-	initializeHandlers
-} from "./utils/handlers.js";
+import Chunker from "@pagedjs/chunker";
+import Polisher from "@pagedjs/polisher";
+import { Previewer, Handler, registerHandlers, initializeHandlers } from "@pagedjs/previewer";
 
 export {
 	Chunker,
 	Polisher,
 	Previewer,
 	Handler,
-	registeredHandlers,
 	registerHandlers,
 	initializeHandlers
 };

@@ -5,6 +5,7 @@ import Chunker from "../chunker/chunker.js";
 import Polisher from "../polisher/polisher.js";
 
 import { initializeHandlers, registerHandlers } from "../utils/handlers.js";
+import { getBaseHref } from "../utils/utils.js";
 
 /**
  * The main class responsible for preparing, chunking, styling, and rendering content into paginated previews.
@@ -142,6 +143,7 @@ class Previewer {
 			),
 		);
 		const elements = [...stylesheets, ...inlineStyles];
+		const baseHref = getBaseHref();
 
 		return elements
 			.sort((a, b) => {
@@ -153,7 +155,7 @@ class Previewer {
 			.map((element) => {
 				if (element.nodeName === "STYLE") {
 					const obj = {};
-					obj[window.location.href] = element.textContent;
+					obj[baseHref] = element.textContent;
 					element.remove();
 					return obj;
 				}

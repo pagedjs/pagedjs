@@ -1,5 +1,5 @@
 import csstree from "css-tree";
-import { UUID } from "../utils/utils.js";
+import { UUID, getBaseHref } from "../utils/utils.js";
 import Hook from "../utils/hook.js";
 
 /**
@@ -31,10 +31,13 @@ class Sheet {
 			this.hooks.afterTreeWalk = new Hook(this);
 		}
 
+		// Get the baseUrl from the Base head tag if defined
+		const baseHref = getBaseHref();
+		
 		try {
-			this.url = new URL(url, window.location.href);
+			this.url = new URL(url, baseHref);
 		} catch (e) {
-			this.url = new URL(window.location.href);
+			this.url = new URL(baseHref);
 		}
 	}
 

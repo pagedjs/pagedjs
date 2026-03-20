@@ -4,7 +4,7 @@
   },
   "globals": {
     "DEBUG": "readonly",
-    "PDF_SETTINGS": "readonly",
+    "generatePdf": "readonly",
     "loadPage": "readonly"
   }
 }

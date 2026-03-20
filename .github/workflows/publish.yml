@@ -1,0 +1,44 @@
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Publish packages
+        run: |
+          publish_if_needed() {
+            local dir=$1
+            local name version published
+            name=$(node -p "require('./$dir/package.json').name")
+            version=$(node -p "require('./$dir/package.json').version")
+            published=$(npm view "$name@$version" version 2>/dev/null || echo "")
+            if [ "$published" = "$version" ]; then
+              echo "Skipping $name@$version (already published)"
+            else
+              echo "Publishing $name@$version"
+              npm publish --provenance --access public --prefix "$dir"
+            fi
+          }
+
+          publish_if_needed .
+          publish_if_needed packages/cli
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

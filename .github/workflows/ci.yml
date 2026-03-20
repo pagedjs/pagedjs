@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t pagedjs .
+
+      - name: Run tests
+        run: >
+          docker run
+          --security-opt seccomp=docker/seccomp.json
+          pagedjs
+          npm test

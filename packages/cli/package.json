@@ -1,0 +1,37 @@
+{
+  "name": "pagedjs-cli",
+  "version": "0.4.3",
+  "description": "Command line interface for rendering HTML to PDF using Paged.js",
+  "author": "Fred Chasen",
+  "license": "MIT",
+  "homepage": "https://pagedjs.org",
+    "repository": {
+    "type": "git",
+    "url": "https://github.com/pagedjs/pagedjs.git"
+  },
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "bin": "./src/cli.js",
+  "scripts": {
+    "start": "./src/cli.js",
+    "build": "mkdir -p dist && cp ../../dist/paged.polyfill.js dist/",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "commander": "^11.1.0",
+    "express": "^4.18.2",
+    "html-entities": "^2.4.0",
+    "katex": "^0.16.9",
+    "lodash": "^4.17.21",
+    "mathjax": "^3.2.2",
+    "node-fetch": "^3.3.2",
+    "ora": "^8.0.1",
+    "pdf-lib": "1.17.1",
+    "puppeteer": "^24.0.0",
+    "replace-ext": "^2.0.0"
+  },
+  "files": ["src", "dist"]
+}

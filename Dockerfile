@@ -8,17 +8,6 @@ ENV DIRECTORY /home/pwuser/pagedjs
 # Configuration for Chrome
 ENV CONNECTION_TIMEOUT=60000
 
-# Configuration for GS4JS
-RUN echo "GS4JS_HOME=/usr/lib/$(gcc -dumpmachine)"
-
-# Install ghostscript
-RUN apt-get update && \
-		apt-get install -y build-essential make gcc g++ && \
-		apt-get -y install ghostscript && apt-get clean && \
-		apt-get install -y libgs-dev && \
-		rm -rf /var/lib/apt/lists/*
-
-
 # Update Freetype
 COPY docker-font.conf /etc/fonts/local.conf
 ENV FREETYPE_PROPERTIES="truetype:interpreter-version=35"
@@ -43,9 +32,6 @@ RUN apt-get update && \
 		apt-get install -y vim && \
 		rm -rf /var/lib/apt/lists/*
 
-#RUN npm install npm@latest -g
-RUN npm install -g node-gyp
-
 RUN mkdir -p $DIRECTORY
 
 # All running as root and as non-privileged user.
@@ -55,7 +41,6 @@ WORKDIR $DIRECTORY
 
 COPY package.json package-lock.json $DIRECTORY/
 RUN npm install
-RUN GS4JS_HOME="/usr/lib/$(gcc -dumpmachine)" npm install ghostscript4js
 
 COPY . $DIRECTORY
 

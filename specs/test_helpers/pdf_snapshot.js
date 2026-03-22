@@ -1,44 +1,27 @@
 import { toMatchImageSnapshot } from "jest-image-snapshot";
-import path from "path";
-import gs from "ghostscript4js";
-import fs from "fs";
-import { DEBUG } from "./constants.js";
+import { pdf } from "pdf-to-img";
 
-function toMatchPDFSnapshot(received, page=1) {
+async function toMatchPDFSnapshot(received, page = 1) {
+	const doc = await pdf(received, { scale: 2 });
+
+	let pageIndex = 0;
 	let pdfImage;
-	let dirname = path.dirname(this.testPath);
-	let basename = path.basename(this.testPath, ".spec.js");
-	let uuid = UUID();
-
-	let pdfPath = path.join(dirname, `./${basename}.pdf`);
-	let imagePath = path.join(dirname, `./${uuid}-${page}.png`);
-
-	fs.writeFileSync(pdfPath, received);
-
-	// create image
-	gs.executeSync(`-psconv -q -dBATCH -dNOPAUSE -dFirstPage=${page} -dLastPage=${page} -sDEVICE=pngalpha -o ${imagePath} -sDEVICE=pngalpha -r144 ${pdfPath}`);
-	// load image
-	pdfImage = fs.readFileSync(imagePath);
-	// remove output
-	if (!DEBUG) {
-		fs.rmSync(imagePath, { force: true });
+	for await (const image of doc) {
+		pageIndex++;
+		if (pageIndex === page) {
+			pdfImage = image;
+			break;
+		}
 	}
 
-	const config = {};
-
-	return toMatchImageSnapshot.apply(this, [pdfImage, config]);
-}
-
-export function UUID() {
-	var d = new Date().getTime();
-	if (typeof performance !== "undefined" && typeof performance.now === "function"){
-		d += performance.now();
+	if (!pdfImage) {
+		return {
+			pass: false,
+			message: () => `PDF does not have page ${page}`,
+		};
 	}
-	return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-		var r = (d + Math.random() * 16) % 16 | 0;
-		d = Math.floor(d / 16);
-		return (c === "x" ? r : (r & 0x3 | 0x8)).toString(16);
-	});
+
+	return toMatchImageSnapshot.apply(this, [pdfImage, {}]);
 }
 
 export default toMatchPDFSnapshot;

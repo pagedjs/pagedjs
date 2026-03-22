@@ -2,7 +2,6 @@ import { toMatchImageSnapshot } from "jest-image-snapshot";
 import path from "path";
 import gs from "ghostscript4js";
 import fs from "fs";
-import { rimrafSync } from "rimraf";
 import { DEBUG } from "./constants.js";
 
 function toMatchPDFSnapshot(received, page=1) {
@@ -22,8 +21,7 @@ function toMatchPDFSnapshot(received, page=1) {
 	pdfImage = fs.readFileSync(imagePath);
 	// remove output
 	if (!DEBUG) {
-		rimrafSync(imagePath);
-		// rimrafSync(pdfPath);
+		fs.rmSync(imagePath, { force: true });
 	}
 
 	const config = {};
@@ -34,7 +32,7 @@ function toMatchPDFSnapshot(received, page=1) {
 export function UUID() {
 	var d = new Date().getTime();
 	if (typeof performance !== "undefined" && typeof performance.now === "function"){
-		d += performance.now(); //use high-precision timer if available
+		d += performance.now();
 	}
 	return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
 		var r = (d + Math.random() * 16) % 16 | 0;

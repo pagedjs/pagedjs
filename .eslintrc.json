@@ -4,7 +4,6 @@
         "commonjs": true,
         "es6": true,
         "node": true,
-        "jest": true,
         "es2022": true
     },
     "globals": {

@@ -1,7 +1,7 @@
 import path from "path";
 import os from "os";
 
-const DIR = path.join(os.tmpdir(), "jest_puppeteer_global_setup");
+const DIR = path.join(os.tmpdir(), "vitest_playwright_global_setup");
 const WS_ENDPOINT_PATH = path.join(DIR, "wsEndpoint");
 const DEBUG = process.env.NODE_ENV === "debug";
 const PORT = 9999;

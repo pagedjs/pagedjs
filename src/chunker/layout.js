@@ -25,7 +25,7 @@ import {
 } from "../utils/dom.js";
 import BreakToken from "./breaktoken.js";
 import RenderResult from "./renderresult.js";
-import EventEmitter from "event-emitter";
+import EventEmitter from "../utils/event-emitter.js";
 import Hook from "../utils/hook.js";
 import Overflow from "./overflow.js";
 
@@ -35,8 +35,9 @@ const MAX_CHARS_PER_BREAK = 1500;
  * Layout
  * @class
  */
-class Layout {
+class Layout extends EventEmitter {
 	constructor(element, hooks, options) {
+		super();
 		this.element = element;
 
 		this.bounds = this.element.getBoundingClientRect();
@@ -1753,7 +1754,5 @@ class Layout {
 		return true;
 	}
 }
-
-EventEmitter(Layout.prototype);
 
 export default Layout;

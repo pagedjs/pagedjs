@@ -1,11 +1,10 @@
-import EventEmitter from "event-emitter";
+import EventEmitter from "../utils/event-emitter.js";
 
 /**
  * Handler class that automatically registers methods as hook callbacks
  * based on hooks provided by chunker, polisher, and caller objects.
  *
- * It also extends its prototype with event-emitter capabilities,
- * allowing instances to emit and listen to events.
+ * Extends EventEmitter, allowing instances to emit and listen to events.
  *
  * @class Handler
  *
@@ -18,8 +17,10 @@ import EventEmitter from "event-emitter";
  * @property {Object} caller - Reference to the provided caller object.
  */
 
-class Handler {
+class Handler extends EventEmitter {
 	constructor(chunker, polisher, caller) {
+		super();
+
 		// Merge all hook maps from chunker, polisher, and caller into one object.
 		// Only include hooks if the corresponding object exists.
 		let hooks = Object.assign(
@@ -47,8 +48,5 @@ class Handler {
 		}
 	}
 }
-
-// Mix event emitter methods (on, off, emit, etc.) into Handler.prototype
-EventEmitter(Handler.prototype);
 
 export default Handler;

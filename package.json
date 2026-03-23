@@ -38,7 +38,7 @@
     "specs": "npm run build && vitest run --config specs/vitest.config.js",
     "lint": "eslint src specs",
     "docker-build": "docker build -t pagedmedia/pagedjs .",
-    "docker-test": "docker build -t pagedmedia/pagedjs . && docker run -it --rm --ipc=host --user pwuser --security-opt 'seccomp=seccomp.json' -v $(pwd)/specs:/home/pwuser/pagedjs/specs pagedmedia/pagedjs npm test",
+    "docker-test": "docker build -t pagedmedia/pagedjs . && docker run -it --rm --ipc=host --user pwuser -v $(pwd)/specs:/home/pwuser/pagedjs/specs pagedmedia/pagedjs npm test",
     "docker-specs": "docker build -t pagedmedia/pagedjs . && docker run -it --rm --ipc=host -v $(pwd)/specs:/home/pwuser/pagedjs/specs pagedmedia/pagedjs npm run specs",
     "docker-update-specs": "docker build -t pagedmedia/pagedjs . && docker run -it --rm --ipc=host -v $(pwd)/specs:/home/pwuser/pagedjs/specs pagedmedia/pagedjs npm run specs -- -u"
   },

@@ -1,19 +1,15 @@
-const TIMEOUT = 10000; // Some book might take longer than this to renderer
+import { test, expect } from "../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
-describe("counter-increment-positive-page", () => {
+
+test.describe("counter-increment-positive-page", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("target/target-counter/counter-increment-positive-page.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	it("all pages should have a page increment of 2", async () => {
+
+	test("all pages should have a page increment of 2", async () => {
 		const firstPageCounterIncrement = await page.$eval("[data-page-number='1']", (element) => window.getComputedStyle(element).counterIncrement);
 		const secondPageCounterIncrement = await page.$eval("[data-page-number='2']", (element) => window.getComputedStyle(element).counterIncrement);
 		const thirdPageCounterIncrement = await page.$eval("[data-page-number='3']", (element) => window.getComputedStyle(element).counterIncrement);
@@ -25,11 +21,9 @@ describe("counter-increment-positive-page", () => {
 	});
 
 	if (!DEBUG) {
-		it("should create a pdf", async () => {
+		test("should create a pdf", async () => {
 			const pdf = await page.pdf(PDF_SETTINGS);
-			expect(pdf).toMatchPDFSnapshot(1);
-			expect(pdf).toMatchPDFSnapshot(2);
-			expect(pdf).toMatchPDFSnapshot(4);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 });

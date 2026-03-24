@@ -1,19 +1,15 @@
-const TIMEOUT = 10000;
+import { test, expect } from "../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
-describe("content-none", () => {
+
+test.describe("content-none", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("generate-content/content-none/content-none.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	it("should render 5 pages", async () => {
+
+	test("should render 5 pages", async () => {
 		let pages = await page.$$eval(".pagedjs_page", (r) => {
 			return r.length;
 		});
@@ -23,11 +19,10 @@ describe("content-none", () => {
 
 
 	if (!DEBUG) {
-		it("should create a pdf", async () => {
+		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(3);
-			expect(pdf).toMatchPDFSnapshot(4);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

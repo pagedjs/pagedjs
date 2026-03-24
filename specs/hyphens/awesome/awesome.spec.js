@@ -1,19 +1,15 @@
-const TIMEOUT = 10000;
+import { test, expect } from "../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
-describe("css is awesome", () => {
+
+test.describe("css is awesome", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("hyphens/awesome/awesome.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	xit("should render 7 pages", async () => {
+
+	test.skip("should render 7 pages", async () => {
 		let pages = await page.$$eval(".pagedjs_page", (r) => {
 			return r.length;
 		});
@@ -21,13 +17,13 @@ describe("css is awesome", () => {
 		expect(pages).toEqual(7);
 	});
 
-	xit("page 1 should have a hyphen", async () => {
+	test.skip("page 1 should have a hyphen", async () => {
 		let text = await page.$eval("[data-page-number='1']", (r) => r.textContent);
 
 		expect(text).toContain("\u2010");
 	});
 
-	xit("page 5 should NOT have a hyphen", async () => {
+	test.skip("page 5 should NOT have a hyphen", async () => {
 		let text = await page.$eval("[data-page-number='5']", (r) => r.textContent);
 
 		expect(text).not.toContain("\u2010");
@@ -35,11 +31,10 @@ describe("css is awesome", () => {
 
 
 	if (!DEBUG) {
-		xit("should create a pdf", async () => {
+		test.skip("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(1);
-			expect(pdf).toMatchPDFSnapshot(2);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

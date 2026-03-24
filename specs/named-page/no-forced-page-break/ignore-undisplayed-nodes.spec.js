@@ -1,19 +1,15 @@
-const TIMEOUT = 10000;
+import { test, expect } from "../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
-describe("ignore-undisplayed-nodes", () => {
+
+test.describe("ignore-undisplayed-nodes", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("named-page/no-forced-page-break/ignore-undisplayed-nodes.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	it("should not force a page break after an undisplayed element and render only 2 pages", async () => {
+
+	test("should not force a page break after an undisplayed element and render only 2 pages", async () => {
 		let pages = await page.$$eval(".pagedjs_page", (r) => {
 			return r.length;
 		});
@@ -22,11 +18,10 @@ describe("ignore-undisplayed-nodes", () => {
 	});
 
 	if (!DEBUG) {
-		it("should create a pdf", async () => {
+		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(1);
-			expect(pdf).toMatchPDFSnapshot(2);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 });

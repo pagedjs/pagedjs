@@ -1,19 +1,15 @@
-const TIMEOUT = 10000; // Some book might take longer than this to renderer
+import { test, expect } from "../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
-describe("blank-page", () => {
+
+test.describe("blank-page", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("page-selector/blank-page/blank-page.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	it("should have an empty class on page 6", async () => {
+
+	test("should have an empty class on page 6", async () => {
 		let chapter = await page.$eval("[data-page-number='4']", (r) => {
 			return r.classList.contains("pagedjs_blank_page");
 		});
@@ -21,7 +17,7 @@ describe("blank-page", () => {
 		expect(chapter).toBe(true);
 	});
 
-	it("should not give page 1 an empty class", async () => {
+	test("should not give page 1 an empty class", async () => {
 		let chapter = await page.$eval("[data-page-number='1']", (r) => {
 			return r.classList.contains("pagedjs_blank_page");
 		});
@@ -30,11 +26,10 @@ describe("blank-page", () => {
 	});
 
 	if (!DEBUG) {
-		it("should create a pdf", async () => {
+		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(1);
-			expect(pdf).toMatchPDFSnapshot(6);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

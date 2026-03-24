@@ -1,4 +1,4 @@
-import EventEmitter from "event-emitter";
+import EventEmitter from "../utils/event-emitter.js";
 
 import Hook from "../utils/hook.js";
 import Chunker from "../chunker/chunker.js";
@@ -16,12 +16,13 @@ import { initializeHandlers, registerHandlers } from "../utils/handlers.js";
  * - `size`: when page size is set
  * - `atpages`: when @page rules are processed
  */
-class Previewer {
+class Previewer extends EventEmitter {
 	/**
 	 * Create a new Previewer instance.
 	 * @param {Object} [options] - Optional configuration settings for rendering.
 	 */
 	constructor(options) {
+		super();
 		this.settings = options || {};
 
 		this.polisher = new Polisher(false);
@@ -206,8 +207,5 @@ class Previewer {
 		return flow;
 	}
 }
-
-// Add event emitter behavior to the Previewer prototype
-EventEmitter(Previewer.prototype);
 
 export default Previewer;

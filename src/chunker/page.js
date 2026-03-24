@@ -1,5 +1,5 @@
 import Layout from "./layout.js";
-import EventEmitter from "event-emitter";
+import EventEmitter from "../utils/event-emitter.js";
 
 /**
  * Represents a single page in a paginated document.
@@ -7,7 +7,7 @@ import EventEmitter from "event-emitter";
  *
  * @class
  */
-class Page {
+class Page extends EventEmitter {
 	/**
 	 * Creates an instance of Page.
 	 *
@@ -18,6 +18,7 @@ class Page {
 	 * @param {Object} options - Additional layout or rendering options.
 	 */
 	constructor(pagesArea, pageTemplate, blank, hooks, options) {
+		super();
 		this.pagesArea = pagesArea;
 		this.pageTemplate = pageTemplate;
 		this.blank = blank;
@@ -377,8 +378,5 @@ class Page {
 		this.wrapper = undefined;
 	}
 }
-
-// Add event emitter capabilities
-EventEmitter(Page.prototype);
 
 export default Page;

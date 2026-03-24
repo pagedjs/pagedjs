@@ -1,28 +1,24 @@
-const TIMEOUT = 10000; // Some book might take longer than this to renderer
+import { test, expect } from "../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
-describe("print-media", () => {
+
+test.describe("print-media", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("media/print/print.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	it("should render green text", async () => {
+
+	test("should render green text", async () => {
 		let textColor = await page.$eval("h1", (h1) => window.getComputedStyle(h1).color);
 		expect(textColor).toContain("rgb(0, 128, 0)"); // green
 	});
 
 	if (!DEBUG) {
-		it("should create a pdf", async () => {
+		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(1);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

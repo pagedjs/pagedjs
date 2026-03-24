@@ -1,20 +1,16 @@
-const TIMEOUT = 10000; // Some book might take longer than this to renderer
+import { test, expect } from "../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
-describe("counter-page", () => {
+
+test.describe("counter-page", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("counters/counter-page/counter-page.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
+
 	// Unable to read counter values
-	xit("should have a page number for all pages", async () => {
+	test.skip("should have a page number for all pages", async () => {
 		let text1 = await page.$eval("[data-page-number='1'] .pagedjs_margin-bottom-left > .pagedjs_margin-content", (r) => window.getComputedStyle(r, "::after").content);
 		expect(text1).toContain("1");
 
@@ -35,11 +31,10 @@ describe("counter-page", () => {
 	});
 
 	if (!DEBUG) {
-		it("should create a pdf", async () => {
+		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(1);
-			expect(pdf).toMatchPDFSnapshot(6);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

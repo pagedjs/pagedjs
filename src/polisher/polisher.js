@@ -53,7 +53,7 @@ class Polisher {
 
 	/**
 	 * Adds and processes one or more CSS sources (URLs or inline CSS).
-	 * @param {...(string|Object<string, string>)} sources - URLs or object maps of URLs to CSS strings.
+	 * @param {...(string|string[]|Object<string, string>)} sources - URLs or object maps of URLs to CSS strings.
 	 * @returns {Promise<string>} - The final processed CSS text.
 	 *
 	 *

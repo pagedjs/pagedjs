@@ -68,6 +68,8 @@ class Polisher {
 		let fetched = [];
 		let urls = [];
 
+		console.log(sources);
+
 		// if the css is a string, just use the string
 		// but don’t assume it’s a url, it can be other things
 		if (typeof sources == "string") {
@@ -191,7 +193,28 @@ class Polisher {
 	 * check if the string is a url for a css file
 	 */
 	isCssUrl(string) {
-		return /\.css(\?|#|$)/i.test(string);
+		// test if the string  ends with css
+		if (/\.css(\?|#|$)/i.test(string)) return true;
+
+		// test if the string looks like a url
+		if (this.isURL(string)) return true;
+
+		// test if the string looks like a filepath
+		if (this.isFilePath(string)) return true;
+		return false;
+	}
+
+	isURL(str) {
+		try {
+			new URL(str);
+			return true;
+		} catch {
+			return false;
+		}
+	}
+
+	isFilePath(str) {
+		return /^(\/|\.\/|\.\.\/|[a-zA-Z]:\\)/.test(str);
 	}
 }
 

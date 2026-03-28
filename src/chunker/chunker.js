@@ -294,6 +294,10 @@ class Chunker {
 			rendered = await this.render(parsed, this.breakToken);
 		}
 
+		if (rendered && rendered.value instanceof Error) {
+			throw rendered.value;
+		}
+
 		this.rendered = true;
 		this.pagesArea.style.setProperty("--pagedjs-page-count", this.total);
 

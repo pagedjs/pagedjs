@@ -157,6 +157,11 @@ class Page {
 			breakToken,
 			prevPage,
 		);
+
+		if (renderResult && renderResult.error) {
+			throw renderResult.error;
+		}
+
 		let newBreakToken = renderResult.breakToken;
 
 		if (breakToken && newBreakToken && breakToken.equals(newBreakToken)) {
@@ -188,6 +193,11 @@ class Page {
 			contents,
 			breakToken,
 		);
+
+		if (renderResult && renderResult.error) {
+			throw renderResult.error;
+		}
+
 		let newBreakToken = renderResult.breakToken;
 
 		this.endToken = newBreakToken;

@@ -9,25 +9,22 @@
 			import { Previewer } from "../../dist/paged.esm.js";
 
 			let paged = new Previewer();
+
 			let flow = paged
 				.preview(
 					document.querySelector("#content").innerHTML,
-					["./css/main"],
+					[
+						"./css/main",
+						"css/test.css",
+						"@page{size: 210mm 297mm;}",
+						{ url: "./css/chaussette.css" },
+						{ css: "p{color:orange;}" },
+					],
 					document.querySelector("#ex1"),
 				)
 				.then((flow) => {
 					console.log("Rendered", flow.total, "pages.");
 				});
-
-			// let flowAAgain = paged
-			// 	.preview(
-			// 		document.querySelector("#content").innerHTML,
-			// 		["./css/main.css"],
-			// 		document.querySelector("#ex2"),
-			// 	)
-			// 	.then((flow) => {
-			// 		console.log("Rendered", flow.total, "pages.");
-			// 	});
 		</script>
 	</head>
 	<body>

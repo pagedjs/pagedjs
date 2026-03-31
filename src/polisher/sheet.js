@@ -208,6 +208,10 @@ class Sheet {
 	 * @param {Object} ast - CSS AST.
 	 */
 	replaceUrls(ast) {
+		if (!URL.canParse("", this.url)) {
+			// skip replacing urls if this.url is invalid as a base url
+			return;
+		}
 		csstree.walk(ast, {
 			visit: "Url",
 			enter: (node) => {

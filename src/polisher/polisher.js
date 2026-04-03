@@ -207,18 +207,23 @@ class Polisher {
 		};
 
 		const process = (source) => {
+			// if the source is a string, check if it’s a url or assume it’s css
 			if (typeof source == "string") {
 				if (this.isCssUrl(source)) {
 					addUrl(source);
 				} else {
 					add(undefined, source);
 				}
+				//if it’s an object,
 			} else if (source && typeof source == "object") {
+				// check if it has `{url: value}` and parse that url
 				if (source.url) {
 					addUrl(source.url);
+					// check if it has `{css: value}`
 				} else if (source.css) {
 					add(source.url, source.css);
 				} else {
+					// else assume that the object is `{id: css}` [for legacy purpose]
 					for (const key in source) {
 						const value = source[key];
 						if (this.isCssUrl(key)) {

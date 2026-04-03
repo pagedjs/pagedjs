@@ -4,6 +4,8 @@ import json from "@rollup/plugin-json";
 import serve from "rollup-plugin-serve";
 import livereload from "rollup-plugin-livereload";
 
+import pkg from "./package.json" with { type: "json" };
+
 const plugins = [
 	nodeResolve({
 		extensions: [".cjs", ".mjs", ".js"],
@@ -29,10 +31,20 @@ export default [
 	{
 		input: "./src/polyfill/polyfill.js",
 		output: {
-			sourcemap: true,
 			name: "PagedPolyfill",
 			file: "./dist/paged.polyfill.js",
 			format: "umd",
+			sourcemap: "true",
+		},
+		plugins: plugins,
+	},
+	{
+		input: pkg.main,
+		output: {
+			name: "PagedModule",
+			file: "./dist/paged.esm.js",
+			format: "es",
+			sourcemap: "true",
 		},
 		plugins: plugins,
 	},

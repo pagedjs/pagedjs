@@ -53,38 +53,33 @@ class Polisher {
 
 	/**
 	 * Adds and processes one or more CSS sources (URLs or inline CSS).
-	 * @param {...(string|Object<string, string>)} sources - URLs or object maps of URLs to CSS strings.
-	 * @returns {Promise<string>} - The final processed CSS text.
+	 * @param {Array<string | { url: string } | { css: string }>} styles
+	 *   List of styles to apply. Each item can be:
+	 *   - A string (CSS file path or raw CSS)
+	 *   - An object with a `url` property (external stylesheet)
+	 *   - An object with a `css` property (inline CSS)
+	 * those are possible styles setup:
+	 *   let style = "./css/default.css";
+	 *   let style = `{css: "@page{size: a3}"`
+	 *   let style = `{url: "./modules/chow.css"}`
+	 *   let style = "body { color: red; } @page {size: 200mm 200mm}";
+	 *   let style = [ "h1{text-decoration: underline;}", "./css/default.css", { nothing: "body { color: red; } @page {size: 200mm 200mm}" }, { z: "h1{color:green}" } ];
+	 *
 	 */
-	async add(...sources) {
-		let fetched = [];
-		let urls = [];
 
-		for (let source of sources) {
-			let f;
+	async add(sources) {
+		const inputs = this.normalizeCssSources(sources);
 
-			if (typeof source === "object") {
-				for (let url in source) {
-					let css = source[url];
-					urls.push(url);
-					f = Promise.resolve(css);
-				}
-			} else {
-				urls.push(source);
-				f = request(source).then((response) => response.text());
-			}
+		const originals = await Promise.all(inputs.map((input) => input.content));
 
-			fetched.push(f);
-		}
+		const results = await Promise.all(
+			originals.map((content, i) =>
+				this.convertViaSheet(content, inputs[i].url),
+			),
+		);
 
-		return await Promise.all(fetched).then(async (originals) => {
-			let text = "";
-			for (let index = 0; index < originals.length; index++) {
-				text = await this.convertViaSheet(originals[index], urls[index]);
-				this.insert(text);
-			}
-			return text;
-		});
+		results.forEach((text) => this.insert(text));
+		return results;
 	}
 
 	/**
@@ -100,9 +95,25 @@ class Polisher {
 
 		// Handle @imported styles recursively
 		for (let url of sheet.imported) {
-			let str = await request(url).then((response) => response.text());
-			let text = await this.convertViaSheet(str, url);
-			this.insert(text);
+			try {
+				const response = await request(url, {
+					headers: { Accept: "text/css" },
+				});
+
+				if (!response.ok) {
+					if (response.status === 404) {
+						console.warn("couldn’t fetch:", url, "error 404");
+						continue;
+					}
+					throw new Error(`HTTP ${response.status}`);
+				}
+
+				const str = await response.text();
+				const text = await this.convertViaSheet(str, url);
+				this.insert(text);
+			} catch (err) {
+				console.error(`Failed loading import: ${url}`, err);
+			}
 		}
 
 		this.sheets.push(sheet);
@@ -144,6 +155,98 @@ class Polisher {
 			s.remove();
 		});
 		this.sheets = [];
+	}
+
+	/**
+	 * check if the string is a url for a css file
+	 */
+	isCssUrl(string) {
+		// test if the string  ends with css
+		if (/\.css(\?|#|$)/i.test(string)) return true;
+
+		// test if the string looks like a url
+		if (this.isURL(string)) return true;
+
+		// test if the string looks like a filepath
+		if (this.isFilePath(string)) return true;
+		return false;
+	}
+
+	isURL(str) {
+		try {
+			new URL(str);
+			return true;
+		} catch {
+			return false;
+		}
+	}
+
+	isFilePath(str) {
+		return /^(\/|\.\/|\.\.\/|[a-zA-Z]:\\)/.test(str);
+	}
+
+	normalizeCssSources(sources) {
+		const list = [];
+
+		const add = (url, content) => {
+			list.push({ url, content: Promise.resolve(content) });
+		};
+
+		// addurl and test the url
+		const addUrl = (url) => {
+			list.push({
+				url: url,
+				content: request(url, { headers: { Accept: "text/css" } }).then((r) => {
+					if (!r.ok) {
+						console.log(`Couldn’t fetch ${url}: ${r.status}`);
+						return "";
+					}
+					return r.text();
+				}),
+			});
+		};
+
+		const process = (source) => {
+			// if the source is a string, check if it’s a url or assume it’s css
+			if (typeof source == "string") {
+				if (this.isCssUrl(source)) {
+					addUrl(source);
+				} else {
+					add(undefined, source);
+				}
+				//if it’s an object,
+			} else if (source && typeof source == "object") {
+				// check if it has `{url: value}` and parse that url
+				if (source.url) {
+					addUrl(source.url);
+					// check if it has `{css: value}`
+				} else if (source.css) {
+					add(source.url, source.css);
+				} else {
+					// else assume that the object is `{id: css}` [for legacy purpose]
+					for (const key in source) {
+						const value = source[key];
+						if (this.isCssUrl(key)) {
+							add(key, value);
+						} else {
+							add(undefined, value);
+						}
+					}
+				}
+			}
+		};
+
+		if (typeof sources === "string") {
+			process(sources);
+		} else if (sources && typeof sources[Symbol.iterator] === "function") {
+			for (const s of sources) {
+				process(s);
+			}
+		} else if (sources && typeof sources === "object") {
+			process(sources);
+		}
+
+		return list;
 	}
 }
 

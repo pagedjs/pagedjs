@@ -69,7 +69,6 @@ class Polisher {
 
 	async add(sources) {
 		const inputs = this.normalizeCssSources(sources);
-		console.log(inputs);
 
 		const originals = await Promise.all(inputs.map((input) => input.content));
 
@@ -96,11 +95,25 @@ class Polisher {
 
 		// Handle @imported styles recursively
 		for (let url of sheet.imported) {
-			let str = await request(url, {
-				headers: { Accept: "text/css" },
-			}).then((response) => response.text());
-			let text = await this.convertViaSheet(str, url);
-			this.insert(text);
+			try {
+				const response = await request(url, {
+					headers: { Accept: "text/css" },
+				});
+
+				if (!response.ok) {
+					if (response.status === 404) {
+						console.warn("couldn’t fetch:", url, "error 404");
+						continue;
+					}
+					throw new Error(`HTTP ${response.status}`);
+				}
+
+				const str = await response.text();
+				const text = await this.convertViaSheet(str, url);
+				this.insert(text);
+			} catch (err) {
+				console.error(`Failed loading import: ${url}`, err);
+			}
 		}
 
 		this.sheets.push(sheet);
@@ -179,14 +192,20 @@ class Polisher {
 			list.push({ url, content: Promise.resolve(content) });
 		};
 
+		// addurl and test the url
 		const addUrl = (url) => {
 			list.push({
 				url: url,
-				content: request(url, { headers: { Accept: "text/css" } }).then((r) =>
-					r.text(),
-				),
+				content: request(url, { headers: { Accept: "text/css" } }).then((r) => {
+					if (!r.ok) {
+						console.log(`Couldn’t fetch ${url}: ${r.status}`);
+						return "";
+					}
+					return r.text();
+				}),
 			});
 		};
+
 		const process = (source) => {
 			if (typeof source == "string") {
 				if (this.isCssUrl(source)) {

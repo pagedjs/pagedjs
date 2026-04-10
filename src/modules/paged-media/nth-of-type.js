@@ -1,6 +1,6 @@
 import Handler from "../handler.js";
 import csstree from "css-tree";
-import {UUID} from "../../utils/utils.js";
+import { UUID } from "../../utils/utils.js";
 
 class NthOfType extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -13,9 +13,8 @@ class NthOfType extends Handler {
 	onRule(ruleNode, ruleItem, rulelist) {
 		let selector = csstree.generate(ruleNode.prelude);
 		if (selector.match(/:(first|last|nth)-of-type/)) {
-			
 			let declarations = csstree.generate(ruleNode.block);
-			declarations = declarations.replace(/[{}]/g,"");
+			declarations = declarations.replace(/[{}]/g, "");
 
 			let uuid = "nth-of-type-" + UUID();
 
@@ -23,11 +22,11 @@ class NthOfType extends Handler {
 				if (!this.selectors[s]) {
 					this.selectors[s] = [uuid, declarations];
 				} else {
-					this.selectors[s][1] = `${this.selectors[s][1]};${declarations}` ;
+					this.selectors[s][1] = `${this.selectors[s][1]};${declarations}`;
 				}
 			});
 
-			rulelist.remove(ruleItem);
+			if (ruleItem && ruleItem.list === rulelist) rulelist.remove(ruleItem);
 		}
 	}
 
@@ -57,8 +56,4 @@ class NthOfType extends Handler {
 	}
 }
 
-
-
-
 export default NthOfType;
-

@@ -1,6 +1,6 @@
 import Handler from "../handler.js";
 import csstree from "css-tree";
-import {UUID} from "../../utils/utils.js";
+import { UUID } from "../../utils/utils.js";
 
 class Following extends Handler {
 	constructor(chunker, polisher, caller) {
@@ -13,21 +13,26 @@ class Following extends Handler {
 	onRule(ruleNode, ruleItem, rulelist) {
 		let selector = csstree.generate(ruleNode.prelude);
 		if (selector.match(/\+/)) {
-			
+			// why does it do this, what is the parent
+
+			if (ruleItem.head?.data.type == "comment") return;
 			let declarations = csstree.generate(ruleNode.block);
-			declarations = declarations.replace(/[{}]/g,"");
+			declarations = declarations.replace(/[{}]/g, "");
 
 			let uuid = "following-" + UUID();
 
 			selector.split(",").forEach((s) => {
 				if (!this.selectors[s]) {
+					// if this selectors is not in the selector yet, add it
 					this.selectors[s] = [uuid, declarations];
 				} else {
-					this.selectors[s][1] = `${this.selectors[s][1]};${declarations}` ;
+					// else, update the declarations
+					this.selectors[s][1] = `${this.selectors[s][1]};${declarations}`;
 				}
 			});
 
-			rulelist.remove(ruleItem);
+			// make sure the ruleitem belong to the rule list?
+			if (ruleItem && ruleItem.list === rulelist) rulelist.remove(ruleItem);
 		}
 	}
 
@@ -57,8 +62,4 @@ class Following extends Handler {
 	}
 }
 
-
-
-
 export default Following;
-

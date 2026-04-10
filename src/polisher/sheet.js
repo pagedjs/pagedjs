@@ -4,7 +4,6 @@ import Hook from "../utils/hook.js";
 
 class Sheet {
 	constructor(url, hooks) {
-
 		if (hooks) {
 			this.hooks = hooks;
 		} else {
@@ -31,8 +30,6 @@ class Sheet {
 			this.url = new URL(window.location.href);
 		}
 	}
-
-
 
 	// parse
 	async parse(text) {
@@ -68,8 +65,6 @@ class Sheet {
 		return this.ast;
 	}
 
-
-
 	insertRule(rule) {
 		let inserted = this.ast.children.appendData(rule);
 
@@ -83,7 +78,7 @@ class Sheet {
 			visit: "Url",
 			enter: (node, item, list) => {
 				this.hooks.onUrl.trigger(node, item, list);
-			}
+			},
 		});
 	}
 
@@ -107,21 +102,18 @@ class Sheet {
 					this.hooks.onImport.trigger(node, item, list);
 					this.imports(node, item, list);
 				}
-			}
+			},
 		});
 	}
-
 
 	rules(ast) {
 		csstree.walk(ast, {
 			visit: "Rule",
 			enter: (ruleNode, ruleItem, rulelist) => {
-
 				this.hooks.onRule.trigger(ruleNode, ruleItem, rulelist);
 				this.declarations(ruleNode, ruleItem, rulelist);
 				this.onSelector(ruleNode, ruleItem, rulelist);
-
-			}
+			},
 		});
 	}
 
@@ -129,19 +121,27 @@ class Sheet {
 		csstree.walk(ruleNode, {
 			visit: "Declaration",
 			enter: (declarationNode, dItem, dList) => {
-
-				this.hooks.onDeclaration.trigger(declarationNode, dItem, dList, {ruleNode, ruleItem, rulelist});
+				this.hooks.onDeclaration.trigger(declarationNode, dItem, dList, {
+					ruleNode,
+					ruleItem,
+					rulelist,
+				});
 
 				if (declarationNode.property === "content") {
 					csstree.walk(declarationNode, {
 						visit: "Function",
 						enter: (funcNode, fItem, fList) => {
-							this.hooks.onContent.trigger(funcNode, fItem, fList, {declarationNode, dItem, dList}, {ruleNode, ruleItem, rulelist});
-						}
+							this.hooks.onContent.trigger(
+								funcNode,
+								fItem,
+								fList,
+								{ declarationNode, dItem, dList },
+								{ ruleNode, ruleItem, rulelist },
+							);
+						},
 					});
 				}
-
-			}
+			},
 		});
 	}
 
@@ -150,33 +150,55 @@ class Sheet {
 		csstree.walk(ruleNode, {
 			visit: "Selector",
 			enter: (selectNode, selectItem, selectList) => {
-				this.hooks.onSelector.trigger(selectNode, selectItem, selectList, {ruleNode, ruleItem, rulelist});
+				this.hooks.onSelector.trigger(selectNode, selectItem, selectList, {
+					ruleNode,
+					ruleItem,
+					rulelist,
+				});
 
-				if (selectNode.children.forEach(node => {if (node.type === "PseudoElementSelector") {
-					csstree.walk(node, {
-						visit: "PseudoElementSelector",
-						enter: (pseudoNode, pItem, pList) => {
-							this.hooks.onPseudoSelector.trigger(pseudoNode, pItem, pList, {selectNode, selectItem, selectList}, {ruleNode, ruleItem, rulelist});
+				if (
+					selectNode.children.forEach((node) => {
+						if (node.type === "PseudoElementSelector") {
+							csstree.walk(node, {
+								visit: "PseudoElementSelector",
+								enter: (pseudoNode, pItem, pList) => {
+									this.hooks.onPseudoSelector.trigger(
+										pseudoNode,
+										pItem,
+										pList,
+										{ selectNode, selectItem, selectList },
+										{ ruleNode, ruleItem, rulelist },
+									);
+								},
+							});
 						}
-					});
-				}}));
-			}
+					})
+				);
+			},
 		});
 	}
 
 	replaceUrls(ast) {
+		if (!URL.canParse("", this.url)) {
+			// skip replacing urls if this.url is invalid as a base url
+			return;
+		}
 		csstree.walk(ast, {
 			visit: "Url",
 			enter: (node, item, list) => {
 				let content = node.value.value;
-				if ((node.value.type === "Raw" && content.startsWith("data:")) || (node.value.type === "String" && (content.startsWith("\"data:") || content.startsWith("'data:")))) {
+				if (
+					(node.value.type === "Raw" && content.startsWith("data:")) ||
+					(node.value.type === "String" &&
+						(content.startsWith('"data:') || content.startsWith("'data:")))
+				) {
 					// data-uri should not be parsed using the URL interface.
 				} else {
 					let href = content.replace(/["']/g, "");
 					let url = new URL(href, this.url);
 					node.value.value = url.toString();
 				}
-			}
+			},
 		});
 	}
 
@@ -187,17 +209,21 @@ class Sheet {
 			visit: "Selector",
 			enter: (node, item, list) => {
 				let children = node.children;
-				children.prepend(children.createItem({
-					type: "WhiteSpace",
-					value: " "
-				}));
-				children.prepend(children.createItem({
-					type: "IdSelector",
-					name: id,
-					loc: null,
-					children: null
-				}));
-			}
+				children.prepend(
+					children.createItem({
+						type: "WhiteSpace",
+						value: " ",
+					}),
+				);
+				children.prepend(
+					children.createItem({
+						type: "IdSelector",
+						name: id,
+						loc: null,
+						children: null,
+					}),
+				);
+			},
 		});
 	}
 
@@ -215,7 +241,7 @@ class Sheet {
 							let selector = csstree.generate(node.prelude);
 							namedPageSelectors[name] = {
 								name: name,
-								selector: selector
+								selector: selector,
 							};
 
 							// dList.remove(dItem);
@@ -224,11 +250,10 @@ class Sheet {
 							declaration.property = "break-before";
 							value.type = "Identifier";
 							value.name = "always";
-
 						}
-					}
+					},
 				});
-			}
+			},
 		});
 		return namedPageSelectors;
 	}
@@ -237,19 +262,18 @@ class Sheet {
 		csstree.walk(ast, {
 			visit: "Rule",
 			enter: (node, item, list) => {
-
 				csstree.walk(node, {
 					visit: "IdSelector",
 					enter: (idNode, idItem, idList) => {
 						let name = idNode.name;
 						idNode.flags = null;
 						idNode.matcher = "=";
-						idNode.name = {type: "Identifier", loc: null, name: "data-id"};
+						idNode.name = { type: "Identifier", loc: null, name: "data-id" };
 						idNode.type = "AttributeSelector";
-						idNode.value = {type: "String", loc: null, value: `"${name}"`};
-					}
+						idNode.value = { type: "String", loc: null, value: `"${name}"` };
+					},
 				});
-			}
+			},
 		});
 	}
 
@@ -263,9 +287,9 @@ class Sheet {
 					visit: "Identifier",
 					enter: (identNode, identItem, identList) => {
 						queries.push(identNode.name);
-					}
+					},
 				});
-			}
+			},
 		});
 
 		// Just basic media query support for now
@@ -275,7 +299,7 @@ class Sheet {
 				q = queries[index + 1];
 				return !(q === "screen" || q === "speech");
 			} else {
-				return (q === "screen" || q === "speech");
+				return q === "screen" || q === "speech";
 			}
 		});
 
@@ -294,7 +318,7 @@ class Sheet {
 
 				// Remove the original
 				list.remove(item);
-			}
+			},
 		});
 	}
 

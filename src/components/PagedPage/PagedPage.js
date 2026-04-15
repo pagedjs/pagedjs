@@ -72,22 +72,24 @@ export class PagedPage extends LitElement {
     }
 
     :host {
-
       --paged-mark-color: black;
       --paged-bleed: 0mm;
       --paged-width: 210mm;
       --paged-height: 297mm;
 
-      /* margins are part of the geometry */
-  /*    // --paged-margin-left: 15mm;
-      // --paged-margin-right: 15mm;
-      // --paged-margin-top: 15mm;
-      // --paged-margin-bottom: 15mm; */
-
-      width: calc(var(--paged-bleed) + var(--paged-width) + var(--paged-bleed));
-      height: calc(var(--paged-bleed) + var(--paged-height) + var(--paged-bleed));
+      display: block;
+      width: var(--paged-width);
+      height: var(--paged-height);
       overflow: hidden;
       break-after: page;
+      margin: 0;
+      padding: 0;
+    }
+
+    .sheet {
+      width: var(--paged-width);
+      height: var(--paged-height);
+      overflow: hidden;
       display: grid;
       margin: 0;
       padding: 0;
@@ -107,15 +109,6 @@ export class PagedPage extends LitElement {
         [page-area-end margin-right-start] var(--paged-margin-right)
         [margin-right-end bleed-right-start] var(--paged-bleed)
         [bleed-right-end];
-
-      /*  ==> dont need template area with template columns. (we should keep either one or the other
-      //   grid-template-areas:
-      //     "bleed-top bleed-top bleed-top bleed-top bleed-top"
-      //     "bleed-left margin-top-left-corner margin-top margin-top-right-corner bleed-right"
-      //     "bleed-left margin-left page-area margin-right bleed-right"
-      //     "bleed-left margin-bottom-left-corner margin-bottom margin-bottom-right-corner bleed-right";
-      //     "bleed-bottom bleed-bottom bleed-bottom bleed-bottom bleed-bottom ";
-      //     */
     }
 
     // ::target(top) {
@@ -126,7 +119,21 @@ export class PagedPage extends LitElement {
       grid-column: page-area-start / page-area-end;
       grid-row: page-area-start / page-area-end;
       /*the page-area has an overflow:hidden to follow the W3C specifications, but it can be overriden with the author css.*/
-      overflow:hidden;
+      // overflow: hidden;
+      // display: flex;
+      // flex-direction: column;
+      width: 100%;
+      height: 100%;
+    }
+
+    // .page-area .pagedjs_page_content {
+    //   flex-grow: 1;
+    // }
+    .pagedjs_area > .pagedjs_page_content {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      column-fill: auto;
     }
 
     @media screen {
@@ -324,22 +331,40 @@ export class PagedPage extends LitElement {
 
     sheet.replaceSync(`
       @page ${this.name} {
-        margin: 0;
-        size: calc(var(--paged-bleed, 0mm) + ${this.width} + var(--paged-bleed, 0mm))
-              calc(var(--paged-bleed, 0mm) + ${this.height} + var(--paged-bleed, 0mm));
+         margin: 0;
+         size: calc(var(--paged-bleed, 0mm) + ${this.width} + var(--paged-bleed, 0mm))
+               calc(var(--paged-bleed, 0mm) + ${this.height} + var(--paged-bleed, 0mm));
       }
-
+      
  
       [name="${this.name}"] {
         page: ${this.name};
         --paged-bleed: ${this.bleed};
         --paged-width: calc(var(--paged-bleed, 0mm) + ${this.width} + var(--paged-bleed, 0mm));
         --paged-height: calc(var(--paged-bleed, 0mm) + ${this.height} + var(--paged-bleed, 0mm));
-       ${marginsBlock}
+        ${marginsBlock}
       }
     `);
 
     document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+  }
+
+  get pageArea () {
+    return this.renderRoot.querySelector('.page-area') ?? null
+  }
+
+  get contentArea () {
+    return this.renderRoot.querySelector('.pagedjs_page_content') ?? null
+  }
+
+  get footnotesArea () {
+    return this.renderRoot.querySelector('.pagedjs_footnote_area') ?? null
+  }
+
+  firstUpdated () {
+    this.dispatchEvent(
+      new CustomEvent('first-updated', { detail: null, bubbles: false })
+    );
   }
 
   /**
@@ -374,24 +399,33 @@ export class PagedPage extends LitElement {
     }
 
     return html`
-      <div class="page-marks">${crossMarks} ${cropMarks}</div>
-      <div class="page-margins">
-        <slot name="margins">
-          <paged-margins
-            exportparts="margin-box, top, right, bottom, left,
-            margin-box-group, margin-box-group-top, margin-box-group-right,
-            margin-box-group-bottom, margin-box-group-left,
-            top-left-corner, top-left, top-center, top-right, top-right-corner,
-            left-top, left-middle, left-bottom,
-            right-top, right-middle, right-bottom,
-            bottom-left-corner, bottom-left, bottom-center, bottom-right,
-            bottom-right-corner"
-          >
-          </paged-margins>
-        </slot>
-      </div>
-      <div class="page-area" part="page-area">
-        <slot></slot>
+      <div class="sheet">
+        <div class="page-marks">${crossMarks} ${cropMarks}</div>
+        <div class="page-margins">
+          <slot name="margins">
+            <paged-margins
+              exportparts="margin-box, top, right, bottom, left,
+              margin-box-group, margin-box-group-top, margin-box-group-right,
+              margin-box-group-bottom, margin-box-group-left,
+              top-left-corner, top-left, top-center, top-right, top-right-corner,
+              left-top, left-middle, left-bottom,
+              right-top, right-middle, right-bottom,
+              bottom-left-corner, bottom-left, bottom-center, bottom-right,
+              bottom-right-corner"
+            >
+            </paged-margins>
+          </slot>
+        </div>
+        <div class="page-area pagedjs_area" part="page-area">
+				  <div class="pagedjs_page_content">
+            <slot></slot>
+          </div>
+          <div class="pagedjs_footnote_area">
+            <div class="pagedjs_footnote_content pagedjs_footnote_empty">
+              <div class="pagedjs_footnote_inner_content"></div>
+            </div>
+          </div>
+        </div>
       </div>
     `;
   }

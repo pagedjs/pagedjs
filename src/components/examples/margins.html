@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paged Margins</title>
+  <script type="module" src="/dist/PagedPreview.js"></script>
+  <style>
+    body style {
+      display: block;
+      white-space: pre;
+      font-family: monospace;
+      max-width: 80ch;
+      background-color: rgb(243, 243, 243);
+      outline: 1px dotted grey;
+    }
+
+    ::part(margin-box-group) {
+      outline: 1px dotted red;
+      overflow: hidden;
+    }
+
+    ::part(margin-box) {
+      text-decoration: underline;
+      color: brown;
+      outline: 1px dotted;
+    }
+
+    paged-margin-content[slot="top-left"] {
+      background: honeydew;
+    }
+
+    paged-margin-content[slot="top-center"] {
+      background: lavender;
+    }
+
+    paged-margin-content[slot="top-right"] {
+      background: papayawhip;
+    }
+
+    ::part(bottom-center) {
+      background: green;
+    }
+    
+
+    paged-margins {
+      width: 210mm;
+      height: 297mm;
+      outline: 1px dotted black;
+      margin: 15mm;
+    }
+
+    .grid {
+      --bleed: 5mm;
+      --margin-top: 20mm;
+      --margin-right: 15mm;
+      --margin-bottom: 15mm;
+      --margin-left: 15mm;
+      
+      width: 200mm;
+      height: 200mm;
+      margin: 5mm;
+      
+      display: grid;
+      grid-template-columns:
+        [bleed-left-start] var(--bleed)
+        [bleed-left-end margin-left-start] var(--margin-left)
+        [margin-left-end page-area-start] 1fr
+        [margin-right-start page-area-end] var(--margin-right)
+        [margin-right-end bleed-right-start] var(--bleed)
+        [bleed-right-end];
+      grid-template-rows: 
+        [bleed-top-start] var(--bleed)
+        [bleed-top-end margin-top-start] var(--margin-top)
+        [margin-top-end page-area-start] 1fr
+        [margin-bottom-start page-area-end] var(--margin-bottom)
+        [margin-bottom-end bleed-bottom-start] var(--bleed)
+        [bleed-bottom-end];
+      grid-template-areas:
+        ". . . . ."
+        ". top-left-corner top top-right-corner ."
+        ". left page-area right ."
+        ". bottom-left-corner bottom bottom-right-corner ." 
+        ". . . . .";
+    }
+
+    .grid paged-margins {
+      margin: 0;
+      grid-template-columns: subgrid;
+      grid-template-rows: subgrid;
+      grid-column: 2 / span 3;
+      grid-row: 2 / span 3;
+    }
+      
+    .grid .bleed {
+      grid-column: bleed-left-start / bleed-right-end;
+      grid-row: bleed-top-start / bleed-bottom-end;
+      outline: var(--bleed) solid #0080003d;
+      outline-offset: calc(-1 * var(--bleed));
+    }
+  </style>
+</head>
+<body>
+  <paged-margins>
+    <paged-margin-content slot="top-left">Does this appear?</paged-margin-content>
+    <paged-margin-content slot="top-left">Does this appear?</paged-margin-content>
+    <paged-margin-content slot="top-right">Should have</paged-margin-content>
+    <paged-margin-content slot="left-top">T</paged-margin-content>
+    <paged-margin-content slot="left-middle">6</paged-margin-content>
+    <paged-margin-content slot="top-left-corner">6</paged-margin-content>
+    <paged-margin-content slot="left-bottom">B</paged-margin-content>
+  </paged-margins>
+  <paged-margins></paged-margins>
+
+  <h2>As a subgrid</h2>
+  <div class="grid">
+    <div class="bleed"></div>
+    <paged-margins></paged-margins> 
+  </div>
+</body>

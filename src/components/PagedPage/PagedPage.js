@@ -16,7 +16,7 @@ import { cross } from "../utils/assets";
  * @element paged-page
  *
  * @slot - Main content of the page, placed inside the page-area grid region.
- * @slot - Slot to insert custom margins; replaces default paged-margins component. 
+ * @slot - Slot to insert custom margins; replaces default paged-margins component.
  *
  * @csspart page-area - The main printable content area.
  *
@@ -29,39 +29,45 @@ import { cross } from "../utils/assets";
  * @cssprop --paged-margin-right - Size of the right margin.
  */
 export class PagedPage extends LitElement {
-  /**
-   * Lit properties for the component.
-   *
-   * @property {string} name
-   *  The name of the page used in the `@page` rule and exposed as an attribute.
-   *  Auto-generated if not provided.
-   *
-   * @property {number|null} index
-   *  Optional index for multi-page contexts.
-   *
-   * @property {string} width
-   *  Page width, e.g. `"210mm"`. Reflected so CSS `[width="..."]` selectors
-   *  and internal sizing work consistently.
-   *
-   * @property {string} height
-   *  Page height, e.g. `"297mm"`. Reflected so CSS `[height="..."]` selectors
-   *  and internal sizing work consistently.
-   */
-  static properties = {
-    name: { type: String, reflect: true },
-    index: { type: Number },
-    width: { type: String, reflect: true },
-    height: { type: String, reflect: true },
-    bleed: { type: String },
-    margin: { type: String },
-    marks: { type: String },
-  };
+	/**
+	 * Lit properties for the component.
+	 *
+	 * @property {string} name
+	 *  The name of the page used in the `@page` rule and exposed as an attribute.
+	 *  Auto-generated if not provided.
+	 *
+	 * @property {number|null} index
+	 *  Optional index for multi-page contexts.
+	 *
+	 * @property {string} width
+	 *  Page width, e.g. `"210mm"`. Reflected so CSS `[width="..."]` selectors
+	 *  and internal sizing work consistently.
+	 *
+	 * @property {string} height
+	 *  Page height, e.g. `"297mm"`. Reflected so CSS `[height="..."]` selectors
+	 *  and internal sizing work consistently.
+	 */
+	static properties = {
+		name: { type: String, reflect: true },
+		index: { type: Number },
+		width: { type: String, reflect: true },
+		height: { type: String, reflect: true },
+		bleed: { type: String },
+		margin: { type: String },
+		marks: { type: String },
+		recto: { type: Boolean, reflect: true },
+		verso: { type: Boolean, reflect: true },
+		blank: { type: Boolean, reflect: true },
+		first: { type: Boolean, reflect: true },
+		autoName: { type: Boolean, reflect: true, attribute: "auto-name" },
+		inject: { type: Boolean, reflect: true },
+	};
 
-  /**
-   * Component-wide stylesheet defining layout, grid tracks, default margins,
-   * print behavior, and preview appearance.
-   */
-  static styles = css`
+	/**
+	 * Component-wide stylesheet defining layout, grid tracks, default margins,
+	 * print behavior, and preview appearance.
+	 */
+	static styles = css`
     body {
       margin: 0;
       padding: 0;
@@ -76,6 +82,10 @@ export class PagedPage extends LitElement {
       --paged-bleed: 0mm;
       --paged-width: 210mm;
       --paged-height: 297mm;
+      --paged-margin-top: 0;
+      --paged-margin-right: 0;
+      --paged-margin-bottom: 0;
+      --paged-margin-left: 0;
 
       display: block;
       width: var(--paged-width);
@@ -225,71 +235,68 @@ export class PagedPage extends LitElement {
     }
   `;
 
-  /**
-   * Constructor initializes defaults.
-   */
-  constructor() {
-    super();
-    this.index = null;
-    this.width = "210mm";
-    this.height = "297mm";
-    this.name = ""; // auto-filled in connectedCallback
-    this.bleed = "0mm";
-    this.marks = "";
-    this.margin = "";
-  }
+	#internals = null;
 
-  /**
-   * Lifecycle: Runs when component is added to the DOM.
-   *
-   * - Ensures the element has a valid `name` attribute.
-   * - Injects a dynamic `@page` rule to ensure print sizing matches preview.
-   */
-  connectedCallback() {
-    super.connectedCallback();
+	/**
+	 * Constructor initializes defaults.
+	 */
+	constructor() {
+		super();
+		this.#internals = this.attachInternals();
+		this.index = null;
+		this.width = null;
+		this.height = null;
+		this.name = "";
+		this.bleed = "0mm";
+		this.marks = "";
+		this.margin = "";
+		this.autoName = false;
+		this.inject = false;
+	}
 
-    // Auto-assign name if missing
-    if (!this.hasAttribute("name") || !this.name?.trim()) {
-      const autoName = `page-${crypto.randomUUID()}`;
-      this.name = autoName; // reflect:true ensures the attribute is written on the parent object so CSS can use it.
-    }
+	/**
+	 * Lifecycle: Runs when component is added to the DOM.
+	 *
+	 * - Ensures the element has a valid `name` attribute when autoName is true.
+	 * - Injects a dynamic `@page` rule to ensure print sizing matches preview when inject is true.
+	 */
+	connectedCallback() {
+		super.connectedCallback();
+		this.setAttribute("role", "none");
 
-    // validate value for width and height
-    if ((this.width && !CSS.supports("width", this.width)) || !this.width) {
-      console.log("there is no width for the page, using 210mm");
-      this.width = "210mm";
-    }
-    if ((this.height && !CSS.supports("height", this.height)) || !this.height) {
-      console.log("there is no height for the page, using 210mm");
-      this.height = "297mm";
-    }
-    // if there is no bleed or bleed = 0, then set the bleed to 0
-    // chrome seems to have issue with calc when one of the number is 0 without any value
-    if (!this.bleed || this.bleed == "0") {
-      this.bleed = "0mm";
-    }
+		if (this.autoName && (!this.hasAttribute("name") || !this.name?.trim())) {
+			this.name = `page-${crypto.randomUUID()}`;
+		}
 
-    // Inject the @page rules
-    this.#injectPageStyles();
+		if (this.inject) {
+			if (this.width && !CSS.supports("width", this.width)) {
+				console.warn(`paged-page: invalid width "${this.width}"`);
+				this.width = "";
+			}
+			if (this.height && !CSS.supports("height", this.height)) {
+				console.warn(`paged-page: invalid height "${this.height}"`);
+				this.height = "";
+			}
+			if (this.bleed === "0") this.bleed = "0mm";
+			this.#injectPageStyles();
+			this.#injectGlobalPrintStyles();
+		}
+	}
 
-    // Inject the  default printing rule
-    this.#injectGlobalPrintStyles();
-  }
+	static globalPrintStylesApplied = false;
 
-  static globalPrintStylesApplied = false;
+	/**
+	 * Injects global @media print rules into the document.
+	 * Ensures it only runs once.
+	 *
+	 * @private
+	 */
+	#injectGlobalPrintStyles() {
+		if (PagedPage.globalPrintStylesApplied) return;
+		PagedPage.globalPrintStylesApplied = true;
 
-  /**
-   * Injects global @media print rules into the document.
-   * Ensures it only runs once.
-   *
-   * @private
-   */
-  #injectGlobalPrintStyles() {
-    if (PagedPage.globalPrintStylesApplied) return;
-    PagedPage.globalPrintStylesApplied = true;
-
-    const sheet = new CSSStyleSheet();
-    sheet.replaceSync(`
+		const sheet = new CSSStyleSheet();
+		sheet.replaceSync(`
     @media print {
       body {
         margin: 0 !important;
@@ -298,38 +305,38 @@ export class PagedPage extends LitElement {
     }
   `);
 
-    document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
-  }
+		document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+	}
 
-  /**
-   * Injects a dynamic stylesheet that defines a unique `@page <name>` rule
-   * and binds the host element to that page context.
-   *
-   * This is required because:
-   * - CSS variables cannot be used in `@page`
-   * - browsers do not always apply unnamed @page rules consistently
-   *
-   * @private
-   */
-  #injectPageStyles() {
-    let marginsBlock;
+	/**
+	 * Injects a dynamic stylesheet that defines a unique `@page <name>` rule
+	 * and binds the host element to that page context.
+	 *
+	 * This is required because:
+	 * - CSS variables cannot be used in `@page`
+	 * - browsers do not always apply unnamed @page rules consistently
+	 *
+	 * @private
+	 */
+	#injectPageStyles() {
+		let marginsBlock;
 
-    // add support for margins from the component?
-    if (!this.margin || (this.margin && !CSS.supports("margin", this.margin))) {
-      marginsBlock = css`
-        --paged-margin-top: 1in;
-        --paged-margin-right: 1in;
-        --paged-margin-bottom: 1in;
-        --paged-margin-left: 1in;
-      `;
-    } else {
-      marginsBlock = this.margin ? getMargin(this.margin) : "";
-    }
+		// add support for margins from the component?
+		if (!this.margin || (this.margin && !CSS.supports("margin", this.margin))) {
+			marginsBlock = css`
+				--paged-margin-top: 1in;
+				--paged-margin-right: 1in;
+				--paged-margin-bottom: 1in;
+				--paged-margin-left: 1in;
+			`;
+		} else {
+			marginsBlock = this.margin ? getMargin(this.margin) : "";
+		}
 
-    // console.log(marginsBlock);
-    const sheet = new CSSStyleSheet();
+		// console.log(marginsBlock);
+		const sheet = new CSSStyleSheet();
 
-    sheet.replaceSync(`
+		sheet.replaceSync(`
       @page ${this.name} {
          margin: 0;
          size: calc(var(--paged-bleed, 0mm) + ${this.width} + var(--paged-bleed, 0mm))
@@ -346,65 +353,137 @@ export class PagedPage extends LitElement {
       }
     `);
 
-    document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
-  }
+		document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+	}
 
-  get pageArea () {
-    return this.renderRoot.querySelector('.page-area') ?? null
-  }
+	get pageArea() {
+		return this.renderRoot.querySelector(".page-area") ?? null;
+	}
 
-  get contentArea () {
-    return this.renderRoot.querySelector('.pagedjs_page_content') ?? null
-  }
+	get contentArea() {
+		return this.renderRoot.querySelector("fragment-container") ?? null;
+	}
 
-  get footnotesArea () {
-    return this.renderRoot.querySelector('.pagedjs_footnote_area') ?? null
-  }
+	get footnotesArea() {
+		return this.renderRoot.querySelector("fragment-container") ?? null;
+	}
 
-  firstUpdated () {
-    this.dispatchEvent(
-      new CustomEvent('first-updated', { detail: null, bubbles: false })
-    );
-  }
+	firstUpdated() {
+		this.dispatchEvent(
+			new CustomEvent("first-updated", { detail: null, bubbles: false }),
+		);
+	}
 
-  /**
-   * Renders the content area of the page.
-   *
-   * @returns {import("lit").TemplateResult}
-   */
-  render() {
-    const crossMarks = [];
-    const cropMarks = [];
+	#setState(name, on) {
+		if (on) this.#internals.states.add(name);
+		else this.#internals.states.delete(name);
+	}
 
-    if (this.marks?.includes("cross") && this.bleed != "0mm") {
-      crossMarks.push(
-        html`<div class="paged-cross" id="paged-cross-t">${cross}</div>`,
-      );
-      crossMarks.push(
-        html`<div class="paged-cross" id="paged-cross-r">${cross}</div>`,
-      );
-      crossMarks.push(
-        html`<div class="paged-cross" id="paged-cross-b">${cross}</div>`,
-      );
-      crossMarks.push(
-        html`<div class="paged-cross" id="paged-cross-l">${cross}</div>`,
-      );
-    }
+	/**
+	 * Sync reflected Boolean properties to `:state(...)` pseudo-classes
+	 * named after the corresponding CSS @page pseudo-classes:
+	 *   • `blank` property → `:state(blank)` ← matches `@page :blank`
+	 *   • `verso` property → `:state(left)`  ← matches `@page :left`
+	 *   • `recto` property → `:state(right)` ← matches `@page :right`
+	 *   • `first` property → `:state(first)` ← matches `@page :first`
+	 *
+	 * Author CSS can target either the attribute or the state:
+	 *   paged-page[verso], paged-page:state(left) { … }
+	 */
+	updated(changedProps) {
+		super.updated?.(changedProps);
+		if (changedProps.has("blank")) this.#setState("blank", this.blank);
+		if (changedProps.has("verso")) this.#setState("left", this.verso);
+		if (changedProps.has("recto")) this.#setState("right", this.recto);
+		if (changedProps.has("first")) this.#setState("first", this.first);
+	}
 
-    if (this.marks?.includes("crop") && this.bleed != "0mm") {
-      cropMarks.push(html`<div class="paged-crop" id="paged-crop-t"></div>`);
-      cropMarks.push(html`<div class="paged-crop" id="paged-crop-r"></div>`);
-      cropMarks.push(html`<div class="paged-crop" id="paged-crop-b"></div>`);
-      cropMarks.push(html`<div class="paged-crop" id="paged-crop-l"></div>`);
-    }
+	/**
+	 * Renders the content area of the page.
+	 *
+	 * @returns {import("lit").TemplateResult}
+	 */
+	render() {
+		const crossMarks = [];
+		const cropMarks = [];
 
-    return html`
-      <div class="sheet">
-        <div class="page-marks">${crossMarks} ${cropMarks}</div>
-        <div class="page-margins">
-          <slot name="margins">
-            <paged-margins
-              exportparts="margin-box, top, right, bottom, left,
+		if (this.marks?.includes("cross") && this.bleed != "0mm") {
+			crossMarks.push(
+				html`<div
+					part="paged-cross paged-cross-top"
+					class="paged-cross"
+					id="paged-cross-t"
+				>
+					${cross}
+				</div>`,
+			);
+			crossMarks.push(
+				html`<div
+					part="paged-cross paged-cross-right"
+					class="paged-cross"
+					id="paged-cross-r"
+				>
+					${cross}
+				</div>`,
+			);
+			crossMarks.push(
+				html`<div
+					part="paged-cross paged-cross-bottom"
+					class="paged-cross"
+					id="paged-cross-b"
+				>
+					${cross}
+				</div>`,
+			);
+			crossMarks.push(
+				html`<div
+					part="paged-cross paged-cross-left"
+					class="paged-cross"
+					id="paged-cross-l"
+				>
+					${cross}
+				</div>`,
+			);
+		}
+
+		if (this.marks?.includes("crop") && this.bleed != "0mm") {
+			cropMarks.push(
+				html`<div
+					part="paged-crop paged-crop-top"
+					class="paged-crop"
+					id="paged-crop-t"
+				></div>`,
+			);
+			cropMarks.push(
+				html`<div
+					part="paged-crop paged-crop-right"
+					class="paged-crop"
+					id="paged-crop-r"
+				></div>`,
+			);
+			cropMarks.push(
+				html`<div
+					part="paged-crop paged-crop-bottom"
+					class="paged-crop"
+					id="paged-crop-b"
+				></div>`,
+			);
+			cropMarks.push(
+				html`<div
+					part="paged-crop paged-crop-left"
+					class="paged-crop"
+					id="paged-crop-l"
+				></div>`,
+			);
+		}
+
+		return html`
+			<div class="sheet">
+				<div class="page-marks">${crossMarks} ${cropMarks}</div>
+				<div class="page-margins">
+					<slot name="margins">
+						<paged-margins
+							exportparts="margin-box, top, right, bottom, left,
               margin-box-group, margin-box-group-top, margin-box-group-right,
               margin-box-group-bottom, margin-box-group-left,
               top-left-corner, top-left, top-center, top-right, top-right-corner,
@@ -412,62 +491,55 @@ export class PagedPage extends LitElement {
               right-top, right-middle, right-bottom,
               bottom-left-corner, bottom-left, bottom-center, bottom-right,
               bottom-right-corner"
-            >
-            </paged-margins>
-          </slot>
-        </div>
-        <div class="page-area pagedjs_area" part="page-area">
-				  <div class="pagedjs_page_content">
-            <slot></slot>
-          </div>
-          <div class="pagedjs_footnote_area">
-            <div class="pagedjs_footnote_content pagedjs_footnote_empty">
-              <div class="pagedjs_footnote_inner_content"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  }
+						>
+						</paged-margins>
+					</slot>
+				</div>
+				<div class="page-area" part="page-area">
+					<slot></slot>
+				</div>
+			</div>
+		`;
+	}
 }
 
 customElements.define("paged-page", PagedPage);
 
 function getMargin(string) {
-  const units = string.split(" ");
-  const margins = [];
-  switch (units.length) {
-    case 4: // top right bottom left
-      margins.push(css`
-        --paged-margin-top: ${unsafeCSS(units[0])};
-        --paged-margin-right: ${unsafeCSS(units[1])};
-        --paged-margin-bottom: ${unsafeCSS(units[2])};
-        --paged-margin-left: ${unsafeCSS(units[3])};
-      `);
-      break;
-    case 3: // top right bottom right
-      margins.push(css` 
-        --paged-margin-top: ${unsafeCSS(units[0])};
-        --paged-margin-right: ${unsafeCSS(units[1])};
-        --paged-margin-bottom: ${unsafeCSS(units[2])};
-        --paged-margin-left: ${unsafeCSS(units[1])};
-      }`);
-      break;
-    case 2: // top right top right
-      margins.push(css` 
-        --paged-margin-top: ${unsafeCSS(units[0])};
-        --paged-margin-right: ${unsafeCSS(units[1])};
-        --paged-margin-bottom: ${unsafeCSS(units[0])};
-        --paged-margin-left: ${unsafeCSS(units[1])};
-      });`);
-      break;
-    default: // top top top top
-      margins.push(css` 
-        --paged-margin-top: ${unsafeCSS(units[0])};
-        --paged-margin-right: ${unsafeCSS(units[0])};
-        --paged-margin-bottom: ${unsafeCSS(units[0])};
-        --paged-margin-left: ${unsafeCSS(units[0])};
-      };`);
-  }
-  return margins;
+	const units = string.split(" ");
+	const margins = [];
+	switch (units.length) {
+		case 4: // top right bottom left
+			margins.push(css`
+				--paged-margin-top: ${unsafeCSS(units[0])};
+				--paged-margin-right: ${unsafeCSS(units[1])};
+				--paged-margin-bottom: ${unsafeCSS(units[2])};
+				--paged-margin-left: ${unsafeCSS(units[3])};
+			`);
+			break;
+		case 3: // top right bottom right
+			margins.push(css`
+				--paged-margin-top: ${unsafeCSS(units[0])};
+				--paged-margin-right: ${unsafeCSS(units[1])};
+				--paged-margin-bottom: ${unsafeCSS(units[2])};
+				--paged-margin-left: ${unsafeCSS(units[1])};
+			`);
+			break;
+		case 2: // top right top right
+			margins.push(css`
+				--paged-margin-top: ${unsafeCSS(units[0])};
+				--paged-margin-right: ${unsafeCSS(units[1])};
+				--paged-margin-bottom: ${unsafeCSS(units[0])};
+				--paged-margin-left: ${unsafeCSS(units[1])};
+			`);
+			break;
+		default: // top top top top
+			margins.push(css`
+				--paged-margin-top: ${unsafeCSS(units[0])};
+				--paged-margin-right: ${unsafeCSS(units[0])};
+				--paged-margin-bottom: ${unsafeCSS(units[0])};
+				--paged-margin-left: ${unsafeCSS(units[0])};
+			`);
+	}
+	return margins;
 }

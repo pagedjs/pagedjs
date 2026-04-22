@@ -1,51 +1,20 @@
 import * as csstree from "css-tree";
 
 export default [
+  // content: element
   {
-    match: ({ property, valueAST }) => {
-      if (property !== "content") return false;
-      let found = false;
-      csstree.walk(valueAST, {
-        visit: "Function",
-        enter(node) {
-          console.log(node.name);
-          if (node.name === "element") {
-            found = true;
-          }
-        },
-      });
-      return found;
-    },
+    // Match any Declaration node with property 'content'
+    match: (n) => n.type === "Declaration" && n.property === "content",
+    transform: (n) => {
+      // Generate the string of the value
+      const valueStr = csstree.generate(n.value).trim();
 
-    transform: ({ valueAST, node }) => {
-      csstree.walk(valueAST, {
-        visit: "Function",
-        enter(fnNode) {
-          if (fnNode.name === "element") {
-            const args = fnNode.children;
-            if (args && args.head) {
-              const firstArg = args.head.data;
-              let name;
-              if (firstArg.type === "Identifier") {
-                name = firstArg.name;
-              } else if (firstArg.type === "String") {
-                name = firstArg.value.slice(1, -1);
-              }
-
-              if (name) {
-                const varAst = csstree.parse(`var(--paged-element_${name})`, {
-                  context: "value",
-                });
-                fnNode.type = varAst.type;
-                Object.assign(fnNode, varAst);
-              }
-            }
-          }
-        },
-      });
-
-      node.value = valueAST;
-      return { value: csstree.generate(valueAST) };
+      // Match element("...") pattern
+      const match = valueStr.match(/^element\(["'](.+?)["']\)$/);
+      if (match) {
+        const name = match[1].replace(/\s+/g, "_"); // sanitize name
+        n.value = csstree.parse(`var(--element_${name})`, { context: "value" });
+      }
     },
   },
 ];

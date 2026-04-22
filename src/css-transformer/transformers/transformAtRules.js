@@ -12,10 +12,10 @@ import * as csstree from "css-tree";
 export function transformAtRules(ast, rules = []) {
   csstree.walk(ast, {
     visit: "Atrule",
-    enter(node) {
+    enter(node, item, list) {
       for (const rule of rules) {
-        if (rule.match(node)) {
-          rule.transform(node);
+        if (rule.match(node, item, list)) {
+          rule.transform(node, item, list);
         }
       }
     },

@@ -5,6 +5,6 @@ export default [
   },
   {
     match: (sel) => sel.includes(":nth-page("),
-    transform: (sel) => sel.replace(/:nth-page\((\d+)\)/g, ".page-$1"),
+    transform: (sel) => sel.replace(/:nth-page\((\d+)\)/g, "paged-page:nth-of-type($1)"),
   },
 ];

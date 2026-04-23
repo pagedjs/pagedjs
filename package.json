@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "clear-cut": "^2.0.2",
-    "css-tree": "^1.1.3",
+    "css-tree": "^3.2.1",
     "fragmentainers": "^0.0.3",
     "lit": "^3.3.2"
   },

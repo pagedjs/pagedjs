@@ -163,23 +163,6 @@ export class PagedPreview extends HTMLElement {
 		return flow;
 	}
 
-	/**
-	 * Initializes handler modules (like footnotes, counters, etc.) and sets up relevant events.
-	 * @returns {*} - The handler system that manages internal processing hooks.
-	 */
-	initializeHandlers() {
-		let handlers = initializeHandlers(this);
-		return handlers;
-	}
-
-	/**
-	 * Registers handlers with custom logic or extensions.
-	 * @returns {*} - The result of the registerHandlers function.
-	 */
-	registerHandlers() {
-		return registerHandlers.apply(registerHandlers, arguments);
-	}
-
 	#dispatch(name, detail) {
 		this.dispatchEvent(new CustomEvent(name, { detail }));
 	}

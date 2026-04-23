@@ -1,5 +1,6 @@
 import { FragmentedFlow, PageResolver } from "fragmentainers";
 import { PrintStyleSheet } from "./PrintStyleSheet.js";
+import { buildAtPageRules } from "./utils/buildAtPageRules.js";
 import Hook from "../utils/hook.js";
 // Register the custom paged elements.
 import "../components/index.js";
@@ -20,6 +21,7 @@ export class PagedPreview extends HTMLElement {
 	#options;
 	#flowing = null;
 	#adoptedSheet = null;
+	#pageStyle = null;
 
 	constructor(options = {}) {
 		super();
@@ -129,6 +131,7 @@ export class PagedPreview extends HTMLElement {
 		this.#adoptSheet(styles);
 
 		const pageData = styles.toJSON();
+		this.#injectPageStyle(pageData);
 		this.#dispatch("atpages", { pages: pageData });
 
 		const resolver = new PageResolver(pageData);
@@ -176,6 +179,16 @@ export class PagedPreview extends HTMLElement {
 		this.#adoptedSheet = sheet;
 	}
 
+	#injectPageStyle(pageData) {
+		const cssText = buildAtPageRules(pageData).join("\n");
+		if (!this.#pageStyle) {
+			this.#pageStyle = document.createElement("style");
+			this.#pageStyle.dataset.pagedjsIgnore = "";
+			document.head.appendChild(this.#pageStyle);
+		}
+		this.#pageStyle.textContent = cssText;
+	}
+
 	#clear() {
 		for (const page of this.pages) {
 			page.remove();
@@ -188,6 +201,10 @@ export class PagedPreview extends HTMLElement {
 				(s) => s !== this.#adoptedSheet,
 			);
 			this.#adoptedSheet = null;
+		}
+		if (this.#pageStyle) {
+			this.#pageStyle.remove();
+			this.#pageStyle = null;
 		}
 		this.remove();
 	}

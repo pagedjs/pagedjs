@@ -1,7 +1,6 @@
 import * as csstree from "css-tree";
 import { CssTransformer } from "../css-transformer/CssTransformer.js";
 import { collectAllPageData } from "../css-transformer/utils/extractPageData.js";
-import { buildAtPageRules } from "./utils/buildAtPageRules.js";
 import { buildPagedVariableRules } from "./utils/buildPagedVariableRules.js";
 import { loadStylesheets } from "./utils/loadStylesheets.js";
 import "../css-transformer/rules/index.js";
@@ -43,10 +42,6 @@ export class PrintStyleSheet extends CSSStyleSheet {
 		await this.replace(csstree.generate(combined));
 
 		for (const rule of buildPagedVariableRules(this.#pageData)) {
-			this.insertRule(rule, this.cssRules.length);
-		}
-
-		for (const rule of buildAtPageRules(this.#pageData)) {
 			this.insertRule(rule, this.cssRules.length);
 		}
 

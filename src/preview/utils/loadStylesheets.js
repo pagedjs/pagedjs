@@ -79,7 +79,10 @@ export async function fetchStylesheet(href, options = {}) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const res = await fetchImpl(cssURL, { signal: controller.signal });
+    const res = await fetchImpl(cssURL, {
+      signal: controller.signal,
+      headers: { Accept: "text/css,*/*;q=0.1" },
+    });
     if (!res.ok) {
       console.warn(`Failed to fetch stylesheet ${cssURL}: HTTP ${res.status}`);
       return null;

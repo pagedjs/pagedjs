@@ -1,4 +1,4 @@
-import Previewer from "./previewer.js";
+import { PagedPreview } from "../preview/PagedPreview.js";
 import * as Paged from "../index.js";
 
 /**
@@ -45,22 +45,14 @@ let ready = new Promise(function (resolve, reject) {
  */
 
 /** @type {PagedConfig} */
-let config = window.PagedConfig || {
-	auto: true,
-	before: undefined,
-	after: undefined,
-	content: undefined,
-	stylesheets: undefined,
-	renderTo: undefined,
-	settings: undefined,
-};
+const config = window.PagedConfig || {};
 
 /**
  * Initialize the previewer with optional settings from config.
  *
- * @type {Previewer}
+ * @type {PagedPreview}
  */
-let previewer = new Previewer(config.settings);
+const previewer = new PagedPreview(config.settings);
 
 /**
  * Main logic that runs once the DOM is ready.
@@ -68,26 +60,34 @@ let previewer = new Previewer(config.settings);
  * - Triggers `previewer.preview()` if `auto` is not explicitly disabled
  * - Executes `after` hook with result if defined
  */
-ready.then(async function () {
-	let done;
-
+ready.then(async () => {
 	// Call optional hook before preview
 	if (config.before) {
 		await config.before();
 	}
 
-	// Automatically render content if not disabled
-	if (config.auto !== false) {
-		done = await previewer.preview(
-			config.content,
-			config.stylesheets,
-			config.renderTo,
-		);
+	if (config.auto === false) {
+		return;
 	}
+
+	let content = config.content;
+	if (!content) {
+		content = document.createDocumentFragment();
+		while (document.body.firstChild) {
+			content.appendChild(document.body.firstChild);
+		}
+	}
+
+	let renderTo = config.renderTo ?? document.body;
+	if (typeof renderTo === "string") {
+		renderTo = document.querySelector(renderTo);
+	}
+
+	const flow = await previewer.preview(content, config.stylesheets, renderTo);
 
 	// Call optional hook after preview
 	if (config.after) {
-		await config.after(done);
+		await config.after(flow);
 	}
 });
 

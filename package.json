@@ -1,6 +1,6 @@
 {
   "name": "pagedjs",
-  "version": "0.5.0-beta.2",
+  "version": "0.6.0",
   "description": "Chunks up a document into paged media flows and applies print styles",
   "author": "Fred Chasen",
   "license": "MIT",
@@ -12,11 +12,15 @@
       "import": "./src/index.js",
       "default": "./src/index.js"
     },
-    "./polyfill": "./src/polyfill/polyfill.js"
+    "./polyfill": "./src/polyfill/polyfill.js",
+    "./components": "./src/components/index.js",
+    "./css-transformer": "./src/css-transformer/CssTransformer.js"
   },
   "dependencies": {
     "clear-cut": "^2.0.2",
-    "css-tree": "^1.1.3"
+    "css-tree": "^1.1.3",
+    "fragmentainers": "^0.0.3",
+    "lit": "^3.3.2"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",

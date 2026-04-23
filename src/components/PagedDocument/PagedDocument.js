@@ -14,7 +14,7 @@ export class PagedDocument extends LitElement {
    * Does currently not do any filtering.
    */
   get pages () {
-    const slot = this.renderRoot.querySelector('slot');
+    const slot = this.renderRoot?.querySelector('slot');
     
     if (slot) {
       return slot.assignedElements({ flatten: true });
@@ -28,13 +28,13 @@ export class PagedDocument extends LitElement {
    * to update page indexes (page numbers).
    */
   firstUpdated () {
-    const slot = this.renderRoot.querySelector('slot');
-    slot.addEventListener('slotchange', () => this.updatePageIndexes());
+    const slot = this.renderRoot?.querySelector('slot');
+    slot?.addEventListener('slotchange', () => this.updatePageIndexes());
   }
 
   /**
    * Set indexes on pages.
-   * 
+   *
    * Not sure this is necessary. Would prevent a reordering workflow.
    * Unless that is done through order declarations
    */
@@ -48,10 +48,20 @@ export class PagedDocument extends LitElement {
 
   /**
    * Adds a page by constructing a pagedPage and attaching it to itself.
-   * @FIXME: find way to set page constructor?
    */
-  addPage () {
+  addPage (content, states = {}) {
     let page = document.createElement('paged-page');
+
+    page.name = states.name || null;
+		page.blank = !!states.blank;
+		page.verso = !!states.verso;
+		page.recto = !!states.recto;
+		page.first = !!states.first;
+
+    if (content) {
+      page.appendChild(content);
+    }
+
     this.appendChild(page);
     return page;
   }

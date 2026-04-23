@@ -1,19 +1,19 @@
-import Chunker from "./chunker/chunker.js";
-import Polisher from "./polisher/polisher.js";
-import Previewer from "./polyfill/previewer.js";
+import { PrintStyleSheet } from "./preview/PrintStyleSheet.js";
+import { PagedPreview } from "./preview/PagedPreview.js";
 import Handler from "./modules/handler.js";
 import {
 	registeredHandlers,
 	registerHandlers,
-	initializeHandlers
+	initializeHandlers,
 } from "./utils/handlers.js";
+import * as components from "./components/index.js";
 
 export {
-	Chunker,
-	Polisher,
-	Previewer,
+	PagedPreview,
+	PrintStyleSheet,
 	Handler,
 	registeredHandlers,
 	registerHandlers,
-	initializeHandlers
+	initializeHandlers,
+	components,
 };

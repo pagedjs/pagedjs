@@ -1,0 +1,318 @@
+/*
+ * The Future of Ideas — plain CSS Paged Media stylesheet.
+ *
+ * Content ported from electricbookworks/paged-design (the-future-of-ideas).
+ * Sample contains only the preface + chapter 1 + endnotes.
+ * Translated from the pagedjs-based `_defaults` theme into standard
+ * CSS Paged Media Level 3 + GCPM L3 so the book paginates via
+ * fragmentainers without the pagedjs pager runtime.
+ */
+
+/* Page geometry */
+
+@page {
+	size: 5.5in 8.5in;
+	margin: 22mm 20mm 22mm 22mm;
+
+	@top-center {
+		content: string(book-title);
+		font: italic 9pt serif;
+		vertical-align: bottom;
+		padding-bottom: 6mm;
+	}
+
+	@bottom-center {
+		content: counter(page);
+		font: 9pt serif;
+		vertical-align: top;
+		padding-top: 6mm;
+	}
+}
+
+@page :left {
+	margin: 22mm 22mm 22mm 20mm;
+
+	@top-left {
+		content: string(book-title);
+		font: italic 9pt serif;
+		vertical-align: bottom;
+		padding-bottom: 6mm;
+	}
+	@top-center { content: none; }
+
+	@bottom-left {
+		content: counter(page);
+		font: 9pt serif;
+		vertical-align: top;
+		padding-top: 6mm;
+	}
+	@bottom-center { content: none; }
+}
+
+@page :right {
+	margin: 22mm 20mm 22mm 22mm;
+
+	@top-right {
+		content: string(chapter-title);
+		font: italic 9pt serif;
+		vertical-align: bottom;
+		padding-bottom: 6mm;
+	}
+	@top-center { content: none; }
+
+	@bottom-right {
+		content: counter(page);
+		font: 9pt serif;
+		vertical-align: top;
+		padding-top: 6mm;
+	}
+	@bottom-center { content: none; }
+}
+
+/* Named pages — strip running headers on front matter */
+
+@page title-page, @page copyright-page, @page dedication-page,
+@page contents-page {
+	@top-left   { content: none; }
+	@top-right  { content: none; }
+	@top-center { content: none; }
+	@bottom-left  { content: none; }
+	@bottom-right { content: none; }
+	@bottom-center { content: none; }
+}
+
+@page frontmatter { /* preface-style pages — keep page numbers only */
+	@top-left   { content: none; }
+	@top-right  { content: none; }
+	@top-center { content: none; }
+}
+
+@page chapter:first {
+	@top-left   { content: none; }
+	@top-right  { content: none; }
+	@top-center { content: none; }
+}
+
+@page :blank {
+	@top-left   { content: none; }
+	@top-right  { content: none; }
+	@top-center { content: none; }
+	@bottom-left  { content: none; }
+	@bottom-right { content: none; }
+	@bottom-center { content: none; }
+}
+
+/* Running-header strings */
+
+.title-page-title    { string-set: book-title content(); }
+.chapter > h1        { string-set: chapter-title content(); }
+
+/* Section-to-page mapping + forced breaks */
+
+.title-page       { page: title-page;     break-after: page; }
+.copyright-page   { page: copyright-page; break-before: page; break-after: page; }
+.dedication-page  { page: dedication-page; break-before: right; break-after: page; }
+.frontmatter      { page: frontmatter;    break-before: right; break-after: page; }
+.contents-page    { page: contents-page;  break-before: right; break-after: page; }
+.chapter          { page: chapter;        break-before: right; }
+.notes            { break-before: right; }
+
+/* Typography */
+
+html, body {
+	font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+	font-size: 11pt;
+	line-height: 1.45;
+	color: #111;
+}
+
+body { margin: 0; }
+
+p {
+	margin: 0;
+	text-align: justify;
+	hyphens: auto;
+}
+
+p + p {
+	text-indent: 1.4em;
+}
+
+.copyright-page p + p,
+.toc-list li + li,
+.footnotes p + p {
+	text-indent: 0;
+}
+
+a { color: inherit; text-decoration: none; }
+
+h1 {
+	font-size: 18pt;
+	font-weight: normal;
+	line-height: 1.2;
+	margin: 3em 0 2em 0;
+	text-align: left;
+	break-after: avoid;
+}
+
+.frontmatter h1 {
+	text-align: center;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	font-size: 14pt;
+	margin: 3em 0 2em 0;
+}
+
+.contents-page h1 {
+	text-align: center;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	font-size: 14pt;
+	margin: 0 0 2em 0;
+}
+
+/* Title page */
+
+.title-page {
+	text-align: center;
+	padding-top: 35%;
+}
+
+.title-page-title {
+	font-size: 28pt;
+	line-height: 1.1;
+	font-weight: normal;
+	letter-spacing: 0.02em;
+	margin: 0 0 0.5em 0;
+}
+
+.title-page-subtitle {
+	font-size: 14pt;
+	font-style: italic;
+	font-weight: normal;
+	margin: 0 0 4em 0;
+}
+
+.title-page-author {
+	font-size: 12pt;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+/* Copyright page */
+
+.copyright-page {
+	font-size: 9pt;
+	line-height: 1.5;
+	padding-top: 55%;
+}
+
+.copyright-page p {
+	text-align: left;
+	text-indent: 0;
+	margin-bottom: 0.8em;
+}
+
+/* Dedication */
+
+.dedication-page {
+	text-align: center;
+	padding-top: 35%;
+}
+
+.dedication {
+	font-style: italic;
+	font-size: 12pt;
+	line-height: 1.6;
+	text-indent: 0;
+}
+
+/* Contents */
+
+.toc-list,
+.toc-list ul {
+	list-style: none;
+	padding: 0;
+	margin: 0 auto;
+	max-width: 28em;
+}
+
+.toc-list li {
+	margin: 0.4em 0;
+	text-align: left;
+}
+
+.toc-list ul {
+	margin-left: 1.2em;
+	font-size: 10pt;
+}
+
+.frontmatter-reference {
+	font-style: italic;
+	color: #444;
+}
+
+/* Lead characters — small-caps opening of a chapter/section */
+
+.lead-characters {
+	font-variant: small-caps;
+	letter-spacing: 0.04em;
+}
+
+/* First paragraph of a chapter or section break */
+
+h1 + p,
+hr + p {
+	text-indent: 0;
+}
+
+hr {
+	border: none;
+	border-top: none;
+	margin: 1.2em auto;
+	text-align: center;
+	height: 0.8em;
+}
+
+hr::before {
+	content: "* * *";
+	letter-spacing: 0.6em;
+	color: #666;
+	font-size: 0.9em;
+}
+
+/* Footnote markers + endnotes */
+
+sup {
+	font-size: 0.75em;
+	line-height: 0;
+	vertical-align: super;
+}
+
+a.footnote {
+	text-decoration: none;
+}
+
+.footnotes,
+.notes {
+	font-size: 9.5pt;
+	line-height: 1.4;
+	margin-top: 2em;
+	padding-top: 1em;
+	border-top: 0.5pt solid #ccc;
+}
+
+.footnotes p,
+.notes p {
+	text-indent: 0;
+	margin-bottom: 0.5em;
+}
+
+.reversefootnote { text-decoration: none; }
+
+/* Blockquotes */
+
+blockquote {
+	margin: 1em 2em;
+	font-size: 10pt;
+}

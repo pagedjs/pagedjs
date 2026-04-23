@@ -1,0 +1,393 @@
+/*
+ * Ketida sample — plain CSS Paged Media stylesheet.
+ *
+ * Content ported from electricbookworks/paged-design (content/ketida).
+ * Translated from the pagedjs-specific "ketida" theme into standard
+ * CSS Paged Media Level 3 + GCPM L3 so the book paginates via
+ * fragmentainers without the pagedjs pager runtime.
+ *
+ * Pagedjs → standard translations used here:
+ *   position: running(left)   →  string-set on .running-left + string() in margin box
+ *   position: running(right)  →  string-set on .running-right + string() in margin box
+ *   page-break-*              →  break-* (modern fragmentation properties)
+ */
+
+/* Page geometry */
+
+@page {
+	size: 6in 9in;
+	margin: 18mm 16mm 18mm 18mm;
+
+	@top-center {
+		content: string(running-center);
+		font: italic 9pt serif;
+		vertical-align: bottom;
+		padding-bottom: 6mm;
+	}
+
+	@bottom-center {
+		content: counter(page);
+		font: 9pt serif;
+		vertical-align: top;
+		padding-top: 6mm;
+	}
+}
+
+@page :left {
+	margin: 18mm 18mm 18mm 16mm;
+
+	@top-left {
+		content: string(running-left);
+		font: italic 9pt serif;
+		vertical-align: bottom;
+		padding-bottom: 6mm;
+	}
+	@top-center { content: none; }
+
+	@bottom-left {
+		content: counter(page);
+		font: 9pt serif;
+		vertical-align: top;
+		padding-top: 6mm;
+	}
+	@bottom-center { content: none; }
+}
+
+@page :right {
+	margin: 18mm 16mm 18mm 18mm;
+
+	@top-right {
+		content: string(running-right);
+		font: italic 9pt serif;
+		vertical-align: bottom;
+		padding-bottom: 6mm;
+	}
+	@top-center { content: none; }
+
+	@bottom-right {
+		content: counter(page);
+		font: 9pt serif;
+		vertical-align: top;
+		padding-top: 6mm;
+	}
+	@bottom-center { content: none; }
+}
+
+/* Named pages for front matter — suppress running headers */
+
+@page cover, @page halftitle, @page titlepage, @page copyright-page {
+	@top-left { content: none; }
+	@top-right { content: none; }
+	@top-center { content: none; }
+	@bottom-left { content: none; }
+	@bottom-right { content: none; }
+	@bottom-center { content: none; }
+}
+
+@page chapter:first {
+	@top-left { content: none; }
+	@top-right { content: none; }
+	@top-center { content: none; }
+}
+
+@page :blank {
+	@top-left { content: none; }
+	@top-right { content: none; }
+	@top-center { content: none; }
+	@bottom-left { content: none; }
+	@bottom-right { content: none; }
+	@bottom-center { content: none; }
+}
+
+/* Running header strings — captured per-section from hidden markers */
+
+.running-left  { string-set: running-left  content(text); }
+.running-right { string-set: running-right content(text); }
+
+.running-left,
+.running-right {
+	height: 0;
+	overflow: hidden;
+	visibility: hidden;
+}
+
+/* Section-to-page mapping */
+
+.cover          { page: cover;          break-after: page; }
+.halftitle      { page: halftitle;      break-before: right; break-after: page; }
+.titlepage      { page: titlepage;      break-before: right; break-after: page; }
+.copyright_page { page: copyright-page; break-before: page;  break-after: page; }
+.toc            { page: toc;            break-before: right; break-after: page; }
+
+.chapter,
+.introduction,
+.references,
+.further-reading,
+.biography {
+	page: chapter;
+	break-before: right;
+}
+
+.start-right { break-before: right; }
+.start-left  { break-before: left; }
+
+/* Base typography */
+
+html, body {
+	font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+	font-size: 10.5pt;
+	line-height: 1.45;
+	color: #111;
+}
+
+body { margin: 0; }
+
+p {
+	margin: 0;
+	text-align: justify;
+	hyphens: auto;
+}
+
+p + p { text-indent: 1.2em; }
+
+p.paragraph + p.paragraph { text-indent: 1.2em; }
+
+/* Don't indent the paragraph right after a heading or display block */
+header + p,
+h1 + p, h2 + p, h3 + p, h4 + p,
+figure + p,
+.epigraph-prose + p,
+.epigraph-poetry + p {
+	text-indent: 0;
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* Headings */
+
+h1, h2, h3, h4, h5, h6 {
+	font-weight: normal;
+	break-after: avoid;
+	margin: 0;
+}
+
+h1.component-title {
+	font-size: 20pt;
+	line-height: 1.2;
+	letter-spacing: 0.02em;
+	text-align: center;
+	margin: 0 0 1em 0;
+}
+
+.chapter h1,
+.introduction h1,
+.references h1,
+.biography h1 {
+	font-size: 18pt;
+	text-align: left;
+	margin: 3em 0 1.5em 0;
+}
+
+h2 {
+	font-size: 13pt;
+	font-weight: 600;
+	margin: 1.8em 0 0.4em 0;
+}
+
+h3 {
+	font-size: 11.5pt;
+	font-weight: 600;
+	font-style: italic;
+	margin: 1.4em 0 0.3em 0;
+}
+
+h4 {
+	font-size: 10.5pt;
+	font-weight: 600;
+	margin: 1.2em 0 0.2em 0;
+}
+
+.chapter-number {
+	display: block;
+	font-size: 10pt;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: #666;
+	margin-bottom: 0.4em;
+}
+
+/* Cover + title pages */
+
+.cover {
+	margin: 0;
+	padding: 0;
+}
+.cover figure {
+	margin: 0;
+	padding: 0;
+	text-align: center;
+}
+.cover img {
+	max-width: 100%;
+	max-height: 9in;
+}
+
+.halftitle,
+.titlepage {
+	text-align: center;
+	padding-top: 40%;
+}
+
+.titlepage .author {
+	margin-top: 2em;
+	font-size: 12pt;
+	font-style: italic;
+}
+
+/* Copyright page */
+
+.copyright_page {
+	font-size: 9pt;
+	line-height: 1.5;
+	padding-top: 60%;
+}
+
+.copyright_page p { text-indent: 0; }
+.copyright_page p + p { margin-top: 0.8em; }
+
+/* TOC */
+
+.toc header h1 {
+	text-align: center;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	font-size: 16pt;
+	margin: 0 0 2em 0;
+}
+
+.toc ol, .toc ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.toc li {
+	margin: 0.3em 0;
+}
+
+.toc-chapter { font-weight: 600; }
+.toc-level-one { padding-left: 1.2em; font-size: 9.5pt; color: #444; }
+.toc-unnumbered { font-style: italic; }
+
+/* Figures */
+
+figure {
+	margin: 1em 0;
+	text-align: center;
+	break-inside: avoid;
+}
+
+figure img {
+	max-width: 100%;
+	max-height: 3in;
+}
+
+figure figcaption,
+figure p {
+	font-size: 9pt;
+	font-style: italic;
+	color: #444;
+	margin-top: 0.5em;
+	text-align: center;
+	text-indent: 0;
+}
+
+/* Extracts / epigraphs / callouts */
+
+.epigraph-prose,
+.epigraph-poetry {
+	margin: 1.5em 2em;
+	font-size: 9.5pt;
+	font-style: italic;
+	break-inside: avoid;
+}
+
+.epigraph-prose .source-note,
+.epigraph-poetry .source-note {
+	display: block;
+	text-align: right;
+	font-style: normal;
+	font-size: 9pt;
+	margin-top: 0.4em;
+}
+
+.extract-prose,
+.extract-poetry {
+	margin: 1em 2em;
+	font-size: 9.5pt;
+}
+
+.note,
+.tip,
+.warning,
+.reminder,
+.learning-objectives,
+.focus-questions,
+.review-activity,
+.self-reflection-activities,
+.worked-example,
+.case-study {
+	margin: 1.2em 0;
+	padding: 0.8em 1em;
+	border-left: 3px solid #ccc;
+	background: #f7f7f7;
+	font-size: 10pt;
+}
+
+.note       { border-left-color: #4a90b8; }
+.tip        { border-left-color: #4aa84a; }
+.warning    { border-left-color: #c23e2a; }
+.key-term   { font-style: italic; }
+
+/* Lists */
+
+ul, ol {
+	margin: 0.8em 0;
+	padding-left: 1.8em;
+}
+
+li { margin: 0.2em 0; }
+
+/* Tables */
+
+table {
+	border-collapse: collapse;
+	margin: 1em auto;
+	font-size: 9.5pt;
+	break-inside: avoid;
+}
+
+th, td {
+	padding: 4px 8px;
+	border: 0.5pt solid #ccc;
+	text-align: left;
+	vertical-align: top;
+}
+
+th {
+	background: #f0f0f0;
+	font-weight: 600;
+}
+
+/* Blockquotes */
+
+blockquote {
+	margin: 1em 2em;
+	font-style: italic;
+	break-inside: avoid;
+}
+
+/* KaTeX math — content is pre-rendered; just keep it inline-friendly */
+
+.katex { font-style: normal; }
+.katex-html { white-space: nowrap; }

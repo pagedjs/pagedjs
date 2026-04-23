@@ -1,0 +1,266 @@
+/*
+ * Alice's Adventures in Wonderland — plain CSS Paged Media stylesheet.
+ *
+ * Content ported from electricbookworks/paged-design (alice-in-wonderland).
+ * Page styles translated from the pagedjs-based `_defaults` theme into
+ * standard CSS Paged Media Level 3 + Generated Content for Paged Media L3
+ * so the book paginates via fragmentainers without any pagedjs polyfill.
+ */
+
+/* Page geometry */
+
+@page {
+	size: 5.5in 8.5in;
+	margin: 22mm 18mm 22mm 22mm;
+
+	@top-center {
+		content: string(book-title);
+		font-family: serif;
+		font-style: italic;
+		font-size: 9pt;
+		vertical-align: bottom;
+		padding-bottom: 6mm;
+	}
+
+	@bottom-center {
+		content: counter(page);
+		font-family: serif;
+		font-size: 9pt;
+		vertical-align: top;
+		padding-top: 6mm;
+	}
+}
+
+@page :left {
+	margin: 22mm 22mm 22mm 18mm;
+
+	@top-left {
+		content: string(book-title);
+		font-family: serif;
+		font-style: italic;
+		font-size: 9pt;
+		vertical-align: bottom;
+		padding-bottom: 6mm;
+	}
+	@top-center { content: none; }
+
+	@bottom-left {
+		content: counter(page);
+		font-family: serif;
+		font-size: 9pt;
+		vertical-align: top;
+		padding-top: 6mm;
+	}
+	@bottom-center { content: none; }
+}
+
+@page :right {
+	margin: 22mm 18mm 22mm 22mm;
+
+	@top-right {
+		content: string(chapter-title);
+		font-family: serif;
+		font-style: italic;
+		font-size: 9pt;
+		vertical-align: bottom;
+		padding-bottom: 6mm;
+	}
+	@top-center { content: none; }
+
+	@bottom-right {
+		content: counter(page);
+		font-family: serif;
+		font-size: 9pt;
+		vertical-align: top;
+		padding-top: 6mm;
+	}
+	@bottom-center { content: none; }
+}
+
+/* Named pages — drop running headers on front-matter + first chapter page */
+
+@page title-page {
+	@top-left { content: none; }
+	@top-right { content: none; }
+	@top-center { content: none; }
+	@bottom-left { content: none; }
+	@bottom-right { content: none; }
+	@bottom-center { content: none; }
+}
+
+@page copyright-page {
+	@top-left { content: none; }
+	@top-right { content: none; }
+	@top-center { content: none; }
+}
+
+@page contents-page {
+	@top-left { content: none; }
+	@top-right { content: none; }
+	@top-center { content: none; }
+}
+
+@page chapter:first {
+	@top-left { content: none; }
+	@top-right { content: none; }
+	@top-center { content: none; }
+}
+
+@page :blank {
+	@top-left { content: none; }
+	@top-right { content: none; }
+	@top-center { content: none; }
+	@bottom-left { content: none; }
+	@bottom-right { content: none; }
+	@bottom-center { content: none; }
+}
+
+/* Running-header strings — captured from document content */
+
+.title-page-title {
+	string-set: book-title content();
+}
+
+.chapter > h2 {
+	string-set: chapter-title content();
+}
+
+/* Section-to-page mapping + forced breaks */
+
+.title-page     { page: title-page;    break-after: page; }
+.copyright-page { page: copyright-page; break-before: page; break-after: page; }
+.contents-page  { page: contents-page; break-before: page; break-after: page; }
+.chapter        { page: chapter;       break-before: right; }
+
+/* Typography */
+
+html, body {
+	font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+	font-size: 11pt;
+	line-height: 1.4;
+	color: #111;
+}
+
+body { margin: 0; }
+
+p {
+	margin: 0;
+	text-align: justify;
+	hyphens: auto;
+}
+
+.chapter p + p,
+.copyright-page p + p {
+	text-indent: 1.4em;
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* Title page */
+
+.title-page {
+	text-align: center;
+	padding-top: 35%;
+}
+
+.title-page-title {
+	font-size: 28pt;
+	line-height: 1.1;
+	font-weight: normal;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	margin: 0 0 1.5em 0;
+}
+
+.title-page-author {
+	font-size: 14pt;
+	font-style: italic;
+	margin: 0 0 4em 0;
+}
+
+.title-page-publisher {
+	font-size: 10pt;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+/* Copyright page */
+
+.copyright-page {
+	font-size: 9pt;
+	line-height: 1.5;
+	padding-top: 60%;
+	text-align: left;
+}
+
+.copyright-page p {
+	margin-bottom: 0.8em;
+	text-align: left;
+	text-indent: 0;
+}
+
+/* Contents page */
+
+.contents-page h2 {
+	text-align: center;
+	font-weight: normal;
+	font-size: 18pt;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	margin: 0 0 2.5em 0;
+}
+
+.toc-list {
+	list-style: none;
+	padding: 0;
+	margin: 0 auto;
+	max-width: 28em;
+}
+
+.toc-list li {
+	margin: 0 0 0.6em 0;
+	text-align: left;
+}
+
+.toc-list a {
+	display: block;
+}
+
+/* Chapters */
+
+.chapter {
+	break-before: right;
+}
+
+.chapter > h2 {
+	text-align: center;
+	font-weight: normal;
+	font-size: 16pt;
+	line-height: 1.3;
+	letter-spacing: 0.02em;
+	margin: 4em 0 2em 0;
+	break-after: avoid;
+	string-set: chapter-title content();
+}
+
+.chapter > h2 .chapter-number {
+	display: block;
+	font-size: 11pt;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	margin-bottom: 0.6em;
+	color: #555;
+}
+
+.chapter > p:first-of-type {
+	text-indent: 0;
+}
+
+.chapter > p:first-of-type::first-line {
+	font-variant: small-caps;
+	letter-spacing: 0.04em;
+}
+
+/* Inline italics (preserved from source) */
+
+i, em { font-style: italic; }

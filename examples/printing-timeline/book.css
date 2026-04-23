@@ -1,0 +1,173 @@
+/*
+ * Printing Timeline — demonstrates @page size/orientation changes between
+ * named sections. The essay pages use 5.5×8.5in portrait; the timeline
+ * page flips to landscape for a wide three-column table.
+ */
+
+@page {
+	size: 5.5in 8.5in;
+	margin: 20mm 22mm;
+
+	@top-center {
+		content: string(book-title);
+		font-family: serif;
+		font-style: italic;
+		font-size: 9pt;
+		vertical-align: bottom;
+		padding-bottom: 6mm;
+	}
+
+	@bottom-center {
+		content: counter(page);
+		font-family: serif;
+		font-size: 9pt;
+		vertical-align: top;
+		padding-top: 6mm;
+	}
+}
+
+@page :first {
+	@top-center { content: none; }
+	@bottom-center { content: none; }
+}
+
+@page timeline {
+	size: 8.5in 5.5in;
+	margin: 18mm 22mm;
+
+	@top-center {
+		content: "A Timeline of Early European Printing";
+		font-family: serif;
+		font-style: italic;
+		font-size: 9pt;
+		vertical-align: bottom;
+		padding-bottom: 4mm;
+	}
+
+	@bottom-center {
+		content: counter(page);
+		font-family: serif;
+		font-size: 9pt;
+	}
+}
+
+html, body {
+	font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+	font-size: 11pt;
+	line-height: 1.5;
+	color: #111;
+}
+
+body { margin: 0; }
+
+/* Section → named page mapping */
+
+.titlepage { break-after: page; }
+.essay     { break-before: right; }
+.timeline  { page: timeline; break-before: right; }
+.afterword { break-before: right; }
+
+.titlepage h1 {
+	string-set: book-title content();
+}
+
+/* Title page */
+
+.titlepage {
+	text-align: center;
+	padding-top: 35%;
+}
+
+.titlepage h1 {
+	font-size: 24pt;
+	font-weight: normal;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	margin: 0 0 0.8em 0;
+}
+
+.titlepage .subtitle {
+	font-style: italic;
+	font-size: 12pt;
+	margin: 0 0 3em 0;
+}
+
+.titlepage .byline {
+	font-size: 10pt;
+	letter-spacing: 0.15em;
+	text-transform: uppercase;
+	color: #555;
+}
+
+/* Essay + afterword */
+
+.essay h2, .afterword h2 {
+	font-size: 16pt;
+	font-weight: normal;
+	text-align: center;
+	margin: 3em 0 2em 0;
+	letter-spacing: 0.02em;
+}
+
+.essay p, .afterword p {
+	text-align: justify;
+	hyphens: auto;
+	margin: 0;
+}
+
+.essay p + p, .afterword p + p {
+	text-indent: 1.4em;
+}
+
+.essay p:first-of-type::first-line,
+.afterword p:first-of-type::first-line {
+	font-variant: small-caps;
+	letter-spacing: 0.04em;
+}
+
+/* Timeline (landscape) */
+
+.timeline h2 {
+	font-size: 18pt;
+	font-weight: normal;
+	text-align: center;
+	margin: 0 0 1.2em 0;
+	letter-spacing: 0.02em;
+}
+
+.timeline table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 10pt;
+	line-height: 1.35;
+}
+
+.timeline th {
+	text-align: left;
+	border-bottom: 0.5pt solid #333;
+	padding: 0.4em 0.8em 0.4em 0;
+	font-weight: normal;
+	font-style: italic;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	font-size: 9pt;
+}
+
+.timeline td {
+	padding: 0.35em 0.8em 0.35em 0;
+	vertical-align: top;
+	border-bottom: 0.25pt solid #ddd;
+}
+
+.timeline td:first-child {
+	white-space: nowrap;
+	width: 14%;
+	font-variant-numeric: tabular-nums;
+}
+
+.timeline td:nth-child(2) {
+	width: 26%;
+	font-style: italic;
+}
+
+em, i { font-style: italic; }

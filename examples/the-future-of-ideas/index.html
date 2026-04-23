@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>
+        The Future Of Ideas, by Lawrence Lessig
+    </title>
+    <link rel="stylesheet" href="book.css" />
+    <script type="module" src="/src/polyfill/polyfill.js"></script>
+</head>
+
+<body>
+    <section class="title-page titlepage component-front">
+        <p class="title-page-title">The future of&nbsp;ideas</p>
+        <p class="title-page-subtitle">The fate of the commons in a connected world</p>
+        <p class="title-page-author">Lawrence Lessig</p>
+    </section>
+    <section class="copyright-page copyright_page component-front">
+        <p>Copyright ©2001 Lawrence Lessig</p>
+        <p><a href="http://www.the-future-of-ideas.com/">Creative Commons Attribution Noncommercial</a></p>
+        <p>Published in the United States by Random House, Inc., New York, and simultaneously in Canada by Random House of Canada Limited, Toronto.</p>
+        <p>Random House and colophon are registered trademarks of Random House, Inc.</p>
+        <p>Library of Congress cataloging-in-publication data<br>
+            Lessig, Lawrence.<br>
+            The future of ideas : the fate of the commons in a connected world/LawrenceLessig.<br>
+            p. cm.<br>
+            Includes index.<br>
+            ISBN 0-375-50578-4<br>
+            1. Intellectual property. 2. Copyright and electronic data processing. 3. Internet — Law and legislation. 4. Information society. I. Title.</p>
+        <p>K1401.L472001<br>
+            346.04’8’0285—dc21 2001031968</p>
+        <p>First Edition</p>
+    </section>
+    <section class="dedication-page dedication_page component-front">
+        <p class="dedication">To Bettina,<br>
+            my teacher<br>
+            of the most important<br>
+            lesson.</p>
+    </section>
+    <section class="frontmatter preface component-front">
+        <h1 id="preface">Preface</h1>
+        <p><span class="lead-characters">In 1999,</span> in a book entitled The Control Revolution, journalist and legal scholar Andrew Shapiro described two futures that the Internet might take.<sup id="fnref:P1"><a href="#fn:P1" class="footnote">1</a></sup> The first was the familiar story of increased individual freedom, as the network gave us greater control over our lives, and over the institutions, including government, that regulate our lives. The second was a less familiar warning—of the rebirth of technologies of control, as institutions “disintermediated” by the Internet learned how to alter the network to reestablish their control.</p>
+        <p>Shapiro saw good and bad in both futures. Too much dis-intermediation, he warned, would interfere with collective governance; some balance was needed. But likewise, efforts to rearchitect the Net to reenable control threatened to undermine its potential for individual freedom and growth.</p>
+        <p>Shapiro did not predict which future would be ours. Indeed, his argument was that bits of each future were possible, and that we must choose a balance between them. His account was subtle, but optimistic. If there was a bias to the struggle, he, like most of us then, believed the bias would favor freedom.</p>
+        <p>This book picks up where Shapiro left off. Its message is neither subtle nor optimistic. In the chapters that follow, I argue that we are far enough along to see the future we have chosen. In that future, the counterrevolution prevails. The forces that the original Internet threatened to transform are well on their way to transforming the Internet. Through changes in the architecture that defined the original network, as well as changes in the legal environment within which that network lives, the future that promised great freedom and innovation will not be ours. The future that threatened the reemergence of almost perfect control will.</p>
+        <p>I don’t mean the control of George Orwell’s 1984. The struggle that I describe here is not between free speech and censorship, or between democracy and totalitarianism. The freedom that is my focus here is the creativity and innovation that marked the early Internet. This is the freedom that fueled the greatest technological revolution that our culture has seen since the Industrial Revolution. This is the freedom that promised a world of creativity different from the past.</p>
+        <p>This freedom has been lost. With scarcely anyone even noticing, the network that gave birth to the innovation of the 1990s has been remade from under us; the legal environment surrounding that network has been importantly changed, too. And the result of these two changes together will be an environment of innovation fundamentally different from what it was, or promised to be.</p>
+        <p>Or so it will be unless we do something now. Unless we learn something important about the source of that creativity and innovation, and then protect that source, the Internet will be changed.</p>
+        <p>With dot.busts all around, it is not difficult to argue that this is the winter of the Internet’s life. The question for us is whether the spring will be as silent.</p>
+        <hr>
+        <p><span class="lead-characters">A book</span> like this does not emerge from a library. It has instead been written through hundreds of conversations over many years. I am a law professor, but my argument spans computer design to economics. It is no doubt foolish for anyone to try to pull together such a range of material, but I could never have dared to be so foolish without the patient tutoring of many different people. Among these, I am most grateful to my colleagues at the Electronic Frontier Foundation, including John Gilmore and John Perry Barlow; and the Center for Public Domain, especially Laurie Racine and Bob Young. Jeff Chester of the Center for Media Education and Mark Cooper of the Consumers Union taught me a great deal about media policy and the passion of this struggle. There is a long list of technical experts who have struggled to show me how the network works. Among these</p>
+        <p>I am most grateful to Hal Abelson, Scott Bradner, Ben Edelman, Dewayne Hendricks, Joseph Reagle, David P. Reed, and Jerome Saltzer. Dewayne Hendricks and David P. Reed helped me understand spectrum and, more important, the potential spectrum offered. Peter Huber helped me understand telephone companies and the very different potential they offered. I am grateful as well to an extraordinary collection of law professors, who have built in the field of cyberlaw an amazing community. James Boyle’s book Shamans, Software, and Spleens was my first introduction to the issues that I address here; James Boyle the person has been a steady, invaluable guide since. Jack Balkin, Yochai Benkler, Mark Lemley, Jessica Litman, David Post, and Pam Samuelson have all taught me far more than I could return to them.</p>
+        <p>My work on this book began at Harvard Law School’s Berkman Center. The theme was born in the passionate rants of its extraordinary director, Charlie Nesson. Through our work as colleagues, and on the Microsoft case as well, Jonathan Zittrain helped me see how platforms matter. He has been a constant, if neglected, friend throughout the development of the argument here.</p>
+        <p>I am also especially grateful to the hundreds of readers of The Industry Standard who have reacted to the snippets of this book that I have woven into columns for that magazine. While the furor of many of those readers is sometimes hard to suffer, the insights and wisdom of many have been critical in re-forming the views I express here.</p>
+        <p>Finally, there is a collection of people who figure throughout the story of this book, but who were more central to its writing than the text might reveal. These are the figures who are truly fighting for a cause. Some of them are quite well known—Richard Stallman, for example. Others are well known among lawyers, at least—Dennis Karjala, Jessica Litman, Marc Rotenberg, Pam Samuelson. But others inspire more through their simple and quiet perseverance. Eric Eldred, whom you will meet in the course of these pages, is the best example of this type. These ideas would never have been put into words without the inspiration from people like him.</p>
+        <hr>
+        <p><span class="lead-characters">Early versions</span> of this book were read by a number of people. I am grateful to those who offered critical (and sometimes especially critical) comments—in particular Bruce Ackerman, Yochai Benkler, David Bollier, Scott Hemphill, Dewayne Hendricks, Tom Maddox, Charles Nesson, Richard A. Posner, Barbara van Schewick, Timothy Wu, and Robert Young. My research was aided by an army of students, including Amy Ash, Scott Ashton, Aaron Bukofzer, Sky Canaves, Brian Gustafson, Drew Harris, Scott Hemphill, Matt Kahn, Matt Rice, Hilary Stockton, and Jonathan Sanders. Pauline Reich, Hilary Stockton, and Richard Taketa contributed examples to the text. Chris Guzelian was especially helpful in bringing the book to closure, through both his research and a careful and talented final edit. Bettina Neuefeind, however, remains the world’s greatest editor.</p>
+        <p>I am particularly grateful to Elisa Garza Kammeyer for her work throughout this last year, first as a researcher and finally as an assistant. She will prove to be the one truly famous person mentioned in this book, though that is a story that will take many years to unfold.</p>
+    </section>
+    <section class="contents-page toc component-front">
+        <h1 id="contents">Contents</h1>
+        <ul class="toc-list">
+            <li class="frontmatter-reference"><a href="#preface">Preface</a></li>
+            <li><a href="#free">1: “Free”</a></li>
+            <li>Part I: Dot.commons
+                <ul>
+                    <li>2: Building Blocks: “Commons” and “Layers”
+                        <ul>
+                            <li>The Commons</li>
+                            <li>Layers</li>
+                        </ul>
+                    </li>
+                    <li>3: Commons on the Wires</li>
+                    <li>4: Commons Among the Wired</li>
+                    <li>5: Commons, Wire-less</li>
+                    <li>6: Commons Lessons</li>
+                </ul>
+            </li>
+            <li>Part II: Dot.contrast
+                <ul>
+                    <li>7: Creativity in Real Space
+                        <ul>
+                            <li>Creativity in the Dark Ages</li>
+                            <li>The Arts
+                                <ul>
+                                    <li>Content</li>
+                                    <li>Physical</li>
+                                    <li>Code</li>
+                                </ul>
+                            </li>
+                            <li>Commerce
+                                <ul>
+                                    <li>Coding</li>
+                                    <li>Markets</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    <li>8: Innovation from the Internet
+                        <ul>
+                            <li>New Products from the Net
+                                <ul>
+                                    <li>HTML Books</li>
+                                    <li>MP3</li>
+                                    <li>Film</li>
+                                    <li>Lyric Servers and Culture Databases</li>
+                                </ul>
+                            </li>
+                            <li>New Markets</li>
+                            <li>New Means of Distribution
+                                <ul>
+                                    <li>My.MP3</li>
+                                    <li>Napster</li>
+                                </ul>
+                            </li>
+                            <li>New Demand</li>
+                            <li>New Participation: P2P</li>
+                        </ul>
+                    </li>
+                    </li>
+                </ul>
+            </li>
+            <li>Part III: Dot.control
+                <ul>
+                    <li>9: Old vs. New</li>
+                    <li>10: Controlling the Wires (and Hence the Code Layer)
+                        <ul>
+                            <li>The End-to-End in Telephones</li>
+                            <li>Fat Pipe</li>
+                            <li>AT&amp;T Cable</li>
+                        </ul>
+                    </li>
+                    <li>11: Controlling the Wired (and Hence the Content Layer)
+                        <ul>
+                            <li>Increasing Control
+                                <ul>
+                                    <li>Copyright Bots</li>
+                                    <li>CPHack</li>
+                                    <li>DeCSS</li>
+                                    <li>iCraveTV</li>
+                                    <li>MP3</li>
+                                    <li>Napster</li>
+                                    <li>Eldred</li>
+                                </ul>
+                            </li>
+                            <li>Consequences of Control</li>
+                        </ul>
+                    </li>
+                    <li>12: Controlling Wire-less (and Hence the Physical Layer)</li>
+                    <li>13: What’s Happening Here?</li>
+                    <li>14: Alt. Commons
+                        <ul>
+                            <li>The Physical Layer
+                                <ul>
+                                    <li>Free Spectrum</li>
+                                    <li>Free Highways</li>
+                                </ul>
+                            </li>
+                            <li>The Code Layer
+                                <ul>
+                                    <li>Neutral Platforms</li>
+                                </ul>
+                            </li>
+                            <li>The Content Layer
+                                <ul>
+                                    <li>Copyright
+                                        <ul>
+                                            <li>Five-year renewable terms</li>
+                                            <li>Software copyright</li>
+                                            <li>Protecting innovation</li>
+                                            <li>Protecting music</li>
+                                            <li>Rebuilding the Creative Commons</li>
+                                            <li>Limits on code</li>
+                                            <li>Limits on contract</li>
+                                            <li>Limit commercial exploitation</li>
+                                        </ul>
+                                    </li>
+                                    <li>Patents
+                                        <ul>
+                                            <li>Moratorium</li>
+                                            <li>Damages</li>
+                                            <li>Reform</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>15: What Orrin Understands</li>
+                </ul>
+            </li>
+            <li>Notes</li>
+            <li>Index</li>
+        </ul>
+    </section>
+    <section class="chapter component-body">
+        <h1 id="free"><span class="chapter-number">1</span> “Free”</h1>
+        <p><span class="lead-characters">Davis Guggenheim</span> is a film director. He has produced a range of movies, some commercial, some not. His passion, like his father’s before, is documentaries, and his most recent, and perhaps best, film, The First Year, is about public school teachers in their first year of teaching—a Hoop Dreams for public education.</p>
+        <p>In the process of making a film, a director must “clear rights.” A film based on a copyrighted novel must get the permission of the copyright holder. A song in the opening credits requires the permission of the artist performing the song. These are ordinary and reasonable limits on the creative process, made necessary by a system of copyright law. Without such a system, we would not have anything close to the creativity that directors such as Guggenheim have produced.</p>
+        <p>But what about the stuff that appears in the film incidentally? Posters on a wall in a dorm room, a can of Coke held by the “cigarette smoking man,” an advertisement on a truck in the background? These too are creative works. Does a director need permission to have these in his or her film?</p>
+        <p>“Ten years ago,” Guggenheim explains, “if incidental artwork . . . was recognized by a common person,” then you would have to clear its copyright. Today, things are very different. Now “if any piece of artwork is recognizable by anybody . . . then you have to clear the rights of that and pay” to use the work. “[A]lmost every piece of artwork, any piece of furniture, or sculpture, has to be cleared before you can use it.”<sup id="fnref:1"><a href="#fn:1" class="footnote">2</a></sup></p>
+        <p>Okay, so picture just what this means: As Guggenheim describes it, “[B]efore you shoot, you have this set of people on the payroll who are sub- mitting everything you’re using to the lawyers.” The lawyers check the list and then say what can be used and what cannot. “If you cannot find the original of a piece of artwork . . . you cannot use it.” Even if you can find it, often permission will be denied. The lawyers thus decide what’s allowed in the film. They decide what can be in the story.</p>
+        <p>The lawyers insist upon this control because the legal system has taught them how costly less control can be. The film Twelve Monkeys was stopped by a court twenty-eight days after its release because an artist claimed a chair in the movie resembled a sketch of a piece of furniture that he had designed. The movie Batman Forever was threatened because the Batmobile drove through an allegedly copyrighted courtyard and the original architect demanded money before the film could be released. In 1998, a judge stopped the release of The Devil’s Advocate for two days because a sculptor claimed his art was used in the background.<sup id="fnref:2"><a href="#fn:2" class="footnote">3</a></sup> Such events teach the lawyers that they must control the filmmakers.<sup id="fnref:3"><a href="#fn:3" class="footnote">4</a></sup> They convince studios that creative control is ultimately a legal matter.</p>
+        <p>This control creates burdens, and not just expense. “The cost for me,” Guggenheim says, “is creativity. . . . Suddenly the world that you’re trying to create is completely generic and void of the elements that you would normally create. . . . It’s my job to conceptualize and to create a world, and to bring people into the world that I see. That’s why they pay me as a director. And if I see this person having a certain lifestyle, having this certain art on the wall, and living a certain way, it is essential to . . . the vision I am trying to portray. Now I somehow have to justify using it. And that is wrong.”</p>
+        <hr>
+        <p><span class="lead-characters">This is</span> not a book about filmmaking. Whatever problems filmmakers have, they are tiny in the order of things. But I begin with this example because it points to a much more fundamental puzzle, and one that will be with us throughout this book: What could ever lead anyone to create such a silly and extreme rule? Why would we burden the creative process—not just film, but generally, and not just the arts, but innovation more broadly— with rules that seem to have no connection to innovation and creativity?</p>
+        <p>Copyright law, law professor Jessica Litman has written, is filled with rules that ordinary people would respond to by saying, “There can’t really be a law that says that. That would be silly.”<sup id="fnref:4"><a href="#fn:4" class="footnote">5</a></sup> Yet in fact there is such a law, and it does say just that, and it is, as the ordinary person rightly thinks, silly. So why? What is the mentality that gets us to this place where highly educated, extremely highly paid lawyers run around negotiating for the rights to have a poster in the background of a film about a frat party? Or scrambling to get editors to remove an unsigned billboard? What leads us to build a legal world where the advice a successful director can give to a young artist is this:</p>
+        <blockquote>
+            <p>I would say to an 18-year-old artist, you’re totally free to do whatever you want. But—and then I would give him a long list of all the things that he couldn’t include in his movie because they would not be cleared, legally cleared. That he would have to pay for them. [So freedom? Here’s the freedom]: You’re totally free to make a movie in an empty room, with your two friends.<sup id="fnref:5"><a href="#fn:5" class="footnote">6</a></sup></p>
+        </blockquote>
+        <p><span class="lead-characters">A time</span> is marked not so much by ideas that are argued about as by ideas that are taken for granted. The character of an era hangs upon what needs no defense. Power runs with ideas that only the crazy would draw into doubt. The “taken for granted” is the test of sanity; “what everyone knows” is the line between us and them.</p>
+        <p>This means that sometimes a society gets stuck. Sometimes these unquestioned ideas interfere, as the cost of questioning becomes too great. In these times, the hardest task for social or political activists is to find a way to get people to wonder again about what we all believe is true. The challenge is to sow doubt.</p>
+        <p>And so it is with us. All around us are the consequences of the most significant technological, and hence cultural, revolution in generations. This revolution has produced the most powerful and diverse spur to innovation of any in modern times. Yet a set of ideas about a central aspect of this prosperity—“property”—confuses us. This confusion is leading us to change the environment in ways that will change the prosperity. Believing we know what makes prosperity work, ignoring the nature of the actual prosperity all around, we change the rules within which the Internet revolution lives. These changes will end the revolution.</p>
+        <p>That’s a large claim for so thin a book, so to convince you to carry on, I should qualify it a bit. I don’t mean “the Internet” will end. “The Internet” is with us forever, even if the character of “the Internet” will change. And I don’t pretend that I can prove the demise that I warn of here. There is too much that is contingent, and not yet done, and too little good data to make any convincing predictions.</p>
+        <p>But I do mean to convince you of a blind spot in our culture, and of the harm that this blind spot creates. In the understanding of this revolution and of the creativity it has induced, we systematically miss the role of a crucially important part. We therefore don’t even notice as this part disappears or, more important, is removed. Blind to its effect, we don’t watch for its demise.</p>
+        <p>This blindness will harm the environment of innovation. Not just the innovation of Internet entrepreneurs (though that is an extremely important part of what I mean), but also the innovation of authors or artists more generally. This blindness will lead to changes in the Internet that will undermine its potential for building something new—a potential realized in the original Internet, but increasingly compromised as that original Net is changed.</p>
+        <p>The struggle against these changes is not the traditional struggle between Left and Right or between conservative and liberal. To question assumptions about the scope of “property” is not to question property. I am fanatically pro-market, in the market’s proper sphere. I don’t doubt the important and valuable role played by property in most, maybe just about all, contexts. This is not an argument about commerce versus something else. The innovation that I defend is commercial and noncommercial alike; the arguments I draw upon to defend it are as strongly tied to the Right as to the Left.</p>
+        <p>Instead, the real struggle at stake now is between old and new. The story on the following pages is about how an environment designed to enable the new is being transformed to protect the old—transformed by courts, by legislators, and by the very coders who built the original Net. Old versus new. That battle is nothing new. As Machiavelli wrote in The Prince:</p>
+        <blockquote>
+            <p>Innovation makes enemies of all those who prospered under the old regime, and only lukewarm support is forthcoming from those who would prosper under the new. Their support is indifferent partly from fear and partly because they are generally incredulous, never really trusting new things unless they have tested them by experience.<sup id="fnref:6"><a href="#fn:6" class="footnote">7</a></sup></p>
+        </blockquote>
+        <p>And so it is today with us: those who prospered under the old regime are threatened by the Internet; this is the story of how they react. Those who would prosper under the new regime have not risen to defend it against the old; whether they will is the question this book asks. The answer so far is clear: They will not.</p>
+        <hr>
+        <p><span class="lead-characters">There are</span> two futures in front of us, the one we are taking and the one we could have. The one we are taking is easy to describe. Take the Net, mix it with the fanciest TV, add a simple way to buy things, and that’s pretty much it. It is a future much like the present. Though I don’t (yet) believe this view of America Online (AOL), it is the most cynical image of Time Warner’s marriage to AOL: the forging of an estate of large-scale networks with power over users to an estate dedicated to almost perfect control over content. That content will not be “broadcast” to millions at the same time; it will be fed to users as users demand it, packaged in advertising precisely tailored to the user. But the service will still be essentially one-way, and the freedom to feed back, to feed creativity to others, will be just about as constrained as it is today. These constraints are not the constraints of economics as it exists today—not the high costs of production or the extraordinarily high costs of distribution. These constraints instead will be burdens created by law—by intellectual property as well as other government-granted exclusive rights. The promise of many-to-many communication that defined the early Internet will be replaced by a reality of many, many ways to buy things and many, many ways to select among what is offered. What gets offered will be just what fits within the current model of the concentrated systems of distribution: cable television on speed, addicting a much more manageable, malleable, and sellable public.</p>
+        <p>The future that we could have is much harder to describe. It is harder because the very premise of the Internet is that no one can predict how it will develop. The architects who crafted the first protocols of the Net had no sense of a world where grandparents would use computers to keep in touch with their grandkids. They had no idea of a technology where every song imaginable is available within thirty seconds’ reach. The World Wide Web (WWW) was the fantasy of a few MIT computer scientists. The perpetual tracking of preferences that allows a computer in Washington State to suggest an artist I might like because of a book I just purchased was an idea that no one had made famous before the Internet made it real.</p>
+        <p>Yet there are elements of this future that we can fairly imagine. They are the consequences of falling costs, and hence falling barriers to creativity. The most dramatic are the changes in the costs of distribution; but just as important are the changes in the costs of production. Both are the consequences of going digital: digital technologies create and replicate reality much more efficiently than nondigital technology does. This will mean a world of change.</p>
+        <p>These changes could have an effect in every sphere of social life. Begin with the creative sphere, and let’s start with creativity off-line, long before the law tried to regulate it through “copyright.”</p>
+        <p>There was a time (it was the time of the framing of our Constitution) when creativity was essentially unregulated. As we’ll see in chapter 11, the law of copyright effectively regulated publishers only. Its scope was just “maps, charts, and books.” That meant every other aspect of creative life was free. Music could be performed in public without a license from a lawyer; a novel could be turned into a play even if the novel was copyrighted. A story could be adapted into a different story; many were, as the very act of creativity was understood to be the act of taking something and re-forming it into something (ever so slightly) new. The public domain was vast and rich—the works of Shakespeare had just fallen from the control of publishers in England; they would not have been protected in the United States even if they had not.<sup id="fnref:7"><a href="#fn:7" class="footnote">8</a></sup></p>
+        <p>It’s not clear who got to participate in this creativity. No doubt social norms meant that the right did not reach blindly across the sexes or races. But the spirit of the times was storytelling, as a society defined itself by the stories it told, and the law had no role in deciding who got to tell what stories. An old man fortunate enough to read might learn of the struggles with pirates in the Gulf of Tripoli. He would retell this story to others in the town square. A local troupe of actors might stage the struggle for patrons of a local pub. If compelling, the troupe might move to the town next over and retell the story.</p>
+        <p>It makes no sense to say that that world was “more creative” than ours. My point is not about quantity, or even quality, and my argument does not imagine a “golden age.” The point instead is about the nature of the constraints on this practice of creativity: no doubt there were technical constraints on it; no doubt these were important and real. But except for important subject matter constraints imposed by the law, the law had essentially no role in saying how one person could take and remake the work of someone else. This act of creativity was free, or at least free of the law.</p>
+        <p>Skip ahead to just a few years in front of 2001 and think about the potential for creativity then. Digital technology has radically reduced the cost of digital creations. As we will see more clearly below, the cost of filmmaking is a fraction of what it was just a decade ago. The same is true for the production of music or any digital art. Using what we might call a “music processor,” students in a high school music class can compose symphonies that are played back to the composer. Imagine the cost of that just ten years ago (both to educate the composer about how to write music and to hire the equipment to play it back). Digital tools dramatically change the horizon of opportunity for those who could create something new.<sup id="fnref:8"><a href="#fn:8" class="footnote">9</a></sup></p>
+        <p>And not just for those who would create something “totally new,” if such an idea is even possible. Think about the ads from Apple Computer urging that “consumers” do more than simply consume:</p>
+        <blockquote>
+            <p>Rip, mix, burn,</p>
+        </blockquote>
+        <p>Apple instructs.</p>
+        <blockquote>
+            <p>After all, it’s your music.</p>
+        </blockquote>
+        <p>Apple, of course, wants to sell computers. Yet its ad touches an ideal that runs very deep in our history. For the technology that they (and of course others) sell could enable this generation to do with our culture what generations have done from the very beginning of human society: to take what is our culture; to “rip” it—meaning to copy it; to “mix” it—meaning to reform it however the user wants; and finally, and most important, to “burn” it—to publish it in a way that others can see and hear.<sup id="fnref:9"><a href="#fn:9" class="footnote">10</a></sup> Digital technology could enable an extraordinary range of ordinary people to become part of a creative process. To move from the life of a “consumer” (just think about what that word means—passive, couch potato, <em>fed</em>) of music—and not just music, but film, and art, and commerce—to a life where one can individually and collectively participate in making something new.</p>
+        <p>Now obviously, in some form, this ability predates digital technology. Rap music is a genre that is built upon “ripping” (and, relatedly, “sampling”) the music of others, mixing that music with lyrics or other music, and then burning that remixing onto records or tapes that get sold to others.<sup id="fnref:10"><a href="#fn:10" class="footnote">11</a></sup> Jazz was no different a generation before. Music in particular, but not just music, has always been about using what went before in a way that empowers creators to do something new.<sup id="fnref:11"><a href="#fn:11" class="footnote">12</a></sup></p>
+        <p>But now we have the potential to expand the reach of this creativity to an extraordinary range of culture and commerce. Technology could enable a whole generation to <em>create</em>—remixed films, new forms of music, digital art, a new kind of storytelling, writing, a new technology for poetry, criticism, political activism—and then, through the infrastructure of the Internet, <em>share</em> that creativity with others.</p>
+        <p>This is the art through which free culture is built. And not just through art. The future that I am describing is as important to commerce as to any other field of creativity. Though most distinguish innovation from creativity, or creativity from commerce, I do not. The network that I am describing enables both forms of creativity. It would leave the network open to the widest range of commercial innovation; it would keep the barriers to this creativity as low as possible.</p>
+        <p>Already we can see something of this potential. The open and neutral platform of the Internet has spurred hundreds of companies to develop new ways for individuals to interact. E-mail was the start; but most of the messages that now build contact are the flashes of chat in groups or between individuals—as spouses (and others) live at separate places of work with a single window open to each other through an instant messenger. Groups form easily to discuss any issue imaginable; public debate is enabled by removing perhaps the most significant cost of human interaction— synchronicity. I can add to your conversation tonight; you can follow it up tomorrow; someone else, the day after.</p>
+        <p>And this is just the beginning, as the technology will only get better. Thousands could experiment on this common platform for a better way; millions of dot.com dollars will flow down the tube; but then a handful of truly extraordinary innovations comes from these experiments. A wristwatch for kids that squeezes knowingly as a mother touches hers, thirty miles away. A Walkman where lovers can whisper to each other between songs, though separated by an ocean. A technology to signal two people that both are available to talk on the <em>phone—now</em>. A technology to enable a community to decide local issues through deliberation in virtual juries. The potential can only be glimpsed. And contrary to the technology doomsayers, this is a potential for making human life more, not less, human.</p>
+        <p>But just at the cusp of this future, at the same time that we are being pushed to the world where anyone can “rip, mix, [and] burn,” a countermovement is raging all around. To ordinary people, this slogan from Apple seems benign enough; to lawyers in the content industry, it is high treason. To the lawyers who prosecute the laws of copyright, the very idea that the music on “your” CD is “your music” is absurd. “Read the license,” they’re likely to demand. “Read the law,” they’ll say, piling on. This culture that you sing to yourself, or that swims all around you, this music that you pay for many times over—when you hear it on commercial radio, when you buy a CD, when you pay a surplus at a large restaurant so that it can play the same music on its speakers, when you purchase a movie ticket where the song is the theme—this music is <em>not yours</em>. You have no “right” to rip it, or to mix it, or especially to burn it. You may have, the lawyers will insist, <em>permission</em> to do these things. But don’t confuse Hollywood’s grace with your rights. These parts of our culture, these lawyers will tell you, are the property of the few. The law of copyright makes them so, even though (as I will show in the chapters that follow) the law of copyright was never meant to create any such power.</p>
+        <p>Indeed, the best evidence of this conflict is again Apple itself. For the very same machines that Apple sells to “rip, mix, [and] burn” music are programmed to make it impossible for ordinary users to “rip, mix, [and] burn” Hollywood’s movies. Try to “rip, mix, [and] burn” Disney’s 102 Dalmatians and it’s your computer that will get ripped, not the content. Software, or code, protects this content, and Apple’s machine protects this code. It may be your music, but it’s not your film. Film you can rip, mix, and burn only as Hollywood allows. It controls that creativity—it, and the law that backs it up.</p>
+        <p>This struggle is just a token of a much broader battle, for the model that governs film is slowly being pushed to every kind of content. The changes we see affect every front of human creativity. They affect commercial as well as noncommercial activities, the arts as well as the sciences. They are as much about growth and jobs as they are about music and film. And how we decide these questions will determine much about the kind of society we will become. It will determine what the “free” means in our selfcongratulatory claim that we are now, and will always be, a “free society.”</p>
+        <p>This is a struggle about an ideal—about what rules should govern the freedom to innovate. I would call it a “moral question,” but that sounds too personal, or private. One might call it a political question, but most of us work hard to ignore the absurdities of ordinary politics. It is instead best described as a constitutional question: it is about the fundamental values that define this society and whether we will allow those values to change. Are we, in the digital age, to be a free society? And what precisely would that idea mean?</p>
+        <hr>
+        <p><span class="lead-characters">To answer</span> these questions, we must put them into context. That’s what I will do in the balance of this chapter. Step back from the conflict about music or innovation, and think about resources in a society more generally. How are resources, in this vague, general sense, ordered? Who decides who gets access to what?</p>
+        <p>Every society has resources that are free and resources that are controlled. Free resources are those available for the taking. Controlled resources are those for which the permission of someone is needed before the resource can be used. Einstein’s theory of relativity is a free resource. You can take it and use it without the permission of anyone. Einstein’s last residence in Princeton, New Jersey, is a controlled resource. To sleep at 112 Mercer Street requires the permission of the Institute for Advanced Study.</p>
+        <p>Over the past hundred years, much of the heat in political argument has been about which system for controlling resources—the state or the market—works best. The Cold War was a battle of just this sort. The socialist East placed its faith in the government to allocate and regulate resources; the free-market West placed its faith in the market for allocating or regulating resources. The struggle was between the state and the market. The question was which system works best.</p>
+        <p>That war is over. For most resources, most of the time, the market trumps the state. There are exceptions, of course, and dissenters still. But if the twentieth century taught us one lesson, it is the dominance of private over state ordering. Markets work better than Tammany Hall in deciding who should get what, when. Or as Nobel Prize–winning economist Ronald Coase put it, whatever problems there are with the market, the problems with government are far more profound.</p>
+        <p>This, however, is a new century; our questions will be different. The issue for us will not be which system of exclusive control—the government or the market—should govern a given resource. The question for us comes before: not whether the market or the state but, for any given resource, whether that resource should be controlled or free.</p>
+        <p>“Free.”</p>
+        <p>So deep is the rhetoric of control within our culture that whenever one says a resource is “free,” most believe that a price is being quoted—free, that is, as in zero cost. But “free” has a much more fundamental meaning—in French, libre rather than gratis, or for us non–French speakers, and as the philosopher of our age and founder of the Free Software Foundation Richard Stallman puts it, “free, not in the sense of free beer, but free in the sense of free speech.”<sup id="fnref:12"><a href="#fn:12" class="footnote">13</a></sup> A resource is “free” if (1) one can use it without the permission of anyone else; or (2) the permission one needs is granted neutrally. So understood, the question for our generation will be not whether the market or the state should control a resource, but whether that resource should remain free.<sup id="fnref:13"><a href="#fn:13" class="footnote">14</a></sup></p>
+        <p>This is not a new question, though we’ve been well trained to ignore it. Free resources have always been central to innovation, creativity, and democracy. The roads are free in the sense I mean; they give value to the businesses around them. Central Park is free in the sense I mean; it gives value to the city that it centers. A jazz musician draws freely upon the chord sequence of a popular song to create a new improvisation, which, if popular, will itself be used by others. Scientists plotting an orbit of a spacecraft draw freely upon the equations developed by Kepler and Newton and modified by Einstein. Inventor Mitch Kapor drew freely upon the idea of a spreadsheet—VisiCalc—to build the first killer application for the IBM PC—Lotus 1-2-3. In all of these cases, the availability of a resource that remains outside the exclusive control of someone else—whether a government or a private individual—has been central to progress in science and the arts. It will also remain central to progress in the future.</p>
+        <p>Yet lurking in the background of our collective thought is a hunch that free resources are somehow inferior. That nothing is valuable that isn’t restricted. That we shouldn’t want, as Groucho Marx might put it, any resource that would willingly have us. As Yale professor Carol Rose writes, our view is that “the whole world is best managed when divided among private owners,”<sup id="fnref:14"><a href="#fn:14" class="footnote">15</a></sup> so we proceed as quickly as we can to divide all resources among private owners so as to better manage the world.</p>
+        <p>This is the taken-for-granted idea that I spoke of at the start: that control is good, and hence more control is better; that progress always comes from dividing resources among private owners; that the more dividing we do, the better off we will be; that the free is an exception, or an imperfection, which depends upon altruism, or carelessness, or a commitment to communism.</p>
+        <p>Free resources, however, have nothing to do with communism. (The Soviet Union was not a place with either free speech or free beer.) Neither are the resources that I am talking about the product of altruism. I am not arguing that there is such a thing as a “free lunch.” There is no manna from heaven. Resources cost money to produce. They must be paid for if they are to be produced.</p>
+        <p>But how a resource is produced says nothing about how access to that resource is granted. Production is different from consumption. And while the ordinary and sensible rule for most goods is the “pay me this for that” model of the local convenience store, a second’s reflection reveals that there is a wide range of resources that we make available in a completely different way.</p>
+        <p>Think of music on the radio, which you consume without paying anything. Or the roads that you drive upon, which are paid for independently of their use. Or the history that we hear about without ever paying the researcher. These too are resources. They too cost money to produce. But we organize access to these resources differently from the way we organize access to chewing gum. To get access to these, you don’t have to pay up front. Sometimes you don’t have to pay at all. And when you do have to pay, the price is set neutrally or without regard to the user, inside or outside the company. And for good reason, too. Access to chewing gum may rightly be controlled all the way down; but access to roads, and history, and control of our government must always, and sensibly, remain “free.”</p>
+        <hr>
+        <p><span class="lead-characters">The argument</span> of this book is that always and everywhere, free resources have been crucial to innovation and creativity; that without them, creativity is crippled. Thus, and especially in the digital age, the central question becomes not whether government or the market should control a resource, but whether a resource should be controlled at all. Just because control is possible, it doesn’t follow that it is justified. Instead, in a free society, the burden of justification should fall on him who would defend systems of control.</p>
+        <p>No simple answer will satisfy this demand. The choice is not between all or none. Obviously many resources must be controlled if they are to be produced or sustained. I should have the right to control access to my house and my car. You shouldn’t be allowed to rifle through my desk. Microsoft should have the right to control access to its source code. Hollywood should have the right to charge admission to its movies. If one couldn’t control access to these resources, or resources called “mine,” one would have little incentive to work to produce these resources, including those called mine.</p>
+        <p>But likewise, and obviously, many resources should be free. The right to criticize a government official is a resource that is not, and should not be, controlled. I shouldn’t need the permission of the Einstein estate before I test his theory against newly discovered data. These resources and others gain value by being kept free rather than controlled. A mature society realizes that value by protecting such resources from both private and public control.</p>
+        <p>We need to learn this lesson again. The opportunity for this learning is the Internet. No modern phenomenon better demonstrates the importance of free resources to innovation and creativity than the Internet. To those who argue that control is necessary if innovation is to occur, and that more control will yield more innovation, the Internet is the simplest and most direct reply. For as I will show in the chapters that follow, the defining feature of the Internet is that it leaves resources free. The Internet has provided for much of the world the greatest demonstration of the power of freedom— and its lesson is one we must learn if its benefits are to be preserved.</p>
+        <p>Yet at just the time that the Internet is reminding us about the extraordinary value of freedom, the Internet is being changed to take that freedom away. Just as we are beginning to see the power that free resources produce, changes in the architecture of the Internet—both legal and technical—are sapping the Internet of this power. Fueled by a bias in favor of control, pushed by those whose financial interests favor control, our social and political institutions are ratifying changes in the Internet that will reestablish control and, in turn, reduce innovation on the Internet and in society generally.</p>
+        <p>I am dead against the changes we are seeing, but it is too much to believe I could convince you that the full range is wrong. My aim is much more limited. My hope is to show you the other side of what has become a takenfor- granted idea—the view that control of some sort is always better. If you stay with me to the end, then I want you to leave this book simply with a question about whether control is best. I don’t have the data to prove anything more than this limited hope. But we do have a history to show that there is something important here to understand.</p>
+        <hr>
+        <p><span class="lead-characters">This showing</span> moves in three steps. In the part that follows, I introduce more formally what I mean by “free.” I relate that concept to the notion of “the commons” and then introduce three contexts where resources in the Internet are held in common. These commons are related to the innovation the Internet has produced. My aim in this first part is to show just how.</p>
+        <p>I then consider in part II a parallel environment for innovation and creativity in “real space”—the space not tied directly to the Internet, though increasingly affected by it. This is the space where records are now made, books are still written, and film is primarily shot. This space does not present the commons the Internet is—and for good reason, too. The character of production in real space does not permit the freedom that the Internet does. The constraint on creativity it yields there is a necessary, if unfortunate, feature of that space.</p>
+        <p>This context of creativity has been changed by the Internet. In the balance of part II, I offer examples of how. These examples will show how many of the constraints that affected real-space creativity have been removed by the architecture, and original legal context, of the Internet. These limitations, perhaps justified before, are justified no more.</p>
+        <p>Or at least, were justified no more. For the argument of the third and final part of this book is that the environment of the Internet is now changing. Features of the architecture—both legal and technical—that originally created this environment of free creativity are now being changed. They are being changed in ways that will reintroduce the very barriers that the Internet originally removed.</p>
+        <p>These barriers, however, don’t have the neutral justification that the constraints of real-space economics do.<sup id="fnref:15"><a href="#fn:15" class="footnote">16</a></sup> If there are constraints here, it is simply because we are building them in. And as I will argue, there are strong reasons why many are trying to rebuild these constraints: they will enable these existing and powerful interests to protect themselves from the competitive threat the Internet represents. The old, in other words, is bending the Net to protect itself against the new.</p>
+    </section>
+    <section class="notes component-back">
+        <h1 id="notes">Notes</h1>
+        <p>Note: All URLs given as citations are subject to change.</p>
+    </section>
+    <section class="footnotes component-back">
+        <ol>
+            <li id="fn:P1">
+                <p>Andrew L. Shapiro, The Control Revolution: How the Internet Is Putting Individuals in Charge and Changing the World We Know (New York: PublicAffairs, 1999). <a href="#fnref:P1" class="reversefootnote">↩</a></p>
+            </li>
+            <li id="fn:1">
+                <p>Telephone interview with Davis Guggenheim, November 15, 2000. The law on the books in this area (as distinct from what directors and lawyers working for directors think) is “by no means certain.” See Melville B. Nimmer and David Nimmer, “Nimmer on Copyright,” §13.05[D][3], at 13-222 (2001). <a href="#fnref:1" class="reversefootnote">↩</a></p>
+            </li>
+            <li id="fn:2">
+                <p>For these cases and others, see the extraordinarily helpful site http://www. benedict.com/visual/visual.htm. See also Daniel B. Wood, “Hollywood Loves an Original Idea,” Christian Science Monitor, December 15, 1997, http://www.csmonitor.com/ durable/1997/12/15/us/us.4.html; Woods v. Universal City Studios, Inc., 920 F. Supp. 62 (SDNY 1996) (12 Monkeys). <a href="#fnref:2" class="reversefootnote">↩</a></p>
+            </li>
+            <li id="fn:3">
+                <p>See Matthew C. Lucas, “The De Minimis Dilemma: A Bedeviling Problem of Definitions and a New Proposal for a Notice Rule,” Journal of Technology Law &amp; Policy 4, no. 3 (2000): 2 (http://journal.law.ufl.edu/~techlaw/4-3/lucas.html). <a href="#fnref:3" class="reversefootnote">↩</a></p>
+            </li>
+            <li id="fn:4">
+                <p>Jessica Litman, Digital Copyright (Amherst, N.Y.: Prometheus Books, 2001), 244–45. <a href="#fnref:4" class="reversefootnote">↩</a></p>
+            </li>
+            <li id="fn:5">
+                <p>Telephone interview with Davis Guggenheim. <a href="#fnref:5" class="reversefootnote">↩</a></p>
+            </li>
+            <li id="fn:6">
+                <p>Niccolò Machiavelli, The Prince, 2nd ed. (London and New York: W. W. Norton, 1992), 17. <a href="#fnref:6" class="reversefootnote">↩</a></p>
+            </li>
+            <li id="fn:7">
+                <p>In 1710, the English Parliament passed the Statute of Anne, which, to the horror of its original supporters, was amended to limit the term of copyright to twenty-eight years. In 1774, the House of Lords finally upheld the limit, permitting the works of Shakespeare to fall into the public domain for the first time. Donaldson v. Becket, English Reports 98 (House of Lords, 1774), 251, overturning Millar v. Taylor, Burroughs 4 (1769): 2303, 2308. See Mark Rose, Authors and Owners (Cambridge, Mass.: Harvard University Press, 1993), 97. Had the work of Shakespeare not fallen into the public domain, it would not have been protected in the United States, because foreign copyrights were not protected in the United States until 1891. T. Bender and D. Sampliner, “Poets, Pirates, and the Creation of American Literature,” New York University Journal of International Law &amp; Politics 29 (1997): 255. Americans were free to copy English works without the permission of English authors and were free to translate foreign works without the permission of foreign copyright holders. <a href="#fnref:7" class="reversefootnote">↩</a></p>
+            </li>
+            <li id="fn:8">
+                <p>For an introduction, see “The Future of Digital Entertainment” (Special Report), Scientific American 283 (2000): 47. <a href="#fnref:8" class="reversefootnote">↩</a></p>
+            </li>
+            <li id="fn:9">
+                <p>Apple, of course, means something a bit narrower by the term mix. See http://www. apple.com/imac/digitalmusic.html: “Because iTunes is really about freedom. The freedom, first and foremost, to play songs in the order you want, not the order they were first recorded on CD. The freedom to mix and match artists and musical categories as it suits you. The freedom to create your own music CDs. And the freedom to put more than a hundred MP3 songs on a single CD.” <a href="#fnref:9" class="reversefootnote">↩</a></p>
+            </li>
+            <li id="fn:10">
+                <p>The relationship to low-cost production is no accident with some modern music. As John Leland describes it, “The digital sampling device has changed not only the sound of pop music, but also the mythology. It has done what punk rock threatened to do: made everybody into a potential musician, bridged the gap between performer and audience.” Siva Vaidhyanathan, Copyrights and Copywrongs: The Rise of Intellectual Property and How It Threatens Creativity (New York: New York University Press, 2001), 138. By keeping the cost low, and hence the distance between creator and consumer short, the genre aspires to keep the range of creators as broad as possible. That aspiration for music could, I argue in this book, become an aspiration for creativity more generally. <a href="#fnref:10" class="reversefootnote">↩</a></p>
+            </li>
+            <li id="fn:11">
+                <p>This is the character of Caribbean music as well. “Every new version will slightly modify the original tune,” but then, obviously, draw upon and copy it. Ibid., 136. <a href="#fnref:11" class="reversefootnote">↩</a></p>
+            </li>
+            <li id="fn:12">
+                <p>Richard Stallman has been likened to the Moses of what I will call the “open code” movement. The likeness is indeed striking. As I describe in chapter 4, below, Stallman began the movement to build a free operating system. But as with Moses, it was another leader, Linus Torvalds, who finally carried the movement into the promised land by facilitating the development of the final part of the OS puzzle. Like Moses, too, Stallman is both respected and reviled by allies within the movement. He is an unforgiving, and hence for many inspiring, leader of a critically important aspect of modern culture. I have deep respect for the principle and commitment of this extraordinary individual, though I also have great respect for those who are courageous enough to question his thinking and then sustain his wrath. Stallman insists that those who would advance the values of the free software movement must adopt the language “free” rather than “open.” This seems to me an unproductive debate. To the extent Stallman believes that people dilute the insights of the free software movement by minimizing its connection to fundamental values, he is correct. The importance of free and open source software is much more than business, or efficient code. But the remedy to narrowness is not magic words—especially when the magic words tend to confuse rather than clarify. I am partial to the term open—as in open society; I believe it is properly a reference to values as well as the licenses under which code is distributed; and by “open code” I mean to refer to the values across both technical and legal contexts that promote a world where governing structures—code— are fundamentally free. are behind it, see Working Group on Libre Software, “Free Software/Open Source: Information Society Opportunities for Europe?,” Version 1.2 (April 2000), http://eu. conecta.it/paper.pdf. <a href="#fnref:12" class="reversefootnote">↩</a></p>
+            </li>
+            <li id="fn:13">
+                <p>In the terms of legal theory, there are two distinct ways in which a resource could be “free” in the sense I mean. Either no one would have any entitlement to the resource, or if someone did have an entitlement, the resource would be protected by a liability rather than a property rule. See Guido Calabresi and Douglas Melamed, “Property Rules, Liability Rules, and Inalienability: One View of the Cathedral,” Harvard Law Review 85 (1972): 1089. See also Robert P. Merges, “Institutions for Intellectual Property Transactions: The Case of Patent Pools,” in Expanding the Boundaries of Intellectual Property, Rochelle Cooper Dreyfuss and Diane Leenheer Zimmerman, eds. (Oxford: Oxford University Press, 2001), 123, 131 (“The essence of this Framework is this: Calabresi and Melamed assign all legal entitlements to one of two rules, ‘property rules’ and ‘liability rules.’ The former are best described as ‘absolute permission rules’: one cannot take these entitlements without prior permission of the owner. The rightholder, acting individually, thus sets the price. Most real estate fits this description. By contrast, liability rules are best described as ‘take now, pay later.’ They allow for nonowners to take the entitlement without permission of the owner, so long as they adequately compensate the owner later. In the Calabresi-Melamed Framework, ex post adequate compensation is deemed ‘collective valuation.’ ”). <a href="#fnref:13" class="reversefootnote">↩</a></p>
+            </li>
+            <li id="fn:14">
+                <p>Carol Rose, “The Comedy of the Commons: Custom, Commerce, and Inherently Public Property,” University of Chicago Law Review 53 (1986): 711, 712 . <a href="#fnref:14" class="reversefootnote">↩</a></p>
+            </li>
+            <li id="fn:15">
+                <p>I don’t mean that all such barriers will be properly considered “neutral.” Sometimes barriers are merely a tool for raising rivals’ costs. Some of those nonneutral barriers will be remedied through antitrust law. But I’m assuming the general case is benign in real space. <a href="#fnref:15" class="reversefootnote">↩</a></p>
+            </li>
+        </ol>
+    </section>
+</body>
+
+</html>

@@ -1,0 +1,459 @@
+@page {
+  size: 5.5in 8.5in;           /* trade paperback */
+  margin: 0.875in 0.75in 1in 0.75in;
+
+  @top-left {
+    content: "T. S. Eliot";
+    font-family: "Cormorant Garamond", "EB Garamond", Garamond, serif;
+    font-size: 7.5pt;
+    font-variant: small-caps;
+    text-transform: lowercase;
+    letter-spacing: 1.5px;
+    color: #888;
+    vertical-align: bottom;
+    padding-bottom: 4pt;
+    border-bottom: 0.4pt solid #ccc;
+  }
+
+  @top-right {
+    content: string(section-title);
+    font-family: "Cormorant Garamond", "EB Garamond", Garamond, serif;
+    font-size: 7.5pt;
+    font-style: italic;
+    color: #888;
+    vertical-align: bottom;
+    padding-bottom: 4pt;
+    border-bottom: 0.4pt solid #ccc;
+  }
+
+  @bottom-center {
+    content: counter(page);
+    font-family: "Cormorant Garamond", "EB Garamond", Garamond, serif;
+    font-size: 8pt;
+    color: #888;
+    padding-top: 8pt;
+  }
+
+  @footnote {
+    border-top: 0.4pt solid #999;
+    padding-top: 6pt;
+    margin-top: 12pt;
+    float: bottom;
+  }
+}
+
+@page :first {
+  margin-top: 2.5in;
+  @top-left { content: none; }
+  @top-right { content: none; }
+  @bottom-center { content: none; }
+}
+
+@page :left {
+  margin-left: 0.875in;
+  margin-right: 0.625in;
+
+  @top-left {
+    content: "T. S. Eliot";
+  }
+  @top-right {
+    content: string(section-title);
+  }
+
+  @bottom-left {
+    content: counter(page);
+    font-family: "Cormorant Garamond", "EB Garamond", Garamond, serif;
+    font-size: 8pt;
+    color: #888;
+    padding-top: 8pt;
+  }
+  @bottom-center { content: none; }
+}
+
+@page :right {
+  margin-left: 0.625in;
+  margin-right: 0.875in;
+
+  @top-left {
+    content: string(section-title);
+    font-style: italic;
+  }
+  @top-right {
+    content: "The Waste Land";
+    font-style: normal;
+    font-variant: small-caps;
+    text-transform: lowercase;
+    letter-spacing: 1.5px;
+  }
+
+  @bottom-right {
+    content: counter(page);
+    font-family: "Cormorant Garamond", "EB Garamond", Garamond, serif;
+    font-size: 8pt;
+    color: #888;
+    padding-top: 8pt;
+  }
+  @bottom-center { content: none; }
+}
+
+@page :blank {
+  @top-left { content: none; }
+  @top-right { content: none; }
+  @bottom-left { content: none; }
+  @bottom-center { content: none; }
+  @bottom-right { content: none; }
+}
+
+@page notes {
+  @top-right {
+    content: "Notes on The Waste Land";
+    font-style: italic;
+    font-variant: normal;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+}
+
+
+:root {
+  --serif: "Cormorant Garamond", "EB Garamond", "Garamond Premier Pro",
+           Garamond, "Palatino Linotype", Palatino, serif;
+  --text:  #1a1a1a;
+  --muted: #666;
+  --rule:  #ccc;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--serif);
+  font-size: 11pt;
+  line-height: 1.55;
+  color: var(--text);
+  max-width: 32em;
+  margin: 0 auto;
+  padding: 2em 1em;
+}
+
+
+.poem-title {
+  text-align: center;
+  margin-bottom: 2em;
+  string-set: section-title "The Waste Land";
+}
+
+.poem-title h1 {
+  font-size: 2em;
+  font-weight: 400;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin-bottom: 0.25em;
+}
+
+.poem-title .author {
+  font-size: 1.1em;
+  font-style: italic;
+  color: var(--muted);
+  letter-spacing: 2px;
+}
+
+.epigraph {
+  max-width: 22em;
+  margin: 2em auto 3em;
+  text-align: center;
+  page: auto;
+  break-after: avoid;
+}
+
+.epigraph blockquote {
+  font-size: 0.9em;
+  line-height: 1.5;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.epigraph blockquote p {
+  text-align: center;
+}
+
+.dedication {
+  margin-top: 1.5em;
+  font-size: 0.95em;
+  font-variant: small-caps;
+  text-transform: lowercase;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.dedication i {
+  font-variant: normal;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+
+.poem-section {
+  break-before: page;
+}
+
+.poem-section header {
+  text-align: center;
+  padding: 3em 0 2em;
+  break-after: avoid;
+}
+
+.poem-section header h2 {
+  font-size: 1.3em;
+  font-weight: 400;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  string-set: section-title content();
+}
+
+
+.verse-block {
+  margin-bottom: 0;
+  break-inside: avoid-page;
+}
+
+.verse-block.stanza-break {
+  margin-top: 1.3em;
+}
+
+p.verse {
+  text-align: left;
+  text-indent: 0;
+  padding-left: 3em;       /* room for line numbers */
+  position: relative;
+  line-height: 1.55;
+}
+
+p.verse.indent-2 { padding-left: 5em; }
+p.verse.indent-4 { padding-left: 7em; }
+
+
+.ln {
+  position: absolute;
+  left: 0;
+  width: 2.5em;
+  text-align: right;
+  font-size: 0.75em;
+  line-height: inherit;
+  color: #bbb;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ln::before {
+  content: attr(data-line);
+  display: none;
+}
+.ln[data-line="1"]::before,
+.ln[data-line$="0"]::before,
+.ln[data-line$="5"]::before {
+  display: inline;
+}
+
+
+.small-caps {
+  font-variant: small-caps;
+  text-transform: lowercase;
+  font-size: 1.05em;
+  letter-spacing: 1px;
+}
+
+
+.notes-section {
+  break-before: page;
+  page: notes;
+}
+
+.notes-section header {
+  text-align: center;
+  padding: 3em 0 2em;
+  break-after: avoid;
+}
+
+.notes-section header h2 {
+  font-size: 1.2em;
+  font-weight: 400;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  string-set: section-title "Notes";
+}
+
+.notes-section h3 {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 1.5em 0 0.75em;
+  font-style: italic;
+  letter-spacing: 1px;
+  break-after: avoid;
+}
+
+.note-preface {
+  font-size: 0.92em;
+  line-height: 1.5;
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  margin-bottom: 1.5em;
+}
+
+.note-preface + .note-preface {
+  text-indent: 1.5em;
+}
+
+.notes-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+  line-height: 1.45;
+}
+
+.notes-table tr {
+  break-inside: avoid;
+}
+
+.notes-table td {
+  padding: 3pt 0;
+  vertical-align: top;
+  border-bottom: none;
+}
+
+.notes-table .line-num {
+  width: 4.5em;
+  white-space: nowrap;
+  padding-right: 0.75em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.notes-table cite {
+  font-style: italic;
+}
+
+
+a.noteref {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.8em;
+  vertical-align: super;
+  line-height: 0;           /* prevent superscript from expanding line height */
+}
+
+a.noteref:hover {
+  color: #c00;
+}
+
+
+/*
+.footnote {
+  float: footnote;
+  font-size: 0.85em;
+  line-height: 1.4;
+}
+.footnote::footnote-call {
+  content: counter(footnote);
+  font-size: 0.65em;
+  vertical-align: super;
+  line-height: 0;
+}
+.footnote::footnote-marker {
+  content: counter(footnote) ". ";
+  font-size: 0.85em;
+}
+*/
+
+
+@media print {
+  body {
+    max-width: none;
+    padding: 0;
+    margin: 0;
+    font-size: 10pt;
+  }
+
+  p.verse {
+    orphans: 2;
+    widows: 2;
+  }
+
+  .verse-block {
+    break-inside: avoid;
+  }
+
+  .poem-section header {
+    break-after: avoid;
+  }
+
+  .notes-table tr {
+    break-inside: avoid;
+  }
+
+  .notes-section h3 {
+    break-after: avoid;
+  }
+
+  #part-1 .verse-block:first-of-type p.verse:first-child::first-letter {
+    float: left;
+    font-size: 3.2em;
+    line-height: 0.8;
+    padding-right: 0.08em;
+    padding-top: 0.05em;
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  a.noteref sup { text-decoration: none; }
+}
+
+
+@media screen {
+  body {
+    padding: 3em 1.5em;
+  }
+
+  .poem-section {
+    border-top: 1px solid var(--rule);
+    padding-top: 1em;
+    margin-top: 3em;
+  }
+
+  .poem-section:first-of-type {
+    border-top: none;
+    margin-top: 0;
+  }
+
+  .notes-section {
+    border-top: 2px solid var(--rule);
+    margin-top: 3em;
+    padding-top: 1em;
+  }
+
+  #part-1 .verse-block:first-of-type p.verse:first-child::first-letter {
+    float: left;
+    font-size: 3.4em;
+    line-height: 0.75;
+    padding-right: 0.06em;
+    padding-top: 0.06em;
+    color: var(--text);
+    font-weight: 400;
+  }
+}
+
+
+/*
+a.noteref::after {
+  content: " (p. " target-counter(attr(href), page) ")";
+  font-size: 0.8em;
+  color: #999;
+}
+*/
+
+
+/*
+h2 { bookmark-level: 1; bookmark-state: open; }
+h3 { bookmark-level: 2; }
+*/

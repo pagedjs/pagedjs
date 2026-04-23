@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => {
 					fileName: () => "paged.polyfill.js",
 				},
 				sourcemap: true,
-				minify: true,
+				minify: false,
 				emptyOutDir: false,
 			},
 			plugins: [bannerPlugin()],

@@ -26,23 +26,38 @@ class Following extends Handler {
 	}
 
 	onRule(ruleNode, ruleItem, rulelist) {
-		let selector = csstree.generate(ruleNode.prelude);
-		if (selector.match(/\+/)) {
-			let declarations = csstree.generate(ruleNode.block);
-			declarations = declarations.replace(/[{}]/g, "");
+		const selector = csstree.generate(ruleNode.prelude);
 
-			let uuid = "following-" + UUID();
+		// Strip :nth-*() bodies before testing for `+` so the formula's
+		// plus (e.g. :nth-of-type(7n+1)) isn't mistaken for an adjacent-
+		// sibling combinator.
+		const NTH_PSEUDO = /:nth-(?:child|last-child|of-type|last-of-type)\(\s*[^)]*\)/gi;
+		if (!/\+/.test(selector.replace(NTH_PSEUDO, ""))) return;
 
-			selector.split(",").forEach((s) => {
-				if (!this.selectors[s]) {
-					this.selectors[s] = [uuid, declarations];
-				} else {
-					this.selectors[s][1] = `${this.selectors[s][1]};${declarations}`;
-				}
+		let declarations = csstree.generate(ruleNode.block);
+		declarations = declarations.replace(/[{}]/g, "");
+
+		let uuid = "following-" + UUID();
+
+		// Walk SelectorList children instead of splitting by "," so that
+		// commas inside :where()/:is()/:not() stay inside their pseudo.
+		const recordSelector = (s) => {
+			if (!this.selectors[s]) {
+				this.selectors[s] = [uuid, declarations];
+			} else {
+				this.selectors[s][1] = `${this.selectors[s][1]};${declarations}`;
+			}
+		};
+
+		if (ruleNode.prelude.type === "SelectorList" && ruleNode.prelude.children) {
+			ruleNode.prelude.children.forEach((selectorNode) => {
+				recordSelector(csstree.generate(selectorNode));
 			});
-
-			rulelist.remove(ruleItem);
+		} else {
+			recordSelector(selector);
 		}
+
+		rulelist.remove(ruleItem);
 	}
 	afterParsed(parsed) {
 		this.processSelectors(parsed, this.selectors);

@@ -1546,12 +1546,14 @@ class Layout {
 				}
 			}
 
-			// Get the columns widths and make them attributes so removal of
-			// overflow doesn't do strange things - they may be affecting
-			// widths on this page.
+			// Get the columns widths and pin them as inline styles so removal
+			// of overflow doesn't do strange things - they may be affecting
+			// widths on this page.  (Setting `.width` directly throws on
+			// elements that expose it as a read-only DOM property — most
+			// non-replaced elements in Firefox.)
 			Array.from(check.parentElement.children).forEach((childNode) => {
 				let style = getComputedStyle(childNode);
-				childNode.width = style.width;
+				try { childNode.style.width = style.width; } catch (e) { /* ignore */ }
 			});
 
 			if (

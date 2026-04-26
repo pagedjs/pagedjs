@@ -176,8 +176,13 @@ class Chunker {
 	recordRulesToDisable() {
 		for (var i in document.styleSheets) {
 			let sheet = document.styleSheets[i];
-			for (var j in sheet.cssRules) {
-				let rule = sheet.cssRules.item(j);
+			// Cross-origin stylesheets (e.g. fonts loaded via CDN) throw
+			// SecurityError when cssRules is read.  Skip those sheets.
+			let rules;
+			try { rules = sheet.cssRules; } catch (e) { continue; }
+			if (!rules) continue;
+			for (var j in rules) {
+				let rule = rules.item(j);
 				if (rule && rule.style) {
 					for (var k in this.rulesToDisable) {
 						let skip = false;
@@ -265,7 +270,12 @@ class Chunker {
 
 		if (content) {
 			this.recordRulesToDisable();
-			this.disableRules(content);
+			// `content` may be a raw HTML/XML string (Previewer.preview accepts
+			// either Element/Document or string).  disableRules / enableRules
+			// call querySelectorAll on it, which only works on a DOM node.
+			if (typeof content.querySelectorAll === "function") {
+				this.disableRules(content);
+			}
 		}
 
 		parsed = new ContentParser(content);
@@ -301,7 +311,9 @@ class Chunker {
 
 		this.emit("rendered", this.pages);
 
-		this.enableRules(content);
+		if (content && typeof content.querySelectorAll === "function") {
+			this.enableRules(content);
+		}
 
 		return this;
 	}

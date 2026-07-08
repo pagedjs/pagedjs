@@ -11,7 +11,6 @@ import {
 	footnotePseudoRules,
 } from "./footnoteRules.js";
 import positionRunning from "./positionRunning.js";
-import urlRules from "./urlRules.js";
 
 positionRunning.forEach((rule) =>
 	CssTransformer.addDeclarationRule(rule.match, rule.transform),
@@ -47,8 +46,4 @@ positionRunning.forEach((rule) =>
 
 [...pseudoRules].forEach((rule) =>
 	CssTransformer.addPseudoRule(rule.match, rule.transform),
-);
-
-[...urlRules].forEach((rule) =>
-	CssTransformer.addUrlRule(rule.match, rule.transform),
 );

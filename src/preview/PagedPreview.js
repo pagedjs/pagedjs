@@ -1,4 +1,4 @@
-import { FragmentedFlow, PageResolver } from "fragmentainers";
+import { Fragmenter, PageResolver } from "fragmentainers";
 import { PrintStyleSheet } from "./PrintStyleSheet.js";
 import { buildAtPageRules } from "./utils/buildAtPageRules.js";
 import Hook from "../utils/hook.js";
@@ -138,7 +138,7 @@ export class PagedPreview extends HTMLElement {
 		this.#dispatch("size", { size: resolver });
 
 		const { emulatePrintPixelRatio } = this.#options;
-		const flow = new FragmentedFlow(this.#content, {
+		const flow = new Fragmenter(this.#content, {
 			styles,
 			resolver,
 			emulatePrintPixelRatio,

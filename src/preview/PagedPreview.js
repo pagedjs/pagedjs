@@ -19,19 +19,43 @@ export class PagedPreview extends HTMLElement {
 	#document;
 	#content;
 	#options;
+	#flowOptions;
 	#flowing = null;
+	#currentFlow = null;
 	#adoptedSheet = null;
 	#pageStyle = null;
 
+	/**
+	 * @param {Object} [options]
+	 * @param {boolean} [options.removeStyles=true] - Remove the document's
+	 *   stylesheets once collected.
+	 * @param {Object} [options.flow] - Options forwarded verbatim to every
+	 *   `Fragmenter` this previewer creates (`devicePixelRatio`,
+	 *   `emulatePrintPixelRatio`, `styleSheet`, ...). `styles` and `resolver`
+	 *   are computed per render and cannot be overridden here.
+	 * @param {boolean} [options.emulatePrintPixelRatio] - Alias for
+	 *   `options.flow.emulatePrintPixelRatio`; the flow bag wins.
+	 */
 	constructor(options = {}) {
 		super();
 		this.#options = {
-			emulatePrintPixelRatio: options.emulatePrintPixelRatio,
 			removeStyles: options.removeStyles ?? true,
 		};
+		this.#flowOptions = { ...(options.flow ?? {}) };
+		if (
+			options.emulatePrintPixelRatio !== undefined &&
+			this.#flowOptions.emulatePrintPixelRatio === undefined
+		) {
+			this.#flowOptions.emulatePrintPixelRatio = options.emulatePrintPixelRatio;
+		}
 
 		this.hooks = {
 			beforePreview: new Hook(this),
+			// Runs with the normalized DocumentFragment after content is set
+			// and before stylesheets are collected or anything is laid out.
+			// Mutate the fragment in place (e.g. set fragmentainers markers);
+			// return values are ignored.
+			beforeFlow: new Hook(this),
 			afterPreview: new Hook(this),
 		};
 
@@ -100,34 +124,49 @@ export class PagedPreview extends HTMLElement {
 	/**
 	 * Fragment the content and flow into `<paged-page>` elements.
 	 *
-	 * @param {HTMLElement|DocumentFragment|string} content - The content to render.
+	 * @param {HTMLElement|DocumentFragment|string} [content] - The content to
+	 *   render. When omitted, the previously set content is reused.
 	 * @param {Array<string|Object>} [stylesheets] - List of stylesheet hrefs or inline styles to apply.
-	 * @returns {Promise<HTMLElement[]>}
+	 * @returns {Promise<Fragmenter>}
 	 */
 	async flow(content, stylesheets) {
 		if (this.#flowing) {
 			return this.#flowing;
 		}
+		if (content !== undefined && content !== null) {
+			this.content = content;
+		}
 		if (this.pages.length) {
 			this.#clear();
 		}
 
-		this.#flowing = this.#flow(content, stylesheets).finally(() => {
+		this.#flowing = this.#flow(stylesheets).finally(() => {
 			this.#flowing = null;
 		});
 
 		return this.#flowing;
 	}
 
-	async #flow(content, stylesheets) {
+	/**
+	 * The `Fragmenter` of the most recent render, until the next render
+	 * replaces it or `destroy()` runs.
+	 */
+	get currentFlow() {
+		return this.#currentFlow;
+	}
+
+	async #flow(stylesheets) {
 		const startTime = performance.now();
 		this.#dispatch("rendering", { preview: this });
+
+		this.#destroyFlow();
+		await this.hooks.beforeFlow.trigger(this.#content);
 
 		const styles = stylesheets
 			? await PrintStyleSheet.fromEntries(stylesheets)
 			: await PrintStyleSheet.fromDocument({
-					remove: this.#options.removeStyles,
-				});
+				remove: this.#options.removeStyles,
+			});
 		this.#adoptSheet(styles);
 
 		const pageData = styles.toJSON();
@@ -137,12 +176,12 @@ export class PagedPreview extends HTMLElement {
 		const resolver = new PageResolver(pageData);
 		this.#dispatch("size", { size: resolver });
 
-		const { emulatePrintPixelRatio } = this.#options;
 		const flow = new Fragmenter(this.#content, {
+			...this.#flowOptions,
 			styles,
 			resolver,
-			emulatePrintPixelRatio,
 		});
+		this.#currentFlow = flow;
 		await flow.preload();
 
 		for (const fragment of flow) {
@@ -195,7 +234,15 @@ export class PagedPreview extends HTMLElement {
 		}
 	}
 
+	#destroyFlow() {
+		if (this.#currentFlow) {
+			this.#currentFlow.destroy();
+			this.#currentFlow = null;
+		}
+	}
+
 	destroy() {
+		this.#destroyFlow();
 		if (this.#adoptedSheet) {
 			document.adoptedStyleSheets = document.adoptedStyleSheets.filter(
 				(s) => s !== this.#adoptedSheet,

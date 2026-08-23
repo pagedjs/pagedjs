@@ -1,3 +1,4 @@
+import "../handlers/index.js";
 import { PagedPreview } from "../preview/PagedPreview.js";
 import * as Paged from "../index.js";
 

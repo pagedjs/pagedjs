@@ -40,7 +40,7 @@ const PASSES = [
  * | ------------- | -------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------- |
  * | `declaration` | every `Declaration`              | `property`, `value`, `valueAST`                    | `{ property?, value? }`, `{ declarations: [{ property, value, important? }] }`, `{ remove }` |
  * | `function`    | every `Function` in a value      | `name`, `value`, `args`, `declaration`             | `{ value }`, `{ remove }`                                                               |
- * | `at-rule`     | every `Atrule`                   | `name`, `prelude`, `block`                         | `{ selector, removeDeclarations?, prependDeclarations? }`, `{ unwrap }`, `{ remove }`   |
+ * | `at-rule`     | every `Atrule`                   | `name`, `prelude`, `block`                         | `{ selector, removeDeclarations?, prependDeclarations?, splitDeclarations? }`, `{ unwrap }`, `{ remove }`   |
  * | `media-query` | every `MediaQuery` in a prelude  | `name`, `modifier`, `mediaType`, `condition`, `query`, `atrule` | `{ query }`, `{ unwrap }`, `{ remove }`                                    |
  * | `rule`        | every `Rule`                     | `selector`, `block`                                | `{ selector }`, `{ remove }`                                                            |
  * | `selector`    | every `Selector`, nested too     | `selector`, `rule`                                 | `{ selector }`, `{ remove }`                                                            |

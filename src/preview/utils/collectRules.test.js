@@ -86,7 +86,7 @@ describe("collectRules", () => {
 			"@top-center { content: element(page title) }",
 		);
 		expect(csstree.generate(transformer.apply(ast))).toBe(
-			"&::part(top-center){content:var(--element_page_title)}",
+			"&::part(top-center)::before{content:var(--element_page_title)}",
 		);
 	});
 });

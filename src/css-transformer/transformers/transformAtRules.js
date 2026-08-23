@@ -20,6 +20,8 @@ import {
  *   selector list, keeping node identity and block, and stops.
  *   `removeDeclarations` (property names) and `prependDeclarations`
  *   (`{ property, value }`) may accompany it, applied to the block first.
+ *   `splitDeclarations` (`[{ selector, properties }]`) moves matching
+ *   declarations into adjacent style rules while preserving their nodes.
  * - `{ unwrap: true }` hoists the block into the parent list and stops.
  * - `{ remove: true }` drops the at-rule and stops.
  * - Returning nothing leaves the node for later rules; edit it in place.
@@ -73,6 +75,20 @@ function applyAtRuleRules(node, item, list, rules) {
 			}
 			if (result.prependDeclarations) {
 				prependDeclarations(node.block, result.prependDeclarations);
+			}
+			if (
+				Array.isArray(result.splitDeclarations) &&
+				item &&
+				list
+			) {
+				convertToSplitRules(
+					node,
+					item,
+					list,
+					result.selector,
+					result.splitDeclarations,
+				);
+				return true;
 			}
 			convertToRule(node, result.selector);
 			return true;
@@ -150,4 +166,50 @@ function convertToRule(node, selector) {
 	node.type = "Rule";
 	node.prelude = csstree.parse(selector, { context: "selectorList" });
 	node.name = undefined;
+}
+
+function convertToSplitRules(node, item, list, selector, splits) {
+	const splitRules = [];
+
+	for (const split of splits) {
+		const properties =
+			split.properties instanceof Set
+				? split.properties
+				: new Set(split.properties ?? []);
+		const children = new csstree.List();
+
+		for (const childItem of itemsOf(node.block?.children)) {
+			const child = childItem.data;
+			if (child.type !== "Declaration" || !properties.has(child.property)) {
+				continue;
+			}
+			node.block.children.remove(childItem);
+			children.append(childItem);
+		}
+
+		if (children.isEmpty) continue;
+		splitRules.push({
+			type: "Rule",
+			prelude: csstree.parse(split.selector, { context: "selectorList" }),
+			block: { type: "Block", children },
+		});
+	}
+
+	if (!splitRules.length) {
+		convertToRule(node, selector);
+		return;
+	}
+
+	if (node.block?.children?.isEmpty) {
+		replaceItem(list, item, splitRules);
+		return;
+	}
+
+	convertToRule(node, selector);
+	let after = item;
+	for (const splitRule of splitRules) {
+		const splitItem = list.createItem(splitRule);
+		list.insert(splitItem, after.next);
+		after = splitItem;
+	}
 }

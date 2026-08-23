@@ -79,6 +79,6 @@ describe("@media core rules", () => {
 			await transform(
 				"@media print { @page { size: A4; color: red; @top-center { content: \"x\" } } }",
 			),
-		).toBe("paged-page{color:red;&::part(top-center){content:\"x\"}}");
+		).toBe("paged-page{color:red;&::part(top-center)::before{content:\"x\"}}");
 	});
 });

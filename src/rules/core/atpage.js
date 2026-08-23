@@ -34,6 +34,8 @@ const PAGE_ONLY_DECLARATIONS = new Set([
 	"margin-left",
 ]);
 
+const CONTENT_DECLARATIONS = new Set(["content"]);
+
 export const atPageRules = [
 	{
 		type: "at-rule",
@@ -58,6 +60,14 @@ export const atPageRules = [
 	...MARGIN_BOX_NAMES.map((box) => ({
 		type: "at-rule",
 		match: ({ name }) => name === box,
-		transform: () => ({ selector: `&::part(${box})` }),
+		transform: () => ({
+			selector: `&::part(${box})`,
+			splitDeclarations: [
+				{
+					selector: `&::part(${box})::before`,
+					properties: CONTENT_DECLARATIONS,
+				},
+			],
+		}),
 	})),
 ];

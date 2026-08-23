@@ -35,11 +35,15 @@ export class PagedPreview extends HTMLElement {
 	 *   are computed per render and cannot be overridden here.
 	 * @param {boolean} [options.emulatePrintPixelRatio] - Alias for
 	 *   `options.flow.emulatePrintPixelRatio`; the flow bag wins.
+	 * @param {Array<Object>} [options.rules] - Extra `CssTransformer` rules
+	 *   applied to every stylesheet this previewer builds, after the ones
+	 *   the handler catalog contributes.
 	 */
 	constructor(options = {}) {
 		super();
 		this.#options = {
 			removeStyles: options.removeStyles ?? true,
+			rules: options.rules ?? [],
 		};
 		this.#flowOptions = { ...(options.flow ?? {}) };
 		if (
@@ -163,9 +167,12 @@ export class PagedPreview extends HTMLElement {
 		await this.hooks.beforeFlow.trigger(this.#content);
 
 		const styles = stylesheets
-			? await PrintStyleSheet.fromEntries(stylesheets)
+			? await PrintStyleSheet.fromEntries(stylesheets, {
+				rules: this.#options.rules,
+			})
 			: await PrintStyleSheet.fromDocument({
 				remove: this.#options.removeStyles,
+				rules: this.#options.rules,
 			});
 		this.#adoptSheet(styles);
 

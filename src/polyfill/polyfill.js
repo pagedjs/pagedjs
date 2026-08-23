@@ -42,7 +42,9 @@ let ready = new Promise(function (resolve, reject) {
  * @property {string|HTMLElement} [content] - Selector or element to render.
  * @property {string[]} [stylesheets] - Array of stylesheet URLs or paths.
  * @property {HTMLElement|string} [renderTo] - Where to render the output.
- * @property {Object} [settings] - Additional settings passed to the Previewer.
+ * @property {Object} [settings] - Options forwarded to the `PagedPreview`
+ *   constructor: `removeStyles`, `flow`, and `rules` (extra
+ *   `CssTransformer` rules applied to every stylesheet it builds).
  */
 
 /** @type {PagedConfig} */

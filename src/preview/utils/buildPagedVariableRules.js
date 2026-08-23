@@ -1,4 +1,5 @@
 import { resolvePageSize } from "../../css-transformer/utils/pageSize.js";
+import { buildPagedSelector } from "../../css-transformer/utils/pagedSelector.js";
 
 export function buildPagedVariableRules(pageData) {
 	const rules = [];
@@ -39,23 +40,4 @@ function buildDeclarations(page) {
 		decls.push(`--paged-page-orientation: ${page.pageOrientation};`);
 
 	return decls;
-}
-
-function buildPagedSelector({ name, pseudo, nth }) {
-	let sel = "paged-page";
-	if (name) sel += `[name="${name}"]`;
-	for (const p of pseudo) sel += `:state(${p})`;
-	if (nth) sel += `:nth-of-type(${formatNth(nth)})`;
-	return sel;
-}
-
-function formatNth({ a, b }) {
-	if (a === 0) return String(b);
-	let s;
-	if (a === 1) s = "n";
-	else if (a === -1) s = "-n";
-	else s = `${a}n`;
-	if (b > 0) s += `+${b}`;
-	else if (b < 0) s += String(b);
-	return s;
 }

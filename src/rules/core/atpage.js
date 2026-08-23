@@ -1,5 +1,6 @@
 import * as csstree from "css-tree";
-import { extractPagePrelude } from "../utils/extractPageData.js";
+import { extractPagePrelude } from "../../css-transformer/utils/extractPageData.js";
+import { buildPagedSelector } from "../../css-transformer/utils/pagedSelector.js";
 
 const MARGIN_BOX_NAMES = [
 	"top-left-corner",
@@ -20,6 +21,8 @@ const MARGIN_BOX_NAMES = [
 	"left-bottom",
 ];
 
+// CSS Paged Media §3.2: these describe the sheet, not the page box, and
+// are regenerated from the extracted page data instead.
 const PAGE_ONLY_DECLARATIONS = new Set([
 	"size",
 	"bleed",
@@ -32,16 +35,12 @@ const PAGE_ONLY_DECLARATIONS = new Set([
 	"margin-left",
 ]);
 
-export default [
+export const atPageRules = [
 	{
+		type: "at-rule",
 		match: (node) => node.type === "Atrule" && node.name === "page",
 		transform: (node) => {
 			const data = extractPagePrelude(node.prelude);
-			const selector = buildPagedSelector(data);
-
-			node.type = "Rule";
-			node.prelude = csstree.parse(selector, { context: "selectorList" });
-			node.name = undefined;
 
 			stripPageOnlyDeclarations(node.block);
 
@@ -49,17 +48,14 @@ export default [
 				const blankName = data.name ? `${data.name}-blank` : "blank";
 				prependDeclaration(node.block, `page: ${blankName};`);
 			}
+
+			return { selector: buildPagedSelector(data) };
 		},
 	},
 	...MARGIN_BOX_NAMES.map((name) => ({
+		type: "at-rule",
 		match: (node) => node.type === "Atrule" && node.name === name,
-		transform: (node) => {
-			node.type = "Rule";
-			node.prelude = csstree.parse(`&::part(${name})`, {
-				context: "selectorList",
-			});
-			node.name = undefined;
-		},
+		transform: () => ({ selector: `&::part(${name})` }),
 	})),
 ];
 
@@ -83,23 +79,4 @@ function prependDeclaration(block, declText) {
 	const decl = parsed.block.children.first;
 	if (!decl) return;
 	block.children.prepend(block.children.createItem(decl));
-}
-
-function buildPagedSelector({ name, pseudo, nth }) {
-	let sel = "paged-page";
-	if (name) sel += `[name="${name}"]`;
-	for (const p of pseudo) sel += `:state(${p})`;
-	if (nth) sel += `:nth-of-type(${formatNth(nth)})`;
-	return sel;
-}
-
-function formatNth({ a, b }) {
-	if (a === 0) return String(b);
-	let s;
-	if (a === 1) s = "n";
-	else if (a === -1) s = "-n";
-	else s = `${a}n`;
-	if (b > 0) s += `+${b}`;
-	else if (b < 0) s += String(b);
-	return s;
 }

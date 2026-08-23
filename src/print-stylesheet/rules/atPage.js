@@ -1,5 +1,5 @@
-import { extractPagePrelude } from "../../css-transformer/utils/extractPageData.js";
-import { buildPagedSelector } from "../../css-transformer/utils/pagedSelector.js";
+import { extractPagePrelude } from "../utils/pageData.js";
+import { buildPagedSelector } from "../utils/pagedSelector.js";
 
 const MARGIN_BOX_NAMES = [
 	"top-left-corner",

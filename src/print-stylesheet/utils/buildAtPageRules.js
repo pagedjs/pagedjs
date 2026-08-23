@@ -1,4 +1,4 @@
-import { resolvePageSize } from "../../css-transformer/utils/pageSize.js";
+import { resolvePageSize } from "./pageSize.js";
 
 export function buildAtPageRules(pageData) {
 	const rules = [];
@@ -20,7 +20,7 @@ export function buildAtPageRules(pageData) {
 			rules.push(`@page ${blankName} ${block}`);
 			const selector = d.name
 				? `paged-page[name="${d.name}"][blank]`
-				: `paged-page[blank]`;
+				: "paged-page[blank]";
 			rules.push(`${selector} { page: ${blankName}; }`);
 		} else {
 			const prelude = buildPagePrelude(d.name, d.pseudo);

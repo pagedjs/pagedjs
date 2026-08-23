@@ -1,5 +1,5 @@
-import { resolvePageSize } from "../../css-transformer/utils/pageSize.js";
-import { buildPagedSelector } from "../../css-transformer/utils/pagedSelector.js";
+import { resolvePageSize } from "./pageSize.js";
+import { buildPagedSelector } from "./pagedSelector.js";
 
 export function buildPagedVariableRules(pageData) {
 	const rules = [];

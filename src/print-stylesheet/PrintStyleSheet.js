@@ -1,7 +1,7 @@
 import * as csstree from "css-tree";
 import { Fragmenter } from "fragmentainers";
 import { CssTransformer } from "../css-transformer/CssTransformer.js";
-import { collectAllPageData } from "../css-transformer/utils/extractPageData.js";
+import { collectAllPageData } from "./utils/pageData.js";
 import { buildPagedVariableRules } from "./utils/buildPagedVariableRules.js";
 import { collectRules } from "./utils/collectRules.js";
 import { loadStylesheets } from "./utils/loadStylesheets.js";

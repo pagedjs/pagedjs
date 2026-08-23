@@ -1,5 +1,5 @@
 import { resolveHandlerClasses } from "fragmentainers/handlers";
-import { coreRules } from "../../rules/core/index.js";
+import { coreRules } from "../rules/index.js";
 
 /**
  * Derive a transformer rule list from a handler catalog.

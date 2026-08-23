@@ -9,7 +9,7 @@ async function transform(css) {
 	return csstree.generate(transformer.apply(ast));
 }
 
-describe("@page margin-box core rules", () => {
+describe("core @page margin-box rules", () => {
 	it("puts generated content on the exposed ::before pseudo-element", async () => {
 		expect(
 			await transform("@page { @top-center { content: \"Chapter\"; } }"),

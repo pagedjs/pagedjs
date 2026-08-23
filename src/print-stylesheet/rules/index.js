@@ -1,8 +1,8 @@
-import { atPageRules } from "./atpage.js";
-import { atMediaRules } from "./atmedia.js";
+import { atPageRules } from "./atPage.js";
+import { atMediaRules } from "./atMedia.js";
 
-export { atPageRules } from "./atpage.js";
-export { atMediaRules } from "./atmedia.js";
+export { atPageRules } from "./atPage.js";
+export { atMediaRules } from "./atMedia.js";
 
 /**
  * The page-model rules. They describe how `@page`, its margin boxes and

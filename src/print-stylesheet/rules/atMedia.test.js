@@ -9,7 +9,7 @@ async function transform(css) {
 	return csstree.generate(transformer.apply(ast));
 }
 
-describe("@media core rules", () => {
+describe("core @media rules", () => {
 	it("unwraps a print block", async () => {
 		expect(await transform("@media print { p { color: red } }")).toBe("p{color:red}");
 	});

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import * as csstree from "css-tree";
 import { LayoutHandler } from "fragmentainers/handlers";
 import { CssTransformer } from "../../css-transformer/CssTransformer.js";
-import { coreRules } from "../../rules/core/index.js";
+import { coreRules } from "../rules/index.js";
 import { RunningElements } from "../../handlers/running-elements.js";
 import { collectRules } from "./collectRules.js";
 

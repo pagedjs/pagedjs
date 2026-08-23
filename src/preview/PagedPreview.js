@@ -1,6 +1,6 @@
 import { Fragmenter, PageResolver } from "fragmentainers";
-import { PrintStyleSheet } from "./PrintStyleSheet.js";
-import { buildAtPageRules } from "./utils/buildAtPageRules.js";
+import { PrintStyleSheet } from "../print-stylesheet/PrintStyleSheet.js";
+import { buildAtPageRules } from "../print-stylesheet/utils/buildAtPageRules.js";
 import Hook from "../utils/hook.js";
 // Register the custom paged elements.
 import "../components/index.js";

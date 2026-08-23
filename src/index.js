@@ -1,5 +1,5 @@
 import "./handlers/index.js";
-import { PrintStyleSheet } from "./preview/PrintStyleSheet.js";
+import { PrintStyleSheet } from "./print-stylesheet/PrintStyleSheet.js";
 import { PagedPreview } from "./preview/PagedPreview.js";
 import * as components from "./components/index.js";
 

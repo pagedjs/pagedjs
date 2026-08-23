@@ -192,12 +192,13 @@ export class PagedPreview extends HTMLElement {
 		await flow.preload();
 
 		for (const fragment of flow) {
+			const constraints = fragment.constraints ?? {};
 			const page = this.#document.addPage(fragment, {
 				name: fragment.namedPage,
-				blank: fragment.isBlank,
-				verso: fragment.isVerso,
-				recto: fragment.isRecto,
-				first: fragment.isFirst,
+				blank: constraints.isBlank,
+				verso: constraints.isVerso,
+				recto: constraints.isRecto,
+				first: constraints.isFirst,
 			});
 
 			this.#dispatch("page", { page });

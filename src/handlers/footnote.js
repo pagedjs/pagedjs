@@ -73,13 +73,53 @@ const footnoteRules = [
 	},
 ];
 
-function getBreakBoundaryElement(breakToken) {
+/**
+ * Where a page's content starts or ends, from its break token. An inline
+ * break is a text position in an anonymous inline node's item list; a
+ * block break after a box's complete content is the box itself.
+ */
+function getBreakBoundary(breakToken) {
 	if (!breakToken) return null;
 	let token = breakToken;
 	while (token.childBreakTokens?.length > 0) {
 		token = token.childBreakTokens[0];
 	}
-	return token.node?.element ?? null;
+	if (token.type === "inline") {
+		const items = token.node.inlineItemsData?.items ?? [];
+		const anchor = items.find((item) => item.domNode || item.element);
+		return { items, offset: token.textOffset, node: anchor?.domNode ?? anchor?.element ?? null };
+	}
+	// A box pushed whole to the next fragmentainer has all of its content
+	// after the break; a box that broke after its content has it all before.
+	return {
+		items: null,
+		offset: 0,
+		node: token.node?.element ?? null,
+		contentBefore: !token.isBreakBefore && token.hasSeenAllChildren,
+	};
+}
+
+function follows(node, reference) {
+	const pos = reference.compareDocumentPosition(node);
+	return pos === 0 || !!(pos & Node.DOCUMENT_POSITION_FOLLOWING);
+}
+
+/** True when the call is laid out on the page bounded by `start` and `end`. */
+function isWithinBoundaries(callElement, start, end) {
+	if (start && !isAfterBoundary(callElement, start)) return false;
+	if (end && isAfterBoundary(callElement, end)) return false;
+	return true;
+}
+
+function isAfterBoundary(callElement, boundary) {
+	if (boundary.items) {
+		const item = boundary.items.find((i) => i.element === callElement);
+		if (item) return item.startOffset >= boundary.offset;
+		return boundary.node ? follows(callElement, boundary.node) : false;
+	}
+	if (!boundary.node) return false;
+	if (boundary.node.contains(callElement)) return !boundary.contentBefore;
+	return follows(callElement, boundary.node);
 }
 
 function readFootnotePolicy(bodyElement) {
@@ -225,8 +265,8 @@ class Footnote extends LayoutHandler {
 		if (this.#footnoteMap.size === 0) return { children: [], pushForward: [] };
 		this.#ensureBodiesAttached(mainFragment);
 
-		const startBoundary = getBreakBoundaryElement(inputBreakToken);
-		const endBoundary = getBreakBoundaryElement(mainFragment.breakToken ?? null);
+		const startBoundary = getBreakBoundary(inputBreakToken);
+		const endBoundary = getBreakBoundary(mainFragment.breakToken ?? null);
 
 		const children = [];
 		const pushForward = [];
@@ -306,18 +346,6 @@ class Footnote extends LayoutHandler {
 		}
 		this.#measurer = measurer;
 	}
-}
-
-function isWithinBoundaries(callElement, start, end) {
-	if (start) {
-		const pos = start.compareDocumentPosition(callElement);
-		if (pos !== 0 && !(pos & Node.DOCUMENT_POSITION_FOLLOWING)) return false;
-	}
-	if (end) {
-		const pos = callElement.compareDocumentPosition(end);
-		if (pos !== 0 && !(pos & Node.DOCUMENT_POSITION_FOLLOWING)) return false;
-	}
-	return true;
 }
 
 /**

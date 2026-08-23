@@ -68,10 +68,6 @@ export class PagedPage extends LitElement {
 	 * print behavior, and preview appearance.
 	 */
 	static styles = css`
-    body {
-      margin: 0;
-      padding: 0;
-    }
     *,
     * * {
       box-sizing: border-box;
@@ -94,6 +90,7 @@ export class PagedPage extends LitElement {
       break-after: page;
       margin: 0;
       padding: 0;
+      counter-increment: page;
     }
 
     .sheet {
@@ -121,24 +118,13 @@ export class PagedPage extends LitElement {
         [bleed-right-end];
     }
 
-    // ::target(top) {
-    // grid-area: margin-top;
-    // }
-
     .page-area {
       grid-column: page-area-start / page-area-end;
       grid-row: page-area-start / page-area-end;
-      /*the page-area has an overflow:hidden to follow the W3C specifications, but it can be overriden with the author css.*/
-      // overflow: hidden;
-      // display: flex;
-      // flex-direction: column;
       width: 100%;
       height: 100%;
     }
 
-    // .page-area .pagedjs_page_content {
-    //   flex-grow: 1;
-    // }
     .pagedjs_area > .pagedjs_page_content {
       width: 100%;
       height: 100%;
@@ -160,7 +146,7 @@ export class PagedPage extends LitElement {
 
     .paged-crop {
       width: 100%;
-      heigth:100%
+      height: 100%;
       background: black;
     }
 
@@ -236,6 +222,8 @@ export class PagedPage extends LitElement {
   `;
 
 	#internals = null;
+	#styledBleed = null;
+	#styledMarks = null;
 
 	/**
 	 * Constructor initializes defaults.
@@ -279,33 +267,7 @@ export class PagedPage extends LitElement {
 			}
 			if (this.bleed === "0") this.bleed = "0mm";
 			this.#injectPageStyles();
-			this.#injectGlobalPrintStyles();
 		}
-	}
-
-	static globalPrintStylesApplied = false;
-
-	/**
-	 * Injects global @media print rules into the document.
-	 * Ensures it only runs once.
-	 *
-	 * @private
-	 */
-	#injectGlobalPrintStyles() {
-		if (PagedPage.globalPrintStylesApplied) return;
-		PagedPage.globalPrintStylesApplied = true;
-
-		const sheet = new CSSStyleSheet();
-		sheet.replaceSync(`
-    @media print {
-      body {
-        margin: 0 !important;
-        padding: 0 !important;
-      }
-    }
-  `);
-
-		document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
 	}
 
 	/**
@@ -361,11 +323,11 @@ export class PagedPage extends LitElement {
 	}
 
 	get contentArea() {
-		return this.renderRoot.querySelector("fragment-container") ?? null;
+		return this.querySelector(":scope > fragment-container") ?? null;
 	}
 
 	get footnotesArea() {
-		return this.renderRoot.querySelector("fragment-container") ?? null;
+		return this.contentArea?.querySelector("[data-footnote-area]") ?? null;
 	}
 
 	firstUpdated() {
@@ -396,6 +358,34 @@ export class PagedPage extends LitElement {
 		if (changedProps.has("verso")) this.#setState("left", this.verso);
 		if (changedProps.has("recto")) this.#setState("right", this.recto);
 		if (changedProps.has("first")) this.#setState("first", this.first);
+		this.#resolvePrintProperties();
+	}
+
+	/**
+	 * Preview styles reach the component as custom properties. Resolve them
+	 * after page attributes and custom states have been applied so named and
+	 * pseudo-page rules participate in the cascade before marks are rendered.
+	 */
+	#resolvePrintProperties() {
+		const styles = getComputedStyle(this);
+		const marks = styles.getPropertyValue("--paged-marks").trim();
+
+		// No custom-property value means this is a directly configured component;
+		// retain its `marks` and `bleed` properties as the rendering source.
+		if (!marks) {
+			if (this.#styledMarks === null && this.#styledBleed === null) return;
+			this.#styledMarks = null;
+			this.#styledBleed = null;
+			this.requestUpdate();
+			return;
+		}
+
+		const bleed = styles.getPropertyValue("--paged-bleed").trim() || "0mm";
+		if (marks === this.#styledMarks && bleed === this.#styledBleed) return;
+
+		this.#styledMarks = marks;
+		this.#styledBleed = bleed;
+		this.requestUpdate();
 	}
 
 	/**
@@ -406,8 +396,10 @@ export class PagedPage extends LitElement {
 	render() {
 		const crossMarks = [];
 		const cropMarks = [];
+		const marks = this.#styledMarks ?? this.marks;
+		const bleed = this.#styledBleed ?? this.bleed;
 
-		if (this.marks?.includes("cross") && this.bleed != "0mm") {
+		if (marks?.includes("cross") && hasBleed(bleed)) {
 			crossMarks.push(
 				html`<div
 					part="paged-cross paged-cross-top"
@@ -446,7 +438,7 @@ export class PagedPage extends LitElement {
 			);
 		}
 
-		if (this.marks?.includes("crop") && this.bleed != "0mm") {
+		if (marks?.includes("crop") && hasBleed(bleed)) {
 			cropMarks.push(
 				html`<div
 					part="paged-crop paged-crop-top"
@@ -542,4 +534,9 @@ function getMargin(string) {
 			`);
 	}
 	return margins;
+}
+
+function hasBleed(value) {
+	const lengths = value?.trim().split(/\s+/) ?? [];
+	return lengths.some((length) => !/^[+-]?0*(?:\.0+)?(?:[a-z%]+)?$/i.test(length));
 }

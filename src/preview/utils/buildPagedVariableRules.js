@@ -4,7 +4,6 @@ import { buildPagedSelector } from "../../css-transformer/utils/pagedSelector.js
 export function buildPagedVariableRules(pageData) {
 	const rules = [];
 	for (const page of pageData) {
-		if (page.pseudo.includes("blank")) continue;
 		const decls = buildDeclarations(page);
 		if (!decls.length) continue;
 		rules.push(`${buildPagedSelector(page)} { ${decls.join(" ")} }`);

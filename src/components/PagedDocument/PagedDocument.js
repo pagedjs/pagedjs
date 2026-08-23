@@ -1,75 +1,74 @@
-import { LitElement, html } from "lit";
+import { LitElement, css, html } from "lit";
 
 export class PagedDocument extends LitElement {
-  constructor() {
-    super();
-  }
+	static styles = css`
+		:host {
+			counter-reset: page 0 pages var(--paged-page-count, 0);
+		}
+	`;
 
-  connectedCallback() {
-    super.connectedCallback();
-  }
+	/**
+	 * Returns children assigned to the default slot.
+	 * Does currently not do any filtering.
+	 */
+	get pages() {
+		const slot = this.renderRoot?.querySelector("slot");
 
-  /**
-   * Returns children assigned to the default slot.
-   * Does currently not do any filtering.
-   */
-  get pages () {
-    const slot = this.renderRoot?.querySelector('slot');
-    
-    if (slot) {
-      return slot.assignedElements({ flatten: true });
-    }
+		if (slot) {
+			return slot.assignedElements({ flatten: true });
+		}
 
-    return null;
-  }
+		return null;
+	}
 
-  /**
-   * Should be ran after first render. Set a listener for slot change
-   * to update page indexes (page numbers).
-   */
-  firstUpdated () {
-    const slot = this.renderRoot?.querySelector('slot');
-    slot?.addEventListener('slotchange', () => this.updatePageIndexes());
-  }
+	/**
+	 * Set a listener for slot changes and index any pages that were assigned
+	 * before the component's first render.
+	 */
+	firstUpdated() {
+		const slot = this.renderRoot?.querySelector("slot");
+		slot?.addEventListener("slotchange", () => this.updatePageIndexes());
+		this.updatePageIndexes();
+	}
 
-  /**
-   * Set indexes on pages.
-   *
-   * Not sure this is necessary. Would prevent a reordering workflow.
-   * Unless that is done through order declarations
-   */
-  updatePageIndexes () {
-    this.pages.forEach((page, index) => {
-      if (page.getAttribute('index') != index) {
-        page.setAttribute('index', index)
-      }
-    });
-  }
+	/**
+	 * Set zero-based indexes on pages and expose the final page count to the
+	 * `pages` CSS counter.
+	 */
+	updatePageIndexes() {
+		const pages = this.pages ?? [];
+		pages.forEach((page, index) => {
+			if (page.getAttribute("index") !== String(index)) {
+				page.setAttribute("index", index);
+			}
+		});
+		this.style.setProperty("--paged-page-count", String(pages.length));
+	}
 
-  /**
-   * Adds a page by constructing a pagedPage and attaching it to itself.
-   */
-  addPage (content, states = {}) {
-    let page = document.createElement('paged-page');
+	/**
+	 * Adds a page by constructing a pagedPage and attaching it to itself.
+	 */
+	addPage(content, states = {}) {
+		const page = document.createElement("paged-page");
 
-    page.name = states.name || null;
+		page.name = states.name || null;
 		page.blank = !!states.blank;
 		page.verso = !!states.verso;
 		page.recto = !!states.recto;
 		page.first = !!states.first;
 
-    if (content) {
-      page.appendChild(content);
-    }
+		if (content) {
+			page.appendChild(content);
+		}
 
-    this.appendChild(page);
-    return page;
-  }
+		this.appendChild(page);
+		this.updatePageIndexes();
+		return page;
+	}
 
-  render() {
-    return html`<slot></slot>`;
-  }
+	render() {
+		return html`<slot></slot>`;
+	}
 }
 
 customElements.define("paged-document", PagedDocument);
-

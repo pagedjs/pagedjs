@@ -86,62 +86,51 @@ Examples:
 
 Command line interface to render out PDFs of HTML files using Puppeteer: [https://github.com/pagedjs/pagedjs-cli](https://github.com/pagedjs/pagedjs-cli).
 
-## Module
+## Handlers
 
-Modules are groups of handlers for that apply the layout and styles of a CSS module, such as Generated Content.
-
-New handlers can be registered from `import { registerHandlers } from 'pagedjs'` or by calling `Paged.registerHandlers` on an html page.
+A feature is a `LayoutHandler` subclass. It carries the CSS rewrites it depends
+on as `static rules`, and hooks into layout through the methods it overrides.
+Append the class to `Fragmenter.handlers` before the first render — pagedjs's own
+handlers are appended the same way, when the package is imported.
 
 ```html
 <script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
 <script>
-	class MyHandler extends Paged.Handler {
-		constructor(chunker, polisher, caller) {
-			super(chunker, polisher, caller);
-		}
+	class Watermark extends Paged.LayoutHandler {
+		static rules = [
+			{
+				type: "declaration",
+				match: ({ property }) => property === "watermark",
+				transform: () => ({ property: "--watermark" }),
+			},
+		];
 
-		afterPageLayout(pageFragment, page) {
-			console.log(pageFragment);
+		matchRule(rule) {
+			const text = rule.style.getPropertyValue("--watermark").trim();
+			if (text) this.text = text;
 		}
 	}
-	Paged.registerHandlers(MyHandler);
+
+	Paged.Fragmenter.handlers.push(Watermark);
 </script>
 ```
 
-Handlers have methods that correspond to the hooks for the parsing, layout and rendering of the Chunker and Polisher. Returning a promise or `async` function from a method in a handler will complete that task before continuing with the other registered methods for that hook.
+Appending a subclass of a handler already in the catalog replaces it in place,
+taking over both its rules and its hooks:
 
 ```js
-// Previewer
-beforePreview(content, renderTo)
-afterPreview(pages)
+class MyFootnote extends Paged.Footnote {
+	static rules = [...super.rules, myExtraRule];
+}
+Paged.Fragmenter.handlers.push(MyFootnote);
+```
 
-// Chunker
-beforeParsed(content)
-filter(content)
-afterParsed(parsed)
-beforePageLayout(page)
-onPageLayout(pageWrapper, breakToken, layout);
-afterPageLayout(pageElement, page, breakToken)
-finalizePage(pageElement, page, breakToken)
-afterRendered(pages)
+For a CSS rewrite with no layout behaviour behind it, pass rules to a single
+previewer instead of registering a handler:
 
-// Polisher
-beforeTreeParse(text, sheet)
-beforeTreeWalk(ast)
-afterTreeWalk(ast, sheet)
-onUrl(urlNode)
-onAtPage(atPageNode)
-onRule(ruleNode)
-onDeclaration(declarationNode, ruleNode)
-onContent(contentNode, declarationNode, ruleNode)
-
-// Layout
-layoutNode(node)
-renderNode(node, sourceNode, layout)
-onOverflow(overflow, rendered, bounds)
-onBreakToken(breakToken, overflow, rendered)
-afterOverflowRemoved(removed, rendered)
-beforeRenderResult(breakToken, pageWrapper)
+```js
+new Paged.PagedPreview({ rules: [myRule] });
+// or, for the polyfill: window.PagedConfig = { settings: { rules: [myRule] } };
 ```
 
 ## How Pagedjs processes content

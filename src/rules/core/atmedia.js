@@ -1,41 +1,35 @@
-import { getSimpleMediaQuery } from "../../css-transformer/utils/mediaQueries.js";
+const PRINT_TYPES = new Set(["print", "all"]);
 
+/**
+ * Resolve `@media` against the medium the sheet is being generated for.
+ *
+ * Each comma-separated query is judged on its own: one that always matches
+ * makes the wrapper redundant, one that never matches is struck from the
+ * list, and the at-rule goes away once its last query does. Queries that
+ * can't be decided statically — a bare feature test, an unknown media
+ * type, `not print and (...)` — are left alone.
+ */
 export const atMediaRules = [
 	{
-		type: "at-rule",
-		match: (node) =>
-			node.type === "Atrule" &&
-			node.name === "media" &&
-			getSimpleMediaQuery(node) === "print",
-		transform: (node, item, list) => {
-			if (!list || !item) return;
-			// Move the block's children in *after* `item`. The walker's cursor
-			// already sits past `item`, so anything inserted before it is never
-			// visited — and a nested @media has to be flattened or dropped too.
-			let after = item;
-			for (const child of childItems(node.block)) {
-				node.block.children.remove(child);
-				list.insert(child, after.next);
-				after = child;
-			}
-			list.remove(item);
-		},
+		type: "media-query",
+		match: ({ modifier, mediaType, condition }) =>
+			(modifier !== "not" && PRINT_TYPES.has(mediaType) && condition === null) ||
+			(modifier === "not" && mediaType === "screen"),
+		transform: () => ({ unwrap: true }),
 	},
 	{
-		type: "at-rule",
-		match: (node) =>
-			node.type === "Atrule" &&
-			node.name === "media" &&
-			getSimpleMediaQuery(node) === "screen",
-		transform: (_node, item, list) => {
-			if (!list || !item) return;
-			list.remove(item);
-		},
+		type: "media-query",
+		match: ({ modifier, mediaType, condition }) =>
+			(modifier !== "not" && mediaType === "screen") ||
+			(modifier === "not" && PRINT_TYPES.has(mediaType) && condition === null),
+		transform: () => ({ remove: true }),
+	},
+	{
+		// The media type is already satisfied, so only the feature test is
+		// left to evaluate.
+		type: "media-query",
+		match: ({ modifier, mediaType, condition }) =>
+			modifier !== "not" && PRINT_TYPES.has(mediaType) && condition !== null,
+		transform: ({ condition }) => ({ query: condition }),
 	},
 ];
-
-function childItems(block) {
-	const items = [];
-	block?.children?.forEach((data, item) => items.push(item));
-	return items;
-}

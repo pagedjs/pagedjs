@@ -40,9 +40,8 @@ const FOOTNOTE_STYLES = `
 const footnoteRules = [
 	{
 		type: "declaration",
-		match: ({ property, valueString }) =>
-			property === "float" &&
-			valueString.trim().toLowerCase() === "footnote",
+		match: ({ property, value }) =>
+			property === "float" && value.trim().toLowerCase() === "footnote",
 		transform: () => ({
 			declarations: [
 				{ property: FLOAT, value: "footnote" },
@@ -59,21 +58,18 @@ const footnoteRules = [
 		// css-gcpm-3 names the at-rule `@footnote`; `@footnotes` is a
 		// widespread spelling in sheets written against other engines.
 		type: "at-rule",
-		match: (node) =>
-			node.type === "Atrule" &&
-			(node.name === "footnote" || node.name === "footnotes"),
+		match: ({ name }) => name === "footnote" || name === "footnotes",
 		transform: () => ({ selector: `& [${AREA}]` }),
 	},
 	{
 		type: "pseudo",
-		match: (sel) => sel.includes("::footnote-call"),
-		transform: (sel) => sel.replace(/::footnote-call/g, `[${CALL}]::after`),
+		match: ({ kind, name }) => kind === "element" && name === "footnote-call",
+		transform: () => ({ selector: `[${CALL}]::after` }),
 	},
 	{
 		type: "pseudo",
-		match: (sel) => sel.includes("::footnote-marker"),
-		transform: (sel) =>
-			sel.replace(/::footnote-marker/g, `[${MARKER}]::marker`),
+		match: ({ kind, name }) => kind === "element" && name === "footnote-marker",
+		transform: () => ({ selector: `[${MARKER}]::marker` }),
 	},
 ];
 

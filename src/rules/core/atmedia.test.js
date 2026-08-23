@@ -30,6 +30,30 @@ describe("@media core rules", () => {
 		).toBe("a{color:red}b{color:green}i{color:blue}");
 	});
 
+	it("resolves every query in a list", async () => {
+		expect(await transform("@media only print { p{color:red} }")).toBe("p{color:red}");
+		expect(await transform("@media print, screen { p{color:red} }")).toBe("p{color:red}");
+		expect(await transform("@media screen, print { p{color:red} }")).toBe("p{color:red}");
+		expect(await transform("@media not screen { p{color:red} }")).toBe("p{color:red}");
+		expect(await transform("@media all { p{color:red} }")).toBe("p{color:red}");
+		expect(await transform("@media not all { p{color:red} }")).toBe("");
+	});
+
+	it("keeps the feature test and drops the satisfied media type", async () => {
+		expect(await transform("@media print and (min-width: 5in) { p{color:red} }")).toBe(
+			"@media (min-width:5in){p{color:red}}",
+		);
+		expect(
+			await transform(
+				"@media screen and (max-width:30em), print and (min-width:5in) { p{color:red} }",
+			),
+		).toBe("@media (min-width:5in){p{color:red}}");
+	});
+
+	it("drops a query that can never match print", async () => {
+		expect(await transform("@media screen and (max-width: 30em) { p{color:red} }")).toBe("");
+	});
+
 	it("drops a screen block nested inside a print block", async () => {
 		expect(
 			await transform("@media print { @media screen { p { color: red } } }"),

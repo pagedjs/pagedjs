@@ -1,4 +1,3 @@
-import * as csstree from "css-tree";
 import { extractPagePrelude } from "../../css-transformer/utils/extractPageData.js";
 import { buildPagedSelector } from "../../css-transformer/utils/pagedSelector.js";
 
@@ -38,45 +37,27 @@ const PAGE_ONLY_DECLARATIONS = new Set([
 export const atPageRules = [
 	{
 		type: "at-rule",
-		match: (node) => node.type === "Atrule" && node.name === "page",
-		transform: (node) => {
-			const data = extractPagePrelude(node.prelude);
-
-			stripPageOnlyDeclarations(node.block);
+		match: ({ name }) => name === "page",
+		transform: ({ prelude }) => {
+			const data = extractPagePrelude(prelude);
+			const result = {
+				selector: buildPagedSelector(data),
+				removeDeclarations: PAGE_ONLY_DECLARATIONS,
+			};
 
 			if (data.pseudo.includes("blank")) {
 				const blankName = data.name ? `${data.name}-blank` : "blank";
-				prependDeclaration(node.block, `page: ${blankName};`);
+				result.prependDeclarations = [
+					{ property: "page", value: blankName },
+				];
 			}
 
-			return { selector: buildPagedSelector(data) };
+			return result;
 		},
 	},
-	...MARGIN_BOX_NAMES.map((name) => ({
+	...MARGIN_BOX_NAMES.map((box) => ({
 		type: "at-rule",
-		match: (node) => node.type === "Atrule" && node.name === name,
-		transform: () => ({ selector: `&::part(${name})` }),
+		match: ({ name }) => name === box,
+		transform: () => ({ selector: `&::part(${box})` }),
 	})),
 ];
-
-function stripPageOnlyDeclarations(block) {
-	if (!block || !block.children) return;
-	const toRemove = [];
-	block.children.forEach((child, item) => {
-		if (
-			child.type === "Declaration" &&
-			PAGE_ONLY_DECLARATIONS.has(child.property)
-		) {
-			toRemove.push(item);
-		}
-	});
-	for (const item of toRemove) block.children.remove(item);
-}
-
-function prependDeclaration(block, declText) {
-	if (!block) return;
-	const parsed = csstree.parse(`x { ${declText} }`, { context: "rule" });
-	const decl = parsed.block.children.first;
-	if (!decl) return;
-	block.children.prepend(block.children.createItem(decl));
-}

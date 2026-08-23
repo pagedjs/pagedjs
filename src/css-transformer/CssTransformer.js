@@ -1,22 +1,27 @@
 import * as csstree from "css-tree";
-import { transformDeclarations } from "./transformers/transformDeclarations.js";
+import { transformValues } from "./transformers/transformValues.js";
 import { transformAtRules } from "./transformers/transformAtRules.js";
 import { transformRules } from "./transformers/transformRules.js";
-import { transformPseudos } from "./transformers/transformPseudos.js";
 import { transformUrls } from "./transformers/transformUrls.js";
 import { inlineImports } from "./utils/inlineImports.js";
 
 /**
- * Walkers keyed by rule type, in the order `apply()` runs them.
- * `url` is absent: URLs are rewritten in `prepare()`, per source sheet,
+ * The passes `apply()` runs, in order, and the rule types each one serves.
+ *
+ * Rule types are grouped rather than given a walk apiece: every pass roots
+ * on a node type css-tree fast-traverses to (`Declaration`, `Atrule`,
+ * `Rule`), and reaches the finer types by walking the subtree it already
+ * has — a value, a prelude. Adding `function`, `media-query` or `pseudo`
+ * therefore costs no extra traversal of the sheet.
+ *
+ * `url` is in neither: URLs are rewritten in `prepare()`, per source sheet,
  * because resolution needs that sheet's base URL.
  */
-const WALKERS = {
-	"declaration": transformDeclarations,
-	"at-rule": transformAtRules,
-	"rule": transformRules,
-	"pseudo": transformPseudos,
-};
+const PASSES = [
+	{ types: ["declaration", "function"], apply: transformValues },
+	{ types: ["at-rule", "media-query"], apply: transformAtRules },
+	{ types: ["rule", "selector", "pseudo"], apply: transformRules },
+];
 
 /**
  * Rewrites a `css-tree` AST with a fixed set of rules.
@@ -24,13 +29,28 @@ const WALKERS = {
  * A rule is `{ type, match, transform }`. `type` selects the walker;
  * anything with an unknown type is carried but never run.
  *
- * | type          | match / transform arguments                              | transform result                                                     |
- * | ------------- | -------------------------------------------------------- | --------------------------------------------------------------------- |
- * | `declaration` | `{ property, valueString, valueAST, node, item, list }`    | `{ property?, value? }` rewrites in place and later rules see it; `{ declarations: [{ property, value, important? }] }` replaces the declaration and stops |
- * | `at-rule`     | `(node, item, list)`                                       | `{ selector }` turns the at-rule into a style rule with that selector list and stops; otherwise mutate `node` / `list` in place |
- * | `rule`        | `(node, item, list)` — the whole `Rule`, prelude and block | none; mutate in place                                                  |
- * | `pseudo`      | `(selectorString, node)` for every `Selector`              | the replacement selector string, or a falsy value to leave it alone    |
- * | `url`         | `(url, { baseURL })` for every `Url`, already rebased      | the replacement URL string                                             |
+ * `match(ctx)` and `transform(ctx)` both take the same single context
+ * object, so a rule destructures only what it needs and a walker can add
+ * a field without changing any signature. Every ctx carries `node` (the
+ * AST node matched) plus `item` and `list` (its position in the enclosing
+ * `List`, when it has one); the rest is per type. Serialized conveniences
+ * are named after the thing — `value`, `selector`, `query`, `url`.
+ *
+ * | type          | matches                          | ctx adds                                          | `transform` may return                                                                |
+ * | ------------- | -------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------- |
+ * | `declaration` | every `Declaration`              | `property`, `value`, `valueAST`                    | `{ property?, value? }`, `{ declarations: [{ property, value, important? }] }`, `{ remove }` |
+ * | `function`    | every `Function` in a value      | `name`, `value`, `args`, `declaration`             | `{ value }`, `{ remove }`                                                               |
+ * | `at-rule`     | every `Atrule`                   | `name`, `prelude`, `block`                         | `{ selector, removeDeclarations?, prependDeclarations? }`, `{ unwrap }`, `{ remove }`   |
+ * | `media-query` | every `MediaQuery` in a prelude  | `name`, `modifier`, `mediaType`, `condition`, `query`, `atrule` | `{ query }`, `{ unwrap }`, `{ remove }`                                    |
+ * | `rule`        | every `Rule`                     | `selector`, `block`                                | `{ selector }`, `{ remove }`                                                            |
+ * | `selector`    | every `Selector`, nested too     | `selector`, `rule`                                 | `{ selector }`, `{ remove }`                                                            |
+ * | `pseudo`      | every `::element` / `:class` part | `name`, `kind`, `args`, `selector`, `rule`        | `{ selector }`, `{ remove }`                                                            |
+ * | `url`         | every `Url`, already rebased     | `url`, `baseURL`                                   | `{ url }`                                                                               |
+ *
+ * A result that edits the node in place — `{ property }`, `{ value }` on a
+ * declaration, `{ selector }` on a rule or selector, `{ url }` — refreshes
+ * ctx, and later rules of that type see the new state. Anything that
+ * replaces, removes or reparents the node stops the chain for that node.
  */
 export class CssTransformer {
 	#rulesByType = new Map();
@@ -72,11 +92,17 @@ export class CssTransformer {
 	}
 
 	apply(ast) {
-		for (const [type, walk] of Object.entries(WALKERS)) {
-			const rules = this.#rulesByType.get(type);
-			if (rules) {
-				walk(ast, rules);
+		for (const pass of PASSES) {
+			const rules = {};
+			let active = false;
+			for (const type of pass.types) {
+				const forType = this.#rulesByType.get(type);
+				if (forType) {
+					rules[type] = forType;
+					active = true;
+				}
 			}
+			if (active) pass.apply(ast, rules);
 		}
 		return ast;
 	}

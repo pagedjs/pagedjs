@@ -3,6 +3,7 @@ import * as csstree from "css-tree";
 import { LayoutHandler } from "fragmentainers/handlers";
 import { CssTransformer } from "../../css-transformer/CssTransformer.js";
 import { coreRules } from "../../rules/core/index.js";
+import { RunningElements } from "../../handlers/running-elements.js";
 import { collectRules } from "./collectRules.js";
 
 const rule = (id) => ({ type: "declaration", id, match: () => false, transform: () => null });
@@ -77,5 +78,15 @@ describe("collectRules", () => {
 		const transformer = new CssTransformer({ rules: collectRules([Alpha, Beta]) });
 		const ast = await transformer.prepare(".pin { position: fixed; top: 0; }");
 		expect(csstree.generate(transformer.apply(ast))).toBe(".pin{position:fixed;top:0}");
+	});
+
+	it("collects the parked running-elements rules without wiring the handler", async () => {
+		const transformer = new CssTransformer({ rules: collectRules([RunningElements]) });
+		const ast = await transformer.prepare(
+			"@top-center { content: element(page title) }",
+		);
+		expect(csstree.generate(transformer.apply(ast))).toBe(
+			"&::part(top-center){content:var(--element_page_title)}",
+		);
 	});
 });

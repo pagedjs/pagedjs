@@ -3,29 +3,46 @@ import * as csstree from "css-tree";
 export const ABSOLUTE_URL_RE =
 	/^(?:https?:|data:|blob:|javascript:|mailto:|tel:|#|\/\/)/i;
 
-export function transformUrls(ast, rules = [], ctx = {}) {
-	const context = ctx ?? {};
+/**
+ * The URL pass, run per source sheet from `prepare()` because resolution
+ * needs that sheet's base URL. Every `Url` is rebased first, so a rule
+ * always sees an absolute URL.
+ *
+ * url — ctx `{ url, baseURL, node, item, list }`
+ * - `{ url }` replaces it; later rules see the replacement.
+ */
+export function transformUrls(ast, rules = [], options = {}) {
 	const activeRules = rules ?? [];
-	const baseURL = context.baseURL;
+	const baseURL = options?.baseURL;
 
 	if (!activeRules.length && !baseURL) return ast;
 
 	csstree.walk(ast, {
 		visit: "Url",
-		enter(node) {
+		enter(node, item, list) {
 			const meta = readUrlValue(node);
 			if (meta == null) return;
 
-			let current = resolveRelativeUrl(meta.text, baseURL);
+			const ctx = {
+				url: resolveRelativeUrl(meta.text, baseURL),
+				baseURL,
+				node,
+				item,
+				list,
+			};
+
 			for (const rule of activeRules) {
-				if (!rule.match(current, context)) continue;
-				const next = rule.transform(current, context);
-				if (typeof next === "string" && next !== current) {
-					current = next;
+				if (!rule.match(ctx)) continue;
+
+				const result = rule.transform(ctx);
+				if (!result) continue;
+
+				if (typeof result.url === "string" && result.url !== ctx.url) {
+					ctx.url = result.url;
 				}
 			}
 
-			if (current !== meta.text) writeUrlValue(node, current, meta);
+			if (ctx.url !== meta.text) writeUrlValue(node, ctx.url, meta);
 		},
 	});
 

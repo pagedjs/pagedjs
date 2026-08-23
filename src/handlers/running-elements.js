@@ -3,24 +3,22 @@ import { LayoutHandler } from "fragmentainers/handlers";
 const runningElementRules = [
 	{
 		type: "declaration",
-		match: ({ property, valueString }) =>
-			property === "position" && /^\s*running\(/i.test(valueString),
-		transform: ({ valueString }) => ({
+		match: ({ property, value }) =>
+			property === "position" && /^\s*running\(/i.test(value),
+		transform: ({ value }) => ({
 			declarations: [
-				{ property: "--page-position", value: valueString.trim() },
+				{ property: "--page-position", value: value.trim() },
 				{ property: "display", value: "none" },
 			],
 		}),
 	},
 	{
-		type: "declaration",
-		match: ({ property, valueAST }) =>
-			property === "content" && readElementName(valueAST) !== null,
-		transform: ({ valueAST }) => {
-			const name = readElementName(valueAST);
-			if (name === null) return null;
-			return { value: `var(--element_${name})` };
-		},
+		type: "function",
+		match: ({ name, args, declaration }) =>
+			declaration.property === "content" &&
+			name.toLowerCase() === "element" &&
+			args.length === 1,
+		transform: ({ args }) => ({ value: `var(--element_${slug(args[0])})` }),
 	},
 ];
 
@@ -37,30 +35,6 @@ export class RunningElements extends LayoutHandler {
 	static rules = runningElementRules;
 }
 
-function readElementName(valueAST) {
-	const nodes = childrenToArray(valueAST);
-	if (nodes.length !== 1) return null;
-
-	const node = nodes[0];
-	if (node.type !== "Function" || node.name.toLowerCase() !== "element") {
-		return null;
-	}
-
-	const args = childrenToArray(node);
-	if (args.length !== 1) return null;
-
-	const name = readName(args[0]);
-	return name ? name.replace(/\s+/g, "_") : null;
-}
-
-function readName(node) {
-	if (node.type === "Identifier") return node.name;
-	if (node.type === "String") return node.value;
-	return null;
-}
-
-function childrenToArray(node) {
-	const children = [];
-	node?.children?.forEach((child) => children.push(child));
-	return children;
+function slug(name) {
+	return name.replace(/^["']|["']$/g, "").replace(/\s+/g, "_");
 }

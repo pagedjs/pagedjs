@@ -1,4 +1,5 @@
-import { LayoutHandler, markNativePseudo } from "fragmentainers";
+import { LayoutHandler } from "fragmentainers";
+import { markNativePseudo } from "fragmentainers/handlers";
 import { FragmentFlow } from "fragmentainers/fragmentation";
 import { DOMLayoutNode } from "fragmentainers/layout";
 import { parseNumeric, toPx } from "fragmentainers/styles";

@@ -1,5 +1,8 @@
 import { LitElement, html, css, unsafeCSS } from "lit";
-import { cross } from "../utils/assets";
+import { cross } from "../utils/assets.js";
+// The default `<paged-margins>` is fallback content of this component's
+// `margins` slot, so the element has to be defined for the page to own boxes.
+import "../PagedMargins/PagedMargins.js";
 
 /**
  * The sixteen page-margin boxes of CSS Paged Media, in the order the spec lists
@@ -119,6 +122,13 @@ export class PagedPage extends LitElement {
       margin: 0;
       padding: 0;
       counter-increment: page;
+      /*
+       * The engine's page value wins when a fragmentainer supplied one.
+       * With --paged-page unset the declaration is invalid at
+       * computed-value time and computes to none, leaving the increment
+       * above to number a standalone page. See CSS Lists 3, counter-set.
+       */
+      counter-set: page var(--paged-page);
     }
 
     .sheet {
@@ -422,9 +432,57 @@ export class PagedPage extends LitElement {
 	}
 
 	firstUpdated() {
+		this.#adoptContent();
 		this.dispatchEvent(
 			new CustomEvent("first-updated", { detail: null, bubbles: false }),
 		);
+	}
+
+	/**
+	 * Copy the annotations the engine stamped on the adopted fragmentainer onto
+	 * the host, where the cascade can reach them.
+	 *
+	 * Handlers annotate the `<fragment-container>` because that is what they are
+	 * handed, but `@page` rules style the page. Mirroring is what joins the two,
+	 * and it is confined to the `--paged-` namespace so a document's own custom
+	 * properties are never copied.
+	 */
+	#adoptContent() {
+		const container = this.contentArea;
+		if (!container?.style) return;
+		// Indexed rather than iterated: a CSSStyleDeclaration exposes its
+		// declarations by index everywhere, but is not iterable in every DOM.
+		for (let index = 0; index < container.style.length; index += 1) {
+			const name = container.style.item(index);
+			if (name.startsWith("--paged-")) {
+				this.style.setProperty(name, container.style.getPropertyValue(name));
+			}
+		}
+		this.#placeRunningElements();
+	}
+
+	/**
+	 * Slot the running element each margin box asked for.
+	 *
+	 * The box names its request in `--paged-running-element: <name> <mode>`,
+	 * written by the transformer from `content: element(name, mode)`. Reading it
+	 * from computed style is what lets the cascade choose the running element per
+	 * page, the same way `#resolvePrintProperties` reads `--paged-marks`.
+	 */
+	#placeRunningElements() {
+		const running = this.contentArea?.runningElements;
+		if (!running) return;
+		for (const name of MARGIN_BOXES) {
+			const box = this.marginBox(name);
+			if (!box) continue;
+			const request = getComputedStyle(box)
+				.getPropertyValue("--paged-running-element")
+				.trim();
+			if (!request) continue;
+			const [element, mode = "first"] = request.split(/\s+/);
+			const node = running[element]?.[mode];
+			if (node) this.setMarginContent(name, node.cloneNode(true));
+		}
 	}
 
 	#setState(name, on) {
@@ -580,7 +638,7 @@ ${MARGIN_BOXES.map((box) => html`<slot name=${box} slot=${box}></slot>`)}
 					</slot>
 				</div>
 				<div class="page-area" part="page-area">
-					<slot></slot>
+					<slot @slotchange=${this.#adoptContent}></slot>
 				</div>
 			</div>
 		`;

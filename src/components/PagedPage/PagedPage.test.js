@@ -35,6 +35,75 @@ function addPageStyle(cssText) {
 }
 
 describe("PagedPage", () => {
+	describe("fragment annotations", () => {
+		/**
+		 * A page holding a fragmentainer annotated the way a handler leaves it.
+		 *
+		 * @param {Record<string, string>} properties
+		 * @returns {Promise<{page: PagedPage, container: Element}>}
+		 */
+		async function pageWithFragment(properties = {}) {
+			const page = document.createElement("paged-page");
+			const container = document.createElement("fragment-container");
+			for (const [name, value] of Object.entries(properties)) {
+				container.style.setProperty(name, value);
+			}
+			page.appendChild(container);
+			document.body.appendChild(page);
+			await settle(page);
+			return { page, container };
+		}
+
+		it("mirrors --paged- annotations from the fragmentainer onto the host", async () => {
+			const { page } = await pageWithFragment({
+				"--paged-page": "4",
+				"--paged-string-first-title": "\"Chapter\"",
+			});
+
+			expect(page.style.getPropertyValue("--paged-page")).toBe("4");
+			expect(page.style.getPropertyValue("--paged-string-first-title")).toBe("\"Chapter\"");
+		});
+
+		it("copies nothing outside the --paged- namespace", async () => {
+			const { page } = await pageWithFragment({ "--theme-accent": "red", color: "blue" });
+
+			expect(page.style.getPropertyValue("--theme-accent")).toBe("");
+			expect(page.style.getPropertyValue("color")).toBe("");
+		});
+
+		it("hands the engine's page value to the cascade", async () => {
+			// counter-set is applied after counter-increment, so the engine's value
+			// wins whenever a fragmentainer supplied one.
+			expect(PagedPage.styles.cssText).toContain("counter-set: page var(--paged-page);");
+			expect(PagedPage.styles.cssText).toContain("counter-increment: page;");
+		});
+
+		it("leaves a standalone page to its own counter increment", async () => {
+			const page = document.createElement("paged-page");
+			document.body.appendChild(page);
+			await settle(page);
+
+			expect(page.style.getPropertyValue("--paged-page")).toBe("");
+		});
+
+		it("places nothing in a box that asked for no running element", async () => {
+			// Which running element a box gets is chosen by the cascade, through
+			// `--paged-running-element` on the box's computed style. This DOM
+			// resolves no computed custom properties inside a shadow root, so the
+			// positive case is covered by the browser check, not here. What this
+			// pins is that publishing running elements never fills a box by itself.
+			const { page, container } = await pageWithFragment();
+			container.runningElements = { header: { first: document.createElement("h1") } };
+			page.appendChild(container);
+			await settle(page);
+			await page.marginsArea.updateComplete;
+
+			for (const name of MARGIN_BOXES) {
+				expect(page.querySelector(`[slot="${name}"]`)).toBe(null);
+			}
+		});
+	});
+
 	describe("page-margin boxes", () => {
 		/**
 		 * The nodes a margin box actually shows, followed through both shadow

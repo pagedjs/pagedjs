@@ -1,5 +1,6 @@
 import { Fragmenter } from "fragmentainers";
 import { Footnote } from "./footnote.js";
+import { PageCounter } from "./page-counter.js";
 
 /**
  * pagedjs's layout handlers. Appended once, at import, to the shared
@@ -8,7 +9,7 @@ import { Footnote } from "./footnote.js";
  * effect for handlers; `src/index.js` and the polyfill import it before
  * any render.
  */
-export const pagedHandlers = [Footnote];
+export const pagedHandlers = [Footnote, PageCounter];
 
 for (const Handler of pagedHandlers) {
 	if (!Fragmenter.handlers.includes(Handler)) {
@@ -16,4 +17,4 @@ for (const Handler of pagedHandlers) {
 	}
 }
 
-export { Footnote };
+export { Footnote, PageCounter };

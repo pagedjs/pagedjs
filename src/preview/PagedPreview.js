@@ -9,7 +9,11 @@ import "../components/index.js";
  * The main class responsible for preparing, fragmenting, styling, and rendering content into paginated previews.
  *
  * Emits events:
- * - `page`: when a page is rendered
+ * - `page`: when a page is added to the document. `<paged-page>` and the
+ *   `<paged-margins>` nested in it render asynchronously, so a listener that
+ *   reads margin boxes or mirrored `--paged-*` annotations awaits
+ *   `page.updateComplete` and then `page.marginsArea.updateComplete`. The flow
+ *   does not wait, so pagination is not held up by rendering.
  * - `rendering`: when rendering starts
  * - `rendered`: when rendering finishes
  * - `size`: when page size is set

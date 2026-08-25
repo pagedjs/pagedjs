@@ -2,6 +2,32 @@ import { LitElement, html, css, unsafeCSS } from "lit";
 import { cross } from "../utils/assets";
 
 /**
+ * The sixteen page-margin boxes of CSS Paged Media, in the order the spec lists
+ * them (CSS Paged Media 3 §5). `<paged-page>` forwards one slot per box into
+ * `<paged-margins>` so content can be placed on the page itself rather than on
+ * the margins element.
+ * https://www.w3.org/TR/css-page-3/#margin-boxes
+ */
+export const MARGIN_BOXES = [
+	"top-left-corner",
+	"top-left",
+	"top-center",
+	"top-right",
+	"top-right-corner",
+	"left-top",
+	"left-middle",
+	"left-bottom",
+	"right-top",
+	"right-middle",
+	"right-bottom",
+	"bottom-left-corner",
+	"bottom-left",
+	"bottom-center",
+	"bottom-right",
+	"bottom-right-corner",
+];
+
+/**
  * `<paged-page>` — A printable, CSS-controlled page component with support for
  * margins, bleed, full-page grid layout, and print sizing via the `@page` rule.
  *
@@ -17,6 +43,8 @@ import { cross } from "../utils/assets";
  *
  * @slot - Main content of the page, placed inside the page-area grid region.
  * @slot - Slot to insert custom margins; replaces default paged-margins component.
+ * @slot top-left-corner|top-left|top-center|top-right|top-right-corner|left-top|left-middle|left-bottom|right-top|right-middle|right-bottom|bottom-left-corner|bottom-left|bottom-center|bottom-right|bottom-right-corner
+ *  - Content for the page-margin box of that name, forwarded to `<paged-margins>`.
  *
  * @csspart page-area - The main printable content area.
  *
@@ -330,6 +358,69 @@ export class PagedPage extends LitElement {
 		return this.contentArea?.querySelector("[data-footnote-area]") ?? null;
 	}
 
+	/**
+	 * The `<paged-margins>` in effect: the one slotted into `margins`, or the
+	 * default the slot falls back to. Flattened assignment covers both, so a
+	 * caller never has to know which one a page ended up with.
+	 *
+	 * @returns {Element|null}
+	 */
+	get marginsArea() {
+		const slot = this.renderRoot?.querySelector("slot[name='margins']");
+		const assigned = slot?.assignedElements({ flatten: true }) ?? [];
+		return assigned.find((node) => node.localName === "paged-margins") ?? null;
+	}
+
+	/**
+	 * The `<paged-margin-box>` element for one page-margin box.
+	 *
+	 * @param {string} name - One of MARGIN_BOXES, for example "top-center".
+	 * @returns {Element|null} null before the margins element has rendered.
+	 */
+	marginBox(name) {
+		const margins = this.marginsArea;
+		const root = margins?.renderRoot ?? margins?.shadowRoot;
+		return root?.getElementById?.(name) ?? root?.querySelector(`#${name}`) ?? null;
+	}
+
+	/**
+	 * Place a node in a page-margin box, replacing whatever that box held.
+	 *
+	 * The node is assigned to the page's own slot for that box rather than
+	 * inserted into the margins element, so it survives the margins element
+	 * being replaced and reaches a custom `<paged-margins>` the same way.
+	 *
+	 * @param {string} name - One of MARGIN_BOXES.
+	 * @param {Node} node - The content to place.
+	 * @throws {Error} when `name` is not a page-margin box.
+	 */
+	setMarginContent(name, node) {
+		this.clearMarginContent(name);
+		if (node instanceof Element) {
+			node.setAttribute("slot", name);
+		}
+		this.appendChild(node);
+	}
+
+	/**
+	 * Remove whatever a page-margin box holds.
+	 *
+	 * @param {string} name - One of MARGIN_BOXES.
+	 * @throws {Error} when `name` is not a page-margin box.
+	 */
+	clearMarginContent(name) {
+		if (!MARGIN_BOXES.includes(name)) {
+			throw new Error(
+				`"${name}" is not a page-margin box. Expected one of: ${MARGIN_BOXES.join(", ")}.`,
+			);
+		}
+		for (const child of [...this.children]) {
+			if (child.getAttribute("slot") === name) {
+				child.remove();
+			}
+		}
+	}
+
 	firstUpdated() {
 		this.dispatchEvent(
 			new CustomEvent("first-updated", { detail: null, bubbles: false }),
@@ -484,6 +575,7 @@ export class PagedPage extends LitElement {
               bottom-left-corner, bottom-left, bottom-center, bottom-right,
               bottom-right-corner"
 						>
+${MARGIN_BOXES.map((box) => html`<slot name=${box} slot=${box}></slot>`)}
 						</paged-margins>
 					</slot>
 				</div>

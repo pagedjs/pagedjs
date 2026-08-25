@@ -39,7 +39,7 @@ const PASSES = [
  * | type          | matches                          | ctx adds                                          | `transform` may return                                                                |
  * | ------------- | -------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------- |
  * | `declaration` | every `Declaration`              | `property`, `value`, `valueAST`                    | `{ property?, value? }`, `{ declarations: [{ property, value, important? }] }`, `{ remove }` |
- * | `function`    | every `Function` in a value      | `name`, `value`, `args`, `declaration`             | `{ value }`, `{ remove }`                                                               |
+ * | `function`    | every `Function` in a value      | `name`, `value`, `args`, `declaration`, `rule`, `selector` | `{ value, declarations? }`, `{ remove }`                                             |
  * | `at-rule`     | every `Atrule`                   | `name`, `prelude`, `block`                         | `{ selector, removeDeclarations?, prependDeclarations?, splitDeclarations? }`, `{ unwrap }`, `{ remove }`   |
  * | `media-query` | every `MediaQuery` in a prelude  | `name`, `modifier`, `mediaType`, `condition`, `query`, `atrule` | `{ query }`, `{ unwrap }`, `{ remove }`                                    |
  * | `rule`        | every `Rule`                     | `selector`, `block`                                | `{ selector }`, `{ remove }`                                                            |

@@ -142,6 +142,27 @@ describe("the function walker", () => {
 		match: ({ name }) => name === "shout",
 		transform: ({ args }) => ({ value: `"${args[0].toUpperCase()}"` }),
 	};
+	const generatedRules = () => {
+		let nextId = 0;
+		return [
+			{
+				type: "function",
+				match: ({ name }) => name === "generated",
+				transform: ({ value }) => {
+					const id = nextId++;
+					return {
+						value: `var(--paged-generated-${id}, "")`,
+						declarations: [
+							{
+								property: `--paged-generated-${id}-source`,
+								value,
+							},
+						],
+					};
+				},
+			},
+		];
+	};
 
 	it("rewrites a function anywhere in a value", async () => {
 		const out = await run([upper], "p { content: shout(hi) \" and \" shout(bye); }");
@@ -176,6 +197,74 @@ describe("the function walker", () => {
 		expect(await run(rules, "p { content: shout(a); width: shout(a); }")).toBe(
 			"p{content:\"yes\";width:shout(a)}",
 		);
+	});
+
+	it("exposes the enclosing rule and full selector inside nested at-rules", async () => {
+		let seen = null;
+		const rules = [
+			{
+				type: "function",
+				match: (ctx) => {
+					if (ctx.name === "generated") seen = ctx;
+					return false;
+				},
+				transform: () => null,
+			},
+		];
+		await run(
+			rules,
+			"@media print { .chapter, .appendix { content: generated(title); } }",
+		);
+
+		expect(seen.selector).toBe(".chapter,.appendix");
+		expect(seen.rule.type).toBe("Rule");
+		expect(csstree.generate(seen.rule.prelude)).toBe(seen.selector);
+	});
+
+	it("appends metadata for multiple functions without reprocessing it", async () => {
+		let matches = 0;
+		const [generated] = generatedRules();
+		const rules = [
+			{
+				...generated,
+				match: (ctx) => {
+					const matched = generated.match(ctx);
+					if (matched) matches++;
+					return matched;
+				},
+			},
+		];
+
+		expect(
+			await run(
+				rules,
+				".chapter, .appendix { content: generated(one) \" / \" generated(two); color: red; }",
+			),
+		).toBe(
+			".chapter,.appendix{content:var(--paged-generated-0, \"\")\" / \"var(--paged-generated-1, \"\");color:red;--paged-generated-0-source:generated(one);--paged-generated-1-source:generated(two)}",
+		);
+		expect(matches).toBe(2);
+	});
+
+	it("keeps companion declarations in a nested at-rule block", async () => {
+		expect(
+			await run(
+				generatedRules(),
+				"@page { @top-center { content: generated(title); color: red; } }",
+			),
+		).toBe(
+			"@page{@top-center{content:var(--paged-generated-0, \"\");color:red;--paged-generated-0-source:generated(title)}}",
+		);
+	});
+
+	it("scopes generated occurrence ids to each stylesheet build", async () => {
+		const css = "p { content: generated(one) generated(two); }";
+		const first = await run(generatedRules(), css);
+		const second = await run(generatedRules(), css);
+
+		expect(second).toBe(first);
+		expect(first).toContain("--paged-generated-0-source");
+		expect(first).toContain("--paged-generated-1-source");
 	});
 
 	it("drops a function on remove", async () => {
@@ -429,4 +518,3 @@ describe("the unified rule context", () => {
 		);
 	});
 });
-

@@ -123,7 +123,13 @@ test.describe("pagedjs handlers in the catalog", () => {
 		const names = await page.evaluate(() =>
 			window.Paged.pagedHandlers.map((Handler) => Handler.name),
 		);
-		expect(names).toEqual(["Footnote", "PageCounter", "NamedStrings", "RunningElements"]);
+		expect(names).toEqual([
+			"Footnote",
+			"PageCounter",
+			"NamedStrings",
+			"RunningElements",
+			"TargetText",
+		]);
 	});
 
 	test("float: footnote renders a footnote area through PagedPreview", async ({ page }) => {

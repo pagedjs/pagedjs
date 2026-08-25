@@ -1,5 +1,5 @@
 import { LayoutHandler } from "fragmentainers/handlers";
-import { cssString, splitTopLevel } from "../utils/css.js";
+import { cssString, splitTopLevel, unquote } from "../utils/css.js";
 import { MODES, exitValue, opensFragment, selectPerMode } from "./occurrences.js";
 
 // The vocabulary the CSS rewrite and the runtime have to agree on.
@@ -203,12 +203,4 @@ export class NamedStrings extends LayoutHandler {
 		this.#warned.add(message);
 		console.warn(message);
 	}
-}
-
-function unquote(token) {
-	const quote = token[0];
-	if (quote !== "\"" && quote !== "'") return token;
-	return token
-		.slice(1, token.endsWith(quote) ? -1 : undefined)
-		.replace(/\\(.)/g, "$1");
 }

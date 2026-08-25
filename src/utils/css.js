@@ -95,3 +95,18 @@ export function cssString(value) {
 	const text = String(value ?? "").replace(/\s+/g, " ").trim();
 	return `"${text.replace(/[\\"]/g, (char) => `\\${char}`)}"`;
 }
+
+/**
+ * Strip the quotes from a CSS string token and undo its escapes.
+ * A token that is not quoted is returned unchanged.
+ *
+ * @param {string} token
+ * @returns {string}
+ */
+export function unquote(token) {
+	const quote = token?.[0];
+	if (quote !== "\"" && quote !== "'") return token ?? "";
+	return token
+		.slice(1, token.endsWith(quote) ? -1 : undefined)
+		.replace(/\\(.)/g, "$1");
+}

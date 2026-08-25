@@ -3,6 +3,7 @@ import { Footnote } from "./footnote.js";
 import { PageCounter } from "./page-counter.js";
 import { NamedStrings } from "./named-strings.js";
 import { RunningElements } from "./running-elements.js";
+import { TargetText } from "./target-text.js";
 
 /**
  * pagedjs's layout handlers. Appended once, at import, to the shared
@@ -11,7 +12,13 @@ import { RunningElements } from "./running-elements.js";
  * effect for handlers; `src/index.js` and the polyfill import it before
  * any render.
  */
-export const pagedHandlers = [Footnote, PageCounter, NamedStrings, RunningElements];
+export const pagedHandlers = [
+	Footnote,
+	PageCounter,
+	NamedStrings,
+	RunningElements,
+	TargetText,
+];
 
 for (const Handler of pagedHandlers) {
 	if (!Fragmenter.handlers.includes(Handler)) {
@@ -19,4 +26,4 @@ for (const Handler of pagedHandlers) {
 	}
 }
 
-export { Footnote, PageCounter, NamedStrings, RunningElements };
+export { Footnote, PageCounter, NamedStrings, RunningElements, TargetText };

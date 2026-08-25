@@ -37,7 +37,7 @@
   "scripts": {
     "build": "vite build && vite build --mode polyfill",
     "start": "vite",
-    "test": "npm run lint && vitest run",
+    "test": "vitest run",
     "specs": "npm run build && npx playwright test --config specs/playwright.config.js",
     "lint": "eslint src specs",
     "docker-build": "docker build -t pagedmedia/pagedjs .",

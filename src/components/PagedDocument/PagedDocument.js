@@ -22,6 +22,22 @@ export class PagedDocument extends LitElement {
 	}
 
 	/**
+	 * Resolve once every page assigned to the document has settled.
+	 *
+	 * Pages are separate custom elements, so the document's own update says
+	 * nothing about whether they have rendered. `<paged-page>` in turn folds in
+	 * its margins, so awaiting the document covers the whole tree.
+	 *
+	 * @returns {Promise<boolean>} false when a further update was requested
+	 *   during this one, per Lit's contract.
+	 */
+	async getUpdateComplete() {
+		const result = await super.getUpdateComplete();
+		await Promise.all((this.pages ?? []).map((page) => page.updateComplete));
+		return result;
+	}
+
+	/**
 	 * Set a listener for slot changes and index any pages that were assigned
 	 * before the component's first render.
 	 */

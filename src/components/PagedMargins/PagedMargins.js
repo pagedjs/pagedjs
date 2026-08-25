@@ -291,6 +291,24 @@ export class PagedMargins extends LitElement {
     return null;
   }
 
+  /**
+   * Resolve once this element and its `<paged-margin-box>` children have
+   * rendered.
+   *
+   * The boxes are separate custom elements with their own update cycles, so
+   * `super.getUpdateComplete()` alone leaves their shadow roots empty and
+   * `slottedNodes`/`slottedElements` with no slot to read.
+   *
+   * @returns {Promise<boolean>} false when a further update was requested
+   *   during this one, per Lit's contract.
+   */
+  async getUpdateComplete () {
+    const result = await super.getUpdateComplete();
+    const boxes = this.renderRoot?.querySelectorAll('paged-margin-box') ?? [];
+    await Promise.all([...boxes].map((box) => box.updateComplete));
+    return result;
+  }
+
   render () {
     return html`
       <paged-margin-box id="top-left-corner" part="margin-box top left corner top-left-corner">

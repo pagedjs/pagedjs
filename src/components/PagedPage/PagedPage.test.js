@@ -96,7 +96,6 @@ describe("PagedPage", () => {
 			container.runningElements = { header: { first: document.createElement("h1") } };
 			page.appendChild(container);
 			await settle(page);
-			await page.marginsArea.updateComplete;
 
 			for (const name of MARGIN_BOXES) {
 				expect(page.querySelector(`[slot="${name}"]`)).toBe(null);
@@ -131,11 +130,33 @@ describe("PagedPage", () => {
 				page.setMarginContent(name, content);
 			}
 			await settle(page);
-			await page.marginsArea.updateComplete;
 
 			for (const name of MARGIN_BOXES) {
 				expect(boxContent(page, name).map((node) => node.textContent)).toEqual([name]);
 			}
+		});
+
+		it("settles its margins and their boxes within a single update", async () => {
+			// Lit's update cycle is per element: without the page folding the
+			// nested renders into its own `updateComplete`, `<paged-margins>` still
+			// has an empty shadow root here, and so does every box inside it.
+			const page = document.createElement("paged-page");
+			document.body.appendChild(page);
+			await page.updateComplete;
+
+			expect(page.marginBox("top-center")?.id).toBe("top-center");
+			expect(page.marginBox("top-center").slottedElements).toEqual([]);
+		});
+
+		it("settles a margins element supplied through the slot too", async () => {
+			const page = document.createElement("paged-page");
+			const margins = document.createElement("paged-margins");
+			margins.setAttribute("slot", "margins");
+			page.appendChild(margins);
+			document.body.appendChild(page);
+			await page.updateComplete;
+
+			expect(page.marginBox("bottom-center")?.id).toBe("bottom-center");
 		});
 
 		it("reaches the boxes of the default margins element the slot falls back to", async () => {
@@ -154,7 +175,6 @@ describe("PagedPage", () => {
 			page.appendChild(margins);
 			document.body.appendChild(page);
 			await settle(page);
-			await margins.updateComplete;
 
 			expect(page.marginsArea).toBe(margins);
 			expect(page.marginBox("bottom-center")?.id).toBe("bottom-center");
@@ -172,7 +192,6 @@ describe("PagedPage", () => {
 			page.setMarginContent("top-center", first);
 			page.setMarginContent("top-center", second);
 			await settle(page);
-			await page.marginsArea.updateComplete;
 
 			expect(boxContent(page, "top-center").map((node) => node.textContent)).toEqual([
 				"second",
@@ -188,7 +207,6 @@ describe("PagedPage", () => {
 			page.setMarginContent("top-left", content);
 			page.clearMarginContent("top-left");
 			await settle(page);
-			await page.marginsArea.updateComplete;
 
 			expect(boxContent(page, "top-left")).toEqual([]);
 			expect(page.querySelector("[slot='top-left']")).toBe(null);

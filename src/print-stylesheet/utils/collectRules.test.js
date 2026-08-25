@@ -80,13 +80,16 @@ describe("collectRules", () => {
 		expect(csstree.generate(transformer.apply(ast))).toBe(".pin{position:fixed;top:0}");
 	});
 
-	it("collects the parked running-elements rules without wiring the handler", async () => {
+	// The request has to land on the box and the content on its ::before, so
+	// the box's computed style is where `<paged-page>` reads the selection.
+	it("splits an element() request off the margin box content", async () => {
 		const transformer = new CssTransformer({ rules: collectRules([RunningElements]) });
 		const ast = await transformer.prepare(
-			"@top-center { content: element(page title) }",
+			"@top-center { content: element(title, last) }",
 		);
 		expect(csstree.generate(transformer.apply(ast))).toBe(
-			"&::part(top-center)::before{content:var(--element_page_title)}",
+			"&::part(top-center){--paged-running-element:title last}"
+				+ "&::part(top-center)::before{content:\"\"}",
 		);
 	});
 });

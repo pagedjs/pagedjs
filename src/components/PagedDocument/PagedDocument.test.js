@@ -1,5 +1,7 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { PagedPage } from "../PagedPage/PagedPage.js";
+// The page resolves its boxes only once `<paged-margins>` is defined.
+import "../PagedMargins/PagedMargins.js";
 import { PagedDocument } from "./PagedDocument.js";
 
 let originalAttachInternals;
@@ -27,6 +29,19 @@ describe("PagedDocument", () => {
 			"counter-reset: page 0 pages var(--paged-page-count, 0);",
 		);
 		expect(PagedPage.styles.cssText).toContain("counter-increment: page;");
+	});
+
+	it("settles its pages within a single update", async () => {
+		// Pages are separate elements with their own update cycles, and each folds
+		// its margins into its own `updateComplete`, so awaiting the document is
+		// awaiting the whole tree.
+		const pagedDocument = document.createElement("paged-document");
+		const page = pagedDocument.addPage();
+
+		document.body.appendChild(pagedDocument);
+		await pagedDocument.updateComplete;
+
+		expect(page.marginBox("top-center")?.id).toBe("top-center");
 	});
 
 	it("indexes assigned pages and maintains the total page count", async () => {

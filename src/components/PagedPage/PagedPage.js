@@ -262,6 +262,10 @@ export class PagedPage extends LitElement {
 	#internals = null;
 	#styledBleed = null;
 	#styledMarks = null;
+	// The running element each margin box currently holds, so a re-run only
+	// touches the boxes whose selection actually changed.
+	#placedRunning = new Map();
+	#placing = null;
 
 	/**
 	 * Constructor initializes defaults.
@@ -431,6 +435,26 @@ export class PagedPage extends LitElement {
 		}
 	}
 
+	/**
+	 * Resolve once the page *and everything it renders* is settled.
+	 *
+	 * Lit's update cycle is per element: `updated()` means this element's own
+	 * template has been committed, not that the `<paged-margins>` that template
+	 * created has rendered its boxes, and not that the running elements the
+	 * cascade asked for have been placed in them. Folding both in here is what
+	 * lets a caller await the page alone and find `marginBox()` and its margin
+	 * content already there.
+	 *
+	 * @returns {Promise<boolean>} false when a further update was requested
+	 *   during this one, per Lit's contract.
+	 */
+	async getUpdateComplete() {
+		const result = await super.getUpdateComplete();
+		await this.marginsArea?.updateComplete;
+		await this.#placing;
+		return result;
+	}
+
 	firstUpdated() {
 		this.#adoptContent();
 		this.dispatchEvent(
@@ -458,7 +482,20 @@ export class PagedPage extends LitElement {
 				this.style.setProperty(name, container.style.getPropertyValue(name));
 			}
 		}
-		this.#placeRunningElements();
+		this.#queueRunningElements();
+	}
+
+	/**
+	 * Run placement after whatever run is already in flight.
+	 *
+	 * Placement is asynchronous and re-runs on every update, so two runs can
+	 * otherwise overlap and resolve the cascade out of order. Chaining also
+	 * leaves one promise for `getUpdateComplete` to await.
+	 */
+	#queueRunningElements() {
+		this.#placing = Promise.resolve(this.#placing).then(() =>
+			this.#placeRunningElements(),
+		);
 	}
 
 	/**
@@ -468,20 +505,35 @@ export class PagedPage extends LitElement {
 	 * written by the transformer from `content: element(name, mode)`. Reading it
 	 * from computed style is what lets the cascade choose the running element per
 	 * page, the same way `#resolvePrintProperties` reads `--paged-marks`.
+	 *
+	 * The boxes belong to `<paged-margins>`, which renders on its own schedule,
+	 * so a box has no computed style to read until that render completes.
+	 * Placement is re-run on every update because the request is cascaded: a
+	 * page-state rule such as `@page :first` only wins once the state is set.
 	 */
-	#placeRunningElements() {
+	async #placeRunningElements() {
 		const running = this.contentArea?.runningElements;
 		if (!running) return;
+		const margins = this.marginsArea;
+		if (!margins) return;
+		await margins.updateComplete;
+
 		for (const name of MARGIN_BOXES) {
 			const box = this.marginBox(name);
 			if (!box) continue;
 			const request = getComputedStyle(box)
 				.getPropertyValue("--paged-running-element")
 				.trim();
-			if (!request) continue;
-			const [element, mode = "first"] = request.split(/\s+/);
-			const node = running[element]?.[mode];
+			const [element, mode = "first"] = request ? request.split(/\s+/) : [];
+			const node = element ? running[element]?.[mode] ?? null : null;
+
+			// Only a box this page filled itself is cleared, so margin content
+			// placed by anyone else survives a re-run.
+			const placed = this.#placedRunning.get(name) ?? null;
+			if (placed === node) continue;
+			this.#placedRunning.set(name, node);
 			if (node) this.setMarginContent(name, node.cloneNode(true));
+			else this.clearMarginContent(name);
 		}
 	}
 
@@ -508,6 +560,7 @@ export class PagedPage extends LitElement {
 		if (changedProps.has("recto")) this.#setState("right", this.recto);
 		if (changedProps.has("first")) this.#setState("first", this.first);
 		this.#resolvePrintProperties();
+		this.#queueRunningElements();
 	}
 
 	/**

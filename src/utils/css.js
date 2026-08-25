@@ -30,3 +30,68 @@ export function cleanSelector(el) {
 	if (el == null) return;
 	return el.replace(/::footnote-call/g, "").replace(/::footnote-marker/g, "");
 }
+
+/**
+ * Split a declaration value on a top-level separator, ignoring separators
+ * inside strings and functions.
+ *
+ * A computed custom property is a raw token stream, so a handler that reads
+ * one back — `--string-set`, `--page-position` — has to scan it itself.
+ *
+ * @param {string} value
+ * @param {RegExp} separator - matches one separator character
+ * @returns {string[]} non-empty, trimmed parts
+ */
+export function splitTopLevel(value, separator) {
+	const parts = [];
+	let current = "";
+	let depth = 0;
+	let quote = null;
+
+	for (let index = 0; index < value.length; index += 1) {
+		const char = value[index];
+
+		if (quote) {
+			current += char;
+			if (char === "\\") {
+				index += 1;
+				current += value[index] ?? "";
+			} else if (char === quote) {
+				quote = null;
+			}
+			continue;
+		}
+
+		if (char === "\"" || char === "'") {
+			quote = char;
+		} else if (char === "(") {
+			depth += 1;
+		} else if (char === ")") {
+			depth -= 1;
+		} else if (depth === 0 && separator.test(char)) {
+			parts.push(current);
+			current = "";
+			continue;
+		}
+
+		current += char;
+	}
+
+	parts.push(current);
+	return parts.map((part) => part.trim()).filter(Boolean);
+}
+
+/**
+ * Quote a resolved value as a CSS string, for a custom property a `content`
+ * declaration reads back through `var()`.
+ *
+ * Whitespace runs collapse the way they would if the text were rendered, so
+ * an indented source element does not carry its indentation into a margin box.
+ *
+ * @param {string} value
+ * @returns {string}
+ */
+export function cssString(value) {
+	const text = String(value ?? "").replace(/\s+/g, " ").trim();
+	return `"${text.replace(/[\\"]/g, (char) => `\\${char}`)}"`;
+}

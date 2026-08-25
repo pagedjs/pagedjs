@@ -119,11 +119,11 @@ test.describe("pagedjs handlers in the catalog", () => {
 		expect(result.listed).toBe(true);
 	});
 
-	test("pagedHandlers holds only the handlers whose runtime is complete", async ({ page }) => {
+	test("pagedHandlers lists every handler the package registers", async ({ page }) => {
 		const names = await page.evaluate(() =>
 			window.Paged.pagedHandlers.map((Handler) => Handler.name),
 		);
-		expect(names).toEqual(["Footnote"]);
+		expect(names).toEqual(["Footnote", "PageCounter", "NamedStrings", "RunningElements"]);
 	});
 
 	test("float: footnote renders a footnote area through PagedPreview", async ({ page }) => {

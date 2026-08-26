@@ -28,6 +28,17 @@ export default [
 			"no-console": ["error", { "allow": ["warn", "error"] }],
 			"no-unused-vars": ["error", { "vars": "all", "args": "none" }],
 			"no-mixed-spaces-and-tabs": ["error", "smart-tabs"],
+			"no-restricted-imports": [
+				"error",
+				{
+					"patterns": [
+						{
+							"regex": "^\\.{1,2}/.*(?<!\\.[a-z0-9]+)$",
+							"message": "Relative imports must include a file extension.",
+						},
+					],
+				},
+			],
 		},
 	},
 ];

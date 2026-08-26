@@ -32,11 +32,12 @@ const targetTextRules = (allocate) => [
 			const id = allocate();
 			// The original tokens travel with the sheet, so the handler
 			// rediscovers its own occurrences without sharing state with the
-			// stylesheet build that rewrote them.
+			// stylesheet build that rewrote them. A CSS string keeps browsers
+			// from rejecting a typed attr() inside the unsupported outer function.
 			return {
 				value: `var(--paged-generated-${id}, "")`,
 				declarations: [
-					{ property: `--paged-generated-${id}-source`, value },
+					{ property: `--paged-generated-${id}-source`, value: cssString(value) },
 				],
 			};
 		},
@@ -164,7 +165,7 @@ function write(element, id, value) {
 
 /** Parse a `--paged-generated-<id>-source` value back into its parts. */
 function parseTargetText(declared) {
-	const call = /^target-text\((.*)\)$/is.exec(declared);
+	const call = /^target-text\((.*)\)$/is.exec(unquote(declared));
 	if (!call) return null;
 
 	const args = splitTopLevel(call[1], /,/);

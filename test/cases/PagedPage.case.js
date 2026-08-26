@@ -1,25 +1,14 @@
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { MARGIN_BOXES, PagedPage } from "./PagedPage.js";
+import { afterEach, describe, expect, it } from "../browser-suite.js";
+import { MARGIN_BOXES, PagedPage } from "/src/components/PagedPage/PagedPage.js";
 // The default margins element is fallback content of the `margins` slot, so the
 // page can only resolve its boxes once `<paged-margins>` is defined.
-import "../PagedMargins/PagedMargins.js";
-
-let originalAttachInternals;
-
-beforeAll(() => {
-	originalAttachInternals = HTMLElement.prototype.attachInternals;
-	HTMLElement.prototype.attachInternals = () => ({ states: new Set() });
-});
+import "/src/components/PagedMargins/PagedMargins.js";
 
 afterEach(() => {
 	document.body.replaceChildren();
 	document.head.querySelectorAll("style[data-test]").forEach((style) => {
 		style.remove();
 	});
-});
-
-afterAll(() => {
-	HTMLElement.prototype.attachInternals = originalAttachInternals;
 });
 
 async function settle(page) {
@@ -302,50 +291,21 @@ describe("PagedPage", () => {
 	});
 
 	it("injects only its page-specific sheet when self-configuration is enabled", () => {
-		const originalCSS = globalThis.CSS;
-		const originalReplaceSync = CSSStyleSheet.prototype.replaceSync;
-		const adoptedDescriptor = Object.getOwnPropertyDescriptor(
-			document,
-			"adoptedStyleSheets",
+		const originalSheets = [...document.adoptedStyleSheets];
+		const page = document.createElement("paged-page");
+		page.name = "standalone";
+		page.width = "210mm";
+		page.height = "297mm";
+		page.inject = true;
+		document.body.appendChild(page);
+
+		const injected = document.adoptedStyleSheets.find(
+			(sheet) => !originalSheets.includes(sheet),
 		);
-		Object.defineProperty(document, "adoptedStyleSheets", {
-			configurable: true,
-			writable: true,
-			value: [],
-		});
-		CSSStyleSheet.prototype.replaceSync = function replaceSync(cssText) {
-			this.testCssText = cssText;
-		};
-		globalThis.CSS = { supports: () => true };
-
-		try {
-			const page = document.createElement("paged-page");
-			page.name = "standalone";
-			page.width = "210mm";
-			page.height = "297mm";
-			page.inject = true;
-			document.body.appendChild(page);
-
-			expect(document.adoptedStyleSheets).toHaveLength(1);
-			expect(document.adoptedStyleSheets[0].testCssText).toContain(
-				"@page standalone",
-			);
-			expect(document.adoptedStyleSheets[0].testCssText).not.toContain(
-				"@media print",
-			);
-		} finally {
-			globalThis.CSS = originalCSS;
-			if (originalReplaceSync) {
-				CSSStyleSheet.prototype.replaceSync = originalReplaceSync;
-			} else {
-				delete CSSStyleSheet.prototype.replaceSync;
-			}
-			if (adoptedDescriptor) {
-				Object.defineProperty(document, "adoptedStyleSheets", adoptedDescriptor);
-			} else {
-				delete document.adoptedStyleSheets;
-			}
-		}
+		const cssText = [...injected.cssRules].map((rule) => rule.cssText).join("\n");
+		expect(document.adoptedStyleSheets).toHaveLength(originalSheets.length + 1);
+		expect(cssText).toContain("@page standalone");
+		expect(cssText).not.toContain("@media print");
 	});
 
 	it("contains valid page styles and owns only the page counter increment", () => {

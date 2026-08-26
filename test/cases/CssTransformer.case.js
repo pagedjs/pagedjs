@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "../browser-suite.js";
 import * as csstree from "css-tree";
-import { CssTransformer } from "./CssTransformer.js";
+import { CssTransformer } from "/src/css-transformer/CssTransformer.js";
 
 const renameRule = (from, to) => ({
 	type: "declaration",

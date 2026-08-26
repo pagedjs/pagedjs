@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from "../browser-suite.js";
 import * as csstree from "css-tree";
-import { CssTransformer } from "../css-transformer/CssTransformer.js";
-import { RunningElements } from "./running-elements.js";
+import { CssTransformer } from "/src/css-transformer/CssTransformer.js";
+import { RunningElements } from "/src/handlers/running-elements.js";
 
 async function rewrite(css) {
 	const transformer = new CssTransformer({ rules: RunningElements.rules });

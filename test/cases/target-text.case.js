@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "../browser-suite.js";
 import * as csstree from "css-tree";
-import { CssTransformer } from "../css-transformer/CssTransformer.js";
-import { TargetText } from "./target-text.js";
+import { CssTransformer } from "/src/css-transformer/CssTransformer.js";
+import { TargetText } from "/src/handlers/target-text.js";
 
 async function rewrite(css, rules = TargetText.rules) {
 	const transformer = new CssTransformer({ rules });
@@ -43,8 +43,22 @@ describe("target text CSS", () => {
 	it("rewrites the function and keeps its source alongside", async () => {
 		expect(await rewrite("a::after { content: target-text(attr(href url)) }")).toBe(
 			"a::after{content:var(--paged-generated-text-0, \"\");"
-				+ "--paged-generated-text-0-source:target-text(attr(href url))}",
+				+ "--paged-generated-text-0-source:\"target-text(attr(href url))\"}",
 		);
+	});
+
+	it("keeps a typed attr source readable through browser CSSOM", async () => {
+		const style = document.createElement("style");
+		style.textContent = await rewrite(
+			"a::after { content: target-text(attr(href url)) }",
+		);
+		document.head.appendChild(style);
+
+		expect(
+			document.styleSheets[0].cssRules[0].style.getPropertyValue(
+				"--paged-generated-text-0-source",
+			),
+		).toBe("\"target-text(attr(href url))\"");
 	});
 
 	it("gives each occurrence its own id", async () => {
@@ -77,7 +91,7 @@ describe("target text runtime", () => {
 
 	it("stamps the target's text on the referencing element", () => {
 		const { content } = setup(
-			"a::after { --paged-generated-text-0-source: target-text(attr(href url)) }",
+			"a::after { --paged-generated-text-0-source: \"target-text(attr(href url))\" }",
 			"<a id=\"ref\" href=\"#chap\">go</a><h1 id=\"chap\">Chapter One</h1>",
 		);
 
@@ -86,7 +100,7 @@ describe("target text runtime", () => {
 
 	it("collapses whitespace and escapes quotes in the target's text", () => {
 		const { content } = setup(
-			"a::after { --paged-generated-text-0-source: target-text(attr(href)) }",
+			"a::after { --paged-generated-text-0-source: \"target-text(attr(href))\" }",
 			"<a id=\"ref\" href=\"#chap\">go</a><h1 id=\"chap\">\n\t'Lorem \"ipsum\" dolor'\n</h1>",
 		);
 
@@ -95,7 +109,7 @@ describe("target text runtime", () => {
 
 	it("takes only the first letter in first-letter mode", () => {
 		const { content } = setup(
-			"a::after { --paged-generated-text-0-source: target-text(attr(href), first-letter) }",
+			"a::after { --paged-generated-text-0-source: \"target-text(attr(href), first-letter)\" }",
 			"<a id=\"ref\" href=\"#chap\">go</a><h1 id=\"chap\"> Praesent placerat</h1>",
 		);
 
@@ -104,7 +118,7 @@ describe("target text runtime", () => {
 
 	it("resolves an id that would need escaping as a selector", () => {
 		const { content } = setup(
-			"a::after { --paged-generated-text-0-source: target-text(attr(href)) }",
+			"a::after { --paged-generated-text-0-source: \"target-text(attr(href))\" }",
 			"<a id=\"ref\" href=\"#chap.two\">go</a><h1 id=\"chap.two\">Dotted</h1>",
 		);
 
@@ -113,7 +127,7 @@ describe("target text runtime", () => {
 
 	it("resolves a percent-encoded fragment", () => {
 		const { content } = setup(
-			"a::after { --paged-generated-text-0-source: target-text(attr(href)) }",
+			"a::after { --paged-generated-text-0-source: \"target-text(attr(href))\" }",
 			"<a id=\"ref\" href=\"#chap%20two\">go</a><h1 id=\"chap two\">Encoded</h1>",
 		);
 
@@ -131,7 +145,7 @@ describe("target text runtime", () => {
 
 	it("stamps every element the rule matches with its own target", () => {
 		const { content } = setup(
-			"nav a::after { --paged-generated-text-0-source: target-text(attr(href)) }",
+			"nav a::after { --paged-generated-text-0-source: \"target-text(attr(href))\" }",
 			"<nav><a id=\"one\" href=\"#a\">1</a><a id=\"two\" href=\"#b\">2</a></nav>"
 				+ "<h1 id=\"a\">First</h1><h1 id=\"b\">Second</h1>",
 		);
@@ -142,7 +156,7 @@ describe("target text runtime", () => {
 
 	it("reads the declaration off the element a pseudo-element belongs to", () => {
 		const { handler } = setup(
-			"nav li#first a[href]::after { --paged-generated-text-0-source: target-text(attr(href)) }",
+			"nav li#first a[href]::after { --paged-generated-text-0-source: \"target-text(attr(href))\" }",
 			"<nav><li id=\"first\"><a href=\"#c\">go</a></li></nav><h1 id=\"c\">Title</h1>",
 		);
 
@@ -154,7 +168,7 @@ describe("target text runtime", () => {
 
 	it("registers no layout pass when nothing needs one", () => {
 		const { budget } = setup(
-			"a::after { --paged-generated-text-0-source: target-text(attr(href)) }",
+			"a::after { --paged-generated-text-0-source: \"target-text(attr(href))\" }",
 			"<a id=\"ref\" href=\"#chap\">go</a><h1 id=\"chap\">Chapter</h1>",
 		);
 
@@ -163,7 +177,7 @@ describe("target text runtime", () => {
 
 	it("registers a layout pass for a mode that reads generated content", () => {
 		const { budget } = setup(
-			"a::after { --paged-generated-text-0-source: target-text(attr(href), before) }",
+			"a::after { --paged-generated-text-0-source: \"target-text(attr(href), before)\" }",
 			"<a id=\"ref\" href=\"#chap\">go</a><h1 id=\"chap\">Chapter</h1>",
 		);
 
@@ -172,7 +186,7 @@ describe("target text runtime", () => {
 
 	it("stamps a deferred mode only in the pass loop, and settles after it", () => {
 		const { handler, content } = setup(
-			"a::after { --paged-generated-text-0-source: target-text(attr(href), before) }",
+			"a::after { --paged-generated-text-0-source: \"target-text(attr(href), before)\" }",
 			"<a id=\"ref\" href=\"#chap\">go</a><h1 id=\"chap\">Chapter</h1>",
 		);
 		const reference = content.getElementById("ref");
@@ -190,7 +204,7 @@ describe("target text runtime", () => {
 	it("resolves a missing target to nothing, warning once", () => {
 		const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
 		const { content } = setup(
-			"a::after { --paged-generated-text-0-source: target-text(attr(href)) }",
+			"a::after { --paged-generated-text-0-source: \"target-text(attr(href))\" }",
 			"<a id=\"one\" href=\"#gone\">1</a><a id=\"two\" href=\"#gone\">2</a>",
 		);
 
@@ -202,7 +216,7 @@ describe("target text runtime", () => {
 	it("resolves a target in another document to nothing, warning once", () => {
 		const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
 		const { content } = setup(
-			"a::after { --paged-generated-text-0-source: target-text(attr(href)) }",
+			"a::after { --paged-generated-text-0-source: \"target-text(attr(href))\" }",
 			"<a id=\"ref\" href=\"other.html#chap\">go</a>",
 		);
 
@@ -214,7 +228,7 @@ describe("target text runtime", () => {
 	it("warns once for a malformed source and records no occurrence", () => {
 		const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
 		const { content } = setup(
-			"a::after { --paged-generated-text-0-source: target-text(attr(href), sideways) }",
+			"a::after { --paged-generated-text-0-source: \"target-text(attr(href), sideways)\" }",
 			"<a id=\"ref\" href=\"#chap\">go</a><h1 id=\"chap\">Chapter</h1>",
 		);
 

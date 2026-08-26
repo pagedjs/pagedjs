@@ -29,17 +29,16 @@
     "eslint": "^10.0.0",
     "express": "^5.2.0",
     "globals": "^17.0.0",
-    "jsdom": "^26.0.0",
+    "serve": "^14.2.6",
     "to-match-pdf-snapshot": "^1.1.4",
-    "vite": "^6.4.0",
-    "vitest": "^4.1.0"
+    "vite": "^6.4.0"
   },
   "scripts": {
     "build": "vite build && vite build --mode polyfill",
     "start": "vite",
-    "test": "vitest run",
+    "test": "playwright test --config test/playwright.config.js",
     "specs": "npm run build && npx playwright test --config specs/playwright.config.js",
-    "lint": "eslint src specs",
+    "lint": "eslint src test specs",
     "docker-build": "docker build -t pagedmedia/pagedjs .",
     "docker-test": "docker build -t pagedmedia/pagedjs . && docker run -it --rm --ipc=host --user pwuser -v $(pwd)/specs:/home/pwuser/pagedjs/specs pagedmedia/pagedjs npm test",
     "docker-specs": "docker build -t pagedmedia/pagedjs . && docker run -it --rm --ipc=host -v $(pwd)/specs:/home/pwuser/pagedjs/specs pagedmedia/pagedjs npm run specs",

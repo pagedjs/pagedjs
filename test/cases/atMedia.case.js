@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "../browser-suite.js";
 import * as csstree from "css-tree";
-import { CssTransformer } from "../../css-transformer/CssTransformer.js";
-import { coreRules } from "./index.js";
+import { CssTransformer } from "/src/css-transformer/CssTransformer.js";
+import { coreRules } from "/src/print-stylesheet/rules/index.js";
 
 async function transform(css) {
 	const transformer = new CssTransformer({ rules: coreRules });

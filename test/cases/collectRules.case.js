@@ -1,10 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "../browser-suite.js";
 import * as csstree from "css-tree";
 import { LayoutHandler } from "fragmentainers/handlers";
-import { CssTransformer } from "../../css-transformer/CssTransformer.js";
-import { coreRules } from "../rules/index.js";
-import { RunningElements } from "../../handlers/running-elements.js";
-import { collectRules } from "./collectRules.js";
+import { CssTransformer } from "/src/css-transformer/CssTransformer.js";
+import { coreRules } from "/src/print-stylesheet/rules/index.js";
+import { RunningElements } from "/src/handlers/running-elements.js";
+import { collectRules } from "/src/print-stylesheet/utils/collectRules.js";
 
 const rule = (id) => ({ type: "declaration", id, match: () => false, transform: () => null });
 

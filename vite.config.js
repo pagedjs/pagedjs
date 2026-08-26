@@ -55,10 +55,5 @@ export default defineConfig(({ mode }) => {
 				"Service-Worker-Allowed": "/",
 			},
 		},
-		test: {
-			include: ["src/**/*.test.js"],
-			globals: true,
-			environment: "jsdom",
-		},
 	};
 });

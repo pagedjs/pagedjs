@@ -1,22 +1,11 @@
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { PagedPage } from "../PagedPage/PagedPage.js";
+import { afterEach, describe, expect, it } from "../browser-suite.js";
+import { PagedPage } from "/src/components/PagedPage/PagedPage.js";
 // The page resolves its boxes only once `<paged-margins>` is defined.
-import "../PagedMargins/PagedMargins.js";
-import { PagedDocument } from "./PagedDocument.js";
-
-let originalAttachInternals;
-
-beforeAll(() => {
-	originalAttachInternals = HTMLElement.prototype.attachInternals;
-	HTMLElement.prototype.attachInternals = () => ({ states: new Set() });
-});
+import "/src/components/PagedMargins/PagedMargins.js";
+import { PagedDocument } from "/src/components/PagedDocument/PagedDocument.js";
 
 afterEach(() => {
 	document.body.replaceChildren();
-});
-
-afterAll(() => {
-	HTMLElement.prototype.attachInternals = originalAttachInternals;
 });
 
 function nextTask() {

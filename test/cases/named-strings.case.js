@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "../browser-suite.js";
 import * as csstree from "css-tree";
-import { CssTransformer } from "../css-transformer/CssTransformer.js";
-import { NamedStrings } from "./named-strings.js";
+import { CssTransformer } from "/src/css-transformer/CssTransformer.js";
+import { NamedStrings } from "/src/handlers/named-strings.js";
 
 async function rewrite(css) {
 	const transformer = new CssTransformer({ rules: NamedStrings.rules });

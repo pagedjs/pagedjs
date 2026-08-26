@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { MODES, exitValue, opensFragment, selectPerMode } from "./occurrences.js";
+import { describe, it, expect, beforeEach } from "../browser-suite.js";
+import { MODES, exitValue, opensFragment, selectPerMode } from "/src/handlers/occurrences.js";
 
 describe("selectPerMode", () => {
 	it("carries the entry value through a page with no occurrence", () => {

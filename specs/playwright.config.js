@@ -6,9 +6,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
 	testDir: ".",
-	testMatch: "**/*.spec.js",
+	testMatch: ["handlers/**/*.spec.js", "preview/**/*.spec.js"],
 	timeout: 10000,
 	globalTimeout: 600000,
+	forbidOnly: true,
 	webServer: {
 		command: "node test_helpers/server.js",
 		cwd: __dirname,

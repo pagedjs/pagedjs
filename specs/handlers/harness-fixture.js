@@ -8,8 +8,13 @@ export { expect };
  */
 export const test = base.extend({
 	page: async ({ page }, use) => {
-		page.on("pageerror", (error) => console.error(error));
+		const failures = [];
+		page.on("pageerror", (error) => failures.push(error.message));
+		page.on("console", (message) => {
+			if (message.type() === "error") failures.push(message.text());
+		});
 		await page.goto("/specs/handlers/harness.html");
 		await use(page);
+		expect(failures, "Unexpected browser errors").toEqual([]);
 	},
 });

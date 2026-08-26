@@ -172,11 +172,12 @@ $ npm run legacy
 
 ## Testing
 
-Testing for Paged.js uses [Vitest](https://vitest.dev) but is split into Tests and Specs.
+Current-engine tests run in Chromium with [Playwright](https://playwright.dev).
 
 ### Tests
 
-Unit tests for Chunker and Polisher methods are run in node using JSDOM.
+Behavior tests under `test/` load source modules directly through the browser
+import map. Every test gets a fresh page and treats browser errors as failures.
 
 ```bash
 npm test
@@ -184,41 +185,15 @@ npm test
 
 ### Specs
 
-Specs run a html file in Chrome (using puppeteer) to test against CSS specifications.
-
-They can also output a pdf and compare pages (one at a time) in that PDF with samples PDFs (saved as images).
-
-The PDF comparison tests depend on the `pdf-to-img` package, which uses `pdf.js` to render PDFs into image files.
-
-It is recommend to run these in the Docker container below via:
-
-```bash
-npm run docker-specs
-```
-
-To test the pdf output of specs, you'll need to build the library locally.
-
-```bash
-npm run build
-```
-
-Then run the tests in playwright.
+The supported handler and preview specs under `specs/` also import source
+modules directly. They do not require a build first.
 
 ```bash
 npm run specs
 ```
 
-To debug the results of a test in a browser you can add `NODE_ENV=debug`
-
-```bash
-NODE_ENV=debug npm run specs
-```
-
-To update the stored pdf images you can run
-
-```bash
-npm run specs -- --updateSnapshot
-```
+Use `PAGED_TEST_PORT` to override the behavior-test server port when running
+multiple checkouts at once.
 
 ### Docker
 

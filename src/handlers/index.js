@@ -4,6 +4,7 @@ import { PageCounter } from "./page-counter.js";
 import { NamedStrings } from "./named-strings.js";
 import { RunningElements } from "./running-elements.js";
 import { TargetText } from "./target-text.js";
+import { TargetCounters } from "./target-counters.js";
 
 /**
  * pagedjs's layout handlers. Appended once, at import, to the shared
@@ -18,6 +19,7 @@ export const pagedHandlers = [
 	NamedStrings,
 	RunningElements,
 	TargetText,
+	TargetCounters,
 ];
 
 for (const Handler of pagedHandlers) {
@@ -26,4 +28,4 @@ for (const Handler of pagedHandlers) {
 	}
 }
 
-export { Footnote, PageCounter, NamedStrings, RunningElements, TargetText };
+export { Footnote, PageCounter, NamedStrings, RunningElements, TargetText, TargetCounters };

@@ -129,6 +129,7 @@ test.describe("pagedjs handlers in the catalog", () => {
 			"NamedStrings",
 			"RunningElements",
 			"TargetText",
+			"TargetCounters",
 		]);
 	});
 

@@ -124,6 +124,7 @@ test.describe("pagedjs handlers in the catalog", () => {
 			window.Paged.pagedHandlers.map((Handler) => Handler.name),
 		);
 		expect(names).toEqual([
+			"SourceFilters",
 			"Footnote",
 			"PageCounter",
 			"NamedStrings",

@@ -9,3 +9,4 @@ specs/temp
 .vscode
 docs/
 
+.playwright-mcp/

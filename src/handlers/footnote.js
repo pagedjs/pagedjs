@@ -101,8 +101,8 @@ function getBreakBoundary(breakToken) {
 }
 
 function follows(node, reference) {
-	const pos = reference.compareDocumentPosition(node);
-	return pos === 0 || !!(pos & Node.DOCUMENT_POSITION_FOLLOWING);
+	const position = reference.compareDocumentPosition(node);
+	return position === 0 || !!(position & Node.DOCUMENT_POSITION_FOLLOWING);
 }
 
 /** True when the call is laid out on the page bounded by `start` and `end`. */
@@ -114,7 +114,7 @@ function isWithinBoundaries(callElement, start, end) {
 
 function isAfterBoundary(callElement, boundary) {
 	if (boundary.items) {
-		const item = boundary.items.find((i) => i.element === callElement);
+		const item = boundary.items.find((entry) => entry.element === callElement);
 		if (item) return item.startOffset >= boundary.offset;
 		return boundary.node ? follows(callElement, boundary.node) : false;
 	}
@@ -149,11 +149,12 @@ function readFootnotePolicy(bodyElement) {
  *   fit, the flow rejects it and the coordinator pushes the call's
  *   containing block to the next page.
  */
-class Footnote extends LayoutHandler {
+export class Footnote extends LayoutHandler {
 	static rules = footnoteRules;
 
 	#footnoteMap = new Map();
 	#measurer = null;
+	#bodiesResolved = false;
 	#flow = new FragmentFlow();
 	#pushedCalls = new WeakSet();
 	#defaultSheet = null;
@@ -180,19 +181,19 @@ class Footnote extends LayoutHandler {
 		}
 		// Custom properties are stripped from @page (CSS Paged Media §3.2), so
 		// --footnote-max-height is declared on :root / html and read once here.
-		const sel = rule.selectorText;
-		if (sel === ":root" || sel === "html") {
-			const raw = rule.style.getPropertyValue("--footnote-max-height").trim();
-			if (raw) {
-				const parsed = parseNumeric(raw);
-				if (parsed?.unit === "percent") {
-					this.#footnoteMaxHeightPercent = parsed.value / 100;
-				} else {
-					const val = toPx(raw);
-					if (val != null) this.#footnoteMaxHeight = val;
-				}
-			}
+		const selector = rule.selectorText;
+		if (selector !== ":root" && selector !== "html") return;
+
+		const declared = rule.style.getPropertyValue("--footnote-max-height").trim();
+		if (!declared) return;
+
+		const parsed = parseNumeric(declared);
+		if (parsed?.unit === "percent") {
+			this.#footnoteMaxHeightPercent = parsed.value / 100;
+			return;
 		}
+		const length = toPx(declared);
+		if (length != null) this.#footnoteMaxHeight = length;
 	}
 
 	appendRules(rules) {
@@ -209,10 +210,7 @@ class Footnote extends LayoutHandler {
 	prepareContent(content) {
 		this.#footnoteMap.clear();
 		this.#flow.destroy();
-		if (this.#measurer) {
-			this.#measurer.remove();
-			this.#measurer = null;
-		}
+		this.#detachBodies();
 
 		if (this.#footnoteSelectors.length === 0) return;
 
@@ -224,22 +222,22 @@ class Footnote extends LayoutHandler {
 			} catch {
 				continue;
 			}
-			for (const el of elements) {
-				if (el.hasAttribute("data-footnote-body")) continue;
-				if (!el.parentNode) continue;
+			for (const element of elements) {
+				if (element.hasAttribute("data-footnote-body")) continue;
+				if (!element.parentNode) continue;
 
 				const id = `fn-${counter++}`;
 				const call = document.createElement("a");
 				call.setAttribute(CALL, id);
 				markNativePseudo(call, "after");
-				el.parentNode.insertBefore(call, el);
+				element.parentNode.insertBefore(call, element);
 
-				el.setAttribute("data-footnote-body", id);
-				el.remove();
+				element.setAttribute("data-footnote-body", id);
+				element.remove();
 
 				this.#footnoteMap.set(id, {
 					callElement: call,
-					bodyElement: el,
+					bodyElement: element,
 					bodyNode: null,
 					policy: "auto",
 				});
@@ -264,14 +262,17 @@ class Footnote extends LayoutHandler {
 
 	extractFlowChildren(mainFragment, inputBreakToken, cap) {
 		if (this.#footnoteMap.size === 0) return { children: [], pushForward: [] };
-		this.#ensureBodiesAttached(mainFragment);
+		// A flow whose setup had no width (region or custom resolver) attached
+		// the bodies at this fragmentainer's applyConstraintSpace, after
+		// afterMeasurementSetup ran; the main layout has flushed since.
+		if (!this.#bodiesResolved) this.#resolveBodies();
 
 		const startBoundary = getBreakBoundary(inputBreakToken);
 		const endBoundary = getBreakBoundary(mainFragment.breakToken ?? null);
 
 		const children = [];
 		const pushForward = [];
-		for (const [, entry] of this.#footnoteMap) {
+		for (const entry of this.#footnoteMap.values()) {
 			if (!isWithinBoundaries(entry.callElement, startBoundary, endBoundary)) continue;
 			// `line` / `block` policy: push the call's containing block to the
 			// next page when the body exceeds the cap — but only once per call.
@@ -314,30 +315,47 @@ class Footnote extends LayoutHandler {
 	}
 
 	destroy() {
-		if (this.#measurer) {
-			this.#measurer.remove();
-			this.#measurer = null;
-		}
+		this.#detachBodies();
 		this.#footnoteMap.clear();
 		this.#flow.destroy();
 	}
 
-	#ensureBodiesAttached(mainFragment) {
-		if (this.#measurer) return;
-		const inlineSize = mainFragment.inlineSize || 0;
+	/**
+	 * Bodies measure against the fragmentainer's inline size, which the
+	 * engine hands over here before the setup reflow and before each
+	 * fragmentainer's geometry reads. Attaching and resizing are writes, so
+	 * they ride the engine's flush; a page as wide as the last costs nothing.
+	 *
+	 * @param {import("fragmentainers/fragmentation").ConstraintSpace} constraintSpace
+	 */
+	applyConstraintSpace(constraintSpace) {
+		if (this.#footnoteMap.size === 0) return;
+		if (!this.#measurer) this.#attachBodies();
+		this.#measurer.applyConstraintSpace(constraintSpace);
+	}
+
+	afterMeasurementSetup() {
+		if (this.#measurer && !this.#bodiesResolved) this.#resolveBodies();
+	}
+
+	// Writes only.
+	#attachBodies() {
 		const measurer = document.createElement("content-measure");
 		measurer.classList.add("footnotes");
 		measurer.setupEmpty(this.styles);
-		measurer.style.width = `${inlineSize}px`;
 
-		for (const [, entry] of this.#footnoteMap) {
+		for (const entry of this.#footnoteMap.values()) {
 			entry.bodyElement.style.setProperty("display", "block");
 			measurer.contentRoot.appendChild(entry.bodyElement);
 		}
 		document.body.appendChild(measurer);
-		void measurer.offsetHeight;
+		this.#measurer = measurer;
+	}
 
-		for (const [, entry] of this.#footnoteMap) {
+	// Reads only: readFootnotePolicy resolves computed style, which needs the
+	// style recalc the preceding reflow flushed.
+	#resolveBodies() {
+		for (const entry of this.#footnoteMap.values()) {
 			entry.policy = readFootnotePolicy(entry.bodyElement);
 			entry.bodyNode = new DOMLayoutNode(entry.bodyElement);
 			entry.bodyNode.context = this.#context;
@@ -345,7 +363,15 @@ class Footnote extends LayoutHandler {
 				entry.bodyNode.breakInside = "avoid";
 			}
 		}
-		this.#measurer = measurer;
+		this.#bodiesResolved = true;
+	}
+
+	#detachBodies() {
+		if (this.#measurer) {
+			this.#measurer.remove();
+			this.#measurer = null;
+		}
+		this.#bodiesResolved = false;
 	}
 }
 
@@ -370,5 +396,3 @@ function decorateForFootnoteArea(root) {
 		node = walker.nextNode();
 	}
 }
-
-export { Footnote };

@@ -53,6 +53,52 @@ test.describe("Footnotes in paged media (browser)", () => {
 		expect(result.text).toContain("Footnote body text");
 	});
 
+	test("measures bodies at each page's inline size", async ({ page }) => {
+		const result = await page.evaluate(async () => {
+			const { Fragmenter } = await import("fragmentainers");
+			const { PageResolver } = await import("fragmentainers/resolvers");
+			await import("/src/handlers/index.js");
+
+			const sheet = new CSSStyleSheet();
+			sheet.replaceSync(
+				".fn { --float: footnote; } p { margin: 0; height: 150px; break-inside: avoid; }",
+			);
+			const body =
+				"a body long enough to wrap onto several lines at the narrow width of the first page and onto fewer at the full width of the second";
+			// The second paragraph and its footnote land on page 1.
+			const html = `<p>One<span class="fn">${body}</span></p><p>Two<span class="fn">${body}</span></p>`;
+
+			// Footnote area height per page for pages described by `rules`.
+			const areaHeights = (rules) => {
+				const template = document.createElement("template");
+				template.innerHTML = html;
+				const layout = new Fragmenter(template.content, {
+					resolver: new PageResolver(rules, { inlineSize: 400, blockSize: 300 }),
+					styles: [sheet],
+				});
+				const heights = [...layout.flow()].map((el) => {
+					document.body.appendChild(el);
+					const height = parseFloat(el.querySelector(".footnote-area")?.style.height) || 0;
+					el.remove();
+					return height;
+				});
+				layout.destroy();
+				return heights;
+			};
+
+			// First page 200px wide, second 400px; reference: every page 400px.
+			const mixed = areaHeights([{ pseudo: ["first"], margin: { left: "100px", right: "100px" } }]);
+			const wide = areaHeights([]);
+			return { mixed, wide };
+		});
+		expect(result.mixed).toHaveLength(2);
+		expect(result.wide).toHaveLength(2);
+		// The narrow first page wraps the body onto more lines.
+		expect(result.mixed[0]).toBeGreaterThan(result.wide[0]);
+		// The second page's body is measured at that page's width, not the first's.
+		expect(result.mixed[1]).toBe(result.wide[1]);
+	});
+
 	test("inserts a footnote call marker in place of the body", async ({ page }) => {
 		const result = await page.evaluate(async () => {
 			const { Fragmenter } = await import("fragmentainers");

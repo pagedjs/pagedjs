@@ -9,11 +9,12 @@ import "../components/index.js";
  * The main class responsible for preparing, fragmenting, styling, and rendering content into paginated previews.
  *
  * Emits events:
- * - `page`: when a page is added to the document. `<paged-page>` and the
- *   `<paged-margins>` nested in it render asynchronously, so a listener that
- *   reads margin boxes or mirrored `--paged-*` annotations awaits
- *   `page.updateComplete`, which covers both. The flow does not wait, so
- *   pagination is not held up by rendering.
+ * - `page`: when a page is added to the document, with the `<paged-page>`,
+ *   the `<fragment-container>` inside it and the `Fragment` it was laid out
+ *   from. `<paged-page>` and the `<paged-margins>` nested in it render
+ *   asynchronously, so a listener that reads margin boxes or mirrored
+ *   `--paged-*` annotations awaits `page.updateComplete`, which covers both.
+ *   The flow does not wait, so pagination is not held up by rendering.
  * - `rendering`: when rendering starts
  * - `rendered`: when rendering finishes
  * - `size`: when page size is set
@@ -111,7 +112,9 @@ export class PagedPreview extends HTMLElement {
 	 * @param {HTMLElement|DocumentFragment|string} [content] - The content to render.
 	 * @param {Array<string|Object>} [stylesheets] - List of stylesheet hrefs or inline styles to apply.
 	 * @param {HTMLElement|string} [renderTo] - Element or selector where rendered content will be inserted.
-	 * @returns {Promise<Object>} - Resolves to the rendered flow object with performance and size metadata.
+	 * @returns {Promise<Fragmenter>} - The flow, with performance and size
+	 *   metadata attached. Its iterator has been consumed; read the layout
+	 *   result back through its `fragments`.
 	 */
 	async preview(content, stylesheets, renderTo) {
 		await this.hooks.beforePreview.trigger(content, renderTo);
@@ -158,6 +161,12 @@ export class PagedPreview extends HTMLElement {
 	/**
 	 * The `Fragmenter` of the most recent render, until the next render
 	 * replaces it or `destroy()` runs.
+	 *
+	 * A render consumes its iterator, so it yields nothing more; the layout
+	 * result is `currentFlow.fragments` — one `Fragment` per page, in page
+	 * order, carrying block sizes, break tokens and constraints. The
+	 * `<fragment-container>` holding a page's rendered content is
+	 * `pages[i].firstElementChild`.
 	 */
 	get currentFlow() {
 		return this.#currentFlow;
@@ -195,21 +204,25 @@ export class PagedPreview extends HTMLElement {
 		this.#currentFlow = flow;
 		await flow.preload();
 
-		for (const fragment of flow) {
-			const constraints = fragment.constraints ?? {};
-			const page = this.#document.addPage(fragment, {
-				name: fragment.namedPage,
+		for (const fragmentainer of flow) {
+			const constraints = fragmentainer.constraints ?? {};
+			const page = this.#document.addPage(fragmentainer, {
+				name: fragmentainer.namedPage,
 				blank: constraints.isBlank,
 				verso: constraints.isVerso,
 				recto: constraints.isRecto,
 				first: constraints.isFirst,
 			});
 
-			this.#dispatch("page", { page });
+			this.#dispatch("page", {
+				page,
+				fragmentainer,
+				fragment: flow.fragments[fragmentainer.fragmentIndex],
+			});
 		}
 
 		flow.performance = performance.now() - startTime;
-		flow.size = this.resolver;
+		flow.size = resolver;
 
 		this.#dispatch("rendered", {
 			flow,

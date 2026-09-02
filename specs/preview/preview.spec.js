@@ -72,6 +72,40 @@ test.describe("PagedPreview flow lifecycle", () => {
 		expect(result.cleared).toBe(true);
 	});
 
+	test("exposes one Fragment per page after the render consumed the iterator", async ({
+		page,
+	}) => {
+		const result = await page.evaluate(async (css) => {
+			const { PagedPreview } = window.Paged;
+			const previewer = new PagedPreview();
+			const seen = [];
+			previewer.addEventListener("page", (event) => {
+				seen.push(event.detail.fragment === previewer.currentFlow.fragments[seen.length]);
+			});
+			const flow = await previewer.preview(
+				`<div>${"<p>x</p>".repeat(10)}</div>`,
+				[{ css }],
+				document.body,
+			);
+			const res = {
+				pages: previewer.pages.length,
+				fragments: previewer.currentFlow.fragments.length,
+				fromFlow: flow.fragments.length,
+				iterated: [...flow].length,
+				blockSizes: flow.fragments.every((f) => f.blockSize > 0),
+				eventFragments: seen,
+			};
+			previewer.destroy();
+			return res;
+		}, "@page { size: 300px 200px; margin: 10px; } p { margin: 0; height: 60px; }");
+		expect(result.pages).toBeGreaterThan(1);
+		expect(result.fragments).toBe(result.pages);
+		expect(result.fromFlow).toBe(result.pages);
+		expect(result.iterated).toBe(0);
+		expect(result.blockSizes).toBe(true);
+		expect(result.eventFragments).toEqual(new Array(result.pages).fill(true));
+	});
+
 	test("two previewers render concurrently with independent handler instances", async ({
 		page,
 	}) => {

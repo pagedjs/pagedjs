@@ -7,20 +7,20 @@
  * @returns {string}
  */
 export function buildPagedSelector({ name, pseudo = [], nth }) {
-	let sel = "paged-page";
-	if (name) sel += `[name="${name}"]`;
-	for (const p of pseudo) sel += `:state(${p})`;
-	if (nth) sel += `:nth-of-type(${formatNth(nth)})`;
-	return sel;
+	let selector = "paged-page";
+	if (name) selector += `[name="${name}"]`;
+	for (const state of pseudo) selector += `:state(${state})`;
+	if (nth) selector += `:nth-of-type(${formatNth(nth)})`;
+	return selector;
 }
 
 function formatNth({ a, b }) {
 	if (a === 0) return String(b);
-	let s;
-	if (a === 1) s = "n";
-	else if (a === -1) s = "-n";
-	else s = `${a}n`;
-	if (b > 0) s += `+${b}`;
-	else if (b < 0) s += String(b);
-	return s;
+	let step;
+	if (a === 1) step = "n";
+	else if (a === -1) step = "-n";
+	else step = `${a}n`;
+	if (b > 0) step += `+${b}`;
+	else if (b < 0) step += String(b);
+	return step;
 }

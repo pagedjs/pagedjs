@@ -9,6 +9,27 @@
 /** The selection modes `string()` and `element()` accept. */
 export const MODES = ["first", "start", "last", "first-except"];
 
+const IDENTIFIER = /^-?[_a-zA-Z][-\w]*$/;
+
+/**
+ * Read the `(name, mode)` arguments `string()` and `element()` share.
+ *
+ * @param {string[]} args - the function's arguments, as the transformer split them
+ * @returns {{ name: string, mode: string }|null} null when the name is not an
+ *   identifier, which leaves the function for the browser to reject.
+ */
+export function parseOccurrenceCall(args) {
+	const name = args[0]?.trim();
+	if (!name || !IDENTIFIER.test(name)) return null;
+	const requested = args[1]?.trim();
+	return { name, mode: MODES.includes(requested) ? requested : "first" };
+}
+
+/** True when `text` is a CSS identifier, as a named string or element name must be. */
+export function isIdentifier(text) {
+	return IDENTIFIER.test(text);
+}
+
 /**
  * Elements that put something on the page without contributing text, so
  * their presence ahead of an occurrence still means the page did not open

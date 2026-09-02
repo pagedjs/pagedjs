@@ -1,12 +1,16 @@
 import { LayoutHandler } from "fragmentainers/handlers";
-import { MODES, exitValue, opensFragment, selectPerMode } from "./occurrences.js";
+import {
+	exitValue,
+	isIdentifier,
+	opensFragment,
+	parseOccurrenceCall,
+	selectPerMode,
+} from "./occurrences.js";
 
 // The vocabulary the CSS rewrite and the runtime have to agree on.
 const POSITION = "--page-position";
 const REQUEST = "--paged-running-element";
 const MARK = "data-paged-running";
-
-const IDENTIFIER = /^-?[_a-zA-Z][-\w]*$/;
 
 // A box of no size, so the element's place in the flow survives its removal.
 const PLACEHOLDER_STYLE = "display:block;height:0;margin:0;padding:0;border:0";
@@ -26,16 +30,16 @@ const runningElementRules = [
 		match: ({ name, declaration }) =>
 			declaration.property === "content" && name.toLowerCase() === "element",
 		transform: ({ args }) => {
-			const name = args[0]?.trim();
-			if (!name || !IDENTIFIER.test(name)) return null;
-			const requested = args[1]?.trim();
-			const mode = MODES.includes(requested) ? requested : "first";
+			const call = parseOccurrenceCall(args);
+			if (!call) return null;
 			// The request rides on the margin box itself while `content` is
 			// split onto its `::before`, so the box's computed style is where
 			// `<paged-page>` reads which element the cascade chose.
 			return {
 				value: "\"\"",
-				declarations: [{ property: REQUEST, value: `${name} ${mode}` }],
+				declarations: [
+					{ property: REQUEST, value: `${call.name} ${call.mode}` },
+				],
 			};
 		},
 	},
@@ -71,7 +75,7 @@ export class RunningElements extends LayoutHandler {
 		const declared = rule.style.getPropertyValue(POSITION).trim();
 		const call = /^running\(\s*(.*?)\s*\)$/i.exec(declared);
 		const name = call?.[1];
-		if (!name || !IDENTIFIER.test(name)) return;
+		if (!name || !isIdentifier(name)) return;
 		this.#selectors.push({ name, selector: rule.selectorText });
 	}
 

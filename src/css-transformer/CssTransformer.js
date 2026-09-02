@@ -84,13 +84,19 @@ export class CssTransformer {
 			const ast = csstree.parse(css);
 			await inlineImports(ast, cssBaseURL);
 			transformUrls(ast, urlRules, { baseURL: cssBaseURL });
-			ast.children.forEach((c) => {
-				combined.children.append(combined.children.createItem(c));
+			ast.children.forEach((child) => {
+				combined.children.append(combined.children.createItem(child));
 			});
 		}
 		return combined;
 	}
 
+	/**
+	 * Run every pass that has rules, in `PASSES` order, mutating `ast` in place.
+	 *
+	 * @param {import("css-tree").CssNode} ast
+	 * @returns {import("css-tree").CssNode} the same node, for chaining.
+	 */
 	apply(ast) {
 		for (const pass of PASSES) {
 			const rules = {};

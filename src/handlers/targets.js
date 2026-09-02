@@ -33,6 +33,14 @@ export function resolveTarget(spec, element) {
 	return unquote((url ? url[1] : spec).trim());
 }
 
+/**
+ * Look an id up in a source tree, which may be a `DocumentFragment` or an
+ * element.
+ *
+ * @param {DocumentFragment|Element} root
+ * @param {string} id
+ * @returns {Element|null}
+ */
 export function findById(root, id) {
 	if (typeof root.getElementById === "function") return root.getElementById(id);
 	// An attribute selector needs only its own quotes escaped, so a dotted or

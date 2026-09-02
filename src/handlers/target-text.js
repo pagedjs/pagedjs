@@ -21,6 +21,12 @@ const MODES = new Set(["content", "before", "after", "first-letter"]);
  */
 const DEFERRED = new Set(["before", "after"]);
 
+/**
+ * The layout-pass budget these occurrences ask the flow for: one pass to
+ * discover values, one to stamp them and re-flow, one for the re-flow to
+ * settle. The flow keeps the largest budget any handler requests and stops
+ * early once a pass reports nothing to invalidate.
+ */
 const PASSES = 3;
 
 const targetTextRules = (allocate) => [

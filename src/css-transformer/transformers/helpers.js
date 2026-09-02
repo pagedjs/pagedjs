@@ -52,6 +52,13 @@ export function parseValueParts(text) {
 	return csstree.parse(text, { context: "value" }).children.toArray();
 }
 
+/**
+ * Build a `Declaration` node. `value` is parsed when given as text, and taken
+ * as-is when it is already an AST node.
+ *
+ * @param {{ property: string, value: string|import("css-tree").CssNode, important?: boolean }} declaration
+ * @returns {import("css-tree").CssNode}
+ */
 export function buildDeclaration({ property, value, important = false }) {
 	return {
 		type: "Declaration",

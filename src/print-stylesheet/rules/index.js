@@ -1,9 +1,6 @@
 import { atPageRules } from "./atPage.js";
 import { atMediaRules } from "./atMedia.js";
 
-export { atPageRules } from "./atPage.js";
-export { atMediaRules } from "./atMedia.js";
-
 /**
  * The page-model rules. They describe how `@page`, its margin boxes and
  * print/screen media map onto the `<paged-page>` element tree, which the

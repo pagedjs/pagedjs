@@ -1,12 +1,17 @@
 import { LayoutHandler } from "fragmentainers/handlers";
 import { cssString, splitTopLevel, unquote } from "../utils/css.js";
-import { MODES, exitValue, opensFragment, selectPerMode } from "./occurrences.js";
+import {
+	MODES,
+	exitValue,
+	isIdentifier,
+	opensFragment,
+	parseOccurrenceCall,
+	selectPerMode,
+} from "./occurrences.js";
 
 // The vocabulary the CSS rewrite and the runtime have to agree on.
 const STRING_SET = "--string-set";
 const MARK = "data-paged-string-set";
-
-const IDENTIFIER = /^-?[_a-zA-Z][-\w]*$/;
 
 /**
  * `content(before)`, `content(after)`, and `content(first-letter)` read
@@ -26,13 +31,11 @@ const namedStringRules = [
 		match: ({ name, declaration }) =>
 			declaration.property === "content" && name.toLowerCase() === "string",
 		transform: ({ args }) => {
-			const name = args[0]?.trim();
-			if (!name || !IDENTIFIER.test(name)) return null;
-			const requested = args[1]?.trim();
-			const mode = MODES.includes(requested) ? requested : "first";
+			const call = parseOccurrenceCall(args);
+			if (!call) return null;
 			// An empty fallback keeps a reference to a name no rule ever sets
 			// from invalidating the whole `content` declaration.
-			return { value: `var(--paged-string-${mode}-${name}, "")` };
+			return { value: `var(--paged-string-${call.mode}-${call.name}, "")` };
 		},
 	},
 ];
@@ -169,7 +172,7 @@ export class NamedStrings extends LayoutHandler {
 
 		for (const assignment of splitTopLevel(declared, /,/)) {
 			const [name, ...content] = splitTopLevel(assignment, /\s/);
-			if (!name || !IDENTIFIER.test(name)) continue;
+			if (!name || !isIdentifier(name)) continue;
 			values.set(
 				name,
 				content.map((token) => this.#evaluateToken(token, element)).join(""),

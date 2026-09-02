@@ -24,14 +24,14 @@ export const pagedHandlers = [
 	TargetCounters,
 ];
 
+// SourceFilters leads the catalog rather than joining its end: the engine's
+// StyleResolver freezes `+` and `~` matches over the source tree in its own
+// prepareContent, then replays them onto continuation fragments, and a
+// <script> counts as an element sibling in that walk. Registered after it,
+// `.b + .b` with a script between the two freezes as "no match" and stops
+// applying on every fragment.
 for (const Handler of pagedHandlers) {
 	if (Fragmenter.handlers.includes(Handler)) continue;
-	// SourceFilters leads the catalog rather than joining its end: the engine's
-	// StyleResolver freezes `+` and `~` matches over the source tree in its own
-	// prepareContent, then replays them onto continuation fragments, and a
-	// <script> counts as an element sibling in that walk. Registered after it,
-	// `.b + .b` with a script between the two freezes as "no match" and stops
-	// applying on every fragment.
 	if (Handler === SourceFilters) Fragmenter.handlers.unshift(Handler);
 	else Fragmenter.handlers.push(Handler);
 }

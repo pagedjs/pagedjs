@@ -1,3 +1,17 @@
+/**
+ * A `describe` / `it` / `expect` shim that runs inside the page.
+ *
+ * The suites under `cases/` exercise custom elements, `adoptedStyleSheets`,
+ * `getComputedStyle` and shadow roots, none of which jsdom resolves, so they
+ * run in real Chromium. Playwright drives the browser from Node and cannot
+ * carry its own `expect` across `page.evaluate`, so the assertions live here,
+ * as a module the page imports.
+ *
+ * One case runs per page: `register-browser-suite.js` navigates, imports the
+ * case module, and calls `runCase`. `beforeAll` therefore runs once per case
+ * rather than once per file — for setup that must not repeat, there is nothing
+ * to repeat across.
+ */
 const rootSuite = createSuite(null);
 let activeSuite = rootSuite;
 let cases = [];
@@ -12,6 +26,7 @@ function createSuite(parent) {
 	};
 }
 
+/** Discard registrations from a previous import so a case file can re-register. */
 export function resetSuite() {
 	rootSuite.beforeAll.length = 0;
 	rootSuite.beforeEach.length = 0;
@@ -59,6 +74,12 @@ function suiteChain(suite) {
 	return chain;
 }
 
+/**
+ * Run the single registered case named `name`, with the hooks of every suite
+ * enclosing it, outermost first. Hooks unwind in reverse on the way out.
+ *
+ * @param {string} name
+ */
 export async function runCase(name) {
 	const matches = cases.filter((entry) => entry.name === name);
 	if (matches.length !== 1) {

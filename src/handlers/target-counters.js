@@ -1,4 +1,4 @@
-import { FragPseudoElement, LayoutHandler } from "fragmentainers/handlers";
+import { LayoutHandler, isPseudoElement } from "fragmentainers/handlers";
 import { CounterState, parseCounterDirective } from "fragmentainers/fragmentation";
 import { cssString, splitTopLevel, unquote } from "../utils/css.js";
 import {
@@ -16,6 +16,13 @@ import {
 const SOURCE = /^--paged-generated-(tcs?-\d+)-source$/;
 
 const PAGE = "page";
+
+/**
+ * The layout-pass budget these occurrences ask the flow for: one pass to
+ * discover values, one to stamp them and re-flow, one for the re-flow to
+ * settle. The flow keeps the largest budget any handler requests and stops
+ * early once a pass reports nothing to invalidate.
+ */
 const PASSES = 3;
 
 /**
@@ -361,7 +368,7 @@ function apply(state, method, entries, scope) {
 /** An element's materialized `::before`, which the engine puts first. */
 function leadingPseudo(element) {
 	const first = element.firstElementChild;
-	return first instanceof FragPseudoElement && first.pseudo === "before" ? first : null;
+	return first && isPseudoElement(first) && first.dataset.pseudo === "before" ? first : null;
 }
 
 /** An element's own `counter-reset`, without anything this handler stamped. */

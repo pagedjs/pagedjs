@@ -19,6 +19,9 @@ export const MARGIN_BOX_NAMES = new Set([
 	"left-bottom",
 ]);
 
+const BARE_NUMBER_RE = /^[+-]?(?:\d+|\d*\.\d+)$/;
+const ZERO_RE = /^[+-]?0*(?:\.0*)?$/;
+
 export function collectAllPageData(ast) {
 	const out = [];
 	csstree.walk(ast, {
@@ -61,7 +64,7 @@ export function collectAllPageData(ast) {
  * @property {string|null} size - CSS `size` value ("A4", "210mm 297mm", ...), or null.
  * @property {PageMargin|null} margin - Per-direction margins, or null when no margin declaration appears.
  * @property {string|null} pageOrientation - CSS `page-orientation` value ('rotate-left', 'rotate-right', 'upright'), or null.
- * @property {string|null} bleed - CSS `bleed` value, or null.
+ * @property {string|null} bleed - Used `bleed` length (see `resolveBleed`), or null.
  * @property {string|null} marks - CSS `marks` value, or null.
  * @property {Object<string, MarginBoxDeclarations>|null} marginBoxes - Map of margin-box name to its declarations, or null.
  */
@@ -143,7 +146,37 @@ export function extractPageData(atruleNode) {
 		}
 	});
 
+	out.bleed = resolveBleed(out.bleed, out.marks);
+
 	return out;
+}
+
+/**
+ * Used value of the `bleed` property (CSS Paged Media 3 §11.3.2).
+ *
+ * `auto` resolves to 6pt when crop marks are asked for and to zero
+ * otherwise. A unitless zero is a `<number>` inside `calc()`, where
+ * `calc(0 + 216mm)` is a type error that invalidates the declaration and
+ * collapses the page to its auto size, so zero is carried as `0px`.
+ *
+ * @param {string|null} value - `bleed` as written, or null when unset.
+ * @param {string|null} marks - `marks` from the same rule, for `auto`.
+ * @returns {string|null} A `<length>`, or null when nothing was declared.
+ */
+export function resolveBleed(value, marks) {
+	if (value == null) return null;
+	const declared = value.trim();
+	if (declared === "") return null;
+
+	const auto = marks && /\bcrop\b/i.test(marks) ? "6pt" : "0px";
+	if (declared.toLowerCase() === "auto") return auto;
+
+	const lengths = declared.split(/\s+/);
+	if (lengths.some((length) => BARE_NUMBER_RE.test(length) && !ZERO_RE.test(length))) {
+		console.warn(`Invalid bleed "${declared}": lengths need a unit.`);
+		return auto;
+	}
+	return lengths.map((length) => (ZERO_RE.test(length) ? "0px" : length)).join(" ");
 }
 
 /**

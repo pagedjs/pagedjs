@@ -53,6 +53,46 @@ test.describe("Footnotes in paged media (browser)", () => {
 		expect(result.text).toContain("Footnote body text");
 	});
 
+	test("places footnotes on their forced-break segments", async ({ page }) => {
+		const result = await page.evaluate(async () => {
+			const { Fragmenter } = await import("fragmentainers");
+			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation");
+			await import("/src/handlers/index.js");
+
+			const sheet = new CSSStyleSheet();
+			sheet.replaceSync(".fn { --float: footnote; } p { height: 100px; margin: 0; }");
+
+			const template = document.createElement("template");
+			template.innerHTML = `<p>One<span class="fn">First footnote</span></p>
+				<p style="break-before: page">Two<span class="fn">Second footnote</span></p>`;
+
+			const layout = new Fragmenter(template.content, {
+				constraintSpace: new ConstraintSpace({
+					availableInlineSize: 400,
+					availableBlockSize: 300,
+					fragmentainerBlockSize: 300,
+					fragmentationType: FRAGMENTATION_PAGE,
+				}),
+				styles: [sheet],
+			});
+			const pages = [...layout.flow()];
+			const footnotes = pages.map((element) => {
+				document.body.appendChild(element);
+				const text = element.querySelector("[data-footnote-area]")?.textContent ?? "";
+				element.remove();
+				return text;
+			});
+			layout.destroy();
+			return footnotes;
+		});
+
+		expect(result).toHaveLength(2);
+		expect(result[0]).toContain("First footnote");
+		expect(result[0]).not.toContain("Second footnote");
+		expect(result[1]).not.toContain("First footnote");
+		expect(result[1]).toContain("Second footnote");
+	});
+
 	test("measures bodies at each page's inline size", async ({ page }) => {
 		const result = await page.evaluate(async () => {
 			const { Fragmenter } = await import("fragmentainers");

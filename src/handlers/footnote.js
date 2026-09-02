@@ -100,27 +100,44 @@ function getBreakBoundary(breakToken) {
 	};
 }
 
-function follows(node, reference) {
+function indexSourceOrder(root) {
+	const order = new WeakMap();
+	const walker = document.createTreeWalker(root, NodeFilter.SHOW_ALL);
+	let index = 0;
+	let node = walker.nextNode();
+	while (node) {
+		order.set(node, index++);
+		node = walker.nextNode();
+	}
+	return order;
+}
+
+function follows(node, reference, sourceOrder) {
+	const nodeIndex = sourceOrder.get(node);
+	const referenceIndex = sourceOrder.get(reference);
+	if (nodeIndex !== undefined && referenceIndex !== undefined) {
+		return nodeIndex >= referenceIndex;
+	}
 	const position = reference.compareDocumentPosition(node);
 	return position === 0 || !!(position & Node.DOCUMENT_POSITION_FOLLOWING);
 }
 
 /** True when the call is laid out on the page bounded by `start` and `end`. */
-function isWithinBoundaries(callElement, start, end) {
-	if (start && !isAfterBoundary(callElement, start)) return false;
-	if (end && isAfterBoundary(callElement, end)) return false;
+function isWithinBoundaries(callElement, start, end, sourceOrder) {
+	if (start && !isAfterBoundary(callElement, start, sourceOrder)) return false;
+	if (end && isAfterBoundary(callElement, end, sourceOrder)) return false;
 	return true;
 }
 
-function isAfterBoundary(callElement, boundary) {
+function isAfterBoundary(callElement, boundary, sourceOrder) {
 	if (boundary.items) {
 		const item = boundary.items.find((entry) => entry.element === callElement);
 		if (item) return item.startOffset >= boundary.offset;
-		return boundary.node ? follows(callElement, boundary.node) : false;
+		return boundary.node ? follows(callElement, boundary.node, sourceOrder) : false;
 	}
 	if (!boundary.node) return false;
 	if (boundary.node.contains(callElement)) return !boundary.contentBefore;
-	return follows(callElement, boundary.node);
+	return follows(callElement, boundary.node, sourceOrder);
 }
 
 function readFootnotePolicy(bodyElement) {
@@ -161,6 +178,7 @@ export class Footnote extends LayoutHandler {
 	#footnoteSelectors = [];
 	#footnoteMaxHeight = null;
 	#footnoteMaxHeightPercent = null;
+	#sourceOrder = new WeakMap();
 	#context = null;
 	styles = null;
 
@@ -211,6 +229,7 @@ export class Footnote extends LayoutHandler {
 		this.#footnoteMap.clear();
 		this.#flow.destroy();
 		this.#detachBodies();
+		this.#sourceOrder = new WeakMap();
 
 		if (this.#footnoteSelectors.length === 0) return;
 
@@ -243,6 +262,7 @@ export class Footnote extends LayoutHandler {
 				});
 			}
 		}
+		this.#sourceOrder = indexSourceOrder(content);
 	}
 
 	getFlow() {
@@ -273,7 +293,9 @@ export class Footnote extends LayoutHandler {
 		const children = [];
 		const pushForward = [];
 		for (const entry of this.#footnoteMap.values()) {
-			if (!isWithinBoundaries(entry.callElement, startBoundary, endBoundary)) continue;
+			if (!isWithinBoundaries(entry.callElement, startBoundary, endBoundary, this.#sourceOrder)) {
+				continue;
+			}
 			// `line` / `block` policy: push the call's containing block to the
 			// next page when the body exceeds the cap — but only once per call.
 			// After a push the body renders via auto-style splitting on the

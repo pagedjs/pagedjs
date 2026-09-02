@@ -176,7 +176,8 @@ describe("footnote measurement in a flow", () => {
 
 		for (let step = flow.next(); !step.done; step = flow.next()) fragments.push(step.value);
 		expect(fragments).toHaveLength(2);
-		expect(fragments[1].querySelector("[data-footnote-area]").textContent).toBe("A note.");
+		expect(fragments[0].querySelector("[data-footnote-area]").textContent).toBe("A note.");
+		expect(fragments[1].querySelector("[data-footnote-area]")).toBe(null);
 
 		flow.destroy();
 	});

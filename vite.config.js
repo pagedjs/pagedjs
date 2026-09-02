@@ -44,6 +44,13 @@ export default defineConfig(({ mode }) => {
 				formats: ["es"],
 				fileName: () => "paged.js",
 			},
+			rollupOptions: {
+				// The library build leaves the engine external so an app importing
+				// both pagedjs and fragmentainers gets one copy: two copies mean two
+				// sets of module singletons and custom element classes, and
+				// `instanceof` against the losing copy is false for every element.
+				external: [/^fragmentainers(\/.*)?$/],
+			},
 			sourcemap: true,
 			minify: false,
 		},

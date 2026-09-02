@@ -7,9 +7,11 @@ Paged.js is an open-source library to display paginated content in the browser a
 
 It contains a set of handlers for CSS transformations and fragmented layout which polyfill the [Paged Media](https://www.w3.org/TR/css-page-3/) and [Generated Content](https://www.w3.org/TR/css-gcpm-3/) CSS modules, along with hooks to create new handlers for custom properties.
 
-The currently supported properties can be found on [the pagedjs website](https://pagedjs.org/documentation/cheatsheet/).
+The property support matrix on [the pagedjs website](https://pagedjs.org/en/documentation/14-supported-feature-of-the-w3c-specifications/)
+describes the released library. This branch has moved ahead of it — see
+[src/handlers/README.md](src/handlers/README.md) for what the current engine implements.
 
-A quick overview to getting started with Paged Media CSS and Paged.js is available on [pagedjs.org/documentation](https://pagedjs.org/documentation/).
+A quick overview to getting started with Paged Media CSS and Paged.js is available on [pagedjs.org/en/documentation](https://pagedjs.org/en/documentation/).
 
 ## NPM Module
 ```sh
@@ -17,12 +19,11 @@ $ npm install pagedjs
 ```
 
 ```js
-import { Previewer } from 'pagedjs';
+import { PagedPreview } from "pagedjs";
 
-let paged = new Previewer();
-let flow = paged.preview(DOMContent, ["path/to/css/file.css"], document.body).then((flow) => {
-	console.log("Rendered", flow.total, "pages.");
-})
+const preview = new PagedPreview();
+const flow = await preview.preview(DOMContent, ["path/to/css/file.css"], document.body);
+console.log("Rendered", preview.pages.length, "pages.");
 ```
 
 ## Polyfill
@@ -67,20 +68,22 @@ whenever you want to start.
 </script>
 ```
 
-## Chunker
-Chunks up a document into paged media flows and applies print classes.
+## Components
 
-Examples:
+A render produces custom elements rather than classed `<div>`s. `<paged-document>`
+holds the flow; each page is a `<paged-page>` rendering a sheet with its bleed,
+margins and page area, and exposing the sixteen CSS margin boxes of Paged Media
+as parts — `::part(top-center)::before { content: string(title); }`. The page
+pseudo-classes are custom states, so `@page :first` becomes
+`paged-page:state(first)`.
 
-* Process the [first 50 pages of Moby Dick](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/index.html).
-* Upload and [chunk an Epub using Epub.js](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/epub.html).
+## Generated content
 
-## Polisher
-Converts `@page` css to classes, and applies counters and content.
-
-Examples:
-
-* Test [styles for print](https://s3.amazonaws.com/pagedmedia/pagedjs/examples/polisher.html).
+Named strings, running elements, `target-text()`, `target-counter()`,
+`target-counters()` and footnotes are documented in
+[src/handlers/README.md](src/handlers/README.md), along with the hooks a
+handler can implement, the layout-pass loop, the `--paged-` annotation contract,
+and the current limitations.
 
 ### CLI
 
@@ -125,6 +128,10 @@ class MyFootnote extends Paged.Footnote {
 Paged.Fragmenter.handlers.push(MyFootnote);
 ```
 
+The [handlers page on pagedjs.org](https://pagedjs.org/en/documentation/10-handlers-hooks-and-custom-javascript/)
+still documents the previous API — `Paged.Handler`, `registerHandlers`, and the
+`Chunker` / `Polisher` hooks. None of those exist here; use the form above.
+
 For a CSS rewrite with no layout behaviour behind it, pass rules to a single
 previewer instead of registering a handler:
 
@@ -133,14 +140,20 @@ new Paged.PagedPreview({ rules: [myRule] });
 // or, for the polyfill: window.PagedConfig = { settings: { rules: [myRule] } };
 ```
 
-## How Pagedjs processes content
+## How Paged.js processes content
 
-Chunker.flow()\
-└── Chunker.render() -> Looping through all pages\
-└──── Chunker.layout*() -> Handles overflowing pages, adding new ones\
-└────── Page.layout() -> Creates new Layout and waits for new Breaktoken\
-└──────── Layout.renderTo() -> Iterates through nodes\
-└────────── Layout.findBreakToken() -> Tries to find overflow/breaktoken
+```
+PagedPreview.preview()
+└── PrintStyleSheet.fromDocument() -> Collects the document's stylesheets
+└──── CssTransformer.apply()      -> Rewrites paged-media CSS the browser would discard
+└────── collectAllPageData()      -> Reads @page size, margins, bleed and marks
+└──────── PageResolver            -> Picks the page size for each named page
+└────────── Fragmenter            -> Yields one fragment per page
+└──────────── PagedDocument.addPage() -> Renders each fragment as a <paged-page>
+```
+
+Fragmentation itself — measurement, break tokens, overflow — lives in the
+[fragmentainers](https://www.npmjs.com/package/fragmentainers) package.
 
 ## Setup
 Install dependencies
@@ -155,19 +168,10 @@ $ npm start
 ```
 
 ## Deployment
-Build the `dist` output
+Build the `dist` output — the ES library (`dist/paged.js`) and the IIFE polyfill
+(`dist/paged.polyfill.js`), in two passes
 ```sh
 $ npm run build
-```
-
-Compile the `lib` output
-```sh
-$ npm run compile
-```
-
-Generate legacy builds with polyfills included
-```sh
-$ npm run legacy
 ```
 
 ## Testing
@@ -183,6 +187,9 @@ import map. Every test gets a fresh page and treats browser errors as failures.
 npm test
 ```
 
+Use `PAGED_TEST_PORT` to override the behavior-test server port when running
+multiple checkouts at once.
+
 ### Specs
 
 The supported handler and preview specs under `specs/` also import source
@@ -192,8 +199,11 @@ modules directly. They do not require a build first.
 npm run specs
 ```
 
-Use `PAGED_TEST_PORT` to override the behavior-test server port when running
-multiple checkouts at once.
+### Lint
+
+```bash
+npm run lint
+```
 
 ### Docker
 
@@ -211,11 +221,23 @@ By default the container will run the development server with `npm start`
 docker run -it -p 9090:9090 pagedmedia/pagedjs
 ```
 
-The tests and specs can be run within the container by running `npm test`
+The tests and specs can be run within the container. `&&` has to be inside the
+quoted command, or the second half runs on the host instead:
 
 ```bash
-docker run -it pagedmedia/pagedjs npm test && npm run specs
+docker run -it pagedmedia/pagedjs sh -c "npm test && npm run specs"
 ```
+
+There are wrapper scripts for the common cases, which build the image first:
+
+```bash
+npm run docker-test          # npm test in the container
+npm run docker-specs         # npm run specs in the container
+npm run docker-update-specs  # regenerate the PDF snapshots
+```
+
+PDF snapshots are authored in the container because `pdf-to-img` renders
+differently across platforms.
 
 
 ## License

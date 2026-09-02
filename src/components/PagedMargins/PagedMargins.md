@@ -227,6 +227,12 @@ Note: the parts are not meant to be used to set the margin sizes (or the block s
 | -------- | --------- | ---- | ------- | ----------- |
 | marginBoxes | | { str: MarginBox \| null} \| null | | Returns a dictionary with the MarginBoxes or null. Keys are the names of the page-margin boxes. |
 
+#### Methods
+
+| Method | Parameters | Returns | Description |
+| ------ | ---------- | ------- | ----------- |
+| getUpdateComplete | — | `Promise<boolean>` | Awaited by `updateComplete`. Resolves once the `<paged-margin-box>` children have rendered too, so `marginBoxes`, `slottedNodes` and `slottedElements` have something to read. |
+
 
 #### Slots
 

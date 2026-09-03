@@ -10,9 +10,23 @@ test.describe("vertical-align", () => {
 
 
 	test("Render the top-left at the top", async () => {
-		let pages = await marginBoxStyle(page, 1, "top-left", "align-items");
+		let pages = await marginBoxStyle(page, 1, "top-left", "--paged-margin-vertical-position");
 
-		expect(pages).toEqual("flex-start");
+		expect(pages).toEqual("0%");
+	});
+
+
+	test("Render the right-middle in the middle", async () => {
+		let pages = await marginBoxStyle(page, 1, "right-middle", "--paged-margin-vertical-position");
+
+		expect(pages).toEqual("50%");
+	});
+
+
+	test("Render the bottom-right at the bottom", async () => {
+		let pages = await marginBoxStyle(page, 1, "bottom-right", "--paged-margin-vertical-position");
+
+		expect(pages).toEqual("100%");
 	});
 
 

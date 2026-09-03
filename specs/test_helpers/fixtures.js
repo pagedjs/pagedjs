@@ -28,7 +28,10 @@ export function marginBoxStyle(
 		`paged-page[index='${pageNumber - 1}']`,
 		(pagedPage, options) => {
 			const box = pagedPage.marginBox(options.boxName);
-			return getComputedStyle(box, options.pseudo)[options.property];
+			const style = getComputedStyle(box, options.pseudo);
+			return options.property.startsWith("--")
+				? style.getPropertyValue(options.property).trim()
+				: style[options.property];
 		},
 		{ boxName, property, pseudo },
 	);

@@ -36,7 +36,6 @@ const EXPECTED_FAILURES = [
 	},
 	{ issue: "SPEC-006", file: /issues\/roman-numerals\/roman-numerals\.spec\.js$/, test: /^(?:Preface should|First Chapter should)/ },
 	{ issue: "SPEC-003", file: /issues\/stops-rendering-early\/stops-rendering-early\.spec\.js$/, test: /.*/ },
-	{ issue: "SPEC-006", file: /margin-boxes\/vertical-align\/vertical-align\.spec\.js$/, test: /.*/ },
 	{ issue: "SPEC-010", file: /math\/math\.spec\.js$/, test: /.*/ },
 	{ issue: "SPEC-010", file: /media\/ignore\/ignore\.spec\.js$/, test: /.*/ },
 	{ issue: "SPEC-005", file: /named-page\/multiple-named\/multiple-named\.spec\.js$/, test: /with a green background$/ },

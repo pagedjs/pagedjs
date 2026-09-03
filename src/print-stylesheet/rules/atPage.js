@@ -1,3 +1,4 @@
+import * as csstree from "css-tree";
 import { extractPagePrelude } from "../utils/pageData.js";
 import { buildPagedSelector } from "../utils/pagedSelector.js";
 
@@ -59,7 +60,40 @@ const PAGE_ONLY_DECLARATIONS = new Set([
 	"border-left-color",
 ]);
 
-const CONTENT_DECLARATIONS = new Set(["content"]);
+const MARGIN_VERTICAL_POSITIONS = new Map([
+	["top", "0%"],
+	["middle", "50%"],
+	["bottom", "100%"],
+]);
+
+/**
+ * Project margin content and supported table-cell vertical alignment keywords
+ * onto the component's internal rendering properties.
+ *
+ * @param {import("css-tree").Block|null} block - Margin at-rule declaration block.
+ * @returns {void}
+ */
+function projectMarginDeclarations(block) {
+	block?.children?.forEach((node) => {
+		if (node.type !== "Declaration") return;
+
+		if (node.property === "content") {
+			node.property = "--paged-margin-content";
+			return;
+		}
+
+		if (node.property !== "vertical-align") return;
+
+		// CSS Page 3 §6: margin-box vertical alignment is always physical, even
+		// when the page or its generated content uses a vertical writing mode.
+		const value = csstree.generate(node.value).toLowerCase();
+		const position = MARGIN_VERTICAL_POSITIONS.get(value);
+		if (!position) return;
+
+		node.property = "--paged-margin-vertical-position";
+		node.value = csstree.parse(position, { context: "value" });
+	});
+}
 
 export const atPageRules = [
 	{
@@ -85,14 +119,11 @@ export const atPageRules = [
 	...MARGIN_BOX_NAMES.map((box) => ({
 		type: "at-rule",
 		match: ({ name }) => name === box,
-		transform: () => ({
-			selector: `&::part(${box})`,
-			splitDeclarations: [
-				{
-					selector: `&::part(${box})::before`,
-					properties: CONTENT_DECLARATIONS,
-				},
-			],
-		}),
+		transform: ({ block }) => {
+			projectMarginDeclarations(block);
+			return {
+				selector: `&::part(${box})`,
+			};
+		},
 	})),
 ];

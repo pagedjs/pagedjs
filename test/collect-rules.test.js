@@ -194,7 +194,7 @@ test.describe("collectRules", () => {
 		expect(results[0].actual, results[0].label).toBe(...results[0].args);
 	});
 
-	test("splits an element() request off the margin box content", async ({ page }) => {
+	test("projects an element() request onto the margin-box component", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
 			const csstree = await import("css-tree");
@@ -207,8 +207,7 @@ test.describe("collectRules", () => {
 			const ast = await transformer.prepare(
 				"@top-center { content: element(title, last) }",
 			);
-			__results.push({ actual: csstree.generate(transformer.apply(ast)), args: ["&::part(top-center){--paged-running-element:title last}"
-							+ "&::part(top-center)::before{content:\"\"}"], label: undefined });
+			__results.push({ actual: csstree.generate(transformer.apply(ast)), args: ["&::part(top-center){--paged-margin-content:\"\";--paged-running-element:title last}"], label: undefined });
 			return __results;
 		});
 		expect(results[0].actual, results[0].label).toBe(...results[0].args);

@@ -200,7 +200,7 @@ test.describe("core @media rules", () => {
 			}
 			__results.push({ actual: await transform(
 				"@media print { @page { size: A4; color: red; @top-center { content: \"x\" } } }",
-			), args: ["paged-page{color:red;&::part(top-center)::before{content:\"x\"}}"], label: undefined });
+			), args: ["paged-page{color:red;&::part(top-center){--paged-margin-content:\"x\"}}"], label: undefined });
 			return __results;
 		});
 		expect(results[0].actual, results[0].label).toBe(...results[0].args);

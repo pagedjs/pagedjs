@@ -34,9 +34,21 @@ export class PagedMarginBox extends LitElement {
       .assignedElements({ flatten: true }) ?? null;
   }
 
+	static styles = css`
+    .generated,
+    .slotted {
+      position: absolute;
+      top: var(--paged-margin-vertical-position);
+      translate: 0 calc(0% - var(--paged-margin-vertical-position));
+    }
+
+    .generated::before {
+      content: var(--paged-margin-content, none);
+    }
+	`;
 
   render () {
-    return html`<slot></slot>`;
+    return html`<span class="generated"></span><span class="slotted"><slot></slot></span>`;
   }
 }
 
@@ -220,10 +232,13 @@ export class PagedMargins extends LitElement {
     }
 
     paged-margin-box {
+      --paged-margin-vertical-position: 50%;
+
       flex-grow: 1;
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
     }
 
     #top,
@@ -252,12 +267,12 @@ export class PagedMargins extends LitElement {
 
     #left-top,
     #right-top {
-      align-items: start;
+      --paged-margin-vertical-position: 0%;
     }
 
     #left-bottom,
     #right-bottom {
-      align-items: end;
+      --paged-margin-vertical-position: 100%;
     }
   `
 

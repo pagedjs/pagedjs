@@ -32,9 +32,8 @@ const runningElementRules = [
 		transform: ({ args }) => {
 			const call = parseOccurrenceCall(args);
 			if (!call) return null;
-			// The request rides on the margin box itself while `content` is
-			// split onto its `::before`, so the box's computed style is where
-			// `<paged-page>` reads which element the cascade chose.
+			// The request rides on the margin box itself, where `<paged-page>`
+			// reads which element the cascade chose.
 			return {
 				value: "\"\"",
 				declarations: [
@@ -148,4 +147,3 @@ export class RunningElements extends LayoutHandler {
 		return found;
 	}
 }
-

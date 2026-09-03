@@ -1,6 +1,6 @@
 import { test, expect } from "./harness-fixture.js";
 
-test("projects margin-box styles onto the box and content onto ::before", async ({
+test("projects margin-box styles and content onto the component", async ({
 	page,
 }) => {
 	const result = await page.evaluate(async () => {
@@ -25,10 +25,11 @@ test("projects margin-box styles onto the box and content onto ::before", async 
 		await margins.updateComplete;
 		const box = margins.shadowRoot.querySelector("#top-center");
 		const boxStyle = getComputedStyle(box);
-		const beforeStyle = getComputedStyle(box, "::before");
+		const generated = box.shadowRoot.querySelector(".generated");
+		const beforeStyle = getComputedStyle(generated, "::before");
 		const output = {
 			backgroundColor: boxStyle.backgroundColor,
-			boxContent: boxStyle.content,
+			boxContent: boxStyle.getPropertyValue("--paged-margin-content"),
 			beforeContent: beforeStyle.content,
 		};
 
@@ -38,7 +39,26 @@ test("projects margin-box styles onto the box and content onto ::before", async 
 
 	expect(result).toEqual({
 		backgroundColor: "rgb(12, 34, 56)",
-		boxContent: "normal",
+		boxContent: "\"Margin title\"",
 		beforeContent: "\"Margin title\"",
 	});
+});
+
+test("resolves page counters inside component-generated margin content", async ({ page }) => {
+	await page.evaluate(async () => {
+		const { PagedPreview } = window.Paged;
+		const previewer = new PagedPreview();
+		await previewer.preview(
+			"<p>body</p>",
+			[{ css: "@page { size: 300px 200px; margin: 40px; @top-center { content: \"Page \" counter(page); } }" }],
+			document.body,
+		);
+	});
+
+	const session = await page.context().newCDPSession(page);
+	const snapshot = await session.send("DOMSnapshot.captureSnapshot", { computedStyles: [] });
+	const text = snapshot.documents[0].layout.text
+		.map((index) => snapshot.strings[index])
+		.join(" ");
+	expect(text).toMatch(/Page\s+1/);
 });

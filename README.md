@@ -34,7 +34,8 @@ Add the the `paged.polyfill.js` script to replace all `@page` css and render the
 <script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
 ```
 
-Try the showcase books in [pagedjs-examples](https://github.com/pagedjs/pagedjs-examples).
+Standalone browser examples and full publications live in
+[pagedjs-examples](https://github.com/pagedjs/pagedjs-examples).
 
 By default the polyfill will run automatically as soon as the DOM is ready.
 However, you can add an async `before` function or return a Promise to delay the polyfill starting.

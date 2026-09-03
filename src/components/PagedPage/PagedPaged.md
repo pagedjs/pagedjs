@@ -123,8 +123,8 @@ Below is an SVG illustrating how `<paged-page>` constructs its layout:
 | --- | --- | --- | --- | --- |
 | name | name | string | auto-generated | Name used in `@page` rule; reflected. |
 | index | index | number \| null | null | Optional index for multi-page systems. |
-| width | width | string | `"210mm"` | Page width. |
-| height | height | string | `"297mm"` | Page height. |
+| width | width | string \| null | null | Page width for self-configuration. |
+| height | height | string \| null | null | Page height for self-configuration. |
 | bleed | bleed | string | `"0mm"` | Bleed around the page. |
 | margin | margin | string | `""` | Shorthand margin value (`"20mm 10mm"` etc). |
 | marks | marks | string | `""` | `"crop"` and/or `"cross"`. |
@@ -179,8 +179,8 @@ _Additional parts come from the forwarded `<paged-margins>` element._
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| \--paged-width | length | 210mm | Internal page width including bleed. |
-| \--paged-height | length | 297mm | Internal page height including bleed. |
+| \--paged-width | length | 8.5in | Internal page width including bleed. |
+| \--paged-height | length | 11in | Internal page height including bleed. |
 | \--paged-bleed | length | 0mm | Bleed area around the page. |
 | \--paged-margin-top | length | Implementation default | Size of the top margin. |
 | \--paged-margin-right | length | Implementation default | Size of the right margin. |
@@ -242,4 +242,3 @@ set. A box the page did not fill itself is never cleared, so content placed
 through `setMarginContent` survives.
 
 - - -
-

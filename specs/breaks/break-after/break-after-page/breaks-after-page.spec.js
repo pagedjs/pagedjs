@@ -1,5 +1,5 @@
 import { test, expect } from "../../../test_helpers/fixtures.js";
-import { DEBUG, PDF_SETTINGS } from "../../../test_helpers/constants.js";
+import { PDF_REVIEW, PDF_SETTINGS } from "../../../test_helpers/constants.js";
 
 
 test.describe("break-after-page", () => {
@@ -10,7 +10,7 @@ test.describe("break-after-page", () => {
 
 
 	test("should render 31 pages", async () => {
-		let pages = await page.$$eval(".pagedjs_page", (r) => {
+		let pages = await page.$$eval("paged-page", (r) => {
 			return r.length;
 		});
 
@@ -18,66 +18,66 @@ test.describe("break-after-page", () => {
 	});
 
 	test("should render page 2 as left", async () => {
-		let isLeft = await page.$eval("[data-page-number='2']", (r) => {
-			return r.classList.contains("pagedjs_left_page");
+		let isLeft = await page.$eval("paged-page[index='1']", (r) => {
+			return r.hasAttribute("verso");
 		});
 
 		expect(isLeft).toEqual(true);
 	});
 
 	test("page 3 should be Section 1", async () => {
-		let text = await page.$eval("[data-page-number='2']", (r) => r.textContent);
+		let text = await page.$eval("paged-page[index='1']", (r) => r.textContent);
 
 		expect(text).toContain("Section 1");
 	});
 
 	test("should render page 4 as left", async () => {
-		let isLeft = await page.$eval("[data-page-number='4']", (r) => {
-			return r.classList.contains("pagedjs_left_page");
+		let isLeft = await page.$eval("paged-page[index='3']", (r) => {
+			return r.hasAttribute("verso");
 		});
 
 		expect(isLeft).toEqual(true);
 	});
 
 	test("page 4 should be Section 2", async () => {
-		let text = await page.$eval("[data-page-number='4']", (r) => r.textContent);
+		let text = await page.$eval("paged-page[index='3']", (r) => r.textContent);
 
 		expect(text).toContain("Section 2");
 	});
 
 	test("should render page 7 as right", async () => {
-		let isRight = await page.$eval("[data-page-number='7']", (r) => {
-			return r.classList.contains("pagedjs_right_page");
+		let isRight = await page.$eval("paged-page[index='6']", (r) => {
+			return r.hasAttribute("recto");
 		});
 
 		expect(isRight).toEqual(true);
 	});
 
 	test("page 7 should be Section 3", async () => {
-		let text = await page.$eval("[data-page-number='7']", (r) => r.textContent);
+		let text = await page.$eval("paged-page[index='6']", (r) => r.textContent);
 
 		expect(text).toContain("Section 3");
 	});
 
 	test("page 8 should break after h2", async () => {
-		let text = await page.$eval("[data-page-number='8']", (r) => r.textContent);
+		let text = await page.$eval("paged-page[index='7']", (r) => r.textContent);
 
 		expect(text.trim()).toEqual("A - h2 (inline element)");
 	});
 
 	test("should render page 9 as right", async () => {
-		let isRight = await page.$eval("[data-page-number='9']", (r) => {
-			return r.classList.contains("pagedjs_right_page");
+		let isRight = await page.$eval("paged-page[index='8']", (r) => {
+			return r.hasAttribute("recto");
 		});
 
 		expect(isRight).toEqual(true);
 	});
 
-	if (!DEBUG) {
+	if (PDF_REVIEW) {
 		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPdfSnapshot();
+			await expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

@@ -1,5 +1,5 @@
 import { test, expect } from "../test_helpers/fixtures.js";
-import { DEBUG, PDF_SETTINGS } from "../test_helpers/constants.js";
+import { PDF_REVIEW, PDF_SETTINGS } from "../test_helpers/constants.js";
 
 
 test.describe("breaks", () => {
@@ -10,7 +10,7 @@ test.describe("breaks", () => {
 
 
 	test("should render 5 pages", async () => {
-		let pages = await page.$$eval(".pagedjs_page", (r) => {
+		let pages = await page.$$eval("paged-page", (r) => {
 			return r.length;
 		});
 
@@ -19,11 +19,11 @@ test.describe("breaks", () => {
 
 	test("should avoid breaking after h2", async () => {
 		let h2ParentPage = await page.$eval("h2", (r) => {
-			let pageId = r.closest(".pagedjs_page").dataset.pageNumber;
+			let pageId = String(Number(r.closest("paged-page").index) + 1);
 			return pageId;
 		});
 		let pParentPage = await page.$eval("#afterh2", (r) => {
-			let pageId = r.closest(".pagedjs_page").dataset.pageNumber;
+			let pageId = String(Number(r.closest("paged-page").index) + 1);
 			return pageId;
 		});
 
@@ -36,7 +36,7 @@ test.describe("breaks", () => {
 			let section;
 			for (let i = 0; i < r.length; i++) {
 				section = r[i];
-				curr = section.closest(".pagedjs_page").dataset.pageNumber;
+				curr = String(Number(section.closest("paged-page").index) + 1);
 				if(curr === prev) {
 					return false;
 				}
@@ -49,16 +49,16 @@ test.describe("breaks", () => {
 	});
 
 	test("should render a blank page before break-before=right", async () => {
-		let blank = await page.$eval(".pagedjs_blank_page", (r) => {
-			return r.dataset.pageNumber;
+		let blank = await page.$eval("paged-page[blank]", (r) => {
+			return String(Number(r.index) + 1);
 		});
 
 		expect(blank).toEqual("4");
 	});
 
 	test("should render break-before=right sections as right page", async () => {
-		let isRight = await page.$eval("[data-page-number='5']", (r) => {
-			return r.classList.contains("pagedjs_right_page");
+		let isRight = await page.$eval("paged-page[index='4']", (r) => {
+			return r.hasAttribute("recto");
 		});
 
 		expect(isRight).toEqual(true);
@@ -66,22 +66,22 @@ test.describe("breaks", () => {
 
 	test("should breaking after #breakAfter", async () => {
 		let h4ParentPage = await page.$eval("#breakAfter", (r) => {
-			let pageId = r.closest(".pagedjs_page").dataset.pageNumber;
+			let pageId = String(Number(r.closest("paged-page").index) + 1);
 			return pageId;
 		});
 		let pParentPage = await page.$eval("#afterh4", (r) => {
-			let pageId = r.closest(".pagedjs_page").dataset.pageNumber;
+			let pageId = String(Number(r.closest("paged-page").index) + 1);
 			return pageId;
 		});
 
 		expect(h4ParentPage).not.toEqual(pParentPage);
 	});
 
-	if (!DEBUG) {
+	if (PDF_REVIEW) {
 		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPdfSnapshot();
+			await expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

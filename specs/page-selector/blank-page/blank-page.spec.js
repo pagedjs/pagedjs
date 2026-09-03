@@ -1,5 +1,5 @@
 import { test, expect } from "../../test_helpers/fixtures.js";
-import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
+import { PDF_REVIEW, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
 
 test.describe("blank-page", () => {
@@ -9,27 +9,27 @@ test.describe("blank-page", () => {
 	});
 
 
-	test("should have an empty class on page 6", async () => {
-		let chapter = await page.$eval("[data-page-number='4']", (r) => {
-			return r.classList.contains("pagedjs_blank_page");
+	test("should mark page 4 as blank", async () => {
+		let chapter = await page.$eval("paged-page[index='3']", (r) => {
+			return r.hasAttribute("blank");
 		});
 
 		expect(chapter).toBe(true);
 	});
 
-	test("should not give page 1 an empty class", async () => {
-		let chapter = await page.$eval("[data-page-number='1']", (r) => {
-			return r.classList.contains("pagedjs_blank_page");
+	test("should not mark page 1 as blank", async () => {
+		let chapter = await page.$eval("paged-page[index='0']", (r) => {
+			return r.hasAttribute("blank");
 		});
 
 		expect(chapter).toBe(false);
 	});
 
-	if (!DEBUG) {
+	if (PDF_REVIEW) {
 		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPdfSnapshot();
+			await expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

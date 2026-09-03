@@ -1,5 +1,5 @@
 import { test, expect } from "../../test_helpers/fixtures.js";
-import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
+import { PDF_REVIEW, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
 
 test.describe("footnotes-place", () => {
@@ -10,7 +10,7 @@ test.describe("footnotes-place", () => {
 
 
 	test("should render 3 pages", async () => {
-		let pages = await page.$$eval(".pagedjs_page", (r) => {
+		let pages = await page.$$eval("paged-page", (r) => {
 			return r.length;
 		});
 
@@ -18,27 +18,27 @@ test.describe("footnotes-place", () => {
 	});
 
 	test("should have two callouts on page 1", async () => {
-		let callouts = await page.$$eval("[data-page-number='1'] [data-footnote-call]", (r) => r.length);
+		let callouts = await page.$$eval("paged-page[index='0'] [data-footnote-call]", (r) => r.length);
 		expect(callouts).toEqual(2);
 	});
 
 	test("should have only one footnote on page 1", async () => {
-		let textStart = await page.$eval("[data-page-number='1']", (r) => r.textContent);
+		let textStart = await page.$eval("paged-page[index='0']", (r) => r.textContent);
 		expect(textStart).toContain("Annales Hirsaugienses");
 		expect(textStart).not.toContain("Origines");
 	});
 
 	test("should place footnote 2 on page 2", async () => {
-		let textStart = await page.$eval("[data-page-number='2']", (r) => r.textContent);
+		let textStart = await page.$eval("paged-page[index='1']", (r) => r.textContent);
 		expect(textStart).toContain("Origines");
 	});
 
 
-	if (!DEBUG) {
+	if (PDF_REVIEW) {
 		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPdfSnapshot();
+			await expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

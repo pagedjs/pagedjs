@@ -1,5 +1,5 @@
-import { test, expect } from "../../test_helpers/fixtures.js";
-import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
+import { test, expect, marginBoxStyle } from "../../test_helpers/fixtures.js";
+import { PDF_REVIEW, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
 
 test.describe("vertical-align", () => {
@@ -10,19 +10,17 @@ test.describe("vertical-align", () => {
 
 
 	test("Render the top-left at the top", async () => {
-		let pages = await page.$eval(".pagedjs_margin-top-left", (r) => {
-			return window.getComputedStyle(r)["align-items"];
-		});
+		let pages = await marginBoxStyle(page, 1, "top-left", "align-items");
 
 		expect(pages).toEqual("flex-start");
 	});
 
 
-	if (!DEBUG) {
+	if (PDF_REVIEW) {
 		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPdfSnapshot();
+			await expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

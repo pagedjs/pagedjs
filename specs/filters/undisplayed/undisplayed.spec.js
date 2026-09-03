@@ -1,5 +1,4 @@
 import { test, expect } from "../../test_helpers/fixtures.js";
-import { DEBUG } from "../../test_helpers/constants.js";
 
 
 test.describe("undisplayed", () => {
@@ -11,7 +10,7 @@ test.describe("undisplayed", () => {
 
 
 	test("should not break display: none elements to new page", async () => {
-		let pages = await page.$$eval(".pagedjs_page", (r) => r.length);
+		let pages = await page.$$eval("paged-page", (r) => r.length);
 		expect(pages).toBe(2);
 
 		let el = await page.$("#displayNoneStyle");

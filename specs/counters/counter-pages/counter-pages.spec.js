@@ -1,5 +1,5 @@
 import { test, expect } from "../../test_helpers/fixtures.js";
-import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
+import { PDF_REVIEW, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
 
 test.describe("counter-pages", () => {
@@ -11,15 +11,15 @@ test.describe("counter-pages", () => {
 
 	// Unable to read counter values
 	test.skip("should have page numbering", async () => {
-		let text = await page.$eval("[data-page-number='1'] .pagedjs_margin-bottom-left > .pagedjs_margin-content", (r) => window.getComputedStyle(r, "::after").content);
+		let text = await page.$eval("paged-page[index='0'] .pagedjs_margin-bottom-left > .pagedjs_margin-content", (r) => window.getComputedStyle(r, "::after").content);
 		expect(text).toContain("1 / 6");
 	});
 
-	if (!DEBUG) {
+	if (PDF_REVIEW) {
 		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPdfSnapshot();
+			await expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

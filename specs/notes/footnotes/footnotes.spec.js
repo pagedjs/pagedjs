@@ -1,5 +1,5 @@
 import { test, expect } from "../../test_helpers/fixtures.js";
-import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
+import { PDF_REVIEW, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
 
 test.describe("footnotes", () => {
@@ -10,7 +10,7 @@ test.describe("footnotes", () => {
 
 
 	test("should render 14 pages", async () => {
-		let pages = await page.$$eval(".pagedjs_page", (r) => {
+		let pages = await page.$$eval("paged-page", (r) => {
 			return r.length;
 		});
 
@@ -18,7 +18,7 @@ test.describe("footnotes", () => {
 	});
 
 	test("page 2 footnote", async () => {
-		let textContent = await page.$eval("[data-page-number='2']", (r) => r.textContent);
+		let textContent = await page.$eval("paged-page[index='1']", (r) => r.textContent);
 
 		// callout
 		expect(textContent).toContain("Legend");
@@ -28,7 +28,7 @@ test.describe("footnotes", () => {
 	});
 
 	test("page 4 long footnote", async () => {
-		let textContent = await page.$eval("[data-page-number='4']", (r) => r.textContent);
+		let textContent = await page.$eval("paged-page[index='3']", (r) => r.textContent);
 
 		// callout
 		expect(textContent).toContain("centuries before");
@@ -38,7 +38,7 @@ test.describe("footnotes", () => {
 	});
 
 	test("page 5 split footnote", async () => {
-		let textContent = await page.$eval("[data-page-number='5']", (r) => r.textContent);
+		let textContent = await page.$eval("paged-page[index='4']", (r) => r.textContent);
 
 		// callout
 		expect(textContent).toContain("Angelo Roccha");
@@ -48,18 +48,18 @@ test.describe("footnotes", () => {
 	});
 
 	test("page 6 footnote split from page 5", async () => {
-		let textContent = await page.$eval("[data-page-number='6']", (r) => r.textContent);
+		let textContent = await page.$eval("paged-page[index='5']", (r) => r.textContent);
 
 		// footnote
 		expect(textContent).toContain("enim a primis");
 	});
 
 
-	if (!DEBUG) {
+	if (PDF_REVIEW) {
 		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPdfSnapshot();
+			await expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

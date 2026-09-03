@@ -37,12 +37,15 @@
     "build": "vite build && vite build --mode polyfill",
     "start": "vite",
     "test": "playwright test --config test/playwright.config.js",
-    "specs": "playwright test --config specs/playwright.config.js",
+    "specs": "npm run build && playwright test --config specs/playwright.config.js",
+    "specs:current": "playwright test --config specs/playwright.config.js specs/handlers specs/preview",
+    "specs:pdf": "npm run build && PAGED_PDF_REVIEW=true playwright test --config specs/playwright.config.js --ui",
+    "specs:pdf:update": "npm run build && PAGED_PDF_REVIEW=true playwright test --config specs/playwright.config.js --update-snapshots=all",
     "lint": "eslint src test specs",
     "docker-build": "docker build -t pagedmedia/pagedjs .",
     "docker-test": "docker build -t pagedmedia/pagedjs . && docker run -it --rm --ipc=host --user pwuser -v $(pwd)/specs:/home/pwuser/pagedjs/specs pagedmedia/pagedjs npm test",
     "docker-specs": "docker build -t pagedmedia/pagedjs . && docker run -it --rm --ipc=host -v $(pwd)/specs:/home/pwuser/pagedjs/specs pagedmedia/pagedjs npm run specs",
-    "docker-update-specs": "docker build -t pagedmedia/pagedjs . && docker run -it --rm --ipc=host -v $(pwd)/specs:/home/pwuser/pagedjs/specs pagedmedia/pagedjs npm run specs -- -u"
+    "docker-update-specs": "docker build -t pagedmedia/pagedjs . && docker run -it --rm --ipc=host -v $(pwd)/test-results:/home/pwuser/pagedjs/test-results pagedmedia/pagedjs npm run specs:pdf:update"
   },
   "repository": {
     "type": "git",

@@ -1,5 +1,5 @@
 import { test, expect } from "../../test_helpers/fixtures.js";
-import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
+import { PDF_REVIEW, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
 
 test.describe("counter-increment-zero-page", () => {
@@ -10,14 +10,14 @@ test.describe("counter-increment-zero-page", () => {
 
 
 	test("cover page (first) should have a page increment of 0", async () => {
-		const counterIncrement = await page.$eval("[data-page-number='1']", (element) => window.getComputedStyle(element).counterIncrement);
+		const counterIncrement = await page.$eval("paged-page[index='0']", (element) => window.getComputedStyle(element).counterIncrement);
 		expect(counterIncrement).toEqual("page 0");
 	});
 
-	if (!DEBUG) {
+	if (PDF_REVIEW) {
 		test("should create a pdf", async () => {
 			const pdf = await page.pdf(PDF_SETTINGS);
-			expect(pdf).toMatchPdfSnapshot();
+			await expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 });

@@ -1,5 +1,4 @@
 import { test, expect } from "../../test_helpers/fixtures.js";
-import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
 
 test.describe("target-text", () => {
@@ -33,11 +32,11 @@ test.describe("target-text", () => {
 		let text = await page.$eval("nav li#fifth a" , (r) => window.getComputedStyle(r, "::after").content);
 		expect(text).toEqual("\": This is inside the after\"");
 	});
-	// if (!DEBUG) {
+	// if (PDF_REVIEW) {
 	// 	it('should create a pdf', async () => {
 	// 		let pdf = await page.pdf(PDF_SETTINGS);
 	// 		// no need to check the pdf with those test
-	// 		// expect(pdf).toMatchPdfSnapshot();
+	// 		// await expect(pdf).toMatchPdfSnapshot();
 	// 	})
 	// }
 }

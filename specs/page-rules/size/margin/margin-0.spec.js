@@ -1,5 +1,5 @@
 import { test, expect } from "../../../test_helpers/fixtures.js";
-import { DEBUG, PDF_SETTINGS } from "../../../test_helpers/constants.js";
+import { PDF_REVIEW, PDF_SETTINGS } from "../../../test_helpers/constants.js";
 
 
 test.describe("margin-0", () => {
@@ -10,14 +10,14 @@ test.describe("margin-0", () => {
 
 
 	test("should render 1 page", async () => {
-		let pages = await page.$$eval(".pagedjs_page", (r) => r.length);
+		let pages = await page.$$eval("paged-page", (r) => r.length);
 		expect(pages).toBe(1);
 	});
 
-	if (!DEBUG) {
+	if (PDF_REVIEW) {
 		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
-			expect(pdf).toMatchPdfSnapshot();
+			await expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 });

@@ -1,5 +1,5 @@
 import { test, expect } from "../../test_helpers/fixtures.js";
-import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
+import { PDF_REVIEW, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
 
 test.describe("multiple-named", () => {
@@ -10,7 +10,7 @@ test.describe("multiple-named", () => {
 
 
 	test("should put contet and preamble on a single page", async () => {
-		let pages = await page.$$eval(".pagedjs_page", (r) => {
+		let pages = await page.$$eval("paged-page", (r) => {
 			return r.length;
 		});
 
@@ -18,18 +18,18 @@ test.describe("multiple-named", () => {
 	});
 
 	test("should put contet and preamble on a page with a green background", async () => {
-		let textColor = await page.$eval("#page-1", (pg) => window.getComputedStyle(pg).backgroundColor);
+		let textColor = await page.$eval("paged-page[index='0']", (pg) => window.getComputedStyle(pg).backgroundColor);
 
 		expect(textColor).toContain("rgb(0, 128, 0)"); // green
 	});
 
 
 
-	if (!DEBUG) {
+	if (PDF_REVIEW) {
 		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPdfSnapshot();
+			await expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 });

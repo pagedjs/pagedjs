@@ -1,5 +1,5 @@
-import { test, expect } from "../../../test_helpers/fixtures.js";
-import { DEBUG, PDF_SETTINGS } from "../../../test_helpers/constants.js";
+import { test, expect, marginBoxStyle } from "../../../test_helpers/fixtures.js";
+import { PDF_REVIEW, PDF_SETTINGS } from "../../../test_helpers/constants.js";
 
 
 test.describe("first-page-of-page-group", () => {
@@ -10,47 +10,53 @@ test.describe("first-page-of-page-group", () => {
 
 
 	test("should not give page 1 a named first page class", async () => {
-		let chapter = await page.$eval("[data-page-number='1']", (r) => {
-			return r.classList.contains("pagedjs_chapter_first_page");
+		let chapter = await page.$eval("paged-page[index='0']", (r) => {
+			return r.name === "chapter" && r.hasAttribute("first");
 		});
 
 		expect(chapter).toBe(false);
 	});
 
 	test("should have a named first page class on page 2", async () => {
-		let chapter = await page.$eval("[data-page-number='2']", (r) => {
-			return r.classList.contains("pagedjs_chapter_first_page");
+		let chapter = await page.$eval("paged-page[index='1']", (r) => {
+			return r.name === "chapter" && r.hasAttribute("first");
 		});
 
 		expect(chapter).toBe(true);
 	});
 
 	test("should have bottom center text on page 2", async () => {
-		let text = await page.$eval("[data-page-number='2'] .pagedjs_margin-bottom-center > .pagedjs_margin-content", (r) => window.getComputedStyle(r, "::after").content);
+		let text = await marginBoxStyle(
+			page,
+			2,
+			"bottom-center",
+			"content",
+			"::after",
+		);
 		expect(text).toContain("first page of the chapter");
 	});
 
 	test("should not give page 3 a named first page class", async () => {
-		let chapter = await page.$eval("[data-page-number='3']", (r) => {
-			return r.classList.contains("pagedjs_chapter_first_page");
+		let chapter = await page.$eval("paged-page[index='2']", (r) => {
+			return r.name === "chapter" && r.hasAttribute("first");
 		});
 
 		expect(chapter).toBe(false);
 	});
 
 	test("should have a named first page class on page 5", async () => {
-		let chapter = await page.$eval("[data-page-number='5']", (r) => {
-			return r.classList.contains("pagedjs_chapter_first_page");
+		let chapter = await page.$eval("paged-page[index='4']", (r) => {
+			return r.name === "chapter" && r.hasAttribute("first");
 		});
 
 		expect(chapter).toBe(true);
 	});
 
-	if (!DEBUG) {
+	if (PDF_REVIEW) {
 		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPdfSnapshot();
+			await expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

@@ -193,11 +193,26 @@ multiple checkouts at once.
 
 ### Specs
 
-The supported handler and preview specs under `specs/` also import source
-modules directly. They do not require a build first.
+The Playwright suite under `specs/` covers the current engine and the migrated
+legacy behavior specs. It builds the browser bundles before running:
 
 ```bash
 npm run specs
+```
+
+For a quicker pass over only the newer handler and preview specs, run
+`npm run specs:current`.
+
+PDF comparison is an opt-in review workflow. `npm run specs:pdf` opens the
+Playwright UI, where a failed PDF assertion exposes its expected, actual, and
+diff images. It does not accept changed output. Expected PDFs and rendered
+pages are disposable files under the ignored `test-results/pdf/` directory;
+they are not committed as image baselines.
+
+After reviewing a change, regenerate the disposable expectations explicitly:
+
+```bash
+npm run specs:pdf:update
 ```
 
 ### Lint
@@ -234,11 +249,12 @@ There are wrapper scripts for the common cases, which build the image first:
 ```bash
 npm run docker-test          # npm test in the container
 npm run docker-specs         # npm run specs in the container
-npm run docker-update-specs  # regenerate the PDF snapshots
+npm run docker-update-specs  # regenerate disposable PDF expectations
 ```
 
-PDF snapshots are authored in the container because `pdf-to-img` renders
-differently across platforms.
+The PDF matcher renders every page with pdfjs and delegates image differences
+to Playwright's snapshot reporting. The old committed `pdf-to-img` PNGs were
+removed after comparison; review decisions now live in the audit ledger.
 
 
 ## License

@@ -1,5 +1,5 @@
-import { test, expect } from "../../test_helpers/fixtures.js";
-import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
+import { test, expect, marginBoxText } from "../../test_helpers/fixtures.js";
+import { PDF_REVIEW, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
 
 test.describe("duplicate-headers", () => {
@@ -10,7 +10,7 @@ test.describe("duplicate-headers", () => {
 
 
 	test("should render 6 pages", async () => {
-		let pages = await page.$$eval(".pagedjs_page", (r) => {
+		let pages = await page.$$eval("paged-page", (r) => {
 			return r.length;
 		});
 
@@ -18,28 +18,28 @@ test.describe("duplicate-headers", () => {
 	});
 
 	test("page 1 header should be \"chapter\"", async () => {
-		let text = await page.$eval("[data-page-number='1'] .pagedjs_margin-top-left > .pagedjs_margin-content", (r) => r.textContent);
+		let text = await marginBoxText(page, 1, "top-left");
 
 		expect(text).toContain("chapter");
 	});
 
 	test("page 3 header should be \"chapter nth\"", async () => {
-		let text = await page.$eval("[data-page-number='3'] .pagedjs_margin-top-left > .pagedjs_margin-content", (r) => r.textContent);
+		let text = await marginBoxText(page, 3, "top-left");
 
 		expect(text).toContain("chapter nth");
 	});
 
 	test("page 4 header should be \"chapter left\"", async () => {
-		let text = await page.$eval("[data-page-number='4'] .pagedjs_margin-top-left > .pagedjs_margin-content", (r) => r.textContent);
+		let text = await marginBoxText(page, 4, "top-left");
 
 		expect(text).toContain("chapter left");
 	});
 
-	if (!DEBUG) {
+	if (PDF_REVIEW) {
 		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPdfSnapshot();
+			await expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

@@ -47,6 +47,26 @@ function buildDeclarations(page) {
 		if (page.margin.left)
 			declarations.push(`--paged-margin-left: ${page.margin.left};`);
 	}
+	if (page.padding) {
+		for (const side of ["top", "right", "bottom", "left"]) {
+			if (page.padding[side]) {
+				declarations.push(`--paged-padding-${side}: ${page.padding[side]};`);
+			}
+		}
+	}
+	if (page.border) {
+		for (const side of ["top", "right", "bottom", "left"]) {
+			const edge = page.border[side];
+			if (!edge) continue;
+			for (const field of ["width", "style", "color"]) {
+				if (edge[field]) {
+					declarations.push(
+						`--paged-border-${side}-${field}: ${edge[field]};`,
+					);
+				}
+			}
+		}
+	}
 	if (page.marks) declarations.push(`--paged-marks: ${page.marks};`);
 	if (page.pageOrientation)
 		declarations.push(`--paged-page-orientation: ${page.pageOrientation};`);

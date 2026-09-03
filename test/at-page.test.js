@@ -74,4 +74,23 @@ test.describe("core @page margin-box rules", () => {
 		});
 		expect(results[0].actual, results[0].label).toBe(...results[0].args);
 	});
+
+	test("removes page padding and borders from the host-facing rule", async ({ page }) => {
+		const actual = await page.evaluate(async () => {
+			const csstree = await import("css-tree");
+			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
+			const transformer = new CssTransformer({ rules: coreRules });
+			const ast = await transformer.prepare(`
+				@page {
+					padding: 10px;
+					border: 5px solid red;
+					background: yellow;
+				}
+			`);
+			return csstree.generate(transformer.apply(ast));
+		});
+
+		expect(actual).toBe("paged-page{background:yellow}");
+	});
 });

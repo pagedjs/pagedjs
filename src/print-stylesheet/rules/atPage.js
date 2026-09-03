@@ -20,8 +20,8 @@ const MARGIN_BOX_NAMES = [
 	"left-bottom",
 ];
 
-// CSS Paged Media §3.2: these describe the sheet, not the page box, and
-// are regenerated from the extracted page data instead.
+// Page geometry: extracted values drive Fragmentainers and the component's
+// internal page box; retaining them here would also decorate the outer host.
 const PAGE_ONLY_DECLARATIONS = new Set([
 	"size",
 	"bleed",
@@ -32,6 +32,31 @@ const PAGE_ONLY_DECLARATIONS = new Set([
 	"margin-right",
 	"margin-bottom",
 	"margin-left",
+	"padding",
+	"padding-top",
+	"padding-right",
+	"padding-bottom",
+	"padding-left",
+	"border",
+	"border-width",
+	"border-style",
+	"border-color",
+	"border-top",
+	"border-right",
+	"border-bottom",
+	"border-left",
+	"border-top-width",
+	"border-right-width",
+	"border-bottom-width",
+	"border-left-width",
+	"border-top-style",
+	"border-right-style",
+	"border-bottom-style",
+	"border-left-style",
+	"border-top-color",
+	"border-right-color",
+	"border-bottom-color",
+	"border-left-color",
 ]);
 
 const CONTENT_DECLARATIONS = new Set(["content"]);

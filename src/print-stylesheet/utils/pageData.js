@@ -21,6 +21,8 @@ export const MARGIN_BOX_NAMES = new Set([
 
 const BARE_NUMBER_RE = /^[+-]?(?:\d+|\d*\.\d+)$/;
 const ZERO_RE = /^[+-]?0*(?:\.0*)?$/;
+const PAGE_SIDES = ["top", "right", "bottom", "left"];
+const PAGE_BOX_DECLARATION_RE = /^(?:padding(?:-(?:top|right|bottom|left))?|border(?:-(?:width|style|color|(?:top|right|bottom|left)(?:-(?:width|style|color))?))?)$/;
 
 export function collectAllPageData(ast) {
 	const out = [];
@@ -63,6 +65,8 @@ export function collectAllPageData(ast) {
  * @property {PageNth|null} nth - `:nth(An+B)` coefficients, or null if no `:nth` pseudo is present.
  * @property {string|null} size - CSS `size` value ("A4", "210mm 297mm", ...), or null.
  * @property {PageMargin|null} margin - Per-direction margins, or null when no margin declaration appears.
+ * @property {PageMargin|null} padding - Per-direction padding, or null when no padding declaration appears.
+ * @property {Object<string, {width: string|null, style: string|null, color: string|null}>|null} border - Per-side border declarations, or null.
  * @property {string|null} pageOrientation - CSS `page-orientation` value ('rotate-left', 'rotate-right', 'upright'), or null.
  * @property {string|null} bleed - Used `bleed` length (see `resolveBleed`), or null.
  * @property {string|null} marks - CSS `marks` value, or null.
@@ -82,6 +86,8 @@ export function extractPageData(atruleNode) {
 		nth,
 		size: null,
 		margin: null,
+		padding: null,
+		border: null,
 		pageOrientation: null,
 		bleed: null,
 		marks: null,
@@ -91,6 +97,7 @@ export function extractPageData(atruleNode) {
 	const block = atruleNode.block;
 	if (!block || !block.children) return out;
 
+	const pageBoxDeclarations = [];
 	block.children.forEach((c) => {
 		if (!c) return;
 
@@ -109,6 +116,11 @@ export function extractPageData(atruleNode) {
 
 		if (c.type !== "Declaration") return;
 		const value = csstree.generate(c.value).trim();
+		if (PAGE_BOX_DECLARATION_RE.test(c.property)) {
+			pageBoxDeclarations.push(
+				`${c.property}:${value}${c.important ? "!important" : ""};`,
+			);
+		}
 		switch (c.property) {
 			case "size":
 				out.size = value;
@@ -146,9 +158,44 @@ export function extractPageData(atruleNode) {
 		}
 	});
 
+	const pageBox = normalizePageBoxDeclarations(pageBoxDeclarations);
+	out.padding = pageBox.padding;
+	out.border = pageBox.border;
+
 	out.bleed = resolveBleed(out.bleed, out.marks);
 
 	return out;
+}
+
+function normalizePageBoxDeclarations(declarations) {
+	if (declarations.length === 0) return { padding: null, border: null };
+	const style = document.createElement("div").style;
+	style.cssText = declarations.join("");
+
+	const padding = {};
+	let hasPadding = false;
+	for (const side of PAGE_SIDES) {
+		const value = style.getPropertyValue(`padding-${side}`).trim() || null;
+		padding[side] = value;
+		if (value != null) hasPadding = true;
+	}
+
+	const border = {};
+	let hasBorder = false;
+	for (const side of PAGE_SIDES) {
+		const edge = {};
+		for (const field of ["width", "style", "color"]) {
+			const value = style.getPropertyValue(`border-${side}-${field}`).trim() || null;
+			edge[field] = value;
+			if (value != null) hasBorder = true;
+		}
+		border[side] = edge;
+	}
+
+	return {
+		padding: hasPadding ? padding : null,
+		border: hasBorder ? border : null,
+	};
 }
 
 /**

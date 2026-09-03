@@ -58,6 +58,10 @@ export const MARGIN_BOXES = [
  * @cssprop --paged-margin-bottom - Size of the bottom margin.
  * @cssprop --paged-margin-left - Size of the left margin.
  * @cssprop --paged-margin-right - Size of the right margin.
+ * @cssprop --paged-padding-top - Size of the top page padding.
+ * @cssprop --paged-padding-right - Size of the right page padding.
+ * @cssprop --paged-padding-bottom - Size of the bottom page padding.
+ * @cssprop --paged-padding-left - Size of the left page padding.
  */
 export class PagedPage extends LitElement {
 	/**
@@ -113,6 +117,22 @@ export class PagedPage extends LitElement {
       --paged-margin-right: 0;
       --paged-margin-bottom: 0;
       --paged-margin-left: 0;
+      --paged-padding-top: 0;
+      --paged-padding-right: 0;
+      --paged-padding-bottom: 0;
+      --paged-padding-left: 0;
+      --paged-border-top-width: medium;
+      --paged-border-right-width: medium;
+      --paged-border-bottom-width: medium;
+      --paged-border-left-width: medium;
+      --paged-border-top-style: none;
+      --paged-border-right-style: none;
+      --paged-border-bottom-style: none;
+      --paged-border-left-style: none;
+      --paged-border-top-color: currentcolor;
+      --paged-border-right-color: currentcolor;
+      --paged-border-bottom-color: currentcolor;
+      --paged-border-left-color: currentcolor;
 
       display: block;
       width: var(--paged-width);
@@ -156,11 +176,42 @@ export class PagedPage extends LitElement {
         [bleed-right-end];
     }
 
-    .page-area {
+    .page-box {
       grid-column: page-area-start / page-area-end;
       grid-row: page-area-start / page-area-end;
+      box-sizing: border-box;
       width: 100%;
       height: 100%;
+      min-width: 0;
+      min-height: 0;
+      padding:
+        var(--paged-padding-top)
+        var(--paged-padding-right)
+        var(--paged-padding-bottom)
+        var(--paged-padding-left);
+      border-width:
+        var(--paged-border-top-width)
+        var(--paged-border-right-width)
+        var(--paged-border-bottom-width)
+        var(--paged-border-left-width);
+      border-style:
+        var(--paged-border-top-style)
+        var(--paged-border-right-style)
+        var(--paged-border-bottom-style)
+        var(--paged-border-left-style);
+      border-color:
+        var(--paged-border-top-color)
+        var(--paged-border-right-color)
+        var(--paged-border-bottom-color)
+        var(--paged-border-left-color);
+      z-index: 0;
+    }
+
+    .page-area {
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
     }
 
     .pagedjs_area > .pagedjs_page_content {
@@ -177,7 +228,7 @@ export class PagedPage extends LitElement {
       }
     }
 
-    .page-margins, 
+    .page-margins,
     .page-marks {
       display: contents;
     }
@@ -256,6 +307,7 @@ export class PagedPage extends LitElement {
       grid-template-rows: subgrid;
       grid-column: margin-left-start / margin-right-end;
       grid-row: margin-top-start / margin-bottom-end;
+      z-index: 1;
     }
   `;
 
@@ -690,8 +742,10 @@ ${MARGIN_BOXES.map((box) => html`<slot name=${box} slot=${box}></slot>`)}
 						</paged-margins>
 					</slot>
 				</div>
-				<div class="page-area" part="page-area">
-					<slot @slotchange=${this.#adoptContent}></slot>
+				<div class="page-box">
+					<div class="page-area" part="page-area">
+						<slot @slotchange=${this.#adoptContent}></slot>
+					</div>
 				</div>
 			</div>
 		`;

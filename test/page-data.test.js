@@ -77,4 +77,44 @@ test.describe("@page data extraction", () => {
 		});
 		expect(results[0].actual, results[0].label).toBe(...results[0].args);
 	});
+
+	test("normalizes page padding and border declarations", async ({ page }) => {
+		const result = await page.evaluate(async () => {
+			const csstree = await import("css-tree");
+			const { extractPageData } = await import("/src/print-stylesheet/utils/pageData.js");
+			const ast = csstree.parse(`
+				@page {
+					padding: 10px 20px;
+					padding-left: 30px;
+					border: 2px solid red;
+					border-top-width: 7px;
+					border-left-color: blue;
+				}
+			`);
+			const data = extractPageData(ast.children.first);
+			return { padding: data.padding, border: data.border };
+		});
+
+		expect(result.padding).toEqual({
+			top: "10px",
+			right: "20px",
+			bottom: "10px",
+			left: "30px",
+		});
+		expect(result.border.top).toEqual({ width: "7px", style: "solid", color: "red" });
+		expect(result.border.right).toEqual({ width: "2px", style: "solid", color: "red" });
+		expect(result.border.bottom).toEqual({ width: "2px", style: "solid", color: "red" });
+		expect(result.border.left).toEqual({ width: "2px", style: "solid", color: "blue" });
+	});
+
+	test("leaves absent padding and borders null", async ({ page }) => {
+		const result = await page.evaluate(async () => {
+			const csstree = await import("css-tree");
+			const { extractPageData } = await import("/src/print-stylesheet/utils/pageData.js");
+			const ast = csstree.parse("@page { margin: 10px; }");
+			const data = extractPageData(ast.children.first);
+			return { padding: data.padding, border: data.border };
+		});
+		expect(result).toEqual({ padding: null, border: null });
+	});
 });

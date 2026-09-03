@@ -95,4 +95,74 @@ test.describe("source filters through the preview pipeline", () => {
 		expect(colors[0]).toBe("rgb(0, 0, 0)");
 		expect(colors.slice(1).every((color) => color === "rgb(0, 128, 0)")).toBe(true);
 	});
+
+	test("display:none subtrees stay in their generated page", async ({ page }) => {
+		const result = await page.evaluate(async () => {
+			const { PagedPreview } = window.Paged;
+			const css = `
+				@page { size: 300px 120px; margin: 0; }
+				#first { break-after: page; }
+				p { margin: 0; }
+				[data-hidden-style] { display: none; }
+			`;
+			const previewer = new PagedPreview();
+			await previewer.preview(
+				`<section id="first">
+					<p data-before>before</p>
+					<div data-hidden-style><span data-hidden-child>hidden child</span></div>
+					<div data-hidden-adjacent style="display: none">adjacent hidden</div>
+					<p data-after>after</p>
+				</section>
+				<section id="second">
+					<div data-hidden-inline style="display: none"><span>inline child</span></div>
+					<p data-second>second</p>
+				</section>`,
+				[{ css }],
+				document.body,
+			);
+
+			const pages = [...previewer.querySelectorAll("paged-page")];
+			const styled = pages[0]?.querySelector("[data-hidden-style]");
+			const inline = pages[1]?.querySelector("[data-hidden-inline]");
+			const out = {
+				pages: pages.length,
+				styledPerPage: pages.map(
+					(printedPage) => printedPage.querySelectorAll("[data-hidden-style]").length,
+				),
+				adjacentPerPage: pages.map(
+					(printedPage) => printedPage.querySelectorAll("[data-hidden-adjacent]").length,
+				),
+				inlinePerPage: pages.map(
+					(printedPage) => printedPage.querySelectorAll("[data-hidden-inline]").length,
+				),
+				styledDisplay: styled ? getComputedStyle(styled).display : "",
+				inlineDisplay: inline ? getComputedStyle(inline).display : "",
+				keptDescendant: styled?.querySelector("[data-hidden-child]") !== null,
+				firstOrder: [...(styled?.parentElement.children ?? [])].map(
+					(element) => element.dataset.before !== undefined
+						? "before"
+						: element.dataset.hiddenStyle !== undefined
+							? "hidden"
+							: element.dataset.hiddenAdjacent !== undefined
+								? "adjacent"
+								: "after",
+				),
+				secondOrder: [...(inline?.parentElement.children ?? [])].map((element) =>
+					element.dataset.hiddenInline !== undefined ? "hidden" : "second"
+				),
+			};
+			previewer.destroy();
+			return out;
+		});
+
+		expect(result.pages).toBe(2);
+		expect(result.styledPerPage).toEqual([1, 0]);
+		expect(result.adjacentPerPage).toEqual([1, 0]);
+		expect(result.inlinePerPage).toEqual([0, 1]);
+		expect(result.styledDisplay).toBe("none");
+		expect(result.inlineDisplay).toBe("none");
+		expect(result.keptDescendant).toBe(true);
+		expect(result.firstOrder).toEqual(["before", "hidden", "adjacent", "after"]);
+		expect(result.secondOrder).toEqual(["hidden", "second"]);
+	});
 });

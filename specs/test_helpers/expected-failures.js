@@ -25,7 +25,6 @@ const EXPECTED_FAILURES = [
 		test: /^should page break between containers/,
 	},
 	{ issue: "TEST-011", file: /counters\/nested\/nested\.spec\.js$/, test: /.*/ },
-	{ issue: "SPEC-010", file: /filters\/undisplayed\/undisplayed\.spec\.js$/, test: /.*/ },
 	{ issue: "SPEC-003", file: /following-selector\/following-selector\.spec\.js$/, test: /^should render 14 pages$/ },
 	{ issue: "SPEC-010", file: /generate-content\/content-none\/content-none\.spec\.js$/, test: /^should render 5 pages$/ },
 	{ issue: "SPEC-003", file: /infinite-loop\/infinite-loop\.spec\.js$/, test: /^should render 1 page$/ },

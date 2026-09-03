@@ -271,7 +271,11 @@ export class Footnote extends LayoutHandler {
 				if (!element.parentNode) continue;
 
 				const id = `fn-${counter++}`;
-				const call = document.createElement("a");
+				// Selector identity: E::footnote-call becomes E[data-footnote-call]::after,
+				// so the generated host retains the originating tag and attributes.
+				const call = element.cloneNode(false);
+				// css-gcpm-3 §2.2: the call stays in flow after the body is hidden.
+				call.style.setProperty("display", "inline");
 				call.setAttribute(CALL, id);
 				markNativePseudo(call, "after");
 				element.parentNode.insertBefore(call, element);

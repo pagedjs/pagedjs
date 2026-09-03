@@ -12,10 +12,15 @@ const CSS = `
 }
 p { margin: 0; }
 .fn { float: footnote; }
-::footnote-call { color: rgb(220, 20, 60); }
+p > span#main-note.fn[data-call-style="accent"]::footnote-call {
+	color: rgb(220, 20, 60);
+	font-size: 30px;
+	font-weight: 700;
+}
 `;
 
-const CONTENT = "<p>Main text<span class=\"fn\">Footnote body text</span></p>";
+const CONTENT =
+	"<p>Main text<span id=\"main-note\" class=\"fn\" data-call-style=\"accent\">Footnote body text</span></p>";
 
 async function render(page, css) {
 	return page.evaluate(
@@ -42,6 +47,12 @@ async function render(page, css) {
 				paddingTop: areaStyle ? areaStyle.paddingTop : "",
 				areaText: area ? area.textContent : "",
 				callColor: callStyle ? callStyle.color : "",
+				callDisplay: call ? getComputedStyle(call).display : "",
+				callFontSize: callStyle ? callStyle.fontSize : "",
+				callFontWeight: callStyle ? callStyle.fontWeight : "",
+				callTag: call?.tagName ?? "",
+				callID: call?.id ?? "",
+				callStyleName: call?.getAttribute("data-call-style") ?? "",
 				bodyDisplay: body ? getComputedStyle(body).display : "",
 				footnoteDisplay: body?.getAttribute("data-footnote-display") ?? "",
 			};
@@ -62,9 +73,17 @@ test.describe("author footnote CSS through the preview pipeline", () => {
 		expect(result.areaText).toContain("Footnote body text");
 	});
 
-	test("::footnote-call styles the generated call marker", async ({ page }) => {
+	test("compound-qualified ::footnote-call styles the generated call marker", async ({
+		page,
+	}) => {
 		const result = await render(page, CSS);
 		expect(result.callColor).toBe("rgb(220, 20, 60)");
+		expect(result.callDisplay).not.toBe("none");
+		expect(result.callFontSize).toBe("30px");
+		expect(result.callFontWeight).toBe("700");
+		expect(result.callTag).toBe("SPAN");
+		expect(result.callID).toBe("main-note");
+		expect(result.callStyleName).toBe("accent");
 	});
 
 	test("footnote-display controls the rendered body", async ({ page }) => {

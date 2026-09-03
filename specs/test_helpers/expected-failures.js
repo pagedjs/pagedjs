@@ -53,7 +53,7 @@ const EXPECTED_FAILURES = [
 	{ issue: "SPEC-004", file: /notes\/footnotes-lastpage\/footnotes-lastpage\.spec\.js$/, test: /^(?:not display|should display)/ },
 	{ issue: "SPEC-004", file: /notes\/footnotes-padding\/footnotes-padding\.spec\.js$/, test: /^cut the footnote/ },
 	{ issue: "SPEC-004", file: /notes\/footnotes-sameline\/footnotes-sameline\.spec\.js$/, test: /^should have/ },
-	{ issue: "SPEC-004", file: /notes\/footnotes-styles\/footnotes-styles\.spec\.js$/, test: /^should have/ },
+	{ issue: "SPEC-004", file: /notes\/footnotes-styles\/footnotes-styles\.spec\.js$/, test: /^should have three callouts/ },
 	{ issue: "SPEC-003", file: /nth-of-type-selector\/nth-of-type-selector\.spec\.js$/, test: /^should render 14 pages$/ },
 	{
 		issue: "SPEC-005",

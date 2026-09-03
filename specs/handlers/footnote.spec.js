@@ -139,7 +139,7 @@ test.describe("Footnotes in paged media (browser)", () => {
 		expect(result.mixed[1]).toBe(result.wide[1]);
 	});
 
-	test("inserts a footnote call marker in place of the body", async ({ page }) => {
+	test("inserts a footnote call marker with the originating tag", async ({ page }) => {
 		const result = await page.evaluate(async () => {
 			const { Fragmenter } = await import("fragmentainers");
 			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation");
@@ -179,7 +179,7 @@ test.describe("Footnotes in paged media (browser)", () => {
 			return { callExists, tagName };
 		});
 		expect(result.callExists).toBe(true);
-		expect(result.tagName).toBe("A");
+		expect(result.tagName).toBe("SPAN");
 	});
 
 	test("handles multiple footnotes on the same page", async ({ page }) => {

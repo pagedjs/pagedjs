@@ -67,7 +67,6 @@ const EXPECTED_FAILURES = [
 		file: /splits\/text-align-last\/text-align-last\.spec\.js$/,
 		test: /^should give the first paragraph on page (?:1|3|4)/,
 	},
-	{ issue: "SPEC-009", file: /tables\/column-overflow\/column-overflow\.spec\.js$/, test: /.*/ },
 	{ issue: "SPEC-005", file: /target\/target-counter\/target-counter\.spec\.js$/, test: /.*/ },
 	{ issue: "SPEC-005", file: /target\/target-text\/target-text\.spec\.js$/, test: /.*/ },
 	{ issue: "SPEC-010", file: /whitespaces\/whitespaces\.spec\.js$/, test: /.*/ },

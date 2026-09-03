@@ -159,6 +159,7 @@ test.describe("pagedjs handlers in the catalog", () => {
 		);
 		expect(names).toEqual([
 			"SourceFilters",
+			"NestedFixedPosition",
 			"Footnote",
 			"PageCounter",
 			"NamedStrings",

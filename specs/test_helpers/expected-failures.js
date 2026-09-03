@@ -61,7 +61,6 @@ const EXPECTED_FAILURES = [
 	},
 	{ issue: "SPEC-006", file: /page-selector\/page-nth\/page-nth\.spec\.js$/, test: /^should have bottom center text$/ },
 	{ issue: "SPEC-006", file: /page-selector\/page-spread\/page-spread\.spec\.js$/, test: /^should have bottom center text/ },
-	{ issue: "SPEC-007", file: /position-fixed\/position-fixed\.spec\.js$/, test: /^Page [2-5] should have a fixed sub-element/ },
 	{ issue: "TEST-011", file: /splits\/lists\/lists\.spec\.js$/, test: /^should give the first list item on page [12]/ },
 	{ issue: "TEST-011", file: /splits\/numbering\/numbering\.spec\.js$/, test: /.*/ },
 	{

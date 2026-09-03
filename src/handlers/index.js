@@ -1,5 +1,6 @@
 import { Fragmenter } from "fragmentainers";
 import { SourceFilters } from "./source-filters.js";
+import { NestedFixedPosition } from "./nested-fixed-position.js";
 import { Footnote } from "./footnote.js";
 import { PageCounter } from "./page-counter.js";
 import { NamedStrings } from "./named-strings.js";
@@ -16,6 +17,7 @@ import { TargetCounters } from "./target-counters.js";
  */
 export const pagedHandlers = [
 	SourceFilters,
+	NestedFixedPosition,
 	Footnote,
 	PageCounter,
 	NamedStrings,
@@ -38,6 +40,7 @@ for (const Handler of pagedHandlers) {
 
 export {
 	SourceFilters,
+	NestedFixedPosition,
 	Footnote,
 	PageCounter,
 	NamedStrings,

@@ -9,6 +9,7 @@ export { Fragmenter, LayoutHandler } from "fragmentainers";
 export {
 	pagedHandlers,
 	SourceFilters,
+	NestedFixedPosition,
 	Footnote,
 	PageCounter,
 	NamedStrings,

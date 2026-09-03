@@ -113,8 +113,8 @@ export class PagedPage extends LitElement {
       --paged-mark-color: black;
       --paged-auto-bleed: 0px;
       --paged-bleed: var(--paged-auto-bleed);
-      --paged-width: 210mm;
-      --paged-height: 297mm;
+      --paged-width: 8.5in;
+      --paged-height: 11in;
       --paged-margin-top: 0;
       --paged-margin-right: 0;
       --paged-margin-bottom: 0;

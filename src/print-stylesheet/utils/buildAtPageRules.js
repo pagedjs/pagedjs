@@ -1,8 +1,21 @@
 import { resolvePageSize } from "./pageSize.js";
 import { resolveBleed } from "./pageData.js";
 
+/**
+ * Build the physical `@page` rules consumed by browser printing.
+ *
+ * The leading rule fixes the target sheet to the same Letter fallback used by
+ * `PageResolver`; later author rules override it through the normal page
+ * cascade.
+ *
+ * @param {Array<Object>} pageData - Extracted author `@page` rules.
+ * @returns {string[]} Browser `@page` rules in cascade order.
+ */
 export function buildAtPageRules(pageData) {
-	const rules = [];
+	const [defaultWidth, defaultHeight] = resolvePageSize();
+	const rules = [
+		`@page { margin: 0; size: ${defaultWidth} ${defaultHeight}; }`,
+	];
 	for (const d of pageData) {
 		if (d.nth) continue;
 

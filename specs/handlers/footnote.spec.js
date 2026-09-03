@@ -232,6 +232,81 @@ test.describe("Footnotes in paged media (browser)", () => {
 		expect(result.text1).toContain("Second footnote");
 	});
 
+	test("renders footnote bodies with their corresponding call numbers", async ({ page }) => {
+		const result = await page.evaluate(async () => {
+			const { Fragmenter } = await import("fragmentainers");
+			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation");
+			await import("/src/handlers/index.js");
+
+			const sheet = new CSSStyleSheet();
+			sheet.replaceSync(".fn { --float: footnote; }");
+
+			const template = document.createElement("template");
+			template.innerHTML = `<p>
+          First<span class="fn">First body</span>
+          Second<span class="fn">Second body</span>
+        </p>`;
+
+			const layout = new Fragmenter(template.content, {
+				constraintSpace: new ConstraintSpace({
+					availableInlineSize: 400,
+					availableBlockSize: 400,
+					fragmentainerBlockSize: 400,
+					fragmentationType: FRAGMENTATION_PAGE,
+				}),
+				styles: [sheet],
+			});
+			const element = [...layout.flow()][0];
+			document.body.appendChild(element);
+
+			// Generated counter text is absent from DOM text APIs: unequal-width
+			// symbols make the rendered values observable through layout.
+			const measurementStyle = document.createElement("style");
+			measurementStyle.textContent = `
+        @counter-style measured-footnotes {
+          system: numeric;
+          symbols: "00000000" "I" "IIII";
+        }
+        [data-footnote-call]::after {
+          content: counter(footnote, measured-footnotes) !important;
+          vertical-align: baseline !important;
+          font: 16px monospace !important;
+        }
+        [data-footnote-marker] {
+          font: 16px monospace !important;
+        }
+        [data-footnote-marker]::marker {
+          content: counter(footnote, measured-footnotes) !important;
+          font: 16px monospace !important;
+        }
+      `;
+			document.head.appendChild(measurementStyle);
+
+			const callWidths = [...element.querySelectorAll("[data-footnote-call]")].map(
+				(call) => call.getBoundingClientRect().width,
+			);
+			const bodyMarkerOffsets = [
+				...element.querySelectorAll("[data-footnote-marker]"),
+			].map((body) => {
+				// Inside markers offset the body's first glyph by their rendered width.
+				const range = document.createRange();
+				range.setStart(body.firstChild, 0);
+				range.setEnd(body.firstChild, 1);
+				return range.getBoundingClientRect().left - body.getBoundingClientRect().left;
+			});
+
+			measurementStyle.remove();
+			element.remove();
+			layout.destroy();
+			return { callWidths, bodyMarkerOffsets };
+		});
+
+		expect(result.callWidths).toHaveLength(2);
+		expect(result.bodyMarkerOffsets).toHaveLength(2);
+		expect(result.bodyMarkerOffsets[0]).toBeCloseTo(result.callWidths[0], 3);
+		expect(result.bodyMarkerOffsets[1]).toBeCloseTo(result.callWidths[1], 3);
+	});
+
 	test("footnote reduces available content space causing page break", async ({ page }) => {
 		const result = await page.evaluate(async () => {
 			const { Fragmenter } = await import("fragmentainers");

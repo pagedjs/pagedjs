@@ -12,6 +12,7 @@ const CALL = "data-footnote-call";
 const MARKER = "data-footnote-marker";
 const AREA = "data-footnote-area";
 const DISPLAY_ATTRIBUTE = "data-footnote-display";
+const COUNTER_VALUE = "--paged-footnote-counter-value";
 
 const FOOTNOTE_STYLES = `
 [${CALL}] {
@@ -25,6 +26,7 @@ const FOOTNOTE_STYLES = `
 [${MARKER}] {
   display: list-item;
   list-style-position: inside;
+  counter-reset: footnote var(${COUNTER_VALUE});
 }
 [${MARKER}]::marker {
   content: counter(footnote) ". ";
@@ -281,6 +283,9 @@ export class Footnote extends LayoutHandler {
 				element.parentNode.insertBefore(call, element);
 
 				element.setAttribute("data-footnote-body", id);
+				// Relocated bodies: isolate the call-site value so their markers
+				// render the same number outside the call's counter scope.
+				element.style.setProperty(COUNTER_VALUE, counter);
 				element.remove();
 
 				this.#footnoteMap.set(id, {

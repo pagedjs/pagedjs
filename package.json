@@ -29,6 +29,7 @@
     "eslint": "^10.0.0",
     "express": "^5.2.0",
     "globals": "^17.0.0",
+    "pdfjs-dist": "^5.4.624",
     "serve": "^14.2.6",
     "to-match-pdf-snapshot": "^1.1.4",
     "vite": "^6.4.0"

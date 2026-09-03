@@ -36,3 +36,100 @@ test("adds the declared bleed to both edges of the sheet", async ({ page }) => {
 
 	expect(result).toEqual({ width: "110px", height: "210px" });
 });
+
+test("uses the auto bleed when crop marks are present", async ({ page }) => {
+	const result = await page.evaluate(async () => {
+		const { PagedPreview } = window.Paged;
+		const css = "@page { size: 100px 200px; margin: 0; marks: crop cross; } p { margin: 0; }";
+		const previewer = new PagedPreview();
+		await previewer.preview("<p>hello</p>", [{ css }], document.body);
+		const pagedPage = previewer.pages[0];
+		await pagedPage.updateComplete;
+		const styles = getComputedStyle(pagedPage);
+		const output = {
+			width: styles.width,
+			height: styles.height,
+			bleed: styles.getPropertyValue("--paged-bleed").trim(),
+			cropMarks: pagedPage.shadowRoot.querySelectorAll(".paged-crop").length,
+			crossMarks: pagedPage.shadowRoot.querySelectorAll(".paged-cross").length,
+			pageStyle: document.querySelector("style[data-pagedjs-ignore]")?.textContent,
+		};
+		previewer.destroy();
+		return output;
+	});
+
+	expect(result).toMatchObject({
+		width: "116px",
+		height: "216px",
+		bleed: "6pt",
+		cropMarks: 4,
+		crossMarks: 4,
+	});
+	expect(result.pageStyle).toContain(
+		"size: calc(6pt + 100px + 6pt) calc(6pt + 200px + 6pt)",
+	);
+});
+
+test("does not replace a cascaded explicit bleed with auto", async ({ page }) => {
+	const result = await page.evaluate(async () => {
+		const { PagedPreview } = window.Paged;
+		const css = `
+			@page { size: 100px 200px; margin: 0; bleed: 5px; }
+			@page :first { marks: crop cross; }
+			p { margin: 0; }
+		`;
+		const previewer = new PagedPreview();
+		await previewer.preview("<p>hello</p>", [{ css }], document.body);
+		const pagedPage = previewer.pages[0];
+		await pagedPage.updateComplete;
+		const styles = getComputedStyle(pagedPage);
+		const output = {
+			width: styles.width,
+			height: styles.height,
+			bleed: styles.getPropertyValue("--paged-bleed").trim(),
+			cropMarks: pagedPage.shadowRoot.querySelectorAll(".paged-crop").length,
+			crossMarks: pagedPage.shadowRoot.querySelectorAll(".paged-cross").length,
+		};
+		previewer.destroy();
+		return output;
+	});
+
+	expect(result).toEqual({
+		width: "110px",
+		height: "210px",
+		bleed: "5px",
+		cropMarks: 4,
+		crossMarks: 4,
+	});
+});
+
+test("resolves explicit auto against cascaded marks", async ({ page }) => {
+	const result = await page.evaluate(async () => {
+		const { PagedPreview } = window.Paged;
+		const css = `
+			@page { size: 100px 200px; margin: 0; marks: crop; }
+			@page :first { bleed: auto; }
+			p { margin: 0; }
+		`;
+		const previewer = new PagedPreview();
+		await previewer.preview("<p>hello</p>", [{ css }], document.body);
+		const pagedPage = previewer.pages[0];
+		await pagedPage.updateComplete;
+		const styles = getComputedStyle(pagedPage);
+		const output = {
+			width: styles.width,
+			height: styles.height,
+			bleed: styles.getPropertyValue("--paged-bleed").trim(),
+			cropMarks: pagedPage.shadowRoot.querySelectorAll(".paged-crop").length,
+		};
+		previewer.destroy();
+		return output;
+	});
+
+	expect(result).toEqual({
+		width: "116px",
+		height: "216px",
+		bleed: "6pt",
+		cropMarks: 4,
+	});
+});

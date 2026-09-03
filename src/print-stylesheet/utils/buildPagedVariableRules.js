@@ -1,5 +1,6 @@
 import { resolvePageSize } from "./pageSize.js";
 import { buildPagedSelector } from "./pagedSelector.js";
+import { resolveBleed } from "./pageData.js";
 
 /**
  * Project extracted `@page` data onto the `<paged-page>` elements it describes,
@@ -32,11 +33,18 @@ function buildDeclarations(page) {
 		// The sheet carries the bleed on both edges, so the element is wider and
 		// taller than the page box the author declared.
 		const [width, height] = resolvePageSize(page.size);
-		const bleed = page.bleed || "0px";
-		declarations.push(`--paged-width: calc(${bleed} + ${width} + ${bleed});`);
-		declarations.push(`--paged-height: calc(${bleed} + ${height} + ${bleed});`);
+		declarations.push(
+			`--paged-width: calc(var(--paged-bleed) + ${width} + var(--paged-bleed));`,
+		);
+		declarations.push(
+			`--paged-height: calc(var(--paged-bleed) + ${height} + var(--paged-bleed));`,
+		);
 	}
-	if (page.bleed) declarations.push(`--paged-bleed: ${page.bleed};`);
+	if (page.bleedAuto) {
+		declarations.push("--paged-bleed: var(--paged-auto-bleed);");
+	} else if (page.bleed) {
+		declarations.push(`--paged-bleed: ${page.bleed};`);
+	}
 	if (page.margin) {
 		if (page.margin.top)
 			declarations.push(`--paged-margin-top: ${page.margin.top};`);
@@ -67,7 +75,12 @@ function buildDeclarations(page) {
 			}
 		}
 	}
-	if (page.marks) declarations.push(`--paged-marks: ${page.marks};`);
+	if (page.marks) {
+		declarations.push(
+			`--paged-auto-bleed: ${resolveBleed("auto", page.marks)};`,
+		);
+		declarations.push(`--paged-marks: ${page.marks};`);
+	}
 	if (page.pageOrientation)
 		declarations.push(`--paged-page-orientation: ${page.pageOrientation};`);
 

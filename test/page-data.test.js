@@ -50,6 +50,20 @@ test.describe("@page data extraction", () => {
 		expect(results[2].actual, results[2].label).toBe(...results[2].args);
 	});
 
+	test("records explicit auto separately from an omitted bleed", async ({ page }) => {
+		const result = await page.evaluate(async () => {
+			const csstree = await import("css-tree");
+			const { extractPageData } = await import("/src/print-stylesheet/utils/pageData.js");
+			const pageData = (css) => extractPageData(csstree.parse(css).children.first);
+			return {
+				explicit: pageData("@page { bleed: auto; }").bleedAuto,
+				omitted: pageData("@page { marks: crop; }").bleedAuto,
+			};
+		});
+
+		expect(result).toEqual({ explicit: true, omitted: false });
+	});
+
 	test("falls back to the auto value for a length with no unit", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];

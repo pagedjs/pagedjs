@@ -54,6 +54,7 @@ export const MARGIN_BOXES = [
  * @cssprop --paged-width - Internal CSS width used for layout.
  * @cssprop --paged-height - Internal CSS height used for layout.
  * @cssprop --paged-bleed - Extra print bleed size.
+ * @cssprop --paged-auto-bleed - Used `auto` bleed selected by the page's marks.
  * @cssprop --paged-margin-top - Size of the top margin.
  * @cssprop --paged-margin-bottom - Size of the bottom margin.
  * @cssprop --paged-margin-left - Size of the left margin.
@@ -110,7 +111,8 @@ export class PagedPage extends LitElement {
 
     :host {
       --paged-mark-color: black;
-      --paged-bleed: 0mm;
+      --paged-auto-bleed: 0px;
+      --paged-bleed: var(--paged-auto-bleed);
       --paged-width: 210mm;
       --paged-height: 297mm;
       --paged-margin-top: 0;

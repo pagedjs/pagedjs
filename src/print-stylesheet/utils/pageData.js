@@ -69,6 +69,7 @@ export function collectAllPageData(ast) {
  * @property {Object<string, {width: string|null, style: string|null, color: string|null}>|null} border - Per-side border declarations, or null.
  * @property {string|null} pageOrientation - CSS `page-orientation` value ('rotate-left', 'rotate-right', 'upright'), or null.
  * @property {string|null} bleed - Used `bleed` length (see `resolveBleed`), or null.
+ * @property {boolean} bleedAuto - Whether `bleed` was explicitly declared as `auto`.
  * @property {string|null} marks - CSS `marks` value, or null.
  * @property {Object<string, MarginBoxDeclarations>|null} marginBoxes - Map of margin-box name to its declarations, or null.
  */
@@ -90,6 +91,7 @@ export function extractPageData(atruleNode) {
 		border: null,
 		pageOrientation: null,
 		bleed: null,
+		bleedAuto: false,
 		marks: null,
 		marginBoxes: null,
 	};
@@ -127,6 +129,7 @@ export function extractPageData(atruleNode) {
 				break;
 			case "bleed":
 				out.bleed = value;
+				out.bleedAuto = value.trim().toLowerCase() === "auto";
 				break;
 			case "marks":
 				out.marks = value;

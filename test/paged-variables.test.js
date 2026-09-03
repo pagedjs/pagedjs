@@ -18,11 +18,46 @@ test.describe("buildPagedVariableRules", () => {
 				},
 			]);
 			__results.push({ actual: rules, args: [[
-				"paged-page:state(blank) { --paged-bleed: 3mm; --paged-marks: crop cross; }",
+				"paged-page:state(blank) { --paged-bleed: 3mm; --paged-auto-bleed: 6pt; --paged-marks: crop cross; }",
 			]], label: undefined });
 			return __results;
 		});
 		expect(results[0].actual, results[0].label).toEqual(...results[0].args);
+	});
+
+	test("derives auto bleed from cascaded crop marks", async ({ page }) => {
+		const result = await page.evaluate(async () => {
+			const { buildPagedVariableRules } = await import("/src/print-stylesheet/utils/buildPagedVariableRules.js");
+			return buildPagedVariableRules([
+				{
+					name: null,
+					pseudo: [],
+					nth: null,
+					size: "100px 200px",
+					bleed: null,
+					bleedAuto: false,
+					marks: "crop cross",
+					margin: null,
+					pageOrientation: null,
+				},
+				{
+					name: null,
+					pseudo: ["first"],
+					nth: null,
+					size: null,
+					bleed: "0px",
+					bleedAuto: true,
+					marks: null,
+					margin: null,
+					pageOrientation: null,
+				},
+			]);
+		});
+
+		expect(result).toEqual([
+			"paged-page { --paged-width: calc(var(--paged-bleed) + 100px + var(--paged-bleed)); --paged-height: calc(var(--paged-bleed) + 200px + var(--paged-bleed)); --paged-auto-bleed: 6pt; --paged-marks: crop cross; }",
+			"paged-page:state(first) { --paged-bleed: var(--paged-auto-bleed); }",
+		]);
 	});
 
 	test("emits padding and border variables for the matching page selector", async ({ page }) => {

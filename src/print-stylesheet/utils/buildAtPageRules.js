@@ -1,4 +1,5 @@
 import { resolvePageSize } from "./pageSize.js";
+import { resolveBleed } from "./pageData.js";
 
 export function buildAtPageRules(pageData) {
 	const rules = [];
@@ -8,7 +9,7 @@ export function buildAtPageRules(pageData) {
 		const decls = ["margin: 0"];
 		if (d.size) {
 			const [w, h] = resolvePageSize(d.size);
-			const bleed = d.bleed || "0px";
+			const bleed = d.bleed || resolveBleed("auto", d.marks);
 			decls.push(
 				`size: calc(${bleed} + ${w} + ${bleed}) calc(${bleed} + ${h} + ${bleed})`,
 			);

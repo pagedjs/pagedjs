@@ -31,6 +31,25 @@ test.describe("@page data extraction", () => {
 		expect(results[0].actual, results[0].label).toBe(...results[0].args);
 	});
 
+	test("expands the legacy bleed shorthand into sides", async ({ page }) => {
+		const result = await page.evaluate(async () => {
+			const { expandBleed } = await import("/src/print-stylesheet/utils/pageData.js");
+			return {
+				one: expandBleed("1mm"),
+				two: expandBleed("1mm 2mm"),
+				three: expandBleed("1mm 2mm 3mm"),
+				four: expandBleed("1mm 2mm 3mm 4mm"),
+			};
+		});
+
+		expect(result).toEqual({
+			one: { top: "1mm", right: "1mm", bottom: "1mm", left: "1mm" },
+			two: { top: "1mm", right: "2mm", bottom: "1mm", left: "2mm" },
+			three: { top: "1mm", right: "2mm", bottom: "3mm", left: "2mm" },
+			four: { top: "1mm", right: "2mm", bottom: "3mm", left: "4mm" },
+		});
+	});
+
 	test("resolves auto against the marks in the same rule", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];

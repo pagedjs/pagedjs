@@ -1,6 +1,6 @@
 import { resolvePageSize } from "./pageSize.js";
 import { buildPagedSelector } from "./pagedSelector.js";
-import { resolveBleed } from "./pageData.js";
+import { expandBleed, resolveBleed } from "./pageData.js";
 
 /**
  * Project extracted `@page` data onto the `<paged-page>` elements it describes,
@@ -30,20 +30,27 @@ function buildDeclarations(page) {
 		declarations.push(`page: ${page.name};`);
 	}
 	if (page.size) {
-		// The sheet carries the bleed on both edges, so the element is wider and
-		// taller than the page box the author declared.
+		// Sheet geometry: asymmetric legacy bleed expands the corresponding edge.
 		const [width, height] = resolvePageSize(page.size);
 		declarations.push(
-			`--paged-width: calc(var(--paged-bleed) + ${width} + var(--paged-bleed));`,
+			`--paged-width: calc(var(--paged-bleed-left) + ${width} + var(--paged-bleed-right));`,
 		);
 		declarations.push(
-			`--paged-height: calc(var(--paged-bleed) + ${height} + var(--paged-bleed));`,
+			`--paged-height: calc(var(--paged-bleed-top) + ${height} + var(--paged-bleed-bottom));`,
 		);
 	}
+	let bleed = null;
 	if (page.bleedAuto) {
-		declarations.push("--paged-bleed: var(--paged-auto-bleed);");
+		bleed = "var(--paged-auto-bleed)";
 	} else if (page.bleed) {
-		declarations.push(`--paged-bleed: ${page.bleed};`);
+		bleed = page.bleed;
+	}
+	if (bleed) {
+		const sides = expandBleed(bleed);
+		declarations.push(`--paged-bleed: ${bleed};`);
+		for (const side of ["top", "right", "bottom", "left"]) {
+			declarations.push(`--paged-bleed-${side}: ${sides[side]};`);
+		}
 	}
 	if (page.margin) {
 		if (page.margin.top)

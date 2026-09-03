@@ -1,5 +1,6 @@
 import { LitElement, html, css, unsafeCSS } from "lit";
 import { cross } from "../utils/assets.js";
+import { expandBleed } from "../../print-stylesheet/utils/pageData.js";
 // The default `<paged-margins>` is fallback content of this component's
 // `margins` slot, so the element has to be defined for the page to own boxes.
 import "../PagedMargins/PagedMargins.js";
@@ -53,7 +54,11 @@ export const MARGIN_BOXES = [
  *
  * @cssprop --paged-width - Internal CSS width used for layout.
  * @cssprop --paged-height - Internal CSS height used for layout.
- * @cssprop --paged-bleed - Extra print bleed size.
+ * @cssprop --paged-bleed - Extra print bleed shorthand.
+ * @cssprop --paged-bleed-top - Extra print bleed above the page box.
+ * @cssprop --paged-bleed-right - Extra print bleed to the right of the page box.
+ * @cssprop --paged-bleed-bottom - Extra print bleed below the page box.
+ * @cssprop --paged-bleed-left - Extra print bleed to the left of the page box.
  * @cssprop --paged-auto-bleed - Used `auto` bleed selected by the page's marks.
  * @cssprop --paged-margin-top - Size of the top margin.
  * @cssprop --paged-margin-bottom - Size of the bottom margin.
@@ -113,6 +118,10 @@ export class PagedPage extends LitElement {
       --paged-mark-color: black;
       --paged-auto-bleed: 0px;
       --paged-bleed: var(--paged-auto-bleed);
+      --paged-bleed-top: var(--paged-bleed);
+      --paged-bleed-right: var(--paged-bleed);
+      --paged-bleed-bottom: var(--paged-bleed);
+      --paged-bleed-left: var(--paged-bleed);
       --paged-width: 8.5in;
       --paged-height: 11in;
       --paged-margin-top: 0;
@@ -162,19 +171,19 @@ export class PagedPage extends LitElement {
       padding: 0;
 
       grid-template-rows:
-        [bleed-top-start] var(--paged-bleed)
+        [bleed-top-start] var(--paged-bleed-top)
         [bleed-top-end margin-top-start] var(--paged-margin-top)
         [margin-top-end page-area-start] minmax(1px, 1fr)
         [page-area-end margin-bottom-start] var(--paged-margin-bottom)
-        [margin-bottom-end bleed-bottom-start] var(--paged-bleed)
+        [margin-bottom-end bleed-bottom-start] var(--paged-bleed-bottom)
         [bleed-bottom-end];
 
       grid-template-columns:
-        [bleed-left-start] var(--paged-bleed)
+        [bleed-left-start] var(--paged-bleed-left)
         [bleed-left-end margin-left-start] var(--paged-margin-left)
         [margin-left-end page-area-start] 1fr
         [page-area-end margin-right-start] var(--paged-margin-right)
-        [margin-right-end bleed-right-start] var(--paged-bleed)
+        [margin-right-end bleed-right-start] var(--paged-bleed-right)
         [bleed-right-end];
     }
 
@@ -378,6 +387,7 @@ export class PagedPage extends LitElement {
 	 */
 	#injectPageStyles() {
 		let marginsBlock;
+		const bleed = expandBleed(this.bleed) ?? expandBleed("0mm");
 
 		// add support for margins from the component?
 		if (!this.margin || (this.margin && !CSS.supports("margin", this.margin))) {
@@ -397,16 +407,20 @@ export class PagedPage extends LitElement {
 		sheet.replaceSync(`
       @page ${this.name} {
          margin: 0;
-         size: calc(var(--paged-bleed, 0mm) + ${this.width} + var(--paged-bleed, 0mm))
-               calc(var(--paged-bleed, 0mm) + ${this.height} + var(--paged-bleed, 0mm));
+         size: calc(${bleed.left} + ${this.width} + ${bleed.right})
+               calc(${bleed.top} + ${this.height} + ${bleed.bottom});
       }
       
  
       [name="${this.name}"] {
         page: ${this.name};
         --paged-bleed: ${this.bleed};
-        --paged-width: calc(var(--paged-bleed, 0mm) + ${this.width} + var(--paged-bleed, 0mm));
-        --paged-height: calc(var(--paged-bleed, 0mm) + ${this.height} + var(--paged-bleed, 0mm));
+        --paged-bleed-top: ${bleed.top};
+        --paged-bleed-right: ${bleed.right};
+        --paged-bleed-bottom: ${bleed.bottom};
+        --paged-bleed-left: ${bleed.left};
+        --paged-width: calc(${bleed.left} + ${this.width} + ${bleed.right});
+        --paged-height: calc(${bleed.top} + ${this.height} + ${bleed.bottom});
         ${marginsBlock}
       }
     `);

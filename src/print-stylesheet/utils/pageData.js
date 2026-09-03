@@ -230,6 +230,27 @@ export function resolveBleed(value, marks) {
 }
 
 /**
+ * Expand Paged.js's legacy one-to-four-value `bleed` extension into sides.
+ *
+ * CSS Paged Media defines one value, but the legacy engine accepted the CSS
+ * box shorthand shape and existing documents use it for asymmetric sheets.
+ *
+ * @param {string|null} value - Resolved bleed value.
+ * @returns {{top: string, right: string, bottom: string, left: string}|null} Per-side bleed values.
+ */
+export function expandBleed(value) {
+	if (value == null) return null;
+	const lengths = value.trim().split(/\s+/);
+	if (lengths.length === 0 || !lengths[0]) return null;
+
+	const [top, right = top, bottom = top, left = right] = lengths;
+	if (lengths.length === 2) {
+		return { top, right, bottom: top, left: right };
+	}
+	return { top, right, bottom, left };
+}
+
+/**
  * @param {import("css-tree").AtrulePrelude|null} prelude
  * @returns {{ name: string|null, pseudo: string[], nth: PageNth|null }}
  */

@@ -26,6 +26,7 @@ async function render(page, css) {
 
 			const area = previewer.querySelector("[data-footnote-area]");
 			const call = previewer.querySelector("[data-footnote-call]");
+			const body = area?.querySelector("[data-footnote-marker]") ?? null;
 			const areaStyle = area && getComputedStyle(area);
 			const callStyle = call && getComputedStyle(call, "::after");
 			const result = {
@@ -41,6 +42,8 @@ async function render(page, css) {
 				paddingTop: areaStyle ? areaStyle.paddingTop : "",
 				areaText: area ? area.textContent : "",
 				callColor: callStyle ? callStyle.color : "",
+				bodyDisplay: body ? getComputedStyle(body).display : "",
+				footnoteDisplay: body?.getAttribute("data-footnote-display") ?? "",
 			};
 			previewer.destroy();
 			return result;
@@ -62,6 +65,15 @@ test.describe("author footnote CSS through the preview pipeline", () => {
 	test("::footnote-call styles the generated call marker", async ({ page }) => {
 		const result = await render(page, CSS);
 		expect(result.callColor).toBe("rgb(220, 20, 60)");
+	});
+
+	test("footnote-display controls the rendered body", async ({ page }) => {
+		const result = await render(
+			page,
+			CSS.replace("float: footnote;", "float: footnote; footnote-display: inline;"),
+		);
+		expect(result.bodyDisplay).toContain("inline");
+		expect(result.footnoteDisplay).toBe("inline");
 	});
 
 	test("the @footnotes spelling is accepted as an alias", async ({ page }) => {

@@ -128,6 +128,7 @@ than a running number. `--paged-mark-color` is not an annotation but a
 
 Custom properties the rewrite introduces so a browser will keep a value it would
 otherwise discard: `--float` (`float: footnote`), `--footnote-policy`,
+`--footnote-display`,
 `--string-set` (`string-set`), `--page-position` (`position: running()`), and
 `--paged-generated-<id>-source`, which carries the original function tokens
 through the sheet so the handler rediscovers its own occurrences without sharing
@@ -152,12 +153,15 @@ describes the released library. This engine is ahead of it in six places:
 
 | Feature | pagedjs.org | Here |
 | --- | --- | --- |
-| Footnotes | not supported | `float: footnote`, `@footnote`, `::footnote-call`, `::footnote-marker`, `footnote-policy` |
+| Footnotes | not supported | `float: footnote`, `@footnote`, `::footnote-call`, `::footnote-marker`, `footnote-policy`, `footnote-display` |
 | `target-counters()` | not supported | implemented, with separator and counter style |
 | `target-counter(…, page)` | partial | implemented, resolved through `locate()` |
 | `attr()` in `string-set` | not supported | implemented |
 | `string()` modes | `first-except` only | all four of `first`, `start`, `last`, `first-except` |
 | `element()` modes | not supported | all four |
+
+`footnote-display: compact` uses block layout as the engine's user-agent
+selection; explicit `block` and `inline` values use their corresponding layout.
 
 It matches the published matrix on what is still missing: `content(before)`,
 `content(after)` and `content(first-letter)` in `string-set`, leaders, and PDF

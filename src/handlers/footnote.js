@@ -7,9 +7,11 @@ import { parseNumeric, toPx } from "fragmentainers/styles";
 // The vocabulary the CSS rewrite and the runtime have to agree on.
 const FLOAT = "--float";
 const POLICY = "--footnote-policy";
+const DISPLAY = "--footnote-display";
 const CALL = "data-footnote-call";
 const MARKER = "data-footnote-marker";
 const AREA = "data-footnote-area";
+const DISPLAY_ATTRIBUTE = "data-footnote-display";
 
 const FOOTNOTE_STYLES = `
 [${CALL}] {
@@ -54,6 +56,11 @@ const footnoteRules = [
 		type: "declaration",
 		match: ({ property }) => property === "footnote-policy",
 		transform: () => ({ property: POLICY }),
+	},
+	{
+		type: "declaration",
+		match: ({ property }) => property === "footnote-display",
+		transform: () => ({ property: DISPLAY }),
 	},
 	{
 		// css-gcpm-3 names the at-rule `@footnote`; `@footnotes` is a
@@ -146,6 +153,20 @@ function readFootnotePolicy(bodyElement) {
 	return "auto";
 }
 
+function readFootnoteDisplay(bodyElement) {
+	const raw = getComputedStyle(bodyElement)
+		.getPropertyValue(DISPLAY)
+		.trim()
+		.toLowerCase();
+	if (raw === "inline" || raw === "compact") return raw;
+	return "block";
+}
+
+function usedFootnoteDisplay(display) {
+	// css-gcpm-3 §2.3: compact is user-agent selected; this engine selects block.
+	return display === "inline" ? "inline" : "block";
+}
+
 /**
  * Layout handler for CSS footnotes (css-gcpm-3 §2).
  *
@@ -165,6 +186,10 @@ function readFootnotePolicy(bodyElement) {
  * - `line` / `block`: body is marked `break-inside: avoid`; if it doesn't
  *   fit, the flow rejects it and the coordinator pushes the call's
  *   containing block to the next page.
+ *
+ * `--footnote-display` (per body) preserves the unsupported CSS property:
+ * `inline` bodies participate inline in the footnote area; `block` and the
+ * user-agent-selected `compact` fallback use block layout.
  */
 export class Footnote extends LayoutHandler {
 	static rules = footnoteRules;
@@ -259,6 +284,7 @@ export class Footnote extends LayoutHandler {
 					bodyElement: element,
 					bodyNode: null,
 					policy: "auto",
+					display: "block",
 				});
 			}
 		}
@@ -374,11 +400,21 @@ export class Footnote extends LayoutHandler {
 		this.#measurer = measurer;
 	}
 
-	// Reads only: readFootnotePolicy resolves computed style, which needs the
-	// style recalc the preceding reflow flushed.
+	// Read all effective values before the display writes so one footnote does
+	// not force style recalculation before the next footnote's read.
 	#resolveBodies() {
 		for (const entry of this.#footnoteMap.values()) {
 			entry.policy = readFootnotePolicy(entry.bodyElement);
+			entry.display = readFootnoteDisplay(entry.bodyElement);
+		}
+		for (const entry of this.#footnoteMap.values()) {
+			entry.bodyElement.setAttribute(DISPLAY_ATTRIBUTE, entry.display);
+			entry.bodyElement.style.setProperty(
+				"display",
+				usedFootnoteDisplay(entry.display),
+			);
+		}
+		for (const entry of this.#footnoteMap.values()) {
 			entry.bodyNode = new DOMLayoutNode(entry.bodyElement);
 			entry.bodyNode.context = this.#context;
 			if (entry.policy === "line" || entry.policy === "block") {
@@ -408,12 +444,16 @@ function decorateForFootnoteArea(root) {
 	while (node) {
 		if (node.hasAttribute("data-footnote-body")) {
 			const isContinuation = node.hasAttribute("data-split-from");
+			const display = node.getAttribute(DISPLAY_ATTRIBUTE);
 			node.removeAttribute("data-footnote-body");
 			node.setAttribute(
 				isContinuation ? "data-footnote-continuation" : MARKER,
 				"",
 			);
-			node.style.setProperty("display", "block");
+			node.style.setProperty(
+				"display",
+				display === "inline" ? "inline list-item" : "list-item",
+			);
 		}
 		node = walker.nextNode();
 	}

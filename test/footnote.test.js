@@ -4,10 +4,8 @@ test.describe("footnotes", () => {
 	test("attaches the bodies when the engine applies a constraint space", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
 			await import("fragmentainers");
 			const { ConstraintSpace } = await import("fragmentainers/fragmentation.js");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { Footnote } = await import("/src/handlers/footnote.js");
 			const FOOTNOTE_CSS = ".note { --float: footnote; display: none }";
 			function sheet(css) {
@@ -84,10 +82,8 @@ test.describe("footnotes", () => {
 	test("sizes the bodies with the space's CSS inline size rather than a resolved length", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
 			await import("fragmentainers");
 			const { ConstraintSpace } = await import("fragmentainers/fragmentation.js");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { Footnote } = await import("/src/handlers/footnote.js");
 			const FOOTNOTE_CSS = ".note { --float: footnote; display: none }";
 			function sheet(css) {
@@ -155,10 +151,8 @@ test.describe("footnotes", () => {
 	test("follows the inline size from fragmentainer to fragmentainer", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
 			await import("fragmentainers");
 			const { ConstraintSpace } = await import("fragmentainers/fragmentation.js");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { Footnote } = await import("/src/handlers/footnote.js");
 			const FOOTNOTE_CSS = ".note { --float: footnote; display: none }";
 			function sheet(css) {
@@ -231,10 +225,8 @@ test.describe("footnotes", () => {
 	test("attaches nothing for a document without footnotes", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
 			await import("fragmentainers");
 			const { ConstraintSpace } = await import("fragmentainers/fragmentation.js");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { Footnote } = await import("/src/handlers/footnote.js");
 			const FOOTNOTE_CSS = ".note { --float: footnote; display: none }";
 			function sheet(css) {
@@ -299,10 +291,8 @@ test.describe("footnotes", () => {
 	test("resolves policy and layout nodes in afterMeasurementSetup", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
 			await import("fragmentainers");
 			const { ConstraintSpace } = await import("fragmentainers/fragmentation.js");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { Footnote } = await import("/src/handlers/footnote.js");
 			const FOOTNOTE_CSS = ".note { --float: footnote; display: none }";
 			function sheet(css) {
@@ -376,10 +366,8 @@ test.describe("footnotes", () => {
 	test("preserves footnote-display and applies its used display mode", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
 			await import("fragmentainers");
 			const { ConstraintSpace } = await import("fragmentainers/fragmentation.js");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { Footnote } = await import("/src/handlers/footnote.js");
 			const FOOTNOTE_CSS = ".note { --float: footnote; display: none }";
 			function sheet(css) {
@@ -467,10 +455,9 @@ test.describe("footnotes", () => {
 	test("rewrites footnote-display to a custom property", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
 			await import("fragmentainers");
 			await import("fragmentainers/fragmentation.js");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { Footnote } = await import("/src/handlers/footnote.js");
 			function cleanup() {
 				for (const measurer of document.querySelectorAll("content-measure")) measurer.remove();
@@ -484,7 +471,7 @@ test.describe("footnotes", () => {
 				const ast = await transformer.prepare(
 					".note { float: footnote; footnote-display: inline; }",
 				);
-				__results.push({ actual: csstree.generate(transformer.apply(ast)), args: [".note{--float:footnote;display:none;--footnote-display:inline}"], label: undefined });
+				__results.push({ actual: transformer.generate(transformer.apply(ast)), args: [".note{--float:footnote;display:none;--footnote-display:inline}"], label: undefined });
 			} finally {
 				cleanup();
 			}
@@ -496,10 +483,8 @@ test.describe("footnotes", () => {
 	test("inserts no measurement container while a fragmentainer is laid out", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
 			const { Fragmenter } = await import("fragmentainers");
 			await import("fragmentainers/fragmentation.js");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { Footnote } = await import("/src/handlers/footnote.js");
 			const FOOTNOTE_CSS = ".note { --float: footnote; display: none }";
 			function sheet(css) {
@@ -553,10 +538,8 @@ test.describe("footnotes", () => {
 	test("composes inline footnotes as inline list items", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
 			const { Fragmenter } = await import("fragmentainers");
 			await import("fragmentainers/fragmentation.js");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { Footnote } = await import("/src/handlers/footnote.js");
 			const FOOTNOTE_CSS = ".note { --float: footnote; display: none }";
 			function sheet(css) {

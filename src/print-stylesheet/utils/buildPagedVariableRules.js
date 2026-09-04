@@ -1,6 +1,6 @@
 import { resolvePageSize } from "./pageSize.js";
 import { buildPagedSelector } from "./pagedSelector.js";
-import { expandBleed, resolveBleed } from "./pageData.js";
+import { expandBleed, resolveBleed } from "./bleed.js";
 
 /**
  * Project extracted `@page` data onto the `<paged-page>` elements it describes,

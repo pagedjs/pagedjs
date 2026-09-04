@@ -4,12 +4,11 @@ test.describe("running elements", () => {
 	test("renames position: running() into a custom property", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { RunningElements } = await import("/src/handlers/running-elements.js");
 			async function rewrite(css) {
 				const transformer = new CssTransformer({ rules: RunningElements.rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			__results.push({ actual: await rewrite(".header { position: running(head) }"), args: [".header{--page-position:running(head)}"], label: undefined });
 			return __results;
@@ -20,12 +19,11 @@ test.describe("running elements", () => {
 	test("does not hide the running element in CSS", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { RunningElements } = await import("/src/handlers/running-elements.js");
 			async function rewrite(css) {
 				const transformer = new CssTransformer({ rules: RunningElements.rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			__results.push({ actual: await rewrite(".header { position: running(head) }"), args: ["display"], label: undefined });
 			return __results;
@@ -36,12 +34,11 @@ test.describe("running elements", () => {
 	test("splits element() into empty content and a named request", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { RunningElements } = await import("/src/handlers/running-elements.js");
 			async function rewrite(css) {
 				const transformer = new CssTransformer({ rules: RunningElements.rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			__results.push({ actual: await rewrite(".box::before { content: element(head) }"), args: [".box::before{content:\"\";--paged-running-element:head first}"], label: undefined });
 			return __results;
@@ -52,12 +49,11 @@ test.describe("running elements", () => {
 	test("keeps the requested selection mode", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { RunningElements } = await import("/src/handlers/running-elements.js");
 			async function rewrite(css) {
 				const transformer = new CssTransformer({ rules: RunningElements.rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			__results.push({ actual: await rewrite(".box::before { content: element(head, last) }"), args: ["--paged-running-element:head last"], label: undefined });
 			return __results;
@@ -68,12 +64,11 @@ test.describe("running elements", () => {
 	test("falls back to first for a mode that is not a selection mode", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { RunningElements } = await import("/src/handlers/running-elements.js");
 			async function rewrite(css) {
 				const transformer = new CssTransformer({ rules: RunningElements.rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			__results.push({ actual: await rewrite(".box::before { content: element(head, sideways) }"), args: ["--paged-running-element:head first"], label: undefined });
 			return __results;
@@ -84,12 +79,11 @@ test.describe("running elements", () => {
 	test("leaves a reference that is not a valid name alone", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { RunningElements } = await import("/src/handlers/running-elements.js");
 			async function rewrite(css) {
 				const transformer = new CssTransformer({ rules: RunningElements.rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			__results.push({ actual: await rewrite(".box::before { content: element(page title) }"), args: [".box::before{content:element(page title)}"], label: undefined });
 			return __results;
@@ -100,8 +94,6 @@ test.describe("running elements", () => {
 	test("takes the element out of the flow and leaves a box of no size", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { RunningElements } = await import("/src/handlers/running-elements.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -145,8 +137,6 @@ test.describe("running elements", () => {
 	test("swaps nothing more on a second preparation", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { RunningElements } = await import("/src/handlers/running-elements.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -180,8 +170,6 @@ test.describe("running elements", () => {
 	test("publishes the retained element, not the placeholder", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { RunningElements } = await import("/src/handlers/running-elements.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -228,8 +216,6 @@ test.describe("running elements", () => {
 	test("resolves the four modes from one page's occurrences", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { RunningElements } = await import("/src/handlers/running-elements.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -281,8 +267,6 @@ test.describe("running elements", () => {
 	test("takes start from the occurrence that opens the page", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { RunningElements } = await import("/src/handlers/running-elements.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -327,8 +311,6 @@ test.describe("running elements", () => {
 	test("carries the element forward across a page with no occurrence", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { RunningElements } = await import("/src/handlers/running-elements.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -382,8 +364,6 @@ test.describe("running elements", () => {
 	test("leaves a page before the first occurrence with nothing to project", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { RunningElements } = await import("/src/handlers/running-elements.js");
 			function setup(css, html) {
 				const style = document.createElement("style");

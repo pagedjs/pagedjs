@@ -4,12 +4,11 @@ test.describe("target counters", () => {
 	test("rewrites the singular form to a counter the browser formats", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			async function rewrite(css, rules = TargetCounters.rules) {
 				const transformer = new CssTransformer({ rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			__results.push({ actual: await rewrite("a::after { content: target-counter(attr(href), page) }"), args: ["a::after{content:counter(--paged-tc-0);"
 							+ "--paged-generated-tc-0-source:\"target-counter(attr(href),page)\"}"], label: undefined });
@@ -21,12 +20,11 @@ test.describe("target counters", () => {
 	test("carries the counter style into the rewritten counter()", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			async function rewrite(css, rules = TargetCounters.rules) {
 				const transformer = new CssTransformer({ rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			__results.push({ actual: await rewrite("a::after { content: target-counter(attr(href), page, lower-roman) }"), args: ["content:counter(--paged-tc-0,lower-roman)"], label: undefined });
 			return __results;
@@ -37,12 +35,11 @@ test.describe("target counters", () => {
 	test("rewrites the plural form to a variable JavaScript fills in", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			async function rewrite(css, rules = TargetCounters.rules) {
 				const transformer = new CssTransformer({ rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			__results.push({ actual: await rewrite("a::after { content: target-counters(attr(href), sub, \".\") }"), args: ["a::after{content:var(--paged-generated-tcs-0, \"\");"
 							+ "--paged-generated-tcs-0-source:\"target-counters(attr(href),sub,\\\".\\\")\"}"], label: undefined });
@@ -54,12 +51,11 @@ test.describe("target counters", () => {
 	test("numbers the two forms in separate id spaces", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			async function rewrite(css, rules = TargetCounters.rules) {
 				const transformer = new CssTransformer({ rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			const out = await rewrite(
 				"a::after { content: target-counter(attr(href), page) }"
@@ -79,12 +75,11 @@ test.describe("target counters", () => {
 	test("restarts occurrence ids for every stylesheet build", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			async function rewrite(css, rules = TargetCounters.rules) {
 				const transformer = new CssTransformer({ rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			const css = "a::after { content: target-counter(attr(href), page) }";
 			__results.push({ actual: await rewrite(css, TargetCounters.rules), args: [await rewrite(css, TargetCounters.rules)], label: undefined });
@@ -96,12 +91,11 @@ test.describe("target counters", () => {
 	test("keeps a typed attr source readable through browser CSSOM", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			async function rewrite(css, rules = TargetCounters.rules) {
 				const transformer = new CssTransformer({ rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			const style = document.createElement("style");
 			style.textContent = await rewrite(
@@ -119,12 +113,11 @@ test.describe("target counters", () => {
 	test("leaves target-counter outside a content declaration alone", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			async function rewrite(css, rules = TargetCounters.rules) {
 				const transformer = new CssTransformer({ rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			__results.push({ actual: await rewrite("a::after { width: target-counter(attr(href), page) }"), args: ["a::after{width:target-counter(attr(href),page)}"], label: undefined });
 			return __results;
@@ -135,8 +128,6 @@ test.describe("target counters", () => {
 	test("resets the generated counter to the target's page", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			function setup(css, html, { pages = [] } = {}) {
 				const style = document.createElement("style");
@@ -191,8 +182,6 @@ test.describe("target counters", () => {
 	test("reads a url() target and a bare string target", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			function setup(css, html, { pages = [] } = {}) {
 				const style = document.createElement("style");
@@ -250,8 +239,6 @@ test.describe("target counters", () => {
 	test("reads a non-page counter from the source tree, needing no page context", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			function setup(css, html, { pages = [] } = {}) {
 				const style = document.createElement("style");
@@ -307,8 +294,6 @@ test.describe("target counters", () => {
 	test("counts the target's own increment, not the value before it", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			function setup(css, html, { pages = [] } = {}) {
 				const style = document.createElement("style");
@@ -363,8 +348,6 @@ test.describe("target counters", () => {
 	test("joins a nested counter stack for the plural form", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			function setup(css, html, { pages = [] } = {}) {
 				const style = document.createElement("style");
@@ -422,8 +405,6 @@ test.describe("target counters", () => {
 	test("joins the page of a target for the plural form", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			function setup(css, html, { pages = [] } = {}) {
 				const style = document.createElement("style");
@@ -480,8 +461,6 @@ test.describe("target counters", () => {
 	test("replaces a sibling's counter instance rather than nesting inside it", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			function setup(css, html, { pages = [] } = {}) {
 				const style = document.createElement("style");
@@ -539,8 +518,6 @@ test.describe("target counters", () => {
 	test("formats a joined stack with a predefined counter style", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			function setup(css, html, { pages = [] } = {}) {
 				const style = document.createElement("style");
@@ -598,8 +575,6 @@ test.describe("target counters", () => {
 	test("keeps the element's own counter-reset alongside the generated one", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			function setup(css, html, { pages = [] } = {}) {
 				const style = document.createElement("style");
@@ -655,8 +630,6 @@ test.describe("target counters", () => {
 	test("merges several occurrences on one element into a single reset", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			function setup(css, html, { pages = [] } = {}) {
 				const style = document.createElement("style");
@@ -713,8 +686,6 @@ test.describe("target counters", () => {
 	test("ignores an element that generates no box", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			function setup(css, html, { pages = [] } = {}) {
 				const style = document.createElement("style");
@@ -770,8 +741,6 @@ test.describe("target counters", () => {
 	test("invalidates only on the pass that changes a value, then settles", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			function setup(css, html, { pages = [] } = {}) {
 				const style = document.createElement("style");
@@ -828,8 +797,6 @@ test.describe("target counters", () => {
 	test("registers one layout pass budget however many occurrences there are", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			function setup(css, html, { pages = [] } = {}) {
 				const style = document.createElement("style");
@@ -883,8 +850,6 @@ test.describe("target counters", () => {
 	test("resolves a page target that never paginated to zero", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			function setup(css, html, { pages = [] } = {}) {
 				const style = document.createElement("style");
@@ -942,8 +907,6 @@ test.describe("target counters", () => {
 		});
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			function setup(css, html, { pages = [] } = {}) {
 				const style = document.createElement("style");
@@ -1005,8 +968,6 @@ test.describe("target counters", () => {
 		});
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			function setup(css, html, { pages = [] } = {}) {
 				const style = document.createElement("style");
@@ -1068,8 +1029,6 @@ test.describe("target counters", () => {
 		});
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetCounters } = await import("/src/handlers/target-counters.js");
 			function setup(css, html, { pages = [] } = {}) {
 				const style = document.createElement("style");

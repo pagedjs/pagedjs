@@ -1,6 +1,6 @@
 import { LitElement, html, css, unsafeCSS } from "lit";
 import { cross } from "../utils/assets.js";
-import { expandBleed } from "../../print-stylesheet/utils/pageData.js";
+import { expandBleed } from "../../print-stylesheet/utils/bleed.js";
 // The default `<paged-margins>` is fallback content of this component's
 // `margins` slot, so the element has to be defined for the page to own boxes.
 import "../PagedMargins/PagedMargins.js";

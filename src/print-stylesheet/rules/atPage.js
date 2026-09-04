@@ -1,4 +1,3 @@
-import * as csstree from "css-tree";
 import { extractPagePrelude } from "../utils/pageData.js";
 import { buildPagedSelector } from "../utils/pagedSelector.js";
 
@@ -61,9 +60,9 @@ const PAGE_ONLY_DECLARATIONS = new Set([
 ]);
 
 const MARGIN_VERTICAL_POSITIONS = new Map([
-	["top", "0%"],
-	["middle", "50%"],
-	["bottom", "100%"],
+	["top", "0"],
+	["middle", "50"],
+	["bottom", "100"],
 ]);
 
 /**
@@ -86,12 +85,13 @@ function projectMarginDeclarations(block) {
 
 		// CSS Page 3 §6: margin-box vertical alignment is always physical, even
 		// when the page or its generated content uses a vertical writing mode.
-		const value = csstree.generate(node.value).toLowerCase();
-		const position = MARGIN_VERTICAL_POSITIONS.get(value);
+		const children = node.value.children;
+		if (children?.size !== 1 || children.first.type !== "Identifier") return;
+		const position = MARGIN_VERTICAL_POSITIONS.get(children.first.name.toLowerCase());
 		if (!position) return;
 
 		node.property = "--paged-margin-vertical-position";
-		node.value = csstree.parse(position, { context: "value" });
+		children.head.data = { type: "Percentage", loc: null, value: position };
 	});
 }
 

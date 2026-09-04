@@ -1,4 +1,4 @@
-import * as csstree from "css-tree";
+import { resolveBleed } from "./bleed.js";
 
 export const MARGIN_BOX_NAMES = new Set([
 	"top-left-corner",
@@ -19,19 +19,28 @@ export const MARGIN_BOX_NAMES = new Set([
 	"left-bottom",
 ]);
 
-const BARE_NUMBER_RE = /^[+-]?(?:\d+|\d*\.\d+)$/;
-const ZERO_RE = /^[+-]?0*(?:\.0*)?$/;
 const PAGE_SIDES = ["top", "right", "bottom", "left"];
 const PAGE_BOX_DECLARATION_RE = /^(?:padding(?:-(?:top|right|bottom|left))?|border(?:-(?:width|style|color|(?:top|right|bottom|left)(?:-(?:width|style|color))?))?)$/;
 
-export function collectAllPageData(ast) {
+/**
+ * Read original page declarations from the prepared AST, before transforms.
+ * @param {import("css-tree").CssNode} ast Prepared stylesheet AST.
+ * @param {(node: import("css-tree").CssNode) => string} generate AST serializer.
+ * @returns {PageRule[]} Page rules in source order.
+ */
+export function collectAllPageData(ast, generate) {
 	const out = [];
-	csstree.walk(ast, {
-		visit: "Atrule",
-		enter(node) {
-			if (node.name === "page") out.push(extractPageData(node));
-		},
-	});
+	function visit(node) {
+		if (node.type === "Atrule") {
+			if (node.name === "page") {
+				out.push(extractPageData(node, generate));
+				return;
+			}
+		}
+		node.children?.forEach(visit);
+		if (node.block) visit(node.block);
+	}
+	visit(ast);
 	return out;
 }
 /**
@@ -75,10 +84,12 @@ export function collectAllPageData(ast) {
  */
 
 /**
+ * Extract a page rule without parsing or changing the supplied nodes.
  * @param {import("css-tree").Atrule} atruleNode
+ * @param {(node: import("css-tree").CssNode) => string} generate AST serializer.
  * @returns {PageRule}
  */
-export function extractPageData(atruleNode) {
+export function extractPageData(atruleNode, generate) {
 	const { name, pseudo, nth } = extractPagePrelude(atruleNode.prelude);
 	/** @type {PageRule} */
 	const out = {
@@ -109,7 +120,7 @@ export function extractPageData(atruleNode) {
 			if (c.block && c.block.children) {
 				c.block.children.forEach((dc) => {
 					if (!dc || dc.type !== "Declaration") return;
-					decls[dc.property] = csstree.generate(dc.value).trim();
+					decls[dc.property] = generate(dc.value).trim();
 				});
 			}
 			out.marginBoxes[c.name] = decls;
@@ -117,7 +128,7 @@ export function extractPageData(atruleNode) {
 		}
 
 		if (c.type !== "Declaration") return;
-		const value = csstree.generate(c.value).trim();
+		const value = generate(c.value).trim();
 		if (PAGE_BOX_DECLARATION_RE.test(c.property)) {
 			pageBoxDeclarations.push(
 				`${c.property}:${value}${c.important ? "!important" : ""};`,
@@ -202,55 +213,7 @@ function normalizePageBoxDeclarations(declarations) {
 }
 
 /**
- * Used value of the `bleed` property (CSS Paged Media 3 §11.3.2).
- *
- * `auto` resolves to 6pt when crop marks are asked for and to zero
- * otherwise. A unitless zero is a `<number>` inside `calc()`, where
- * `calc(0 + 216mm)` is a type error that invalidates the declaration and
- * collapses the page to its auto size, so zero is carried as `0px`.
- *
- * @param {string|null} value - `bleed` as written, or null when unset.
- * @param {string|null} marks - `marks` from the same rule, for `auto`.
- * @returns {string|null} A `<length>`, or null when nothing was declared.
- */
-export function resolveBleed(value, marks) {
-	if (value == null) return null;
-	const declared = value.trim();
-	if (declared === "") return null;
-
-	const auto = marks && /\bcrop\b/i.test(marks) ? "6pt" : "0px";
-	if (declared.toLowerCase() === "auto") return auto;
-
-	const lengths = declared.split(/\s+/);
-	if (lengths.some((length) => BARE_NUMBER_RE.test(length) && !ZERO_RE.test(length))) {
-		console.warn(`Invalid bleed "${declared}": lengths need a unit.`);
-		return auto;
-	}
-	return lengths.map((length) => (ZERO_RE.test(length) ? "0px" : length)).join(" ");
-}
-
-/**
- * Expand Paged.js's legacy one-to-four-value `bleed` extension into sides.
- *
- * CSS Paged Media defines one value, but the legacy engine accepted the CSS
- * box shorthand shape and existing documents use it for asymmetric sheets.
- *
- * @param {string|null} value - Resolved bleed value.
- * @returns {{top: string, right: string, bottom: string, left: string}|null} Per-side bleed values.
- */
-export function expandBleed(value) {
-	if (value == null) return null;
-	const lengths = value.trim().split(/\s+/);
-	if (lengths.length === 0 || !lengths[0]) return null;
-
-	const [top, right = top, bottom = top, left = right] = lengths;
-	if (lengths.length === 2) {
-		return { top, right, bottom: top, left: right };
-	}
-	return { top, right, bottom, left };
-}
-
-/**
+ * Read a page selector's name, pseudo-classes, and raw nth argument.
  * @param {import("css-tree").AtrulePrelude|null} prelude
  * @returns {{ name: string|null, pseudo: string[], nth: PageNth|null }}
  */
@@ -259,23 +222,20 @@ export function extractPagePrelude(prelude) {
 	let name = null;
 	const pseudo = [];
 	let nth = null;
-	csstree.walk(prelude, (node) => {
+	function visit(node) {
 		if (node.type === "TypeSelector" && node.name) name = node.name;
 		if (node.type === "Identifier" && name == null) name = node.name;
 		if (node.type === "PseudoClassSelector") {
 			if (node.name === "nth") {
-				let arg = null;
-				if (node.children) {
-					const serialised = csstree.generate(node);
-					const m = serialised.match(/^:[\w-]+\((.*)\)$/);
-					if (m) arg = m[1].trim();
-				}
-				nth = parseNth(arg);
+				nth = parseNth(node.children?.first?.value ?? null);
 			} else {
 				pseudo.push(node.name);
 			}
+			return;
 		}
-	});
+		node.children?.forEach(visit);
+	}
+	visit(prelude);
 	return { name, pseudo, nth };
 }
 
@@ -311,6 +271,11 @@ function emptyMargin() {
 	return { top: null, right: null, bottom: null, left: null };
 }
 
+/**
+ * Expand a page margin shorthand into physical sides.
+ * @param {string} m Margin shorthand.
+ * @returns {Object<string, string>} Values for top, right, bottom, and left.
+ */
 export function parseMarginShorthand(m) {
 	const parts = (m || "0").trim().split(/\s+/);
 	switch (parts.length) {

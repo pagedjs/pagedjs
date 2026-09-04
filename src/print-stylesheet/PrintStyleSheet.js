@@ -1,5 +1,5 @@
 import { Fragmenter } from "fragmentainers";
-import { CssTransformer } from "../css-transformer/CssTransformer.js";
+import { CssTransformer } from "@pagedjs/css-transformer";
 import { collectAllPageData } from "./utils/pageData.js";
 import { buildPagedVariableRules } from "./utils/buildPagedVariableRules.js";
 import { collectRules } from "./utils/collectRules.js";
@@ -59,7 +59,7 @@ export class PrintStyleSheet extends CSSStyleSheet {
 		});
 		const combined = await transformer.prepare(entries);
 
-		this.#pageData = collectAllPageData(combined);
+		this.#pageData = collectAllPageData(combined, (node) => transformer.generate(node));
 
 		transformer.apply(combined);
 

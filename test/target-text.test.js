@@ -4,12 +4,11 @@ test.describe("target text", () => {
 	test("rewrites the function and keeps its source alongside", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			async function rewrite(css, rules = TargetText.rules) {
 				const transformer = new CssTransformer({ rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			__results.push({ actual: await rewrite("a::after { content: target-text(attr(href url)) }"), args: ["a::after{content:var(--paged-generated-text-0, \"\");"
 							+ "--paged-generated-text-0-source:\"target-text(attr(href url))\"}"], label: undefined });
@@ -21,12 +20,11 @@ test.describe("target text", () => {
 	test("keeps a typed attr source readable through browser CSSOM", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			async function rewrite(css, rules = TargetText.rules) {
 				const transformer = new CssTransformer({ rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			const style = document.createElement("style");
 			style.textContent = await rewrite(
@@ -44,12 +42,11 @@ test.describe("target text", () => {
 	test("gives each occurrence its own id", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			async function rewrite(css, rules = TargetText.rules) {
 				const transformer = new CssTransformer({ rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			const out = await rewrite(
 				"a::after { content: target-text(attr(href)) } b::after { content: target-text(attr(href), before) }",
@@ -65,12 +62,11 @@ test.describe("target text", () => {
 	test("restarts occurrence ids for every stylesheet build", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			async function rewrite(css, rules = TargetText.rules) {
 				const transformer = new CssTransformer({ rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			const css = "a::after { content: target-text(attr(href)) }";
 			__results.push({ actual: await rewrite(css, TargetText.rules), args: [await rewrite(css, TargetText.rules)], label: undefined });
@@ -82,12 +78,11 @@ test.describe("target text", () => {
 	test("leaves target-text outside a content declaration alone", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			async function rewrite(css, rules = TargetText.rules) {
 				const transformer = new CssTransformer({ rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			__results.push({ actual: await rewrite("a::after { width: target-text(attr(href)) }"), args: ["a::after{width:target-text(attr(href))}"], label: undefined });
 			return __results;
@@ -98,8 +93,6 @@ test.describe("target text", () => {
 	test("stamps the target's text on the referencing element", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -141,8 +134,6 @@ test.describe("target text", () => {
 	test("collapses whitespace and escapes quotes in the target's text", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -184,8 +175,6 @@ test.describe("target text", () => {
 	test("takes only the first letter in first-letter mode", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -227,8 +216,6 @@ test.describe("target text", () => {
 	test("resolves an id that would need escaping as a selector", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -270,8 +257,6 @@ test.describe("target text", () => {
 	test("resolves a percent-encoded fragment", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -313,8 +298,6 @@ test.describe("target text", () => {
 	test("resolves a fragment that is not valid percent-encoding", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -356,8 +339,6 @@ test.describe("target text", () => {
 	test("stamps every element the rule matches with its own target", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -402,8 +383,6 @@ test.describe("target text", () => {
 	test("reads the declaration off the element a pseudo-element belongs to", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -445,8 +424,6 @@ test.describe("target text", () => {
 	test("registers no layout pass when nothing needs one", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -486,8 +463,6 @@ test.describe("target text", () => {
 	test("registers a layout pass for a mode that reads generated content", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -527,8 +502,6 @@ test.describe("target text", () => {
 	test("stamps a deferred mode only in the pass loop, and settles after it", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -582,8 +555,6 @@ test.describe("target text", () => {
 		});
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -633,8 +604,6 @@ test.describe("target text", () => {
 		});
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -684,8 +653,6 @@ test.describe("target text", () => {
 		});
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { TargetText } = await import("/src/handlers/target-text.js");
 			function setup(css, html) {
 				const style = document.createElement("style");

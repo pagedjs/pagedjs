@@ -13,12 +13,11 @@
       "default": "./src/index.js"
     },
     "./polyfill": "./src/polyfill/polyfill.js",
-    "./components": "./src/components/index.js",
-    "./css-transformer": "./src/css-transformer/CssTransformer.js"
+    "./components": "./src/components/index.js"
   },
   "dependencies": {
     "clear-cut": "^2.0.2",
-    "css-tree": "^3.2.1",
+    "@pagedjs/css-transformer": "github:pagedjs/css-transformer#main",
     "fragmentainers": "^0.0.5",
     "lit": "^3.3.2"
   },
@@ -26,6 +25,7 @@
     "@eslint/js": "^10.0.0",
     "@playwright/test": "^1.58.2",
     "chalk": "^5.6.0",
+    "css-tree": "3.2.1",
     "eslint": "^10.0.0",
     "express": "^5.2.0",
     "globals": "^17.0.0",

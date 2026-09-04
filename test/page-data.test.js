@@ -4,13 +4,14 @@ test.describe("@page data extraction", () => {
 	test("carries a unitless zero as a length", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
+			const transformer = new CssTransformer();
 			const { extractPageData } = await import("/src/print-stylesheet/utils/pageData.js");
-			function pageData(css) {
-				const ast = csstree.parse(css);
-				return extractPageData(ast.children.first);
+			async function pageData(css) {
+				const ast = await transformer.prepare(css);
+				return extractPageData(ast.children.first, (node) => transformer.generate(node));
 			}
-			__results.push({ actual: pageData("@page { size: 216mm 279mm; bleed: 0; }").bleed, args: ["0px"], label: undefined });
+			__results.push({ actual: (await pageData("@page { size: 216mm 279mm; bleed: 0; }")).bleed, args: ["0px"], label: undefined });
 			return __results;
 		});
 		expect(results[0].actual, results[0].label).toBe(...results[0].args);
@@ -19,13 +20,14 @@ test.describe("@page data extraction", () => {
 	test("keeps a declared length as written", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
+			const transformer = new CssTransformer();
 			const { extractPageData } = await import("/src/print-stylesheet/utils/pageData.js");
-			function pageData(css) {
-				const ast = csstree.parse(css);
-				return extractPageData(ast.children.first);
+			async function pageData(css) {
+				const ast = await transformer.prepare(css);
+				return extractPageData(ast.children.first, (node) => transformer.generate(node));
 			}
-			__results.push({ actual: pageData("@page { bleed: 3mm; }").bleed, args: ["3mm"], label: undefined });
+			__results.push({ actual: (await pageData("@page { bleed: 3mm; }")).bleed, args: ["3mm"], label: undefined });
 			return __results;
 		});
 		expect(results[0].actual, results[0].label).toBe(...results[0].args);
@@ -33,7 +35,7 @@ test.describe("@page data extraction", () => {
 
 	test("expands the legacy bleed shorthand into sides", async ({ page }) => {
 		const result = await page.evaluate(async () => {
-			const { expandBleed } = await import("/src/print-stylesheet/utils/pageData.js");
+			const { expandBleed } = await import("/src/print-stylesheet/utils/bleed.js");
 			return {
 				one: expandBleed("1mm"),
 				two: expandBleed("1mm 2mm"),
@@ -53,15 +55,16 @@ test.describe("@page data extraction", () => {
 	test("resolves auto against the marks in the same rule", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
+			const transformer = new CssTransformer();
 			const { extractPageData } = await import("/src/print-stylesheet/utils/pageData.js");
-			function pageData(css) {
-				const ast = csstree.parse(css);
-				return extractPageData(ast.children.first);
+			async function pageData(css) {
+				const ast = await transformer.prepare(css);
+				return extractPageData(ast.children.first, (node) => transformer.generate(node));
 			}
-			__results.push({ actual: pageData("@page { bleed: auto; marks: crop cross; }").bleed, args: ["6pt"], label: undefined });
-			__results.push({ actual: pageData("@page { bleed: auto; marks: cross; }").bleed, args: ["0px"], label: undefined });
-			__results.push({ actual: pageData("@page { bleed: auto; }").bleed, args: ["0px"], label: undefined });
+			__results.push({ actual: (await pageData("@page { bleed: auto; marks: crop cross; }")).bleed, args: ["6pt"], label: undefined });
+			__results.push({ actual: (await pageData("@page { bleed: auto; marks: cross; }")).bleed, args: ["0px"], label: undefined });
+			__results.push({ actual: (await pageData("@page { bleed: auto; }")).bleed, args: ["0px"], label: undefined });
 			return __results;
 		});
 		expect(results[0].actual, results[0].label).toBe(...results[0].args);
@@ -71,12 +74,13 @@ test.describe("@page data extraction", () => {
 
 	test("records explicit auto separately from an omitted bleed", async ({ page }) => {
 		const result = await page.evaluate(async () => {
-			const csstree = await import("css-tree");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
+			const transformer = new CssTransformer();
 			const { extractPageData } = await import("/src/print-stylesheet/utils/pageData.js");
-			const pageData = (css) => extractPageData(csstree.parse(css).children.first);
+			const pageData = async (css) => extractPageData((await transformer.prepare(css)).children.first, (node) => transformer.generate(node));
 			return {
-				explicit: pageData("@page { bleed: auto; }").bleedAuto,
-				omitted: pageData("@page { marks: crop; }").bleedAuto,
+				explicit: (await pageData("@page { bleed: auto; }")).bleedAuto,
+				omitted: (await pageData("@page { marks: crop; }")).bleedAuto,
 			};
 		});
 
@@ -86,8 +90,7 @@ test.describe("@page data extraction", () => {
 	test("falls back to the auto value for a length with no unit", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			const { resolveBleed } = await import("/src/print-stylesheet/utils/pageData.js");
+			const { resolveBleed } = await import("/src/print-stylesheet/utils/bleed.js");
 			__results.push({ actual: resolveBleed("5", null), args: ["0px"], label: undefined });
 			__results.push({ actual: resolveBleed("5", "crop"), args: ["6pt"], label: undefined });
 			return __results;
@@ -99,13 +102,14 @@ test.describe("@page data extraction", () => {
 	test("stays null when the page declares no bleed", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
+			const transformer = new CssTransformer();
 			const { extractPageData } = await import("/src/print-stylesheet/utils/pageData.js");
-			function pageData(css) {
-				const ast = csstree.parse(css);
-				return extractPageData(ast.children.first);
+			async function pageData(css) {
+				const ast = await transformer.prepare(css);
+				return extractPageData(ast.children.first, (node) => transformer.generate(node));
 			}
-			__results.push({ actual: pageData("@page { size: A4; }").bleed, args: [null], label: undefined });
+			__results.push({ actual: (await pageData("@page { size: A4; }")).bleed, args: [null], label: undefined });
 			return __results;
 		});
 		expect(results[0].actual, results[0].label).toBe(...results[0].args);
@@ -113,9 +117,10 @@ test.describe("@page data extraction", () => {
 
 	test("normalizes page padding and border declarations", async ({ page }) => {
 		const result = await page.evaluate(async () => {
-			const csstree = await import("css-tree");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
+			const transformer = new CssTransformer();
 			const { extractPageData } = await import("/src/print-stylesheet/utils/pageData.js");
-			const ast = csstree.parse(`
+			const ast = await transformer.prepare(`
 				@page {
 					padding: 10px 20px;
 					padding-left: 30px;
@@ -124,7 +129,7 @@ test.describe("@page data extraction", () => {
 					border-left-color: blue;
 				}
 			`);
-			const data = extractPageData(ast.children.first);
+			const data = extractPageData(ast.children.first, (node) => transformer.generate(node));
 			return { padding: data.padding, border: data.border };
 		});
 
@@ -142,10 +147,11 @@ test.describe("@page data extraction", () => {
 
 	test("leaves absent padding and borders null", async ({ page }) => {
 		const result = await page.evaluate(async () => {
-			const csstree = await import("css-tree");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
+			const transformer = new CssTransformer();
 			const { extractPageData } = await import("/src/print-stylesheet/utils/pageData.js");
-			const ast = csstree.parse("@page { margin: 10px; }");
-			const data = extractPageData(ast.children.first);
+			const ast = await transformer.prepare("@page { margin: 10px; }");
+			const data = extractPageData(ast.children.first, (node) => transformer.generate(node));
 			return { padding: data.padding, border: data.border };
 		});
 		expect(result).toEqual({ padding: null, border: null });

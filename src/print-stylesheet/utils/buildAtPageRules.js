@@ -1,5 +1,5 @@
 import { resolvePageSize } from "./pageSize.js";
-import { expandBleed, resolveBleed } from "./pageData.js";
+import { expandBleed, resolveBleed } from "./bleed.js";
 
 /**
  * Build the physical `@page` rules consumed by browser printing.

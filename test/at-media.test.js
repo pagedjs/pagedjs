@@ -4,13 +4,12 @@ test.describe("core @media rules", () => {
 	test("unwraps a print block", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			async function transform(css) {
 				const transformer = new CssTransformer({ rules: coreRules });
 				const ast = await transformer.prepare(css);
-				return csstree.generate(transformer.apply(ast));
+				return transformer.generate(transformer.apply(ast));
 			}
 			__results.push({ actual: await transform("@media print { p { color: red } }"), args: ["p{color:red}"], label: undefined });
 			return __results;
@@ -21,13 +20,12 @@ test.describe("core @media rules", () => {
 	test("drops a screen block", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			async function transform(css) {
 				const transformer = new CssTransformer({ rules: coreRules });
 				const ast = await transformer.prepare(css);
-				return csstree.generate(transformer.apply(ast));
+				return transformer.generate(transformer.apply(ast));
 			}
 			__results.push({ actual: await transform("@media screen { p { color: red } }"), args: [""], label: undefined });
 			return __results;
@@ -38,13 +36,12 @@ test.describe("core @media rules", () => {
 	test("keeps a media query it does not recognize", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			async function transform(css) {
 				const transformer = new CssTransformer({ rules: coreRules });
 				const ast = await transformer.prepare(css);
-				return csstree.generate(transformer.apply(ast));
+				return transformer.generate(transformer.apply(ast));
 			}
 			__results.push({ actual: await transform("@media (min-width: 30em) { p { color: red } }"), args: ["@media (min-width:30em){p{color:red}}"], label: undefined });
 			return __results;
@@ -55,13 +52,12 @@ test.describe("core @media rules", () => {
 	test("keeps unwrapped siblings in source order", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			async function transform(css) {
 				const transformer = new CssTransformer({ rules: coreRules });
 				const ast = await transformer.prepare(css);
-				return csstree.generate(transformer.apply(ast));
+				return transformer.generate(transformer.apply(ast));
 			}
 			__results.push({ actual: await transform("a { color: red } @media print { b { color: green } } i { color: blue }"), args: ["a{color:red}b{color:green}i{color:blue}"], label: undefined });
 			return __results;
@@ -72,13 +68,12 @@ test.describe("core @media rules", () => {
 	test("resolves every query in a list", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			async function transform(css) {
 				const transformer = new CssTransformer({ rules: coreRules });
 				const ast = await transformer.prepare(css);
-				return csstree.generate(transformer.apply(ast));
+				return transformer.generate(transformer.apply(ast));
 			}
 			__results.push({ actual: await transform("@media only print { p{color:red} }"), args: ["p{color:red}"], label: undefined });
 			__results.push({ actual: await transform("@media print, screen { p{color:red} }"), args: ["p{color:red}"], label: undefined });
@@ -99,13 +94,12 @@ test.describe("core @media rules", () => {
 	test("keeps the feature test and drops the satisfied media type", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			async function transform(css) {
 				const transformer = new CssTransformer({ rules: coreRules });
 				const ast = await transformer.prepare(css);
-				return csstree.generate(transformer.apply(ast));
+				return transformer.generate(transformer.apply(ast));
 			}
 			__results.push({ actual: await transform("@media print and (min-width: 5in) { p{color:red} }"), args: ["@media (min-width:5in){p{color:red}}"], label: undefined });
 			__results.push({ actual: await transform(
@@ -120,13 +114,12 @@ test.describe("core @media rules", () => {
 	test("drops a query that can never match print", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			async function transform(css) {
 				const transformer = new CssTransformer({ rules: coreRules });
 				const ast = await transformer.prepare(css);
-				return csstree.generate(transformer.apply(ast));
+				return transformer.generate(transformer.apply(ast));
 			}
 			__results.push({ actual: await transform("@media screen and (max-width: 30em) { p{color:red} }"), args: [""], label: undefined });
 			return __results;
@@ -137,13 +130,12 @@ test.describe("core @media rules", () => {
 	test("drops a screen block nested inside a print block", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			async function transform(css) {
 				const transformer = new CssTransformer({ rules: coreRules });
 				const ast = await transformer.prepare(css);
-				return csstree.generate(transformer.apply(ast));
+				return transformer.generate(transformer.apply(ast));
 			}
 			__results.push({ actual: await transform("@media print { @media screen { p { color: red } } }"), args: [""], label: undefined });
 			return __results;
@@ -154,13 +146,12 @@ test.describe("core @media rules", () => {
 	test("unwraps a print block nested inside a print block", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			async function transform(css) {
 				const transformer = new CssTransformer({ rules: coreRules });
 				const ast = await transformer.prepare(css);
-				return csstree.generate(transformer.apply(ast));
+				return transformer.generate(transformer.apply(ast));
 			}
 			__results.push({ actual: await transform("@media print { @media print { p { color: red } } }"), args: ["p{color:red}"], label: undefined });
 			return __results;
@@ -171,13 +162,12 @@ test.describe("core @media rules", () => {
 	test("flattens a nested block without losing its siblings", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			async function transform(css) {
 				const transformer = new CssTransformer({ rules: coreRules });
 				const ast = await transformer.prepare(css);
-				return csstree.generate(transformer.apply(ast));
+				return transformer.generate(transformer.apply(ast));
 			}
 			__results.push({ actual: await transform(
 				"@media print { a { color: red } @media screen { .t { display: block } } i { color: blue } }",
@@ -190,13 +180,12 @@ test.describe("core @media rules", () => {
 	test("converts an @page nested inside a print block exactly once", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			async function transform(css) {
 				const transformer = new CssTransformer({ rules: coreRules });
 				const ast = await transformer.prepare(css);
-				return csstree.generate(transformer.apply(ast));
+				return transformer.generate(transformer.apply(ast));
 			}
 			__results.push({ actual: await transform(
 				"@media print { @page { size: A4; color: red; @top-center { content: \"x\" } } }",

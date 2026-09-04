@@ -4,12 +4,11 @@ test.describe("named strings", () => {
 	test("renames string-set into a custom property the runtime can read back", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { NamedStrings } = await import("/src/handlers/named-strings.js");
 			async function rewrite(css) {
 				const transformer = new CssTransformer({ rules: NamedStrings.rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			__results.push({ actual: await rewrite("h1 { string-set: alphabet content(text) }"), args: ["h1{--string-set:alphabet content(text)}"], label: undefined });
 			return __results;
@@ -20,12 +19,11 @@ test.describe("named strings", () => {
 	test("rewrites string() to the custom property for its mode", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { NamedStrings } = await import("/src/handlers/named-strings.js");
 			async function rewrite(css) {
 				const transformer = new CssTransformer({ rules: NamedStrings.rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			__results.push({ actual: await rewrite(".a::before { content: string(alphabet, last) }"), args: [".a::before{content:var(--paged-string-last-alphabet, \"\")}"], label: undefined });
 			return __results;
@@ -36,12 +34,11 @@ test.describe("named strings", () => {
 	test("defaults a bare string() to first", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { NamedStrings } = await import("/src/handlers/named-strings.js");
 			async function rewrite(css) {
 				const transformer = new CssTransformer({ rules: NamedStrings.rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			__results.push({ actual: await rewrite(".a::before { content: string(alphabet) }"), args: [".a::before{content:var(--paged-string-first-alphabet, \"\")}"], label: undefined });
 			return __results;
@@ -52,12 +49,11 @@ test.describe("named strings", () => {
 	test("falls back to first for a mode that is not a selection mode", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { NamedStrings } = await import("/src/handlers/named-strings.js");
 			async function rewrite(css) {
 				const transformer = new CssTransformer({ rules: NamedStrings.rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			__results.push({ actual: await rewrite(".a::before { content: string(alphabet, sideways) }"), args: [".a::before{content:var(--paged-string-first-alphabet, \"\")}"], label: undefined });
 			return __results;
@@ -68,12 +64,11 @@ test.describe("named strings", () => {
 	test("rewrites every reference in one declaration", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { NamedStrings } = await import("/src/handlers/named-strings.js");
 			async function rewrite(css) {
 				const transformer = new CssTransformer({ rules: NamedStrings.rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			__results.push({ actual: await rewrite(".a::before { content: string(a) \" - \" string(b, last) }"), args: [".a::before{content:var(--paged-string-first-a, \"\")\" - \"var(--paged-string-last-b, \"\")}"], label: undefined });
 			return __results;
@@ -84,12 +79,11 @@ test.describe("named strings", () => {
 	test("leaves a reference that is not a valid name alone", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { NamedStrings } = await import("/src/handlers/named-strings.js");
 			async function rewrite(css) {
 				const transformer = new CssTransformer({ rules: NamedStrings.rules });
-				return csstree.generate(transformer.apply(await transformer.prepare(css)));
+				return transformer.generate(transformer.apply(await transformer.prepare(css)));
 			}
 			__results.push({ actual: await rewrite(".a::before { content: string(2 words) }"), args: [".a::before{content:string(2 words)}"], label: undefined });
 			return __results;
@@ -100,8 +94,6 @@ test.describe("named strings", () => {
 	test("resolves the four modes from one page's assignments", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { NamedStrings } = await import("/src/handlers/named-strings.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -156,8 +148,6 @@ test.describe("named strings", () => {
 	test("takes start from the assignment that opens the page", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { NamedStrings } = await import("/src/handlers/named-strings.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -206,8 +196,6 @@ test.describe("named strings", () => {
 	test("carries every mode forward across a page that assigns nothing", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { NamedStrings } = await import("/src/handlers/named-strings.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -263,8 +251,6 @@ test.describe("named strings", () => {
 	test("leaves a page before the first assignment empty", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { NamedStrings } = await import("/src/handlers/named-strings.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -316,8 +302,6 @@ test.describe("named strings", () => {
 	test("concatenates literals with attr()", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { NamedStrings } = await import("/src/handlers/named-strings.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -365,8 +349,6 @@ test.describe("named strings", () => {
 	test("sets every name a single declaration assigns", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { NamedStrings } = await import("/src/handlers/named-strings.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -416,8 +398,6 @@ test.describe("named strings", () => {
 	test("keeps the value the source element holds when the element splits", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { NamedStrings } = await import("/src/handlers/named-strings.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -472,8 +452,6 @@ test.describe("named strings", () => {
 	test("collapses source whitespace and escapes quotes", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { NamedStrings } = await import("/src/handlers/named-strings.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -521,8 +499,6 @@ test.describe("named strings", () => {
 	test("reads the declaration the cascade resolved, not the first that matched", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { NamedStrings } = await import("/src/handlers/named-strings.js");
 			function setup(css, html) {
 				const style = document.createElement("style");
@@ -575,8 +551,6 @@ test.describe("named strings", () => {
 		});
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { NamedStrings } = await import("/src/handlers/named-strings.js");
 			function setup(css, html) {
 				const style = document.createElement("style");

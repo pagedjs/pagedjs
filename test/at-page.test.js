@@ -4,13 +4,12 @@ test.describe("core @page margin-box rules", () => {
 	test("routes generated content to the margin-box component", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			async function transform(css, rules = []) {
 				const transformer = new CssTransformer({ rules: [...coreRules, ...rules] });
 				const ast = await transformer.prepare(css);
-				return csstree.generate(transformer.apply(ast));
+				return transformer.generate(transformer.apply(ast));
 			}
 			__results.push({ actual: await transform("@page { @top-center { content: \"Chapter\"; } }"), args: ["paged-page{&::part(top-center){--paged-margin-content:\"Chapter\"}}"], label: undefined });
 			return __results;
@@ -21,13 +20,12 @@ test.describe("core @page margin-box rules", () => {
 	test("keeps box styles separate without losing cascade or importance", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			async function transform(css, rules = []) {
 				const transformer = new CssTransformer({ rules: [...coreRules, ...rules] });
 				const ast = await transformer.prepare(css);
-				return csstree.generate(transformer.apply(ast));
+				return transformer.generate(transformer.apply(ast));
 			}
 			__results.push({ actual: await transform(`
 							@page {
@@ -47,8 +45,7 @@ test.describe("core @page margin-box rules", () => {
 
 	test("projects supported margin-box vertical alignment onto the physical axis", async ({ page }) => {
 		const actual = await page.evaluate(async () => {
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			const transformer = new CssTransformer({ rules: coreRules });
 			const ast = await transformer.prepare(`
@@ -60,7 +57,7 @@ test.describe("core @page margin-box rules", () => {
 				}
 				p { vertical-align: top; }
 			`);
-			return csstree.generate(transformer.apply(ast));
+			return transformer.generate(transformer.apply(ast));
 		});
 
 		expect(actual).toBe(
@@ -75,13 +72,12 @@ test.describe("core @page margin-box rules", () => {
 	test("routes generated content and its source metadata to the matching margin parts", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			async function transform(css, rules = []) {
 				const transformer = new CssTransformer({ rules: [...coreRules, ...rules] });
 				const ast = await transformer.prepare(css);
-				return csstree.generate(transformer.apply(ast));
+				return transformer.generate(transformer.apply(ast));
 			}
 			const generated = {
 				type: "function",
@@ -104,8 +100,7 @@ test.describe("core @page margin-box rules", () => {
 
 	test("removes page padding and borders from the host-facing rule", async ({ page }) => {
 		const actual = await page.evaluate(async () => {
-			const csstree = await import("css-tree");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			const transformer = new CssTransformer({ rules: coreRules });
 			const ast = await transformer.prepare(`
@@ -115,7 +110,7 @@ test.describe("core @page margin-box rules", () => {
 					background: yellow;
 				}
 			`);
-			return csstree.generate(transformer.apply(ast));
+			return transformer.generate(transformer.apply(ast));
 		});
 
 		expect(actual).toBe("paged-page{background:yellow}");

@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
-import { resolve } from "path";
+import { dirname, resolve } from "path";
 import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
 
 const pkg = JSON.parse(readFileSync("./package.json", "utf-8"));
 const banner = `/*! @license Paged.js v${pkg.version} | MIT | https://github.com/pagedjs/pagedjs */`;
@@ -19,6 +20,20 @@ function bannerPlugin() {
 	};
 }
 
+function transformerNoticesPlugin() {
+	return {
+		name: "transformer-notices",
+		generateBundle() {
+			const entry = fileURLToPath(import.meta.resolve("@pagedjs/css-transformer"));
+			this.emitFile({
+				type: "asset",
+				fileName: "THIRD-PARTY-NOTICES.txt",
+				source: readFileSync(resolve(dirname(entry), "THIRD-PARTY-NOTICES.txt"), "utf8"),
+			});
+		},
+	};
+}
+
 export default defineConfig(({ mode }) => {
 	if (mode === "polyfill") {
 		return {
@@ -33,7 +48,7 @@ export default defineConfig(({ mode }) => {
 				minify: false,
 				emptyOutDir: false,
 			},
-			plugins: [bannerPlugin()],
+			plugins: [bannerPlugin(), transformerNoticesPlugin()],
 		};
 	}
 
@@ -49,7 +64,7 @@ export default defineConfig(({ mode }) => {
 				// both pagedjs and fragmentainers gets one copy: two copies mean two
 				// sets of module singletons and custom element classes, and
 				// `instanceof` against the losing copy is false for every element.
-				external: [/^fragmentainers(\/.*)?$/],
+				external: [/^fragmentainers(\/.*)?$/, "@pagedjs/css-transformer"],
 			},
 			sourcemap: true,
 			minify: false,

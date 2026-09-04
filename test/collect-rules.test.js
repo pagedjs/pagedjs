@@ -4,9 +4,7 @@ test.describe("collectRules", () => {
 	test("puts the core rules first", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
 			const { LayoutHandler } = await import("fragmentainers/handlers.js");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			await import("/src/handlers/running-elements.js");
 			const { collectRules } = await import("/src/print-stylesheet/utils/collectRules.js");
@@ -27,9 +25,7 @@ test.describe("collectRules", () => {
 	test("keeps handler rules in resolved catalog order", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
 			const { LayoutHandler } = await import("fragmentainers/handlers.js");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			await import("/src/handlers/running-elements.js");
 			const { collectRules } = await import("/src/print-stylesheet/utils/collectRules.js");
@@ -53,9 +49,7 @@ test.describe("collectRules", () => {
 	test("contributes nothing for a handler without rules", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
 			const { LayoutHandler } = await import("fragmentainers/handlers.js");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			await import("/src/handlers/running-elements.js");
 			const { collectRules } = await import("/src/print-stylesheet/utils/collectRules.js");
@@ -69,9 +63,7 @@ test.describe("collectRules", () => {
 	test("replaces a base handler's rules with an overriding subclass's", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
 			const { LayoutHandler } = await import("fragmentainers/handlers.js");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			await import("/src/handlers/running-elements.js");
 			const { collectRules } = await import("/src/print-stylesheet/utils/collectRules.js");
@@ -98,9 +90,7 @@ test.describe("collectRules", () => {
 	test("inherits the base rules when the subclass declares none", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
 			const { LayoutHandler } = await import("fragmentainers/handlers.js");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			await import("/src/handlers/running-elements.js");
 			const { collectRules } = await import("/src/print-stylesheet/utils/collectRules.js");
@@ -119,9 +109,7 @@ test.describe("collectRules", () => {
 	test("extends the base rules through super.rules", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
 			const { LayoutHandler } = await import("fragmentainers/handlers.js");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			await import("/src/handlers/running-elements.js");
 			const { collectRules } = await import("/src/print-stylesheet/utils/collectRules.js");
@@ -143,9 +131,7 @@ test.describe("collectRules", () => {
 	test("runs both rule sets when two siblings subclass the same handler", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			await import("css-tree");
 			const { LayoutHandler } = await import("fragmentainers/handlers.js");
-			await import("/src/css-transformer/CssTransformer.js");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			await import("/src/handlers/running-elements.js");
 			const { collectRules } = await import("/src/print-stylesheet/utils/collectRules.js");
@@ -171,9 +157,8 @@ test.describe("collectRules", () => {
 	test("leaves position: fixed alone", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
 			const { LayoutHandler } = await import("fragmentainers/handlers.js");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			await import("/src/print-stylesheet/rules/index.js");
 			await import("/src/handlers/running-elements.js");
 			const { collectRules } = await import("/src/print-stylesheet/utils/collectRules.js");
@@ -188,7 +173,7 @@ test.describe("collectRules", () => {
 			}
 			const transformer = new CssTransformer({ rules: collectRules([Alpha, Beta]) });
 			const ast = await transformer.prepare(".pin { position: fixed; top: 0; }");
-			__results.push({ actual: csstree.generate(transformer.apply(ast)), args: [".pin{position:fixed;top:0}"], label: undefined });
+			__results.push({ actual: transformer.generate(transformer.apply(ast)), args: [".pin{position:fixed;top:0}"], label: undefined });
 			return __results;
 		});
 		expect(results[0].actual, results[0].label).toBe(...results[0].args);
@@ -197,9 +182,8 @@ test.describe("collectRules", () => {
 	test("projects an element() request onto the margin-box component", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
 			await import("fragmentainers/handlers.js");
-			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const { CssTransformer } = await import("@pagedjs/css-transformer");
 			await import("/src/print-stylesheet/rules/index.js");
 			const { RunningElements } = await import("/src/handlers/running-elements.js");
 			const { collectRules } = await import("/src/print-stylesheet/utils/collectRules.js");
@@ -207,7 +191,7 @@ test.describe("collectRules", () => {
 			const ast = await transformer.prepare(
 				"@top-center { content: element(title, last) }",
 			);
-			__results.push({ actual: csstree.generate(transformer.apply(ast)), args: ["&::part(top-center){--paged-margin-content:\"\";--paged-running-element:title last}"], label: undefined });
+			__results.push({ actual: transformer.generate(transformer.apply(ast)), args: ["&::part(top-center){--paged-margin-content:\"\";--paged-running-element:title last}"], label: undefined });
 			return __results;
 		});
 		expect(results[0].actual, results[0].label).toBe(...results[0].args);

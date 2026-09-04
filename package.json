@@ -12,13 +12,13 @@
       "import": "./src/index.js",
       "default": "./src/index.js"
     },
-    "./polyfill": "./src/polyfill/polyfill.js",
-    "./components": "./src/components/index.js"
+    "./polyfill.js": "./src/polyfill.js",
+    "./components.js": "./src/components.js"
   },
   "dependencies": {
     "clear-cut": "^2.0.2",
     "@pagedjs/css-transformer": "github:pagedjs/css-transformer#main",
-    "fragmentainers": "^0.0.5",
+    "fragmentainers": "^0.0.7",
     "lit": "^3.3.2"
   },
   "devDependencies": {

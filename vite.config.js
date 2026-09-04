@@ -39,7 +39,7 @@ export default defineConfig(({ mode }) => {
 		return {
 			build: {
 				lib: {
-					entry: resolve(__dirname, "src/polyfill/polyfill.js"),
+					entry: resolve(__dirname, "src/polyfill.js"),
 					name: "PagedPolyfill",
 					formats: ["iife"],
 					fileName: () => "paged.polyfill.js",

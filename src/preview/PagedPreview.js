@@ -3,7 +3,7 @@ import { PrintStyleSheet } from "../print-stylesheet/PrintStyleSheet.js";
 import { buildAtPageRules } from "../print-stylesheet/utils/buildAtPageRules.js";
 import Hook from "../utils/hook.js";
 // Register the custom paged elements.
-import "../components/index.js";
+import "../components.js";
 
 /**
  * The main class responsible for preparing, fragmenting, styling, and rendering content into paginated previews.

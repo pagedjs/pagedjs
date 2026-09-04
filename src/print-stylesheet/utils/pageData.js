@@ -1,4 +1,5 @@
 import { resolveBleed } from "./bleed.js";
+import { classifyPrintMedia } from "./printMedia.js";
 
 export const MARGIN_BOX_NAMES = new Set([
 	"top-left-corner",
@@ -24,6 +25,8 @@ const PAGE_BOX_DECLARATION_RE = /^(?:padding(?:-(?:top|right|bottom|left))?|bord
 
 /**
  * Read original page declarations from the prepared AST, before transforms.
+ * Queries known to exclude print prune their entire subtree. Unresolved media
+ * features and supports conditions retain the existing inclusion behavior.
  * @param {import("css-tree").CssNode} ast Prepared stylesheet AST.
  * @param {(node: import("css-tree").CssNode) => string} generate AST serializer.
  * @returns {PageRule[]} Page rules in source order.
@@ -35,6 +38,11 @@ export function collectAllPageData(ast, generate) {
 			if (node.name === "page") {
 				out.push(extractPageData(node, generate));
 				return;
+			}
+			if (node.name.toLowerCase() === "media") {
+				const queries = node.prelude?.children?.toArray()
+					.find((child) => child.type === "MediaQueryList");
+				if (queries?.children?.toArray().every((query) => classifyPrintMedia(query) === "exclude")) return;
 			}
 		}
 		node.children?.forEach(visit);

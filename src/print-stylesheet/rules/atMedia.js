@@ -1,4 +1,4 @@
-const PRINT_TYPES = new Set(["print", "all"]);
+import { classifyPrintMedia } from "../utils/printMedia.js";
 
 /**
  * Resolve `@media` against the medium the sheet is being generated for.
@@ -12,24 +12,19 @@ const PRINT_TYPES = new Set(["print", "all"]);
 export const atMediaRules = [
 	{
 		type: "media-query",
-		match: ({ modifier, mediaType, condition }) =>
-			(modifier !== "not" && PRINT_TYPES.has(mediaType) && condition === null) ||
-			(modifier === "not" && mediaType === "screen"),
+		match: (query) => classifyPrintMedia(query) === "match",
 		transform: () => ({ unwrap: true }),
 	},
 	{
 		type: "media-query",
-		match: ({ modifier, mediaType, condition }) =>
-			(modifier !== "not" && mediaType === "screen") ||
-			(modifier === "not" && PRINT_TYPES.has(mediaType) && condition === null),
+		match: (query) => classifyPrintMedia(query) === "exclude",
 		transform: () => ({ remove: true }),
 	},
 	{
 		// The media type is already satisfied, so only the feature test is
 		// left to evaluate.
 		type: "media-query",
-		match: ({ modifier, mediaType, condition }) =>
-			modifier !== "not" && PRINT_TYPES.has(mediaType) && condition !== null,
+		match: (query) => classifyPrintMedia(query) === "condition",
 		transform: ({ condition }) => ({ query: condition }),
 	},
 ];

@@ -5,7 +5,7 @@ test.describe("Footnote flow — split across pages (auto policy)", () => {
 		const result = await page.evaluate(async () => {
 			const { Fragmenter, ConstraintSpace, FRAGMENTATION_PAGE } = await (async () => {
 				const { Fragmenter } = await import("fragmentainers");
-				const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation");
+				const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation.js");
 				await import("/src/handlers/index.js");
 				return { Fragmenter, ConstraintSpace, FRAGMENTATION_PAGE };
 			})();
@@ -71,7 +71,7 @@ test.describe("Footnote flow — policy fallback (line / block)", () => {
 	}) => {
 		const result = await page.evaluate(async () => {
 			const { Fragmenter } = await import("fragmentainers");
-			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation");
+			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation.js");
 			await import("/src/handlers/index.js");
 
 			const sheet = new CSSStyleSheet();

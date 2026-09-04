@@ -1,4 +1,4 @@
-import { LayoutHandler, pseudoFor } from "fragmentainers/handlers";
+import { LayoutHandler, pseudoFor } from "fragmentainers/handlers.js";
 import { cssString, splitTopLevel, unquote } from "../utils/css.js";
 import {
 	collectReferences,

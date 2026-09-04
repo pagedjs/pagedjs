@@ -5,7 +5,7 @@ test.describe("collectRules", () => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
 			await import("css-tree");
-			const { LayoutHandler } = await import("fragmentainers/handlers");
+			const { LayoutHandler } = await import("fragmentainers/handlers.js");
 			await import("/src/css-transformer/CssTransformer.js");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			await import("/src/handlers/running-elements.js");
@@ -28,7 +28,7 @@ test.describe("collectRules", () => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
 			await import("css-tree");
-			const { LayoutHandler } = await import("fragmentainers/handlers");
+			const { LayoutHandler } = await import("fragmentainers/handlers.js");
 			await import("/src/css-transformer/CssTransformer.js");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			await import("/src/handlers/running-elements.js");
@@ -54,7 +54,7 @@ test.describe("collectRules", () => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
 			await import("css-tree");
-			const { LayoutHandler } = await import("fragmentainers/handlers");
+			const { LayoutHandler } = await import("fragmentainers/handlers.js");
 			await import("/src/css-transformer/CssTransformer.js");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			await import("/src/handlers/running-elements.js");
@@ -70,7 +70,7 @@ test.describe("collectRules", () => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
 			await import("css-tree");
-			const { LayoutHandler } = await import("fragmentainers/handlers");
+			const { LayoutHandler } = await import("fragmentainers/handlers.js");
 			await import("/src/css-transformer/CssTransformer.js");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			await import("/src/handlers/running-elements.js");
@@ -99,7 +99,7 @@ test.describe("collectRules", () => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
 			await import("css-tree");
-			const { LayoutHandler } = await import("fragmentainers/handlers");
+			const { LayoutHandler } = await import("fragmentainers/handlers.js");
 			await import("/src/css-transformer/CssTransformer.js");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			await import("/src/handlers/running-elements.js");
@@ -120,7 +120,7 @@ test.describe("collectRules", () => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
 			await import("css-tree");
-			const { LayoutHandler } = await import("fragmentainers/handlers");
+			const { LayoutHandler } = await import("fragmentainers/handlers.js");
 			await import("/src/css-transformer/CssTransformer.js");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			await import("/src/handlers/running-elements.js");
@@ -144,7 +144,7 @@ test.describe("collectRules", () => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
 			await import("css-tree");
-			const { LayoutHandler } = await import("fragmentainers/handlers");
+			const { LayoutHandler } = await import("fragmentainers/handlers.js");
 			await import("/src/css-transformer/CssTransformer.js");
 			const { coreRules } = await import("/src/print-stylesheet/rules/index.js");
 			await import("/src/handlers/running-elements.js");
@@ -172,7 +172,7 @@ test.describe("collectRules", () => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
 			const csstree = await import("css-tree");
-			const { LayoutHandler } = await import("fragmentainers/handlers");
+			const { LayoutHandler } = await import("fragmentainers/handlers.js");
 			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
 			await import("/src/print-stylesheet/rules/index.js");
 			await import("/src/handlers/running-elements.js");
@@ -198,7 +198,7 @@ test.describe("collectRules", () => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
 			const csstree = await import("css-tree");
-			await import("fragmentainers/handlers");
+			await import("fragmentainers/handlers.js");
 			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
 			await import("/src/print-stylesheet/rules/index.js");
 			const { RunningElements } = await import("/src/handlers/running-elements.js");

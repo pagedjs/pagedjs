@@ -15,7 +15,7 @@ import { LayoutHandler } from "fragmentainers";
 export class PageCounter extends LayoutHandler {
 	/**
 	 * @param {Element} element - The composed `<fragment-container>`.
-	 * @param {import("fragmentainers/fragmentation").Fragment} fragment
+	 * @param {import("fragmentainers/fragmentation.js").Fragment} fragment
 	 */
 	afterCompose(element, fragment) {
 		const page = fragment?.page;

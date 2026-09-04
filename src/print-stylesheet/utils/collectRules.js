@@ -1,4 +1,4 @@
-import { resolveHandlerClasses } from "fragmentainers/handlers";
+import { resolveHandlerClasses } from "fragmentainers/handlers.js";
 import { coreRules } from "../rules/index.js";
 
 /**
@@ -9,7 +9,7 @@ import { coreRules } from "../rules/index.js";
  * subclass pushed onto the catalog replaces both at once. Ordering is the
  * catalog's resolved order, the same one the flow instantiates in.
  *
- * @param {Array<typeof import("fragmentainers/handlers").LayoutHandler>} catalog
+ * @param {Array<typeof import("fragmentainers/handlers.js").LayoutHandler>} catalog
  * @returns {Array<{ type: string, match: Function, transform: Function }>}
  */
 export function collectRules(catalog) {

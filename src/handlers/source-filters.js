@@ -1,5 +1,5 @@
-import { LayoutHandler } from "fragmentainers/handlers";
-import { locate } from "fragmentainers/fragmentation";
+import { LayoutHandler } from "fragmentainers/handlers.js";
+import { locate } from "fragmentainers/fragmentation.js";
 
 /**
  * Removes `<script>` elements and comment nodes from the source content.
@@ -28,7 +28,7 @@ export class SourceFilters extends LayoutHandler {
 	 * after the fragmentainer has composed its laid-out boxes.
 	 *
 	 * @param {Object} _options - Fragmenter options.
-	 * @param {import("fragmentainers/fragmentation").FlowContext} context - Owning flow context.
+	 * @param {import("fragmentainers/fragmentation.js").FlowContext} context - Owning flow context.
 	 */
 	init(_options, context) {
 		this.#cloneMap = context.cloneMap;
@@ -91,7 +91,7 @@ export class SourceFilters extends LayoutHandler {
 	 * Restores undisplayed elements beside their nearest composed sibling.
 	 *
 	 * @param {Element} wrapper - Composed fragmentainer wrapper.
-	 * @param {import("fragmentainers/fragmentation").Fragment} fragment - Composed fragment.
+	 * @param {import("fragmentainers/fragmentation.js").Fragment} fragment - Composed fragment.
 	 */
 	afterCompose(wrapper, fragment) {
 		const fragments = this.#flow.fragments;

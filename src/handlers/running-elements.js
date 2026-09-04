@@ -1,4 +1,4 @@
-import { LayoutHandler } from "fragmentainers/handlers";
+import { LayoutHandler } from "fragmentainers/handlers.js";
 import {
 	exitValue,
 	isIdentifier,

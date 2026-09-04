@@ -6,7 +6,7 @@ test.describe("footnotes", () => {
 			const __results = [];
 			await import("css-tree");
 			await import("fragmentainers");
-			const { ConstraintSpace } = await import("fragmentainers/fragmentation");
+			const { ConstraintSpace } = await import("fragmentainers/fragmentation.js");
 			await import("/src/css-transformer/CssTransformer.js");
 			const { Footnote } = await import("/src/handlers/footnote.js");
 			const FOOTNOTE_CSS = ".note { --float: footnote; display: none }";
@@ -86,7 +86,7 @@ test.describe("footnotes", () => {
 			const __results = [];
 			await import("css-tree");
 			await import("fragmentainers");
-			const { ConstraintSpace } = await import("fragmentainers/fragmentation");
+			const { ConstraintSpace } = await import("fragmentainers/fragmentation.js");
 			await import("/src/css-transformer/CssTransformer.js");
 			const { Footnote } = await import("/src/handlers/footnote.js");
 			const FOOTNOTE_CSS = ".note { --float: footnote; display: none }";
@@ -157,7 +157,7 @@ test.describe("footnotes", () => {
 			const __results = [];
 			await import("css-tree");
 			await import("fragmentainers");
-			const { ConstraintSpace } = await import("fragmentainers/fragmentation");
+			const { ConstraintSpace } = await import("fragmentainers/fragmentation.js");
 			await import("/src/css-transformer/CssTransformer.js");
 			const { Footnote } = await import("/src/handlers/footnote.js");
 			const FOOTNOTE_CSS = ".note { --float: footnote; display: none }";
@@ -233,7 +233,7 @@ test.describe("footnotes", () => {
 			const __results = [];
 			await import("css-tree");
 			await import("fragmentainers");
-			const { ConstraintSpace } = await import("fragmentainers/fragmentation");
+			const { ConstraintSpace } = await import("fragmentainers/fragmentation.js");
 			await import("/src/css-transformer/CssTransformer.js");
 			const { Footnote } = await import("/src/handlers/footnote.js");
 			const FOOTNOTE_CSS = ".note { --float: footnote; display: none }";
@@ -301,7 +301,7 @@ test.describe("footnotes", () => {
 			const __results = [];
 			await import("css-tree");
 			await import("fragmentainers");
-			const { ConstraintSpace } = await import("fragmentainers/fragmentation");
+			const { ConstraintSpace } = await import("fragmentainers/fragmentation.js");
 			await import("/src/css-transformer/CssTransformer.js");
 			const { Footnote } = await import("/src/handlers/footnote.js");
 			const FOOTNOTE_CSS = ".note { --float: footnote; display: none }";
@@ -378,7 +378,7 @@ test.describe("footnotes", () => {
 			const __results = [];
 			await import("css-tree");
 			await import("fragmentainers");
-			const { ConstraintSpace } = await import("fragmentainers/fragmentation");
+			const { ConstraintSpace } = await import("fragmentainers/fragmentation.js");
 			await import("/src/css-transformer/CssTransformer.js");
 			const { Footnote } = await import("/src/handlers/footnote.js");
 			const FOOTNOTE_CSS = ".note { --float: footnote; display: none }";
@@ -469,7 +469,7 @@ test.describe("footnotes", () => {
 			const __results = [];
 			const csstree = await import("css-tree");
 			await import("fragmentainers");
-			await import("fragmentainers/fragmentation");
+			await import("fragmentainers/fragmentation.js");
 			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
 			const { Footnote } = await import("/src/handlers/footnote.js");
 			function cleanup() {
@@ -498,7 +498,7 @@ test.describe("footnotes", () => {
 			const __results = [];
 			await import("css-tree");
 			const { Fragmenter } = await import("fragmentainers");
-			await import("fragmentainers/fragmentation");
+			await import("fragmentainers/fragmentation.js");
 			await import("/src/css-transformer/CssTransformer.js");
 			const { Footnote } = await import("/src/handlers/footnote.js");
 			const FOOTNOTE_CSS = ".note { --float: footnote; display: none }";
@@ -555,7 +555,7 @@ test.describe("footnotes", () => {
 			const __results = [];
 			await import("css-tree");
 			const { Fragmenter } = await import("fragmentainers");
-			await import("fragmentainers/fragmentation");
+			await import("fragmentainers/fragmentation.js");
 			await import("/src/css-transformer/CssTransformer.js");
 			const { Footnote } = await import("/src/handlers/footnote.js");
 			const FOOTNOTE_CSS = ".note { --float: footnote; display: none }";

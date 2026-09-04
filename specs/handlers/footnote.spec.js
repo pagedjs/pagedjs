@@ -4,7 +4,7 @@ test.describe("Footnotes in paged media (browser)", () => {
 	test("places footnote body at bottom of the page", async ({ page }) => {
 		const result = await page.evaluate(async () => {
 			const { Fragmenter } = await import("fragmentainers");
-			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation");
+			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation.js");
 			await import("/src/handlers/index.js");
 
 			const css = ".fn { --float: footnote; }";
@@ -56,7 +56,7 @@ test.describe("Footnotes in paged media (browser)", () => {
 	test("places footnotes on their forced-break segments", async ({ page }) => {
 		const result = await page.evaluate(async () => {
 			const { Fragmenter } = await import("fragmentainers");
-			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation");
+			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation.js");
 			await import("/src/handlers/index.js");
 
 			const sheet = new CSSStyleSheet();
@@ -96,7 +96,7 @@ test.describe("Footnotes in paged media (browser)", () => {
 	test("measures bodies at each page's inline size", async ({ page }) => {
 		const result = await page.evaluate(async () => {
 			const { Fragmenter } = await import("fragmentainers");
-			const { PageResolver } = await import("fragmentainers/resolvers");
+			const { PageResolver } = await import("fragmentainers/resolvers.js");
 			await import("/src/handlers/index.js");
 
 			const sheet = new CSSStyleSheet();
@@ -142,7 +142,7 @@ test.describe("Footnotes in paged media (browser)", () => {
 	test("inserts a footnote call marker with the originating tag", async ({ page }) => {
 		const result = await page.evaluate(async () => {
 			const { Fragmenter } = await import("fragmentainers");
-			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation");
+			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation.js");
 			await import("/src/handlers/index.js");
 
 			const css = ".fn { --float: footnote; }";
@@ -185,7 +185,7 @@ test.describe("Footnotes in paged media (browser)", () => {
 	test("handles multiple footnotes on the same page", async ({ page }) => {
 		const result = await page.evaluate(async () => {
 			const { Fragmenter } = await import("fragmentainers");
-			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation");
+			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation.js");
 			await import("/src/handlers/index.js");
 
 			const css = ".fn { --float: footnote; }";
@@ -235,7 +235,7 @@ test.describe("Footnotes in paged media (browser)", () => {
 	test("renders footnote bodies with their corresponding call numbers", async ({ page }) => {
 		const result = await page.evaluate(async () => {
 			const { Fragmenter } = await import("fragmentainers");
-			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation");
+			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation.js");
 			await import("/src/handlers/index.js");
 
 			const sheet = new CSSStyleSheet();
@@ -310,7 +310,7 @@ test.describe("Footnotes in paged media (browser)", () => {
 	test("footnote reduces available content space causing page break", async ({ page }) => {
 		const result = await page.evaluate(async () => {
 			const { Fragmenter } = await import("fragmentainers");
-			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation");
+			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation.js");
 			await import("/src/handlers/index.js");
 
 			const css = ".fn { --float: footnote; }";
@@ -347,7 +347,7 @@ test.describe("Footnotes in paged media (browser)", () => {
 	test("page without footnotes has no footnote area", async ({ page }) => {
 		const result = await page.evaluate(async () => {
 			const { Fragmenter } = await import("fragmentainers");
-			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation");
+			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation.js");
 			await import("/src/handlers/index.js");
 
 			const css = ".fn { --float: footnote; }";
@@ -385,7 +385,7 @@ test.describe("Footnotes in paged media (browser)", () => {
 	test("footnote call and body stay on the same page", async ({ page }) => {
 		const result = await page.evaluate(async () => {
 			const { Fragmenter } = await import("fragmentainers");
-			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation");
+			const { ConstraintSpace, FRAGMENTATION_PAGE } = await import("fragmentainers/fragmentation.js");
 			await import("/src/handlers/index.js");
 
 			const css = ".fn { --float: footnote; }";
@@ -436,7 +436,7 @@ test.describe("Footnote max-height resolution", () => {
 	test("resolves a percentage cap against the available block size", async ({ page }) => {
 		const cap = await page.evaluate(async () => {
 			const { Footnote } = await import("/src/handlers/index.js");
-			const { ConstraintSpace } = await import("fragmentainers/fragmentation");
+			const { ConstraintSpace } = await import("fragmentainers/fragmentation.js");
 			const sheet = new CSSStyleSheet();
 			sheet.insertRule(":root { --footnote-max-height: 50%; }");
 			const handler = new Footnote();
@@ -450,7 +450,7 @@ test.describe("Footnote max-height resolution", () => {
 	test("resolves an em cap without throwing", async ({ page }) => {
 		const cap = await page.evaluate(async () => {
 			const { Footnote } = await import("/src/handlers/index.js");
-			const { ConstraintSpace } = await import("fragmentainers/fragmentation");
+			const { ConstraintSpace } = await import("fragmentainers/fragmentation.js");
 			const sheet = new CSSStyleSheet();
 			sheet.insertRule(":root { --footnote-max-height: 10em; }");
 			const handler = new Footnote();

@@ -1,5 +1,5 @@
-import { FixedPosition } from "fragmentainers/handlers";
-import { FRAGMENTATION_PAGE } from "fragmentainers/fragmentation";
+import { FixedPosition } from "fragmentainers/handlers.js";
+import { FRAGMENTATION_PAGE } from "fragmentainers/fragmentation.js";
 
 const ANCHOR_BLOCK_END = "block-end";
 const ANCHOR_BLOCK_START = "block-start";
@@ -118,9 +118,9 @@ export class NestedFixedPosition extends FixedPosition {
 	 * Adds extracted nested fixed subtrees after the core handler composes its
 	 * top-level fixed boxes.
 	 *
-	 * @param {import("fragmentainers/layout").LayoutNode} rootNode - Layout root.
+	 * @param {import("fragmentainers/layout.js").LayoutNode} rootNode - Layout root.
 	 * @param {import("fragmentainers").ConstraintSpace} constraintSpace - Page constraints.
-	 * @param {import("fragmentainers/fragmentation").BreakToken|null} breakToken - Resume token.
+	 * @param {import("fragmentainers/fragmentation.js").BreakToken|null} breakToken - Resume token.
 	 * @param {Function} layoutChild - Child layout callback used by the core handler.
 	 * @returns {{ reservedBlockStart: number, reservedBlockEnd: number, afterRender: Function|null }}
 	 */

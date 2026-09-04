@@ -1,5 +1,5 @@
-import { LayoutHandler, isPseudoElement } from "fragmentainers/handlers";
-import { CounterState, parseCounterDirective } from "fragmentainers/fragmentation";
+import { LayoutHandler, isPseudoElement } from "fragmentainers/handlers.js";
+import { CounterState, parseCounterDirective } from "fragmentainers/fragmentation.js";
 import { cssString, splitTopLevel, unquote } from "../utils/css.js";
 import {
 	collectReferences,

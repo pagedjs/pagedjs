@@ -1,8 +1,8 @@
 import { LayoutHandler } from "fragmentainers";
-import { markNativePseudo } from "fragmentainers/handlers";
-import { FragmentFlow } from "fragmentainers/fragmentation";
-import { DOMLayoutNode } from "fragmentainers/layout";
-import { parseNumeric, toPx } from "fragmentainers/styles";
+import { markNativePseudo } from "fragmentainers/handlers.js";
+import { FragmentFlow } from "fragmentainers/fragmentation.js";
+import { DOMLayoutNode } from "fragmentainers/layout.js";
+import { parseNumeric, toPx } from "fragmentainers/styles.js";
 
 // The vocabulary the CSS rewrite and the runtime have to agree on.
 const FLOAT = "--float";
@@ -383,7 +383,7 @@ export class Footnote extends LayoutHandler {
 	 * fragmentainer's geometry reads. Attaching and resizing are writes, so
 	 * they ride the engine's flush; a page as wide as the last costs nothing.
 	 *
-	 * @param {import("fragmentainers/fragmentation").ConstraintSpace} constraintSpace
+	 * @param {import("fragmentainers/fragmentation.js").ConstraintSpace} constraintSpace
 	 */
 	applyConstraintSpace(constraintSpace) {
 		if (this.#footnoteMap.size === 0) return;

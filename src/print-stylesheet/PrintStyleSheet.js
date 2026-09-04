@@ -1,4 +1,3 @@
-import * as csstree from "css-tree";
 import { Fragmenter } from "fragmentainers";
 import { CssTransformer } from "../css-transformer/CssTransformer.js";
 import { collectAllPageData } from "./utils/pageData.js";
@@ -64,7 +63,7 @@ export class PrintStyleSheet extends CSSStyleSheet {
 
 		transformer.apply(combined);
 
-		await this.replace(csstree.generate(combined));
+		await this.replace(transformer.generate(combined));
 
 		for (const rule of buildPagedVariableRules(this.#pageData)) {
 			this.insertRule(rule, this.cssRules.length);

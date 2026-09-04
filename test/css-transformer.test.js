@@ -4,7 +4,6 @@ test.describe("CssTransformer", () => {
 	test("keeps each instance's rules to itself", async ({ page }) => {
 		const results = await page.evaluate(async () => {
 			const __results = [];
-			const csstree = await import("css-tree");
 			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
 			const renameRule = (from, to) => ({
 				type: "declaration",
@@ -13,14 +12,92 @@ test.describe("CssTransformer", () => {
 			});
 			const a = new CssTransformer({ rules: [renameRule("color", "--a")] });
 			const b = new CssTransformer({ rules: [renameRule("color", "--b")] });
-			const fromA = csstree.generate(a.apply(await a.prepare("p { color: red; }")));
-			const fromB = csstree.generate(b.apply(await b.prepare("p { color: red; }")));
+			const fromA = a.generate(a.apply(await a.prepare("p { color: red; }")));
+			const fromB = b.generate(b.apply(await b.prepare("p { color: red; }")));
 			__results.push({ actual: fromA, args: ["p{--a:red}"], label: undefined });
 			__results.push({ actual: fromB, args: ["p{--b:red}"], label: undefined });
 			return __results;
 		});
 		expect(results[0].actual, results[0].label).toBe(...results[0].args);
 		expect(results[1].actual, results[1].label).toBe(...results[1].args);
+	});
+
+	test("generates prepared CSS without applying rules or mutating the AST", async ({ page }) => {
+		const result = await page.evaluate(async () => {
+			const csstree = await import("css-tree");
+			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			let calls = 0;
+			const transformer = new CssTransformer({
+				rules: [{
+					type: "declaration",
+					match: () => true,
+					transform: () => {
+						calls++;
+						return { value: "blue" };
+					},
+				}],
+			});
+			const ast = await transformer.prepare("p { color: red; }");
+			const before = csstree.toPlainObject(csstree.clone(ast));
+			const firstRule = ast.children.first;
+			const css = transformer.generate(ast);
+			return {
+				css,
+				calls,
+				before,
+				after: csstree.toPlainObject(csstree.clone(ast)),
+				sameRule: ast.children.first === firstRule,
+			};
+		});
+		expect(result.css).toBe("p{color:red}");
+		expect(result.calls).toBe(0);
+		expect(result.after).toEqual(result.before);
+		expect(result.sameRule).toBe(true);
+	});
+
+	test("generates transformed CSS repeatedly without rerunning rules or mutating the AST", async ({ page }) => {
+		const result = await page.evaluate(async () => {
+			const csstree = await import("css-tree");
+			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			let calls = 0;
+			const transformer = new CssTransformer({
+				rules: [{
+					type: "declaration",
+					match: () => true,
+					transform: () => ({ value: `var(--pass-${++calls})` }),
+				}],
+			});
+			const prepared = await transformer.prepare("p { color: red; }");
+			const ast = transformer.apply(prepared);
+			const before = csstree.toPlainObject(csstree.clone(ast));
+			const firstRule = ast.children.first;
+			const css = transformer.generate(ast);
+			const repeatedCSS = transformer.generate(ast);
+			return {
+				css,
+				repeatedCSS,
+				calls,
+				before,
+				after: csstree.toPlainObject(csstree.clone(ast)),
+				sameAST: ast === prepared,
+				sameRule: ast.children.first === firstRule,
+			};
+		});
+		expect(result.css).toBe("p{color:var(--pass-1)}");
+		expect(result.repeatedCSS).toBe(result.css);
+		expect(result.calls).toBe(1);
+		expect(result.after).toEqual(result.before);
+		expect(result.sameAST).toBe(true);
+		expect(result.sameRule).toBe(true);
+	});
+
+	test("generates an empty string for an empty stylesheet", async ({ page }) => {
+		const css = await page.evaluate(async () => {
+			const { CssTransformer } = await import("/src/css-transformer/CssTransformer.js");
+			const transformer = new CssTransformer();
+			return transformer.generate(await transformer.prepare(""));
+		});
+		expect(css).toBe("");
 	});
 
 	test("runs a walker only when rules of its type exist", async ({ page }) => {

@@ -112,4 +112,14 @@ export class CssTransformer {
 		}
 		return ast;
 	}
+
+	/**
+	 * Serialize an AST without applying rules or modifying its nodes.
+	 *
+	 * @param {import("css-tree").CssNode} ast The AST to serialize.
+	 * @returns {string} Generated CSS text.
+	 */
+	generate(ast) {
+		return csstree.generate(ast);
+	}
 }

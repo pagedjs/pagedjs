@@ -1367,8 +1367,15 @@ class Layout {
 		} else {
 			position = position.parentElement;
 		}
+		// The `position !== rendered` guard is evaluated before `position` moves
+		// up, so the last iteration tags `rendered` itself. findOverflow() bails
+		// out on a tagged root, so the page then reports no overflow at all even
+		// while hasOverflow() is true, and its remaining content is never split.
 		while (!position.nextElementSibling && position !== rendered) {
 			position = position.parentElement;
+			if (position === rendered) {
+				break;
+			}
 			position.dataset.overflowTagged = true;
 		}
 

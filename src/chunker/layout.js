@@ -348,6 +348,19 @@ class Layout {
 			// console.log([].map.call(overflow.content.children, e => e.outerHTML).join('\n'));
 
 			fragment = rebuildTree(overflow.node, fragment, alreadyRendered);
+
+			// processOverflowResult pushes an Overflow into breakToken.overflow
+			// before it decides whether to extract it: when its loop detection
+			// fires ("Stop removal if we are in a loop") it returns early and
+			// leaves `content` unset. Such an entry has nothing to contribute
+			// here, and dereferencing it aborts the whole render. Skip it, as
+			// the forced-break check below already does for `firstOverflow`.
+			// The tree is rebuilt first so `fragment` is always defined for the
+			// data-ref pass after this loop.
+			if (!overflow.content) {
+				return;
+			}
+
 			// Find the parent to which overflow.content should be added.
 			// Overflow.content can be a much shallower start than
 			// overflow.node, if the range end was outside of the range

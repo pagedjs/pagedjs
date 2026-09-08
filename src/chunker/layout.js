@@ -856,13 +856,19 @@ class Layout {
 	 */
 	hasOverflow(element, bounds = this.bounds) {
 		let constrainingElement = element && element.parentNode; // this gets the element, instead of the wrapper for the width workaround
-		if (constrainingElement.classList.contains("pagedjs_page_content")) {
-			constrainingElement = element;
-		}
 		let { width, height } = element.getBoundingClientRect();
-		let scrollWidth = constrainingElement ? constrainingElement.scrollWidth : 0;
+		// .pagedjs_page_content is the multi-column box, so content that spills
+		// past the page shows up in its scrollWidth and not in `element`'s,
+		// which stays at the page width. #171 made this measure `element`
+		// whenever the parent is the content area — exactly the case where the
+		// spill is only visible on the parent — so a page could scroll to
+		// 13760px while hasOverflow() reported false. Take the larger of the
+		// two, keeping the workaround #171 wanted without losing that signal.
+		let scrollWidth = constrainingElement
+			? Math.max(constrainingElement.scrollWidth, element.scrollWidth)
+			: 0;
 		let scrollHeight = constrainingElement
-			? constrainingElement.scrollHeight
+			? Math.max(constrainingElement.scrollHeight, element.scrollHeight)
 			: 0;
 		return (
 			Math.max(Math.ceil(width), scrollWidth) > Math.ceil(bounds.width) ||

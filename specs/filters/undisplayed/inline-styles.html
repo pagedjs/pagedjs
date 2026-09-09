@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Visible inline styles preserve chapter page breaks</title>
+  <style>
+    @page { size: A5; margin: 20mm; }
+    .chapter { break-before: page; }
+  </style>
+</head>
+<body>
+  <section class="chapter" style="padding: 24px; color: red;">
+    Chapter one
+  </section>
+  <section class="chapter">
+    Chapter two
+  </section>
+  <script src="../../../dist/paged.polyfill.js"></script>
+</body>
+</html>

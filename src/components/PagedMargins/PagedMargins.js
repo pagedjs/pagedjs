@@ -34,7 +34,6 @@ export class PagedMarginBox extends LitElement {
       .assignedElements({ flatten: true }) ?? null;
   }
 
-
   render () {
     return html`<slot></slot>`;
   }
@@ -289,6 +288,19 @@ export class PagedMargins extends LitElement {
     }
 
     return null;
+  }
+
+  /**
+   * Resolves when the margins and their boxes finish updating.
+   *
+   * @returns {Promise<boolean>} Whether the margins finished without scheduling
+   *   another update.
+   */
+  async getUpdateComplete() {
+    const result = await super.getUpdateComplete();
+    const boxes = this.renderRoot?.querySelectorAll('paged-margin-box') ?? [];
+    await Promise.all(Array.from(boxes, (box) => box.updateComplete));
+    return result;
   }
 
   render () {

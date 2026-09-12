@@ -4,6 +4,30 @@ import { expandBleed } from "../utils/bleed.js";
 import "../PagedMargins/PagedMargins.js";
 
 /**
+ * Names of the sixteen page-margin boxes in CSS Paged Media Level 3 §5.
+ *
+ * @see https://www.w3.org/TR/css-page-3/#margin-boxes
+ */
+export const MARGIN_BOXES = [
+	"top-left-corner",
+	"top-left",
+	"top-center",
+	"top-right",
+	"top-right-corner",
+	"left-top",
+	"left-middle",
+	"left-bottom",
+	"right-top",
+	"right-middle",
+	"right-bottom",
+	"bottom-left-corner",
+	"bottom-left",
+	"bottom-center",
+	"bottom-right",
+	"bottom-right-corner",
+];
+
+/**
  * `<paged-page>` — A printable, CSS-controlled page component with support for
  * margins, bleed, full-page grid layout, and print sizing via the `@page` rule.
  *
@@ -13,6 +37,8 @@ import "../PagedMargins/PagedMargins.js";
  *   CSS selectors like `[name="..."]` work on both screen and print.
  * - Injects a dynamic `@page <name>` rule using `adoptedStyleSheets` when
  *   `inject` is enabled, so each page instance can have unique print dimensions.
+ * - Forwards slots named by {@link MARGIN_BOXES} to the corresponding box in
+ *   the default `<paged-margins>` element.
  *
  * @element paged-page
  *
@@ -393,6 +419,41 @@ export class PagedPage extends LitElement {
     return this.querySelector(":scope > :not([slot])") ?? null;
   }
 
+  /**
+   * Returns the assigned `<paged-margins>` element or the default fallback.
+   *
+   * @returns {Element|null} The margins element, or `null` when unavailable.
+   */
+  get marginsArea() {
+    const slot = this.renderRoot?.querySelector("slot[name='margins']");
+    const assigned = slot?.assignedElements({ flatten: true }) ?? [];
+    return assigned.find((node) => node.localName === "paged-margins") ?? null;
+  }
+
+  /**
+   * Returns a rendered margin box by its CSS Paged Media name.
+   *
+   * @param {string} name - One of {@link MARGIN_BOXES}.
+   * @returns {Element|null} The matching box, or `null` when unavailable.
+   */
+  marginBox(name) {
+    const margins = this.marginsArea;
+    const root = margins?.renderRoot ?? margins?.shadowRoot;
+    return root?.getElementById?.(name) ?? root?.querySelector(`#${name}`) ?? null;
+  }
+
+  /**
+   * Resolves when the page and its margins finish updating.
+   *
+   * @returns {Promise<boolean>} Whether the page finished without scheduling
+   *   another update.
+   */
+  async getUpdateComplete() {
+    const result = await super.getUpdateComplete();
+    await this.marginsArea?.updateComplete;
+    return result;
+  }
+
   firstUpdated() {
     this.dispatchEvent(
       new CustomEvent("first-updated", { detail: null, bubbles: false }),
@@ -458,6 +519,7 @@ export class PagedPage extends LitElement {
               bottom-left-corner, bottom-left, bottom-center, bottom-right,
               bottom-right-corner"
             >
+              ${MARGIN_BOXES.map((box) => html`<slot name=${box} slot=${box}></slot>`)}
             </paged-margins>
           </slot>
         </div>

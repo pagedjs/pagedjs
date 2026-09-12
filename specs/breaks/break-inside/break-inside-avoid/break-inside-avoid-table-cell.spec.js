@@ -1,19 +1,15 @@
-const TIMEOUT = 10000; // Some book might take longer than this to renderer
+import { test, expect } from "../../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../../test_helpers/constants.js";
 
-describe("break-inside-avoid-table-cell", () => {
+
+test.describe("break-inside-avoid-table-cell", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("breaks/break-inside/break-inside-avoid/break-inside-avoid-table-cell.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	xit("should render 2 pages", async () => {
+
+	test.skip("should render 2 pages", async () => {
 		let pages = await page.$$eval(".pagedjs_page", (r) => {
 			return r.length;
 		});
@@ -22,11 +18,10 @@ describe("break-inside-avoid-table-cell", () => {
 	});
 
 	if (!DEBUG) {
-		xit("should create a pdf", async () => {
+		test.skip("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(1);
-			expect(pdf).toMatchPDFSnapshot(2);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 });

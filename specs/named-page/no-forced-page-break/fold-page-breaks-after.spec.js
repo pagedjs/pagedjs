@@ -1,19 +1,15 @@
-const TIMEOUT = 10000;
+import { test, expect } from "../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
-describe("fold-page-breaks-after", () => {
+
+test.describe("fold-page-breaks-after", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("named-page/no-forced-page-break/fold-page-breaks-after.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	it("should fold page breaks after", async () => {
+
+	test("should fold page breaks after", async () => {
 		let pages = await page.$$eval(".pagedjs_page", (r) => {
 			return r.length;
 		});
@@ -22,13 +18,10 @@ describe("fold-page-breaks-after", () => {
 	});
 
 	if (!DEBUG) {
-		it("should create a pdf", async () => {
+		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(1);
-			expect(pdf).toMatchPDFSnapshot(2);
-			expect(pdf).toMatchPDFSnapshot(3);
-			expect(pdf).toMatchPDFSnapshot(4);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

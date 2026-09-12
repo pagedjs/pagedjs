@@ -1,0 +1,22 @@
+import { defineConfig } from "@playwright/test";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const port = Number(process.env.PAGED_SPEC_PORT ?? 9999);
+
+export default defineConfig({
+	testDir: ".",
+	testMatch: "**/*.spec.js",
+	timeout: 10000,
+	globalTimeout: 600000,
+	webServer: {
+		command: "node test_helpers/server.js",
+		cwd: __dirname,
+		port,
+		reuseExistingServer: true,
+	},
+	use: {
+		baseURL: `http://localhost:${port}`,
+	},
+});

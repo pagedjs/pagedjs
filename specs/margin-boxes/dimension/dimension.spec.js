@@ -1,24 +1,20 @@
-const TIMEOUT = 10000;
+import { test, expect } from "../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
-describe("margin-box-dimension", () => {
+
+test.describe("margin-box-dimension", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("margin-boxes/dimension/dimension.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
 
+
 	if (!DEBUG) {
-		xit("should create a pdf", async () => {
+		test.skip("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(1);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

@@ -1,19 +1,15 @@
-const TIMEOUT = 10000;
+import { test, expect } from "../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
-describe("issue", () => {
+
+test.describe("issue", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("margin-boxes/text-align/text-align.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	xit("should render 6 pages", async () => {
+
+	test.skip("should render 6 pages", async () => {
 		let pages = await page.$$eval(".pagedjs_page", (r) => {
 			return r.length;
 		});
@@ -23,10 +19,10 @@ describe("issue", () => {
 
 
 	if (!DEBUG) {
-		xit("should create a pdf", async () => {
+		test.skip("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(1);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

@@ -1,19 +1,15 @@
-const TIMEOUT = 10000;
+import { test, expect } from "../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
-describe("multiple-named", () => {
+
+test.describe("multiple-named", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("named-page/multiple-named/multiple-named.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	it("should put contet and preamble on a single page", async () => {
+
+	test("should put contet and preamble on a single page", async () => {
 		let pages = await page.$$eval(".pagedjs_page", (r) => {
 			return r.length;
 		});
@@ -21,7 +17,7 @@ describe("multiple-named", () => {
 		expect(pages).toEqual(1);
 	});
 
-	it("should put contet and preamble on a page with a green background", async () => {
+	test("should put contet and preamble on a page with a green background", async () => {
 		let textColor = await page.$eval("#page-1", (pg) => window.getComputedStyle(pg).backgroundColor);
 
 		expect(textColor).toContain("rgb(0, 128, 0)"); // green
@@ -30,10 +26,10 @@ describe("multiple-named", () => {
 
 
 	if (!DEBUG) {
-		it("should create a pdf", async () => {
+		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(1);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 });

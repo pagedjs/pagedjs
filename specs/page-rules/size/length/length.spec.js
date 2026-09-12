@@ -1,19 +1,15 @@
-const TIMEOUT = 10000;
+import { test, expect } from "../../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../../test_helpers/constants.js";
 
-describe("length", () => {
+
+test.describe("length", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("page-rules/size/length/length.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	it("should render 1 page", async () => {
+
+	test("should render 1 page", async () => {
 		let pages = await page.$$eval(".pagedjs_page", (r) => {
 			return r.length;
 		});
@@ -21,7 +17,7 @@ describe("length", () => {
 		expect(pages).toEqual(1);
 	});
 
-	it("should give the page a width of 140mm", async () => {
+	test("should give the page a width of 140mm", async () => {
 		let width = await page.$eval(".pagedjs_page", (r) => {
 			return window.getComputedStyle(r).getPropertyValue("--pagedjs-width");
 		});
@@ -29,7 +25,7 @@ describe("length", () => {
 		expect(width).toEqual("140mm");
 	});
 
-	it("should give the page a height of 200mm", async () => {
+	test("should give the page a height of 200mm", async () => {
 		let width = await page.$eval(".pagedjs_page", (r) => {
 			return window.getComputedStyle(r).getPropertyValue("--pagedjs-height");
 		});
@@ -38,10 +34,10 @@ describe("length", () => {
 	});
 
 	if (!DEBUG) {
-		it("should create a pdf", async () => {
+		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(1);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

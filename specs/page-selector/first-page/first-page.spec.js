@@ -1,19 +1,15 @@
-const TIMEOUT = 10000; // Some book might take longer than this to renderer
+import { test, expect } from "../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
-describe("first-page", () => {
+
+test.describe("first-page", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("page-selector/first-page/first-page.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	it("should have a first page class on page 1", async () => {
+
+	test("should have a first page class on page 1", async () => {
 		let chapter = await page.$eval("[data-page-number='1']", (r) => {
 			return r.classList.contains("pagedjs_first_page");
 		});
@@ -21,7 +17,7 @@ describe("first-page", () => {
 		expect(chapter).toBe(true);
 	});
 
-	it("should not give page 2 a first page class", async () => {
+	test("should not give page 2 a first page class", async () => {
 		let chapter = await page.$eval("[data-page-number='2']", (r) => {
 			return r.classList.contains("pagedjs_first_page");
 		});
@@ -30,11 +26,10 @@ describe("first-page", () => {
 	});
 
 	if (!DEBUG) {
-		it("should create a pdf", async () => {
+		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(1);
-			expect(pdf).toMatchPDFSnapshot(2);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

@@ -1,19 +1,15 @@
-const TIMEOUT = 10000;
+import { test, expect } from "../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
-describe("footnotes-styles", () => {
+
+test.describe("footnotes-styles", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("notes/footnotes-styles/footnotes-styles.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	it("should render 2 pages", async () => {
+
+	test("should render 2 pages", async () => {
 		let pages = await page.$$eval(".pagedjs_page", (r) => {
 			return r.length;
 		});
@@ -21,26 +17,26 @@ describe("footnotes-styles", () => {
 		expect(pages).toEqual(2);
 	});
 
-	it("should have three callouts on page 1", async () => {
+	test("should have three callouts on page 1", async () => {
 		let callouts = await page.$$eval("[data-page-number='1'] [data-footnote-call]", (r) => r.length);
 		expect(callouts).toEqual(3);
 	});
 
-	it("should have red colored callouts", async () => {
+	test("should have red colored callouts", async () => {
 		let color = await page.$eval("[data-page-number='1'] [data-footnote-call]", (r) => window.getComputedStyle(r, "::after").color);
 		expect(color).toContain("rgb(255, 0, 0)"); // red
 	});
 
-	it("should have 30px font-size for callouts", async () => {
+	test("should have 30px font-size for callouts", async () => {
 		let size = await page.$eval("[data-page-number='1'] [data-footnote-call]", (r) => window.getComputedStyle(r, "::after").fontSize);
 		expect(size).toEqual("30px");
 	});
 
 	if (!DEBUG) {
-		it("should create a pdf", async () => {
+		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(1);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

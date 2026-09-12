@@ -1,19 +1,15 @@
-const TIMEOUT = 10000; // Some book might take longer than this to renderer
+import { test, expect } from "../../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../../test_helpers/constants.js";
 
-describe("break-after-right", () => {
+
+test.describe("break-after-right", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("breaks/break-after/break-after-right/break-after-right.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	it("should render 39 pages", async () => {
+
+	test("should render 39 pages", async () => {
 		let pages = await page.$$eval(".pagedjs_page", (r) => {
 			return r.length;
 		});
@@ -21,7 +17,7 @@ describe("break-after-right", () => {
 		expect(pages).toEqual(39);
 	});
 
-	it("should render page 2 as blank", async () => {
+	test("should render page 2 as blank", async () => {
 		let isBlank = await page.$eval("[data-page-number='2']", (r) => {
 			return r.classList.contains("pagedjs_blank_page");
 		});
@@ -29,7 +25,7 @@ describe("break-after-right", () => {
 		expect(isBlank).toEqual(true);
 	});
 
-	it("should render page 3 as right", async () => {
+	test("should render page 3 as right", async () => {
 		let isRight = await page.$eval("[data-page-number='3']", (r) => {
 			return r.classList.contains("pagedjs_right_page");
 		});
@@ -37,13 +33,13 @@ describe("break-after-right", () => {
 		expect(isRight).toEqual(true);
 	});
 
-	it("page 3 should be Section 1", async () => {
+	test("page 3 should be Section 1", async () => {
 		let text = await page.$eval("[data-page-number='3']", (r) => r.textContent);
 
 		expect(text).toContain("Section 1");
 	});
 
-	it("should render page 5 as right", async () => {
+	test("should render page 5 as right", async () => {
 		let isRight = await page.$eval("[data-page-number='5']", (r) => {
 			return r.classList.contains("pagedjs_right_page");
 		});
@@ -51,13 +47,13 @@ describe("break-after-right", () => {
 		expect(isRight).toEqual(true);
 	});
 
-	it("page 5 should be Section 2", async () => {
+	test("page 5 should be Section 2", async () => {
 		let text = await page.$eval("[data-page-number='5']", (r) => r.textContent);
 
 		expect(text).toContain("Section 2");
 	});
 
-	it("should render page 8 as blank", async () => {
+	test("should render page 8 as blank", async () => {
 		let isBlank = await page.$eval("[data-page-number='8']", (r) => {
 			return r.classList.contains("pagedjs_blank_page");
 		});
@@ -65,7 +61,7 @@ describe("break-after-right", () => {
 		expect(isBlank).toEqual(true);
 	});
 
-	it("should render page 9 as right", async () => {
+	test("should render page 9 as right", async () => {
 		let isRight = await page.$eval("[data-page-number='9']", (r) => {
 			return r.classList.contains("pagedjs_right_page");
 		});
@@ -73,19 +69,19 @@ describe("break-after-right", () => {
 		expect(isRight).toEqual(true);
 	});
 
-	it("page 9 should be Section 3", async () => {
+	test("page 9 should be Section 3", async () => {
 		let text = await page.$eval("[data-page-number='9']", (r) => r.textContent);
 
 		expect(text).toContain("Section 3");
 	});
 
-	it("page 10 should break after h2", async () => {
+	test("page 10 should break after h2", async () => {
 		let text = await page.$eval("[data-page-number='10']", (r) => r.textContent);
 
 		expect(text.trim()).toEqual("A - h2 (inline element)");
 	});
 
-	it("should render page 11 as right", async () => {
+	test("should render page 11 as right", async () => {
 		let isRight = await page.$eval("[data-page-number='11']", (r) => {
 			return r.classList.contains("pagedjs_right_page");
 		});
@@ -94,16 +90,10 @@ describe("break-after-right", () => {
 	});
 
 	if (!DEBUG) {
-		it("should create a pdf", async () => {
+		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(2);
-			expect(pdf).toMatchPDFSnapshot(3);
-			expect(pdf).toMatchPDFSnapshot(5);
-			expect(pdf).toMatchPDFSnapshot(7);
-			expect(pdf).toMatchPDFSnapshot(9);
-			expect(pdf).toMatchPDFSnapshot(10);
-			expect(pdf).toMatchPDFSnapshot(11);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

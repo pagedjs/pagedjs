@@ -183,7 +183,7 @@ $ npm run legacy
 
 ## Testing
 
-Testing for Paged.js uses [Jest](https://facebook.github.io/jest/en/) but is split into Tests and Specs.
+Testing for Paged.js uses [Vitest](https://vitest.dev) but is split into Tests and Specs.
 
 ### Tests
 
@@ -199,33 +199,12 @@ Specs run a html file in Chrome (using puppeteer) to test against CSS specificat
 
 They can also output a pdf and compare pages (one at a time) in that PDF with samples PDFs (saved as images).
 
-The PDF comparison tests depend on the `ghostscript` and the `ghostscript4js` package.
+The PDF comparison tests depend on the `pdf-to-img` package, which uses `pdf.js` to render PDFs into image files.
 
-It is recomend to run these in the Docker container below via:
+It is recommend to run these in the Docker container below via:
 
 ```bash
 npm run docker-specs
-```
-
-However if you'd like to run the specs outside of Docker, you'll need to install a local version of Ghostscript for your system according to https://www.npmjs.com/package/ghostscript4js#prerequisites
-
-For Mac you can install it with
-
-```bash
-brew install ghostscript
-```
-
-For Debian you can install it with
-
-```bash
-sudo apt-get install ghostscript
-sudo apt-get install libgs-dev
-```
-
-Now you can install the `ghostscript4js` library. For Linux you can optionally pass the location ghostscript was installed to in `GS4JS_HOME`.
-
-```bash
-GS4JS_HOME="/usr/lib/$(gcc -dumpmachine)" npm install ghostscript4js
 ```
 
 To test the pdf output of specs, you'll need to build the library locally.
@@ -234,7 +213,7 @@ To test the pdf output of specs, you'll need to build the library locally.
 npm run build
 ```
 
-Then run the jest tests in puppeteer.
+Then run the tests in playwright.
 
 ```bash
 npm run specs
@@ -268,13 +247,13 @@ By default the container will run the development server with `npm start`
 docker run -it -p 9090:9090 pagedmedia/pagedjs
 ```
 
-The tests and specs can be run within the container by passing a `seccomp` file for Chrome and running `npm test`
+The tests and specs can be run within the container by running `npm test`
 
 ```bash
-docker run -it --security-opt 'seccomp=seccomp.json' pagedmedia/pagedjs npm test && npm run specs
+docker run -it pagedmedia/pagedjs npm test && npm run specs
 ```
 
 
-## Licence
+## License
 
 MIT License (MIT), which you can read [here](https://github.com/pagedjs/pagedjs-cli?tab=MIT-1-ov-file)

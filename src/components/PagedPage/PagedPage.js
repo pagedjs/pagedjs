@@ -16,7 +16,7 @@ import { cross } from "../utils/assets";
  * @element paged-page
  *
  * @slot - Main content of the page, placed inside the page-area grid region.
- * @slot - Slot to insert custom margins; replaces default paged-margins component. 
+ * @slot - Slot to insert custom margins; replaces default paged-margins component.
  *
  * @csspart page-area - The main printable content area.
  *
@@ -143,7 +143,7 @@ export class PagedPage extends LitElement {
       }
     }
 
-    .page-margins, 
+    .page-margins,
     .page-marks {
       display: contents;
     }
@@ -335,8 +335,8 @@ export class PagedPage extends LitElement {
          size: calc(var(--paged-bleed, 0mm) + ${this.width} + var(--paged-bleed, 0mm))
                calc(var(--paged-bleed, 0mm) + ${this.height} + var(--paged-bleed, 0mm));
       }
-      
- 
+
+
       [name="${this.name}"] {
         page: ${this.name};
         --paged-bleed: ${this.bleed};
@@ -446,7 +446,7 @@ function getMargin(string) {
       `);
       break;
     case 3: // top right bottom right
-      margins.push(css` 
+      margins.push(css`
         --paged-margin-top: ${unsafeCSS(units[0])};
         --paged-margin-right: ${unsafeCSS(units[1])};
         --paged-margin-bottom: ${unsafeCSS(units[2])};
@@ -454,7 +454,7 @@ function getMargin(string) {
       }`);
       break;
     case 2: // top right top right
-      margins.push(css` 
+      margins.push(css`
         --paged-margin-top: ${unsafeCSS(units[0])};
         --paged-margin-right: ${unsafeCSS(units[1])};
         --paged-margin-bottom: ${unsafeCSS(units[0])};
@@ -462,7 +462,7 @@ function getMargin(string) {
       });`);
       break;
     default: // top top top top
-      margins.push(css` 
+      margins.push(css`
         --paged-margin-top: ${unsafeCSS(units[0])};
         --paged-margin-right: ${unsafeCSS(units[0])};
         --paged-margin-bottom: ${unsafeCSS(units[0])};

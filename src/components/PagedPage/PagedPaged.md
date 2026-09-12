@@ -1,7 +1,7 @@
 
 # PagedPage
 
-The **`paged-page`** component represents a printable page with full CSS-controlled geometry, dynamic `@page` sizing, bleed, page-marks, and integrated margin-box rendering via `<paged-margins>`.  
+The **`paged-page`** component represents a printable page with full CSS-controlled geometry, dynamic `@page` sizing, bleed, page-marks, and integrated margin-box rendering via `<paged-margins>`.
 It is designed to work seamlessly with `<paged-margins>` but can also be used by itself.
 
 Each page instance auto-generates a unique `@page <name>` rule so that print and preview rendering stay synchronized.
@@ -66,7 +66,7 @@ Copy code
 
 ## Page Layout Diagram
 
-Below is an SVG illustrating how `<paged-page>` constructs its layout:  
+Below is an SVG illustrating how `<paged-page>` constructs its layout:
 **Bleed → Margin → Page-Area**
 
 svg
@@ -184,9 +184,8 @@ Copy code
 When `bleed != "0mm"`:
 
 *   `"cross"` creates registration cross marks
-    
+
 *   `"crop"` draws crop lines around the bleed box
-    
+
 
 - - -
-

@@ -15,7 +15,7 @@ export class PagedDocument extends LitElement {
    */
   get pages () {
     const slot = this.renderRoot.querySelector('slot');
-    
+
     if (slot) {
       return slot.assignedElements({ flatten: true });
     }
@@ -34,7 +34,7 @@ export class PagedDocument extends LitElement {
 
   /**
    * Set indexes on pages.
-   * 
+   *
    * Not sure this is necessary. Would prevent a reordering workflow.
    * Unless that is done through order declarations
    */
@@ -62,4 +62,3 @@ export class PagedDocument extends LitElement {
 }
 
 customElements.define("paged-document", PagedDocument);
-

@@ -83,7 +83,7 @@
   </paged-horizontal-margin>
 
   <h3>Styling</h3>
-  
+
   <p>
     Margin can be styled through an element selector. Specific boxes van be targeted with an
     attribute selector.
@@ -124,7 +124,7 @@
       right
     </paged-margin-box>
   </paged-horizontal-margin>
-  
+
   <h3>Overwrite alignment with an hierarchical selector</h3>
   <p>Overwrite the alignment of all margin boxes within a <code>paged-horizontal-margin</code>.</p>
   <style>
@@ -246,7 +246,7 @@
 
     /**
      * Measure intrinsic width of content in the slot.
-     * 
+     *
      * @param {Array} nodes Nodes to measure
      * @returns int
      */
@@ -319,7 +319,7 @@
           // left & right
           const outerwidths = contentWidthLeft + contentWidthRight;
           const newLeftWidth = contentWidthLeft * 100 / outerwidths;
-          gridTemplateColumnsString = "minmax(16.66%, " + newLeftWidth + "%) 0 1fr";							
+          gridTemplateColumnsString = "minmax(16.66%, " + newLeftWidth + "%) 0 1fr";
         }
         else {
           // only left
@@ -330,7 +330,7 @@
         // only right
         gridTemplateColumnsString = '0 0 1fr'
       }
-  
+
       marginBox.style.gridTemplateColumns = gridTemplateColumnsString;
     });
   </script>

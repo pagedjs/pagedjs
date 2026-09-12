@@ -16,7 +16,7 @@ used with a paged-page component. But can also be used by itself:
 
 ### Assigning content
 
-The paged-margins component renders a series of page-margin boxes. Content can be assigned through CSS, as defined in the standard, or the DOM, beyond the standard. 
+The paged-margins component renders a series of page-margin boxes. Content can be assigned through CSS, as defined in the standard, or the DOM, beyond the standard.
 
 #### CSS
 
@@ -132,7 +132,7 @@ The following sample changes the font-style and background for the bottom-center
 
 As defined in the W3C specification the width and height of the corner page-margin boxes is fixed and defined by the margin size. The space in between the corners is divided into three boxes which have either a variable width on the top and bottom of the page, or a variable height on the left and right side of the page. The page-margin component wraps these boxes in a margin-box-group and uses a grid to control the dimensions of the boxes in the group.
 
-The component exposes five parts to select either all, or an individual group allowing to change the grid and thus the size of the boxes. 
+The component exposes five parts to select either all, or an individual group allowing to change the grid and thus the size of the boxes.
 
 | Part | Description |
 | ---- | ----------- |
@@ -160,7 +160,7 @@ The following sample adjusts the grid of the margin-box-group-top to make the to
     background: black;
     font-weight: bold;
   }
-  
+
   paged-margins::part(top-center)::before {
     content: "Hello, world!";
   }
@@ -171,7 +171,7 @@ The following sample adjusts the grid of the margin-box-group-top to make the to
 
 ### Special parts (groups)
 
-In addition to the individual boxes the component also offers parts to target all the page-margin boxes or a side of the sheet. The corner boxes are always part of two sides, example, the top-left-corner box will be targeted by both the `left` as well as the `top`-part. 
+In addition to the individual boxes the component also offers parts to target all the page-margin boxes or a side of the sheet. The corner boxes are always part of two sides, example, the top-left-corner box will be targeted by both the `left` as well as the `top`-part.
 
 | Part | Description |
 | ---- | ----------- |

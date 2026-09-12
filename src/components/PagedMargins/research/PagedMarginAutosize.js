@@ -9,15 +9,15 @@ import { LitElement, html, css } from "lit";
  *      slot
  *    PagedMarginBoxAutosize
  *      slot
- * 
- * 
- * The PagedMarginBoxAutosize measures length of its slotted content after 
+ *
+ *
+ * The PagedMarginBoxAutosize measures length of its slotted content after
  * it is added to DOM. It then emits an event `intrinsic-content-width`.
- * 
+ *
  * PagedHorizontalMarginAutosize listens for this event. When it receives it
  * it will update its internal registry and update sizes of the content
  * boxes by updating template column string.
- * 
+ *
  * At the moment changes in the element are not recognized.
  * slotchange event exists but only fires when nodes are added or removed.
  */
@@ -40,7 +40,7 @@ export class PagedMarginBoxAutosize extends LitElement {
 
   /**
    * Measure intrinsic width of content in the slot.
-   * 
+   *
    * @param {Array} nodes Nodes to measure
    * @returns int
    */
@@ -94,7 +94,7 @@ export class PagedHorizontalMarginAutosize extends LitElement {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
   }
-   
+
   paged-margin-box-autosize[position="center"] {
     text-align: center;
     justify-content: center;
@@ -147,7 +147,7 @@ export class PagedHorizontalMarginAutosize extends LitElement {
       if (this.contentWidth.right > 0) {
         const outerwidths = this.contentWidth.left + this.contentWidth.right;
         const newLeftWidth = this.contentWidth.left * 100 / outerwidths;
-        gridTemplateColumnsString = "minmax(16.66%, " + newLeftWidth + "%) 0 1fr";							
+        gridTemplateColumnsString = "minmax(16.66%, " + newLeftWidth + "%) 0 1fr";
       }
       else {
         gridTemplateColumnsString = '1fr 0 0';
@@ -156,7 +156,7 @@ export class PagedHorizontalMarginAutosize extends LitElement {
     else if (this.contentWidth.right > 0) {
       gridTemplateColumnsString = '0 0 1fr'
     }
- 
+
     this.style.gridTemplateColumns = gridTemplateColumnsString;
   }
 

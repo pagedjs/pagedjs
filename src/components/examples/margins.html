@@ -41,7 +41,7 @@
     ::part(bottom-center) {
       background: green;
     }
-    
+
 
     paged-margins {
       width: 210mm;
@@ -56,11 +56,11 @@
       --margin-right: 15mm;
       --margin-bottom: 15mm;
       --margin-left: 15mm;
-      
+
       width: 200mm;
       height: 200mm;
       margin: 5mm;
-      
+
       display: grid;
       grid-template-columns:
         [bleed-left-start] var(--bleed)
@@ -69,7 +69,7 @@
         [margin-right-start page-area-end] var(--margin-right)
         [margin-right-end bleed-right-start] var(--bleed)
         [bleed-right-end];
-      grid-template-rows: 
+      grid-template-rows:
         [bleed-top-start] var(--bleed)
         [bleed-top-end margin-top-start] var(--margin-top)
         [margin-top-end page-area-start] 1fr
@@ -80,7 +80,7 @@
         ". . . . ."
         ". top-left-corner top top-right-corner ."
         ". left page-area right ."
-        ". bottom-left-corner bottom bottom-right-corner ." 
+        ". bottom-left-corner bottom bottom-right-corner ."
         ". . . . .";
     }
 
@@ -91,7 +91,7 @@
       grid-column: 2 / span 3;
       grid-row: 2 / span 3;
     }
-      
+
     .grid .bleed {
       grid-column: bleed-left-start / bleed-right-end;
       grid-row: bleed-top-start / bleed-bottom-end;
@@ -115,6 +115,6 @@
   <h2>As a subgrid</h2>
   <div class="grid">
     <div class="bleed"></div>
-    <paged-margins></paged-margins> 
+    <paged-margins></paged-margins>
   </div>
 </body>

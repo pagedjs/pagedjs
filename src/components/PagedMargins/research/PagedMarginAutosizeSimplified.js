@@ -9,15 +9,15 @@ import { LitElement, html, css } from "lit";
  *      slot
  *    PagedMarginBoxAutosize
  *      slot
- * 
- * 
- * The PagedMarginBoxAutosize measures length of its slotted content after 
+ *
+ *
+ * The PagedMarginBoxAutosize measures length of its slotted content after
  * it is added to DOM. It then emits an event `intrinsic-content-width`.
- * 
+ *
  * PagedHorizontalMarginAutosize listens for this event. When it receives it
  * it will update its internal registry and update sizes of the content
  * boxes by updating template column string.
- * 
+ *
  * At the moment changes in the element are not recognized.
  * slotchange event exists but only fires when nodes are added or removed.
  */
@@ -41,7 +41,7 @@ export class PagedHorizontalMarginAutosizeSimplified extends LitElement {
     display: flex;
     align-items: center;
   }
-   
+
   .paged_margin-center {
     text-align: center;
     justify-content: center;

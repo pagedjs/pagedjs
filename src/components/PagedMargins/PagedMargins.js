@@ -4,9 +4,9 @@ import { LitElement, html, css } from "lit";
 /**
  * `<paged-margin-box>` - private component used within the PagedMargins
  * Shadow DOM. It exposes two properties giving access to *slotted* content.
- * 
+ *
  * @element paged-margin-box
- * 
+ *
  * @slot - The content to be displayed in the margin
  */
 export class PagedMarginBox extends LitElement {
@@ -16,7 +16,7 @@ export class PagedMarginBox extends LitElement {
 
   /**
    * Returns the nodes slotted in the marginBox.
-   * 
+   *
    * @returns {Node[]|null} - Array of slotted nodes or null
    */
   get slottedNodes () {
@@ -26,7 +26,7 @@ export class PagedMarginBox extends LitElement {
 
   /**
    * Returns the elements slotted in the marginBox.
-   * 
+   *
    * @returns {Element[]|null} - Array of slotted elements or null
    */
   get slottedElements () {
@@ -43,11 +43,11 @@ export class PagedMarginBox extends LitElement {
 
 /**
  * `<paged-margin-content>` - Component used to assign text
- * content to a PagedMarginBox. 
- * 
- * 
+ * content to a PagedMarginBox.
+ *
+ *
  * @element paged-margin-content
- * 
+ *
  * @slot - The content to be inserted into the margin
  */
 export class PagedMarginContent extends LitElement {
@@ -63,24 +63,24 @@ export class PagedMarginContent extends LitElement {
 
 /**
  * Object with references to the PagedMarginBoxes within a PagedMargins component.
- * 
+ *
  * @typedef {Object} PagedMarginsMarginBoxes
  * @property {null|PagedMarginBox} topLeftCorner - the top left corner PagedMarginBox, or null
- * @property {null|PagedMarginBox} topLeft - the top left PagedMarginBox, or null 
- * @property {null|PagedMarginBox} topCenter - the top center PagedMarginBox, or null 
- * @property {null|PagedMarginBox} topRight - the top right PagedMarginBox, or null 
- * @property {null|PagedMarginBox} topRightCorner - the top right corner PagedMarginBox, or null 
- * @property {null|PagedMarginBox} leftTop - the left top PagedMarginBox, or null 
- * @property {null|PagedMarginBox} leftMiddle - the left middle PagedMarginBox, or null 
- * @property {null|PagedMarginBox} leftBottom - the left bottom PagedMarginBox, or null 
- * @property {null|PagedMarginBox} rightTop - the right top PagedMarginBox, or null 
- * @property {null|PagedMarginBox} rightMiddle - the right middle PagedMarginBox, or null 
- * @property {null|PagedMarginBox} rightBottom - the right bottom PagedMarginBox, or null 
- * @property {null|PagedMarginBox} bottomLeftCorner - the bottom left corner PagedMarginBox, or null 
- * @property {null|PagedMarginBox} bottomLeft - the bottom left PagedMarginBox, or null 
- * @property {null|PagedMarginBox} bottomCenter - the bottom center PagedMarginBox, or null 
- * @property {null|PagedMarginBox} bottomRight - the bottom right PagedMarginBox, or null 
- * @property {null|PagedMarginBox} bottomRightCorner - the bottom right corner PagedMarginBox, or null 
+ * @property {null|PagedMarginBox} topLeft - the top left PagedMarginBox, or null
+ * @property {null|PagedMarginBox} topCenter - the top center PagedMarginBox, or null
+ * @property {null|PagedMarginBox} topRight - the top right PagedMarginBox, or null
+ * @property {null|PagedMarginBox} topRightCorner - the top right corner PagedMarginBox, or null
+ * @property {null|PagedMarginBox} leftTop - the left top PagedMarginBox, or null
+ * @property {null|PagedMarginBox} leftMiddle - the left middle PagedMarginBox, or null
+ * @property {null|PagedMarginBox} leftBottom - the left bottom PagedMarginBox, or null
+ * @property {null|PagedMarginBox} rightTop - the right top PagedMarginBox, or null
+ * @property {null|PagedMarginBox} rightMiddle - the right middle PagedMarginBox, or null
+ * @property {null|PagedMarginBox} rightBottom - the right bottom PagedMarginBox, or null
+ * @property {null|PagedMarginBox} bottomLeftCorner - the bottom left corner PagedMarginBox, or null
+ * @property {null|PagedMarginBox} bottomLeft - the bottom left PagedMarginBox, or null
+ * @property {null|PagedMarginBox} bottomCenter - the bottom center PagedMarginBox, or null
+ * @property {null|PagedMarginBox} bottomRight - the bottom right PagedMarginBox, or null
+ * @property {null|PagedMarginBox} bottomRightCorner - the bottom right corner PagedMarginBox, or null
  */
 
 /**
@@ -88,11 +88,11 @@ export class PagedMarginContent extends LitElement {
  * Content can be inserted through the relevant parts and a ::before, or after. Or, by
  * inserting nodes into the relevant slots. Consider using the `<paged-margin-content>`
  * to insert text content.
- * 
+ *
  * @element paged-margins
- * 
+ *
  * @property {null|PagedMarginBoxes} - References to the PagedMarginBoxes within the component.
- * 
+ *
  * @slot margin-box - all the page-margin boxes
  * @slot top - all page-margin boxes on the top side of the page, including top left corner and top right corner
  * @slot right - all page-margin boxes on the right side of the page, including top right and bottom right corner.
@@ -119,7 +119,7 @@ export class PagedMarginContent extends LitElement {
  * @slot bottom-center - bottom center page-margin box
  * @slot bottom-right - bottom right page-margin box
  * @slot bottom-right-corner - bottom right corner page-margin box
- * 
+ *
  * @csspart margin-box - all the page-margin boxes
  * @csspart top - all page-margin boxes on the top side of the page, including top left corner and top right corner
  * @csspart right - all page-margin boxes on the right side of the page, including top right and bottom right corner.
@@ -146,7 +146,7 @@ export class PagedMarginContent extends LitElement {
  * @csspart bottom-center - bottom center page-margin box
  * @csspart bottom-right - bottom right page-margin box
  * @csspart bottom-right-corner - bottom right corner page-margin box
- * 
+ *
  * @cssprop {length} --paged-margin-top 15mm Size of the top margin
  * @cssprop {length} --paged-margin-right 15mm Size of the right margin
  * @cssprop {length} --paged-margin-bottom 15mm Size of the bottom margin
@@ -166,12 +166,12 @@ export class PagedMargins extends LitElement {
 
       display: grid;
 
-      grid-template-columns: 
+      grid-template-columns:
         [margin-left-start] var(--paged-margin-left)
         [margin-left-end page-area-start] 1fr
         [margin-right-start page-area-end] var(--paged-margin-right)
         [margin-right-end];
-      
+
       grid-template-rows:
         [margin-top-start] var(--paged-margin-top)
         [margin-top-end page-area-start] 1fr
@@ -231,7 +231,7 @@ export class PagedMargins extends LitElement {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
     }
-    
+
     #left,
     #right {
       display: grid;
@@ -263,8 +263,8 @@ export class PagedMargins extends LitElement {
 
   /**
    * References to the PagedMarginBoxes within the component.
-   * 
-   * @returns {null|PagedMarginsMarginBoxes} 
+   *
+   * @returns {null|PagedMarginsMarginBoxes}
    */
   get marginBoxes () {
     if (this.renderRoot) {
@@ -312,7 +312,7 @@ export class PagedMargins extends LitElement {
       <paged-margin-box id="top-right-corner" part="margin-box top right corner top-right-corner">
         <slot name="top-right-corner"></slot>
       </paged-margin-box>
-      
+
       <div id="left" part="margin-box-group margin-box-group-left">
         <paged-margin-box id="left-top" part="margin-box left left-top">
           <slot name="left-top"></slot>
@@ -336,11 +336,11 @@ export class PagedMargins extends LitElement {
           <slot name="right-bottom"></slot>
         </paged-margin-box>
       </div>
-      
+
       <paged-margin-box id="bottom-left-corner" part="margin-box bottom left corner bottom-left-corner">
         <slot name="bottom-left-corner"></slot>
       </paged-margin-box>
-      
+
       <div id="bottom" part="margin-box-group margin-box-group-bottom">
         <paged-margin-box id="bottom-left" part="margin-box bottom bottom-left">
           <slot name="bottom-left"></slot>

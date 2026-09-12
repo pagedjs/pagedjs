@@ -1,5 +1,6 @@
 import { LitElement, html, css, unsafeCSS } from "lit";
 import { cross } from "../utils/assets.js";
+import { expandBleed } from "../utils/bleed.js";
 import "../PagedMargins/PagedMargins.js";
 
 /**
@@ -23,7 +24,11 @@ import "../PagedMargins/PagedMargins.js";
  *
  * @cssprop --paged-width - Internal CSS width used for layout.
  * @cssprop --paged-height - Internal CSS height used for layout.
- * @cssprop --paged-bleed - Extra print bleed size.
+ * @cssprop --paged-bleed - Print bleed shorthand.
+ * @cssprop --paged-bleed-top - Size of the top bleed area.
+ * @cssprop --paged-bleed-right - Size of the right bleed area.
+ * @cssprop --paged-bleed-bottom - Size of the bottom bleed area.
+ * @cssprop --paged-bleed-left - Size of the left bleed area.
  * @cssprop --paged-margin-top - Size of the top margin.
  * @cssprop --paged-margin-bottom - Size of the bottom margin.
  * @cssprop --paged-margin-left - Size of the left margin.
@@ -76,14 +81,41 @@ export class PagedPage extends LitElement {
 
     :host {
       --paged-mark-color: black;
-      --paged-bleed: 0mm;
-      --paged-width: 210mm;
-      --paged-height: 297mm;
+      --paged-auto-bleed: 0px;
+      --paged-bleed: var(--paged-auto-bleed);
+      --paged-bleed-top: var(--paged-bleed);
+      --paged-bleed-right: var(--paged-bleed);
+      --paged-bleed-bottom: var(--paged-bleed);
+      --paged-bleed-left: var(--paged-bleed);
+      --paged-width: 8.5in;
+      --paged-height: 11in;
+      --paged-margin-top: 0;
+      --paged-margin-right: 0;
+      --paged-margin-bottom: 0;
+      --paged-margin-left: 0;
+      --paged-padding-top: 0;
+      --paged-padding-right: 0;
+      --paged-padding-bottom: 0;
+      --paged-padding-left: 0;
+      --paged-border-top-width: medium;
+      --paged-border-right-width: medium;
+      --paged-border-bottom-width: medium;
+      --paged-border-left-width: medium;
+      --paged-border-top-style: none;
+      --paged-border-right-style: none;
+      --paged-border-bottom-style: none;
+      --paged-border-left-style: none;
+      --paged-border-top-color: currentcolor;
+      --paged-border-right-color: currentcolor;
+      --paged-border-bottom-color: currentcolor;
+      --paged-border-left-color: currentcolor;
 
       display: block;
       width: var(--paged-width);
       height: var(--paged-height);
       overflow: hidden;
+      contain: strict;
+      content-visibility: auto;
       break-after: page;
       margin: 0;
       padding: 0;
@@ -99,40 +131,59 @@ export class PagedPage extends LitElement {
       padding: 0;
 
       grid-template-rows:
-        [bleed-top-start] var(--paged-bleed)
+        [bleed-top-start] var(--paged-bleed-top)
         [bleed-top-end margin-top-start] var(--paged-margin-top)
         [margin-top-end page-area-start] minmax(1px, 1fr)
         [page-area-end margin-bottom-start] var(--paged-margin-bottom)
-        [margin-bottom-end bleed-bottom-start] var(--paged-bleed)
+        [margin-bottom-end bleed-bottom-start] var(--paged-bleed-bottom)
         [bleed-bottom-end];
 
       grid-template-columns:
-        [bleed-left-start] var(--paged-bleed)
+        [bleed-left-start] var(--paged-bleed-left)
         [bleed-left-end margin-left-start] var(--paged-margin-left)
         [margin-left-end page-area-start] 1fr
         [page-area-end margin-right-start] var(--paged-margin-right)
-        [margin-right-end bleed-right-start] var(--paged-bleed)
+        [margin-right-end bleed-right-start] var(--paged-bleed-right)
         [bleed-right-end];
     }
 
-    // ::target(top) {
-    // grid-area: margin-top;
-    // }
-
-    .page-area {
+    .page-box {
       grid-column: page-area-start / page-area-end;
       grid-row: page-area-start / page-area-end;
-      /*the page-area has an overflow:hidden to follow the W3C specifications, but it can be overriden with the author css.*/
-      // overflow: hidden;
-      // display: flex;
-      // flex-direction: column;
+      box-sizing: border-box;
       width: 100%;
       height: 100%;
+      min-width: 0;
+      min-height: 0;
+      padding:
+        var(--paged-padding-top)
+        var(--paged-padding-right)
+        var(--paged-padding-bottom)
+        var(--paged-padding-left);
+      border-width:
+        var(--paged-border-top-width)
+        var(--paged-border-right-width)
+        var(--paged-border-bottom-width)
+        var(--paged-border-left-width);
+      border-style:
+        var(--paged-border-top-style)
+        var(--paged-border-right-style)
+        var(--paged-border-bottom-style)
+        var(--paged-border-left-style);
+      border-color:
+        var(--paged-border-top-color)
+        var(--paged-border-right-color)
+        var(--paged-border-bottom-color)
+        var(--paged-border-left-color);
+      z-index: 0;
     }
 
-    // .page-area .pagedjs_page_content {
-    //   flex-grow: 1;
-    // }
+    .page-area {
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+    }
     @media screen {
       :host {
         outline: 1px solid gainsboro;
@@ -147,21 +198,22 @@ export class PagedPage extends LitElement {
 
     .paged-crop {
       width: 100%;
-      heigth:100%
-      background: black;
+      height: 100%;
+      background: transparent;
     }
 
     #paged-crop-t,
     #paged-crop-b {
         grid-column: 2/5;
         grid-row: 1;
-        height: 10px;
+        height: min(10px, var(--paged-bleed-top));
         border-left: 2px solid var(--paged-mark-color);
         border-right: 2px solid var(--paged-mark-color);
     }
 
     #paged-crop-b {
       grid-row: 5;
+      height: min(10px, var(--paged-bleed-bottom));
       align-self: end;
     }
 
@@ -169,7 +221,7 @@ export class PagedPage extends LitElement {
     #paged-crop-l {
         grid-row: 2/5;
         grid-column: 1;
-        width: 10px;
+        width: min(10px, var(--paged-bleed-left));
         height: 100%;
         border-top: 2px solid var(--paged-mark-color);
         border-bottom: 2px solid var(--paged-mark-color);
@@ -177,36 +229,42 @@ export class PagedPage extends LitElement {
 
     #paged-crop-r {
       grid-column: 5;
+      width: min(10px, var(--paged-bleed-right));
       align-self: end;
       justify-self: end;
     }
 
     .paged-cross {
-      width: 4mm;
-      height: auto;
+      --paged-cross-size: min(4mm, var(--paged-bleed-top));
+      width: var(--paged-cross-size);
+      height: var(--paged-cross-size);
       align-self: center;
       justify-self: center;
       svg {
+        display: block;
         width: 100%;
-        height: auto;
+        height: 100%;
       }
     }
 
     #paged-cross-t {
-      grid-column: 3;
+      grid-column: 2/5;
       grid-row: 1;
     }
     #paged-cross-b {
-      grid-column: 3;
+      --paged-cross-size: min(4mm, var(--paged-bleed-bottom));
+      grid-column: 2/5;
       grid-row: 5;
     }
     #paged-cross-l {
+      --paged-cross-size: min(4mm, var(--paged-bleed-left));
       grid-column: 1;
-      grid-row: 3;
+      grid-row: 2/5;
     }
     #paged-cross-r {
+      --paged-cross-size: min(4mm, var(--paged-bleed-right));
       grid-column: 5;
-      grid-row: 3;
+      grid-row: 2/5;
     }
 
     /*
@@ -219,6 +277,7 @@ export class PagedPage extends LitElement {
       grid-template-rows: subgrid;
       grid-column: margin-left-start / margin-right-end;
       grid-row: margin-top-start / margin-bottom-end;
+      z-index: 1;
     }
   `;
 
@@ -285,6 +344,7 @@ export class PagedPage extends LitElement {
    */
   #injectPageStyles() {
     let marginsBlock;
+    const bleed = expandBleed(this.bleed) ?? expandBleed("0mm");
 
     // add support for margins from the component?
     if (!this.margin || (this.margin && !CSS.supports("margin", this.margin))) {
@@ -304,16 +364,20 @@ export class PagedPage extends LitElement {
     sheet.replaceSync(`
       @page ${this.name} {
          margin: 0;
-         size: calc(var(--paged-bleed, 0mm) + ${this.width} + var(--paged-bleed, 0mm))
-               calc(var(--paged-bleed, 0mm) + ${this.height} + var(--paged-bleed, 0mm));
+         size: calc(${bleed.left} + ${this.width} + ${bleed.right})
+               calc(${bleed.top} + ${this.height} + ${bleed.bottom});
       }
 
 
       [name="${this.name}"] {
         page: ${this.name};
         --paged-bleed: ${this.bleed};
-        --paged-width: calc(var(--paged-bleed, 0mm) + ${this.width} + var(--paged-bleed, 0mm));
-        --paged-height: calc(var(--paged-bleed, 0mm) + ${this.height} + var(--paged-bleed, 0mm));
+        --paged-bleed-top: ${bleed.top};
+        --paged-bleed-right: ${bleed.right};
+        --paged-bleed-bottom: ${bleed.bottom};
+        --paged-bleed-left: ${bleed.left};
+        --paged-width: calc(${bleed.left} + ${this.width} + ${bleed.right});
+        --paged-height: calc(${bleed.top} + ${this.height} + ${bleed.bottom});
         ${marginsBlock}
       }
     `);
@@ -397,8 +461,10 @@ export class PagedPage extends LitElement {
             </paged-margins>
           </slot>
         </div>
-        <div class="page-area" part="page-area">
-          <slot></slot>
+        <div class="page-box">
+          <div class="page-area" part="page-area">
+            <slot></slot>
+          </div>
         </div>
       </div>
     `;
@@ -407,41 +473,13 @@ export class PagedPage extends LitElement {
 
 customElements.define("paged-page", PagedPage);
 
-function getMargin(string) {
-  const units = string.split(" ");
-  const margins = [];
-  switch (units.length) {
-    case 4: // top right bottom left
-      margins.push(css`
-        --paged-margin-top: ${unsafeCSS(units[0])};
-        --paged-margin-right: ${unsafeCSS(units[1])};
-        --paged-margin-bottom: ${unsafeCSS(units[2])};
-        --paged-margin-left: ${unsafeCSS(units[3])};
-      `);
-      break;
-    case 3: // top right bottom right
-      margins.push(css`
-        --paged-margin-top: ${unsafeCSS(units[0])};
-        --paged-margin-right: ${unsafeCSS(units[1])};
-        --paged-margin-bottom: ${unsafeCSS(units[2])};
-        --paged-margin-left: ${unsafeCSS(units[1])};
-      }`);
-      break;
-    case 2: // top right top right
-      margins.push(css`
-        --paged-margin-top: ${unsafeCSS(units[0])};
-        --paged-margin-right: ${unsafeCSS(units[1])};
-        --paged-margin-bottom: ${unsafeCSS(units[0])};
-        --paged-margin-left: ${unsafeCSS(units[1])};
-      });`);
-      break;
-    default: // top top top top
-      margins.push(css`
-        --paged-margin-top: ${unsafeCSS(units[0])};
-        --paged-margin-right: ${unsafeCSS(units[0])};
-        --paged-margin-bottom: ${unsafeCSS(units[0])};
-        --paged-margin-left: ${unsafeCSS(units[0])};
-      };`);
-  }
-  return margins;
+function getMargin(value) {
+  const lengths = value.trim().split(/\s+/);
+  const [top, right = top, bottom = top, left = right] = lengths;
+  return css`
+    --paged-margin-top: ${unsafeCSS(top)};
+    --paged-margin-right: ${unsafeCSS(right)};
+    --paged-margin-bottom: ${unsafeCSS(bottom)};
+    --paged-margin-left: ${unsafeCSS(left)};
+  `;
 }

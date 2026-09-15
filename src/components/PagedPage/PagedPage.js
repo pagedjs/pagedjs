@@ -349,21 +349,21 @@ export class PagedPage extends LitElement {
     document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
   }
 
-  get pageArea () {
-    return this.renderRoot.querySelector('.page-area') ?? null
+  get pageArea() {
+    return this.renderRoot.querySelector(".page-area") ?? null;
   }
 
-  get contentArea () {
-    return this.renderRoot.querySelector('.pagedjs_page_content') ?? null
+  get contentArea() {
+    return this.renderRoot.querySelector(".pagedjs_page_content") ?? null;
   }
 
-  get footnotesArea () {
-    return this.renderRoot.querySelector('.pagedjs_footnote_area') ?? null
+  get footnotesArea() {
+    return this.renderRoot.querySelector(".pagedjs_footnote_area") ?? null;
   }
 
-  firstUpdated () {
+  firstUpdated() {
     this.dispatchEvent(
-      new CustomEvent('first-updated', { detail: null, bubbles: false })
+      new CustomEvent("first-updated", { detail: null, bubbles: false }),
     );
   }
 

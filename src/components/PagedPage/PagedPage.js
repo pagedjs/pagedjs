@@ -1,5 +1,6 @@
 import { LitElement, html, css, unsafeCSS } from "lit";
-import { cross } from "../utils/assets";
+import { cross } from "../utils/assets.js";
+import "../PagedMargins/PagedMargins.js";
 
 /**
  * `<paged-page>` — A printable, CSS-controlled page component with support for

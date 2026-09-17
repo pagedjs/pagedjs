@@ -27,7 +27,7 @@ class Following extends Handler {
 
 	onRule(ruleNode, ruleItem, rulelist) {
 		let selector = csstree.generate(ruleNode.prelude);
-		if (selector.match(/\+/)) {
+		if (csstree.find(ruleNode.prelude, (node) => node.type === "Combinator" && node.name === "+")) {
 			let declarations = csstree.generate(ruleNode.block);
 			declarations = declarations.replace(/[{}]/g, "");
 

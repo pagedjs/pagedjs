@@ -1,20 +1,16 @@
-const TIMEOUT = 10000; // Some book might take longer than this to renderer
+import { test, expect } from "../../test_helpers/fixtures.js";
+import { DEBUG } from "../../test_helpers/constants.js";
 
-describe("undisplayed", () => {
+
+test.describe("undisplayed", () => {
 	let page;
 
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("filters/script-elements/script-elements.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	it("script elements should not be appended in the layout", async () => {
+
+	test("script elements should not be appended in the layout", async () => {
 		let el = await page.$("#pagedScript");
 		expect(el).toBe(null);
 	});

@@ -33,17 +33,16 @@ class Following extends Handler {
 
 			let uuid = "following-" + UUID();
 
-			selector.split(",").forEach((s) => {
-				if (!this.selectors[s]) {
-					this.selectors[s] = [uuid, declarations];
-				} else {
-					this.selectors[s][1] = `${this.selectors[s][1]};${declarations}`;
-				}
-			});
+			if (!this.selectors[selector]) {
+				this.selectors[selector] = [uuid, declarations];
+			} else {
+				this.selectors[selector][1] = `${this.selectors[selector][1]};${declarations}`;
+			}
 
 			rulelist.remove(ruleItem);
 		}
 	}
+
 	afterParsed(parsed) {
 		this.processSelectors(parsed, this.selectors);
 	}

@@ -1170,7 +1170,7 @@ class Layout {
 						parentBottomMargin = result["margin-bottom"];
 					}
 					intrinsicBottom += parentBottomPaddingBorder + parentBottomMargin;
-					if (
+					if ((node&& node.tagName != 'IMG') &&
 						intrinsicBottom <= bounds.bottom &&
 						intrinsicRight <= bounds.right
 					) {

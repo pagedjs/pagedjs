@@ -1551,7 +1551,7 @@ class Layout {
 			// widths on this page.
 			Array.from(check.parentElement.children).forEach((childNode) => {
 				let style = getComputedStyle(childNode);
-				childNode.width = style.width;
+				childNode.setAttribute("width", style.width);
 			});
 
 			if (

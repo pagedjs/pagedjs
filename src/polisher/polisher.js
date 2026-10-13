@@ -71,7 +71,11 @@ class Polisher {
 				}
 			} else {
 				urls.push(source);
-				f = request(source).then((response) => response.text());
+				f = request(source, {
+          headers: {
+            Accept: "text/css",
+          }
+        }).then((response) => response.text());
 			}
 
 			fetched.push(f);

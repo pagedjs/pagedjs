@@ -148,21 +148,18 @@ class UndisplayedFilter extends Handler {
 	}
 
 	/**
-	 * Determines whether an element is removable based on its inline display style.
+	 * Determines whether an element is removable based on its inline style display value.
+	 * right now, only none will remove the element
 	 *
 	 * @param {HTMLElement} element - The element to check.
 	 * @returns {boolean} True if the element is considered removable.
 	 */
 	removable(element) {
-		if (
-			element.style &&
-			element.style.display !== "" &&
-			element.style.display !== "none"
-		) {
-			return false;
+		if (element.style?.display === "none") {
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 }
 

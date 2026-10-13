@@ -131,6 +131,10 @@ class Breaks extends Handler {
 					} else if (prop.property === "page") {
 						elements[i].setAttribute("data-page", prop.value);
 
+						// if the element has no height, it will not trigger an overflow test. This is a quick fix for allow empty content (usefull for making cover with no content on it)
+						// TODO: handle break before in a specific way: on breakbefore, simply create a new page, and call it a day.
+						elements[i].style.minHeight = "1px";
+
 						let nodeAfter = displayedElementAfter(elements[i], parsed);
 
 						if (nodeAfter) {

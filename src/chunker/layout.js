@@ -790,6 +790,10 @@ class Layout {
 					item.startContainer == overflowResult.startContainer &&
 					item.endContainer == overflowResult.endContainer
 				) {
+					// if the new overflow is fully inside the previous one
+					//				// if the new overflow live in the same node as the previous one
+					// existing: |---------|
+					// new:         |---|
 					if (
 						item.startOffset >= overflowResult.startOffset &&
 						item.endOffset <= overflowResult.endOffset
@@ -800,6 +804,11 @@ class Layout {
 						);
 						existing = true;
 					}
+					// if the new overflow is fully inside the previous one
+					//
+					// OR Same start, but new overflow extends further
+					// existing: |------|
+					// new:      |----------|
 					if (
 						item.endOffset > overflowResult.endOffset &&
 						item.startOffset == overflowResult.startOffset
@@ -808,11 +817,34 @@ class Layout {
 						item.setEnd(overflowResult.endContainer, overflowResult.endOffset);
 						existing = true;
 					}
+					// PARTIAL OVERLAP (existing starts first, new extends past it)
+					// existing: |------|
+					// new:          |------|
+
+					if (
+						item.startOffset < overflowResult.endOffset &&
+						overflowResult.startOffset < item.endOffset
+					) {
+						const newStart = Math.min(
+							item.startOffset,
+							overflowResult.startOffset,
+						);
+						const newEnd = Math.max(item.endOffset, overflowResult.endOffset);
+
+						item.setStart(item.startContainer, newStart);
+						item.setEnd(item.endContainer, newEnd);
+
+						existing = true;
+					}
 				}
 			});
+
+			// If no existing range matched → add it
+			// This overflow doesn’t overlap with anything we already know about.
 			if (!existing) {
 				overflow.push(overflowResult);
 			}
+			// Repeat until no more overflow is found
 			overflowResult = this.findOverflow(rendered, bounds, source);
 		}
 
@@ -1412,6 +1444,7 @@ class Layout {
 	 * @returns {null | Range} range - null if there is no overflow.
 	 */
 	findOverflow(rendered, bounds, source) {
+		//if the element has no overflow (testing with the function) or if it’s already tagged as overflowing, don’t look for overflow
 		if (
 			!this.hasOverflow(rendered, bounds) ||
 			rendered.dataset.overflowTagged
@@ -1428,8 +1461,14 @@ class Layout {
 		// bounds should have any fraction treated like that pixel isn't available
 		// and content should have any fraction of a pixel treated like the whole
 		// pixel is required.
-		let end = bounds.right;
-		let vEnd = bounds.bottom;
+		//
+		// define boundaries
+		//
+		//adding a epsilon to save halfpixel issues
+		let EPS = 0.5;
+		//
+		let end = Math.floor(bounds.right);
+		let vEnd = Math.floor(bounds.bottom);
 		let anyOverflowFound;
 
 		// Find the deepest element that is the first in set of siblings with
@@ -1439,6 +1478,7 @@ class Layout {
 			startOfOverflow,
 			check;
 
+		// while the node is text, keepgoing
 		while (isText(node)) {
 			node = node.nextElementSibling;
 		}
@@ -1479,7 +1519,8 @@ class Layout {
 
 		do {
 			let checkBounds = getBoundingClientRect(check);
-			let hasOverflow = checkBounds.bottom > vEnd || checkBounds.right > end;
+			let hasOverflow =
+				checkBounds.bottom > vEnd + EPS || checkBounds.right > end + EPS;
 
 			let rowspanNeedsBreakAt;
 
@@ -1527,7 +1568,7 @@ class Layout {
 			do {
 				sibling = sibling.nextSibling;
 				siblingBounds = sibling ? getBoundingClientRect(sibling) : undefined;
-			} while (sibling && !siblingBounds?.height);
+			} while (sibling && !siblingBounds?.height < 0.5);
 
 			if (sibling && siblingBounds?.height && !rowspanNeedsBreakAt) {
 				// Is the sibling entirely in overflow? If yes, so must all following
@@ -1564,6 +1605,11 @@ class Layout {
 			}
 			check = check.parentElement;
 		} while (check && check !== rendered);
+
+		// Guard against unstable ranges
+		if (!rangeStart || rangeStart === rangeEnd) {
+			return;
+		}
 
 		return this.tagAndCreateOverflowRange(
 			startOfOverflow,
@@ -1717,26 +1763,32 @@ class Layout {
 		let { startContainer } = overflow;
 		let extracted = overflow.extractContents();
 
-		this.hyphenateAtBreak(startContainer, breakLetter);
+		//  check if the computed value of the hyphens property for the parent if the start continaer is actually a text node
+		if (
+			isText(startContainer) &&
+			window.getComputedStyle(startContainer.parentNode).hyphens == "auto"
+		) {
+			this.hyphenateAtBreak(startContainer, breakLetter);
+		}
 
 		return extracted;
 	}
 
-	hyphenateAtBreak(startContainer, breakLetter) {
-		if (isText(startContainer)) {
-			let startText = startContainer.textContent;
-			let prevLetter = startText[startText.length - 1];
+	//TODO: change the hyphenation method: apply the hyphenation, then check for the breaktoken position again, to avoid the missing text sometimes, or force the styles for the .pagedjs_hyphens to be a position absolute.
 
-			// Add a hyphen if previous character is a letter or soft hyphen
-			if (
-				(breakLetter &&
-					/^\w|\u00AD$/.test(prevLetter) &&
-					/^\w|\u00AD$/.test(breakLetter)) ||
-				(!breakLetter && prevLetter && /^\w|\u00AD$/.test(prevLetter))
-			) {
-				startContainer.parentNode.classList.add("pagedjs_hyphen");
-				startContainer.textContent += this.settings.hyphenGlyph || "\u2011";
-			}
+	hyphenateAtBreak(startContainer, breakLetter) {
+		let startText = startContainer.textContent;
+		let prevLetter = startText[startText.length - 1];
+
+		// Add a hyphen if previous character is a letter or soft hyphen
+		if (
+			(breakLetter &&
+				/^\w|\u00AD$/.test(prevLetter) &&
+				/^\w|\u00AD$/.test(breakLetter)) ||
+			(!breakLetter && prevLetter && /^\w|\u00AD$/.test(prevLetter))
+		) {
+			startContainer.parentNode.classList.add("pagedjs_hyphen");
+			startContainer.textContent += this.settings.hyphenGlyph || "\u2011";
 		}
 	}
 

@@ -26,6 +26,11 @@ class Following extends Handler {
 	}
 
 	onRule(ruleNode, ruleItem, rulelist) {
+		// NthOfType also rewrites and removes rules, e.g. `h1 + p:first-of-type` matches both.
+		// Skip a rule it already removed: a second remove throws "item doesn't belong to list".
+		if (ruleItem.prev === null && rulelist.head !== ruleItem) {
+			return;
+		}
 		let selector = csstree.generate(ruleNode.prelude);
 		if (csstree.find(ruleNode.prelude, (node) => node.type === "Combinator" && node.name === "+")) {
 			let declarations = csstree.generate(ruleNode.block);

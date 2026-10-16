@@ -1,8 +1,7 @@
 import pagedMediaHandlers from "../modules/paged-media/index.js";
 import generatedContentHandlers from "../modules/generated-content/index.js";
 import filters from "../modules/filters/index.js";
-import EventEmitter from "event-emitter";
-import pipe from "event-emitter/pipe.js";
+import EventEmitter, { pipe } from "./event-emitter.js";
 
 /**
  * Array of all registered handler classes, composed from different modules.
@@ -18,7 +17,7 @@ export let registeredHandlers = [
  * Class responsible for instantiating and managing handler instances.
  * Emits events from all handlers through itself.
  */
-export class Handlers {
+export class Handlers extends EventEmitter {
 	/**
 	 * Creates a new Handlers manager.
 	 * @param {Object} chunker - The chunker object used by handlers.
@@ -26,6 +25,8 @@ export class Handlers {
 	 * @param {Object} caller - The caller object used by handlers.
 	 */
 	constructor(chunker, polisher, caller) {
+		super();
+
 		/** @private @type {Array<Object>} */
 		this.handlers = [];
 
@@ -36,9 +37,6 @@ export class Handlers {
 		});
 	}
 }
-
-// Mix event-emitter methods into Handlers prototype
-EventEmitter(Handlers.prototype);
 
 /**
  * Adds new handler classes to the list of registered handlers.

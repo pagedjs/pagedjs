@@ -1,22 +1,18 @@
-const TIMEOUT = 10000; // Some book might take longer than this to renderer
+import { test, expect } from "../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
-describe("target-counter-single-colon", () => {
+
+test.describe("target-counter-single-colon", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("target/target-counter/target-counter-single-colon.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
+
 	if (!DEBUG) {
-		it("should create a pdf", async () => {
+		test("should create a pdf", async () => {
 			const pdf = await page.pdf(PDF_SETTINGS);
-			expect(pdf).toMatchPDFSnapshot(1);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 });

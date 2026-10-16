@@ -1,6 +1,6 @@
 import Page from "./page.js";
 import ContentParser from "./parser.js";
-import EventEmitter from "event-emitter";
+import EventEmitter from "../utils/event-emitter.js";
 import Hook from "../utils/hook.js";
 import Queue from "../utils/queue.js";
 import { requestIdleCallback } from "../utils/utils.js";
@@ -89,7 +89,7 @@ const TEMPLATE = `
  * @class
  */
 
-class Chunker {
+class Chunker extends EventEmitter {
 	/**
 	 * Create a new Chunker instance.
 	 *
@@ -108,7 +108,7 @@ class Chunker {
 	 * @property {number} maxChars - Estimated maximum characters per page.
 	 */
 	constructor(content, renderTo, options) {
-		// this.preview = preview;
+		super();
 
 		this.settings = options || {};
 
@@ -823,7 +823,5 @@ class Chunker {
 		this.pageTemplate.remove();
 	}
 }
-
-EventEmitter(Chunker.prototype);
 
 export default Chunker;

@@ -1,19 +1,15 @@
-const TIMEOUT = 10000;
+import { test, expect } from "../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
-describe("footnotes-counter-reset-page", () => {
+
+test.describe("footnotes-counter-reset-page", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("notes/footnotes-counter-reset-page/footnotes-counter-reset-page.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	it("should render 6 pages", async () => {
+
+	test("should render 6 pages", async () => {
 		let pages = await page.$$eval(".pagedjs_page", (r) => {
 			return r.length;
 		});
@@ -23,12 +19,10 @@ describe("footnotes-counter-reset-page", () => {
 
 
 	if (!DEBUG) {
-		it("should create a pdf", async () => {
+		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(1);
-			expect(pdf).toMatchPDFSnapshot(2);
-			expect(pdf).toMatchPDFSnapshot(6);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

@@ -1,19 +1,15 @@
-const TIMEOUT = 10000;
+import { test, expect } from "../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
-describe("named-page-nested", () => {
+
+test.describe("named-page-nested", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("named-page/nested/named-page-nested-first-child.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	it("should put preamble on its own page with an orange background (2 pages)", async () => {
+
+	test("should put preamble on its own page with an orange background (2 pages)", async () => {
 		let pages = await page.$$eval(".pagedjs_page", (r) => {
 			return r.length;
 		});
@@ -22,11 +18,10 @@ describe("named-page-nested", () => {
 	});
 
 	if (!DEBUG) {
-		it("should create a pdf", async () => {
+		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(1);
-			expect(pdf).toMatchPDFSnapshot(2);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 });

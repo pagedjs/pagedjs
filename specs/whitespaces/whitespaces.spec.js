@@ -1,21 +1,17 @@
-const TIMEOUT = 10000; // Some book might take longer than this to renderer
+import { test, expect } from "../test_helpers/fixtures.js";
+import { DEBUG } from "../test_helpers/constants.js";
 
 
 
-describe("whitespaces", () => {
+
+test.describe("whitespaces", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("whitespaces/whitespaces.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	it("should properly ignore white space characters", async () => {
+
+	test("should properly ignore white space characters", async () => {
 		async function getCharCodes(page, selector) {
 			return await page.$eval(selector, (el) => el.textContent.split("").map(l => l.charCodeAt(0)));
 		}

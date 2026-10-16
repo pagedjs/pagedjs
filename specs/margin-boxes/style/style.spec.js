@@ -1,19 +1,15 @@
-const TIMEOUT = 10000;
+import { test, expect } from "../../test_helpers/fixtures.js";
+import { DEBUG, PDF_SETTINGS } from "../../test_helpers/constants.js";
 
-describe("text-align", () => {
+
+test.describe("text-align", () => {
 	let page;
-	beforeAll(async () => {
+	test.beforeAll(async ({ loadPage }) => {
 		page = await loadPage("margin-boxes/style/style.html");
-		return page.rendered;
-	}, TIMEOUT);
-
-	afterAll(async () => {
-		if (!DEBUG) {
-			await page.close();
-		}
 	});
 
-	it("Render the top-left-corner with a crimson background", async () => {
+
+	test("Render the top-left-corner with a crimson background", async () => {
 		let pages = await page.$eval(".pagedjs_margin-top-left-corner", (r) => {
 			return window.getComputedStyle(r)["background-color"];
 		});
@@ -21,7 +17,7 @@ describe("text-align", () => {
 		expect(pages).toEqual("rgb(220, 20, 60)");
 	});
 
-	it("Render the left-top with a cornflowerblue border", async () => {
+	test("Render the left-top with a cornflowerblue border", async () => {
 		let pages = await page.$eval(".pagedjs_margin-left-top", (r) => {
 			return window.getComputedStyle(r)["border-color"];
 		});
@@ -31,10 +27,10 @@ describe("text-align", () => {
 
 
 	if (!DEBUG) {
-		it("should create a pdf", async () => {
+		test("should create a pdf", async () => {
 			let pdf = await page.pdf(PDF_SETTINGS);
 
-			expect(pdf).toMatchPDFSnapshot(1);
+			expect(pdf).toMatchPdfSnapshot();
 		});
 	}
 }

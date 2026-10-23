@@ -36,6 +36,11 @@ class NthOfType extends Handler {
 	 * @param {Object} rulelist - The list of all CSS rules.
 	 */
 	onRule(ruleNode, ruleItem, rulelist) {
+		// Following also rewrites and removes rules, e.g. `h1 + p:first-of-type` matches both.
+		// Skip a rule it already removed: a second remove throws "item doesn't belong to list".
+		if (ruleItem.prev === null && rulelist.head !== ruleItem) {
+			return;
+		}
 		let selector = csstree.generate(ruleNode.prelude);
 		if (selector.match(/:(first|last|nth)-of-type/)) {
 			let declarations = csstree.generate(ruleNode.block);

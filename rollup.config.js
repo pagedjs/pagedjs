@@ -4,7 +4,7 @@ import json from "@rollup/plugin-json";
 import terser from "@rollup/plugin-terser";
 import license from "rollup-plugin-license";
 
-import pkg from "./package.json" assert { type: "json" };
+import pkg from "./package.json" with { type: "json" };
 
 const plugins = [
 	nodeResolve({

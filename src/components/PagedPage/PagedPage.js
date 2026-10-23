@@ -7,17 +7,17 @@ import "../PagedMargins/PagedMargins.js";
  * margins, bleed, full-page grid layout, and print sizing via the `@page` rule.
  *
  * This element:
- * - Auto-assigns a unique page name when none is provided, ensuring consistent
- *   print and preview rendering.
+ * - Auto-assigns a unique page name when `autoName` is enabled.
  * - Reflects the `name`, `width`, and `height` properties to attributes so
  *   CSS selectors like `[name="..."]` work on both screen and print.
- * - Injects a dynamic `@page <name>` rule using `adoptedStyleSheets` so each
- *   page instance can have unique print dimensions.
+ * - Injects a dynamic `@page <name>` rule using `adoptedStyleSheets` when
+ *   `inject` is enabled, so each page instance can have unique print dimensions.
  *
  * @element paged-page
  *
  * @slot - Main content of the page, placed inside the page-area grid region.
- * @slot - Slot to insert custom margins; replaces default paged-margins component.
+ * @slot margins - Slot to insert custom margins; replaces the default
+ *   paged-margins component.
  *
  * @csspart page-area - The main printable content area.
  *
@@ -35,16 +35,16 @@ export class PagedPage extends LitElement {
    *
    * @property {string} name
    *  The name of the page used in the `@page` rule and exposed as an attribute.
-   *  Auto-generated if not provided.
+   *  Auto-generated when `autoName` or `inject` is enabled.
    *
    * @property {number|null} index
    *  Optional index for multi-page contexts.
    *
-   * @property {string} width
+   * @property {string|null} width
    *  Page width, e.g. `"210mm"`. Reflected so CSS `[width="..."]` selectors
    *  and internal sizing work consistently.
    *
-   * @property {string} height
+   * @property {string|null} height
    *  Page height, e.g. `"297mm"`. Reflected so CSS `[height="..."]` selectors
    *  and internal sizing work consistently.
    */
@@ -56,6 +56,12 @@ export class PagedPage extends LitElement {
     bleed: { type: String },
     margin: { type: String },
     marks: { type: String },
+    recto: { type: Boolean, reflect: true },
+    verso: { type: Boolean, reflect: true },
+    blank: { type: Boolean, reflect: true },
+    first: { type: Boolean, reflect: true },
+    autoName: { type: Boolean, reflect: true, attribute: "auto-name" },
+    inject: { type: Boolean, reflect: true },
   };
 
   /**
@@ -63,10 +69,6 @@ export class PagedPage extends LitElement {
    * print behavior, and preview appearance.
    */
   static styles = css`
-    body {
-      margin: 0;
-      padding: 0;
-    }
     *,
     * * {
       box-sizing: border-box;
@@ -85,6 +87,7 @@ export class PagedPage extends LitElement {
       break-after: page;
       margin: 0;
       padding: 0;
+      counter-increment: page;
     }
 
     .sheet {
@@ -130,13 +133,6 @@ export class PagedPage extends LitElement {
     // .page-area .pagedjs_page_content {
     //   flex-grow: 1;
     // }
-    .pagedjs_area > .pagedjs_page_content {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      column-fill: auto;
-    }
-
     @media screen {
       :host {
         outline: 1px solid gainsboro;
@@ -226,80 +222,55 @@ export class PagedPage extends LitElement {
     }
   `;
 
+  #internals = null;
+
   /**
    * Constructor initializes defaults.
    */
   constructor() {
     super();
+    this.#internals = this.attachInternals?.() ?? null;
     this.index = null;
-    this.width = "210mm";
-    this.height = "297mm";
-    this.name = ""; // auto-filled in connectedCallback
+    this.width = null;
+    this.height = null;
+    this.name = "";
     this.bleed = "0mm";
     this.marks = "";
     this.margin = "";
+    this.autoName = false;
+    this.inject = false;
   }
 
   /**
    * Lifecycle: Runs when component is added to the DOM.
    *
-   * - Ensures the element has a valid `name` attribute.
-   * - Injects a dynamic `@page` rule to ensure print sizing matches preview.
+   * - Ensures the element has a valid `name` attribute when `autoName` or
+   *   `inject` is enabled.
+   * - Injects a dynamic `@page` rule when `inject` is enabled.
    */
   connectedCallback() {
     super.connectedCallback();
+    this.setAttribute("role", "none");
 
     // Auto-assign name if missing
-    if (!this.hasAttribute("name") || !this.name?.trim()) {
-      const autoName = `page-${crypto.randomUUID()}`;
-      this.name = autoName; // reflect:true ensures the attribute is written on the parent object so CSS can use it.
+    if (this.autoName && (!this.hasAttribute("name") || !this.name?.trim())) {
+      this.name = `page-${crypto.randomUUID()}`;
     }
 
+    if (!this.inject) return;
+
+    if (!this.name?.trim()) this.name = `page-${crypto.randomUUID()}`;
     // validate value for width and height
-    if ((this.width && !CSS.supports("width", this.width)) || !this.width) {
-      console.log("there is no width for the page, using 210mm");
+    if (!this.width || !CSS.supports("width", this.width)) {
       this.width = "210mm";
     }
-    if ((this.height && !CSS.supports("height", this.height)) || !this.height) {
-      console.log("there is no height for the page, using 210mm");
+    if (!this.height || !CSS.supports("height", this.height)) {
       this.height = "297mm";
     }
-    // if there is no bleed or bleed = 0, then set the bleed to 0
-    // chrome seems to have issue with calc when one of the number is 0 without any value
-    if (!this.bleed || this.bleed == "0") {
-      this.bleed = "0mm";
-    }
-
+    // calc() addition requires matching types, so normalize unitless zero to a length.
+    if (!this.bleed || this.bleed === "0") this.bleed = "0mm";
     // Inject the @page rules
     this.#injectPageStyles();
-
-    // Inject the  default printing rule
-    this.#injectGlobalPrintStyles();
-  }
-
-  static globalPrintStylesApplied = false;
-
-  /**
-   * Injects global @media print rules into the document.
-   * Ensures it only runs once.
-   *
-   * @private
-   */
-  #injectGlobalPrintStyles() {
-    if (PagedPage.globalPrintStylesApplied) return;
-    PagedPage.globalPrintStylesApplied = true;
-
-    const sheet = new CSSStyleSheet();
-    sheet.replaceSync(`
-    @media print {
-      body {
-        margin: 0 !important;
-        padding: 0 !important;
-      }
-    }
-  `);
-
-    document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
   }
 
   /**
@@ -355,17 +326,26 @@ export class PagedPage extends LitElement {
   }
 
   get contentArea() {
-    return this.renderRoot.querySelector(".pagedjs_page_content") ?? null;
-  }
-
-  get footnotesArea() {
-    return this.renderRoot.querySelector(".pagedjs_footnote_area") ?? null;
+    return this.querySelector(":scope > :not([slot])") ?? null;
   }
 
   firstUpdated() {
     this.dispatchEvent(
       new CustomEvent("first-updated", { detail: null, bubbles: false }),
     );
+  }
+
+  #setState(name, on) {
+    if (!this.#internals?.states) return;
+    if (on) this.#internals.states.add(name);
+    else this.#internals.states.delete(name);
+  }
+
+  updated(changedProperties) {
+    if (changedProperties.has("blank")) this.#setState("blank", this.blank);
+    if (changedProperties.has("verso")) this.#setState("left", this.verso);
+    if (changedProperties.has("recto")) this.#setState("right", this.recto);
+    if (changedProperties.has("first")) this.#setState("first", this.first);
   }
 
   /**
@@ -417,15 +397,8 @@ export class PagedPage extends LitElement {
             </paged-margins>
           </slot>
         </div>
-        <div class="page-area pagedjs_area" part="page-area">
-				  <div class="pagedjs_page_content">
-            <slot></slot>
-          </div>
-          <div class="pagedjs_footnote_area">
-            <div class="pagedjs_footnote_content pagedjs_footnote_empty">
-              <div class="pagedjs_footnote_inner_content"></div>
-            </div>
-          </div>
+        <div class="page-area" part="page-area">
+          <slot></slot>
         </div>
       </div>
     `;

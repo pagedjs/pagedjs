@@ -9,18 +9,22 @@
   "browser": "dist/paged.js",
   "type": "module",
   "exports": {
-    "import": "./src/index.js",
-    "require": "./lib/index.cjs",
-    "browser": "./dist/paged.js",
-    "polyfill": "./dist/paged.polyfill.js",
-    "default": "./src/index.js"
+    ".": {
+      "import": "./src/index.js",
+      "require": "./lib/index.cjs",
+      "browser": "./dist/paged.js",
+      "polyfill": "./dist/paged.polyfill.js",
+      "default": "./src/index.js"
+    },
+    "./components.js": "./src/components.js"
   },
   "dependencies": {
     "@babel/polyfill": "^7.10.1",
     "@babel/runtime": "^7.21.0",
     "clear-cut": "^2.0.2",
     "css-tree": "^1.1.3",
-    "event-emitter": "^0.3.5"
+    "event-emitter": "^0.3.5",
+    "lit": "^3.3.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.21.0",

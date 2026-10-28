@@ -4,7 +4,7 @@ Whether you're contributing to Pagedjs through development, creating examples, f
 
 ## I found a bug!
 
-Please file a bug report on our github issues page: https://github.com/pagedjs/pagedjs/-/issues
+Please file a bug report on our github issues page: https://github.com/pagedjs/pagedjs/issues
 
 Issues with a HTML file example and correct / incorrect output PDFs are much quicker to debug and very appreciated.
 

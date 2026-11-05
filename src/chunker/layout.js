@@ -348,6 +348,19 @@ class Layout {
 			// console.log([].map.call(overflow.content.children, e => e.outerHTML).join('\n'));
 
 			fragment = rebuildTree(overflow.node, fragment, alreadyRendered);
+
+			// processOverflowResult pushes an Overflow into breakToken.overflow
+			// before it decides whether to extract it: when its loop detection
+			// fires ("Stop removal if we are in a loop") it returns early and
+			// leaves `content` unset. Such an entry has nothing to contribute
+			// here, and dereferencing it aborts the whole render. Skip it, as
+			// the forced-break check below already does for `firstOverflow`.
+			// The tree is rebuilt first so `fragment` is always defined for the
+			// data-ref pass after this loop.
+			if (!overflow.content) {
+				return;
+			}
+
 			// Find the parent to which overflow.content should be added.
 			// Overflow.content can be a much shallower start than
 			// overflow.node, if the range end was outside of the range
@@ -843,13 +856,19 @@ class Layout {
 	 */
 	hasOverflow(element, bounds = this.bounds) {
 		let constrainingElement = element && element.parentNode; // this gets the element, instead of the wrapper for the width workaround
-		if (constrainingElement.classList.contains("pagedjs_page_content")) {
-			constrainingElement = element;
-		}
 		let { width, height } = element.getBoundingClientRect();
-		let scrollWidth = constrainingElement ? constrainingElement.scrollWidth : 0;
+		// .pagedjs_page_content is the multi-column box, so content that spills
+		// past the page shows up in its scrollWidth and not in `element`'s,
+		// which stays at the page width. #171 made this measure `element`
+		// whenever the parent is the content area — exactly the case where the
+		// spill is only visible on the parent — so a page could scroll to
+		// 13760px while hasOverflow() reported false. Take the larger of the
+		// two, keeping the workaround #171 wanted without losing that signal.
+		let scrollWidth = constrainingElement
+			? Math.max(constrainingElement.scrollWidth, element.scrollWidth)
+			: 0;
 		let scrollHeight = constrainingElement
-			? constrainingElement.scrollHeight
+			? Math.max(constrainingElement.scrollHeight, element.scrollHeight)
 			: 0;
 		return (
 			Math.max(Math.ceil(width), scrollWidth) > Math.ceil(bounds.width) ||
@@ -1354,8 +1373,15 @@ class Layout {
 		} else {
 			position = position.parentElement;
 		}
+		// The `position !== rendered` guard is evaluated before `position` moves
+		// up, so the last iteration tags `rendered` itself. findOverflow() bails
+		// out on a tagged root, so the page then reports no overflow at all even
+		// while hasOverflow() is true, and its remaining content is never split.
 		while (!position.nextElementSibling && position !== rendered) {
 			position = position.parentElement;
+			if (position === rendered) {
+				break;
+			}
 			position.dataset.overflowTagged = true;
 		}
 

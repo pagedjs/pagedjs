@@ -171,14 +171,6 @@ page <name> { size: … }`
 
 This ensures print dimensions match the element’s rendered size.
 
-### Global print cleanup
-
-The component injects the following once:
-
-```css
-@media print {   body {     margin: 0 !important;     padding: 0 !important;   } }
-```
-
 ### Print marks
 
 When and marks are needed `bleed != "0mm"`:

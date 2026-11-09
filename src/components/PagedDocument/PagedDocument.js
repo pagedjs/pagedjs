@@ -88,7 +88,9 @@ export class PagedDocument extends LitElement {
 	}
 
 	/**
-	 * Reconcile assigned elements and index from the first changed position.
+	 * Keep zero-based page indexes in slot order and publish the page-counter total.
+	 * Only the suffix starting at the first changed position needs reindexing.
+	 *
 	 * @returns {void}
 	 */
 	updatePageIndexes() {
@@ -101,6 +103,12 @@ export class PagedDocument extends LitElement {
 		this.#indexFrom(first);
 	}
 
+	/**
+	 * Index appended pages incrementally; other slot edits require reconciliation.
+	 *
+	 * @param {MutationRecord[]} records Pending light-DOM mutations.
+	 * @returns {void}
+	 */
 	#reconcile(records) {
 		if (!this.#ready) return;
 		const relevant = records.filter((record) => record.target === this ||
@@ -122,6 +130,12 @@ export class PagedDocument extends LitElement {
 		this.#indexFrom(first);
 	}
 
+	/**
+	 * Assign indexes to a changed suffix and refresh the document total.
+	 *
+	 * @param {number} first Zero-based position of the first page needing an index.
+	 * @returns {void}
+	 */
 	#indexFrom(first) {
 		for (let i = first; i < this.#indexed.length; i++) {
 			const page = this.#indexed[i];
@@ -130,6 +144,11 @@ export class PagedDocument extends LitElement {
 		this.#updateCount();
 	}
 
+	/**
+	 * Publish the total used by counter(pages), including explicitly supplied totals.
+	 *
+	 * @returns {void}
+	 */
 	#updateCount() {
 		const total = String(this.#totalPages ?? this.#indexed.length);
 		if (this.style.getPropertyValue("--paged-page-count") !== total) {

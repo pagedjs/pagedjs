@@ -1,6 +1,35 @@
 import {defer} from "./utils.js";
 
 /**
+ * Delay after which the queue moves on without an animation frame
+ * @type {number}
+ */
+export const TICK_FALLBACK_DELAY = 50;
+
+/**
+ * Run a callback on the next animation frame, or after a short delay when no frame comes.
+ * Pages that render no frames, such as background tabs and headless printing, would otherwise never run the queue.
+ * @param {function} callback function to run once
+ * @return {undefined} void
+ */
+export function nextTick(callback) {
+	let called = false;
+	let frame;
+	let timer;
+	const run = () => {
+		if (!called) {
+			called = true;
+			// Drop the one that did not run, so that pages without frames do not collect frame requests
+			cancelAnimationFrame(frame);
+			clearTimeout(timer);
+			callback();
+		}
+	};
+	frame = requestAnimationFrame(run);
+	timer = setTimeout(run, TICK_FALLBACK_DELAY);
+}
+
+/**
  * Queue for handling tasks one at a time
  * @class
  * @param {scope} context what this will resolve to in the tasks
@@ -9,7 +38,7 @@ class Queue {
 	constructor(context){
 		this._q = [];
 		this.context = context;
-		this.tick = requestAnimationFrame;
+		this.tick = nextTick;
 		this.running = false;
 		this.paused = false;
 	}

@@ -3,7 +3,8 @@
 The `<paged-document>` component contains `<paged-page>` elements in document
 order. It sets a zero-based `index` attribute on every element assigned to its
 default slot. It also sets `--paged-page-count`, which initializes the `pages`
-CSS counter.
+CSS counter. It assigns `first` to index 0, `recto` to even indexes, and `verso`
+to odd indexes.
 
 ## Adding pages
 
@@ -16,15 +17,13 @@ create a page:
 
   const documentElement = new PagedDocument();
   document.body.append(documentElement);
-  documentElement.addPage(document.createTextNode("First page"), {
-    first: true,
-    recto: true,
-  });
+  documentElement.addPage(document.createTextNode("First page"));
 </script>
 ```
 
 The first argument can be any DOM node. The second argument can set the page's
-`name`, `blank`, `verso` (left), `recto` (right), and `first` properties.
+`name` and `blank` properties. The document derives `first`, `recto`, and `verso`
+from slot order; positional values in the second argument are ignored.
 
 ## Adding pages in HTML
 
@@ -40,10 +39,17 @@ Pages can also be assigned directly to the default slot:
 The `pages` getter returns assigned elements in document order. It does not
 filter them by tag name and returns an empty array before the first render.
 Native DOM insertions, removals, reordering, and slot reassignment update the
-indexes. Appending pages indexes only the new suffix.
+indexes and positional states. Appending pages indexes only the new suffix.
+The document preserves each page's `name` and `blank` state and does not infer
+`blank` from its contents.
+
+Initial markup is indexed after the document's first render. Later native edits
+are reconciled by the mutation observer; reading `pages` processes pending edits
+synchronously once the default slot is ready. `addPage()` also indexes its new
+page synchronously after the first render.
 
 Await `updateComplete` to wait for the document and its assigned pages to finish
-their Lit updates.
+their Lit updates, including reflected positional attributes and custom states.
 
 ## Inserting several pages
 

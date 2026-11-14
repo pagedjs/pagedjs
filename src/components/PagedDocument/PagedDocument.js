@@ -88,7 +88,7 @@ export class PagedDocument extends LitElement {
 	}
 
 	/**
-	 * Keep zero-based page indexes in slot order and publish the page-counter total.
+	 * Keep page indexes and positional states in slot order and publish the total.
 	 * Only the suffix starting at the first changed position needs reindexing.
 	 *
 	 * @returns {void}
@@ -131,7 +131,7 @@ export class PagedDocument extends LitElement {
 	}
 
 	/**
-	 * Assign indexes to a changed suffix and refresh the document total.
+	 * Assign zero-based indexes and positional states to a changed suffix.
 	 *
 	 * @param {number} first Zero-based position of the first page needing an index.
 	 * @returns {void}
@@ -140,6 +140,9 @@ export class PagedDocument extends LitElement {
 		for (let i = first; i < this.#indexed.length; i++) {
 			const page = this.#indexed[i];
 			if (page.getAttribute("index") !== String(i)) page.setAttribute("index", String(i));
+			page.first = i === 0;
+			page.recto = i % 2 === 0;
+			page.verso = i % 2 === 1;
 		}
 		this.#updateCount();
 	}
@@ -158,23 +161,18 @@ export class PagedDocument extends LitElement {
 
 	/**
 	 * Adds a new `<paged-page>` to the document.
+	 * Indexing assigns first, recto, and verso from slot order.
 	 *
 	 * @param {Node} [content] - Content to append to the page.
-	 * @param {Object} [states] - Initial page state.
+	 * @param {Object} [states] - Page name and caller-owned blank state.
 	 * @param {string} [states.name] - Page name.
 	 * @param {boolean} [states.blank] - Blank page state.
-	 * @param {boolean} [states.verso] - Verso (left) page state.
-	 * @param {boolean} [states.recto] - Recto (right) page state.
-	 * @param {boolean} [states.first] - First page state.
 	 * @returns {HTMLElement} The new page element.
 	 */
 	addPage(content, states = {}) {
 		const page = document.createElement("paged-page");
 		page.name = states.name ?? "";
 		page.blank = Boolean(states.blank);
-		page.verso = Boolean(states.verso);
-		page.recto = Boolean(states.recto);
-		page.first = Boolean(states.first);
 
 		if (content) page.appendChild(content);
 		this.appendChild(page);

@@ -4,7 +4,7 @@
 The **`paged-page`** component represents a printable page with full CSS-controlled geometry, dynamic `@page` sizing, bleed, page-marks, and integrated margin-box rendering via `<paged-margins>`.
 It is designed to work seamlessly with `<paged-margins>` but can also be used by itself.
 
-Each page instance auto-generates a unique `@page <name>` rule so that print and preview rendering stay synchronized.
+With `inject` enabled, each page instance creates an `@page <name>` rule so that print and preview rendering stay synchronized.
 
 - - -
 
@@ -20,11 +20,17 @@ Copy code
 
 ### Page sizing
 
+Standalone pages default to Letter (`8.5in` × `11in`) through `--paged-width`
+and `--paged-height`. The `width` and `height` properties default to `null`.
+With `inject` enabled, missing or invalid dimensions fall back to `8.5in` and
+`11in`; valid explicit dimensions are preserved. The `bleed` attribute adds bleed
+to the injected page size.
+
 html
 
 Copy code
 
-`<paged-page width="148mm" height="210mm" bleed="3mm">   <p>A5 page with bleed.</p> </paged-page>`
+`<paged-page inject width="148mm" height="210mm" bleed="3mm">   <p>A5 page with bleed.</p> </paged-page>`
 
 ### Custom page name
 
@@ -112,8 +118,8 @@ Copy code
 | --- | --- | --- | --- | --- |
 | name | name | string | auto-generated | Name used in `@page` rule; reflected. |
 | index | index | number \| null | null | Optional index for multi-page systems. |
-| width | width | string | `"210mm"` | Page width. |
-| height | height | string | `"297mm"` | Page height. |
+| width | width | string \| null | `null` | Page width; falls back to `"8.5in"` when `inject` is enabled. |
+| height | height | string \| null | `null` | Page height; falls back to `"11in"` when `inject` is enabled. |
 | bleed | bleed | string | `"0mm"` | Bleed around the page. |
 | margin | margin | string | `""` | Shorthand margin value (`"20mm 10mm"` etc). |
 | marks | marks | string | `""` | `"crop"` and/or `"cross"`. |
@@ -151,8 +157,8 @@ _Additional parts come from the forwarded `<paged-margins>` element._
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| \--paged-width | length | 210mm | Internal page width including bleed. |
-| \--paged-height | length | 297mm | Internal page height including bleed. |
+| \--paged-width | length | 8.5in | Internal page width including bleed. |
+| \--paged-height | length | 11in | Internal page height including bleed. |
 | \--paged-bleed | length | 0mm | Bleed area around the page. |
 | \--paged-margin-top | length | Implementation default | Size of the top margin. |
 | \--paged-margin-right | length | Implementation default | Size of the right margin. |
@@ -165,9 +171,9 @@ When no valid `margin` attribute is provided, all margins default to **1in**.
 
 ## Behavior
 
-### Automatic `@page` rule injection
+### Optional `@page` rule injection
 
-Each `<paged-page>` instance installs its own:
+With `inject` enabled, each `<paged-page>` instance installs its own:
 
 css
 

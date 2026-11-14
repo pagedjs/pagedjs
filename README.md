@@ -183,11 +183,7 @@ $ npm run legacy
 
 ## Testing
 
-Testing for Paged.js uses [Jest](https://facebook.github.io/jest/en/) but is split into Tests and Specs.
-
-### Tests
-
-Unit tests for Chunker and Polisher methods are run in node using JSDOM.
+Unit tests use Vitest and JSDOM:
 
 ```bash
 npm test
@@ -195,86 +191,50 @@ npm test
 
 ### Specs
 
-Specs run a html file in Chrome (using puppeteer) to test against CSS specifications.
-
-They can also output a pdf and compare pages (one at a time) in that PDF with samples PDFs (saved as images).
-
-The PDF comparison tests depend on the `ghostscript` and the `ghostscript4js` package.
-
-It is recomend to run these in the Docker container below via:
-
-```bash
-npm run docker-specs
-```
-
-However if you'd like to run the specs outside of Docker, you'll need to install a local version of Ghostscript for your system according to https://www.npmjs.com/package/ghostscript4js#prerequisites
-
-For Mac you can install it with
-
-```bash
-brew install ghostscript
-```
-
-For Debian you can install it with
-
-```bash
-sudo apt-get install ghostscript
-sudo apt-get install libgs-dev
-```
-
-Now you can install the `ghostscript4js` library. For Linux you can optionally pass the location ghostscript was installed to in `GS4JS_HOME`.
-
-```bash
-GS4JS_HOME="/usr/lib/$(gcc -dumpmachine)" npm install ghostscript4js
-```
-
-To test the pdf output of specs, you'll need to build the library locally.
-
-```bash
-npm run build
-```
-
-Then run the jest tests in puppeteer.
+Browser specs use Playwright. This command builds the library and runs the specs:
 
 ```bash
 npm run specs
 ```
 
-To debug the results of a test in a browser you can add `NODE_ENV=debug`
+PDF comparisons use `to-match-pdf-snapshot` and PDF.js. Snapshots are stored in
+`test-results/pdf`; test artifacts are stored in `test-results/specs`.
+Generate or refresh local snapshots with:
+
+```bash
+npm run specs -- --update-snapshots=all
+```
+
+Run behavioral checks without PDF comparisons with:
 
 ```bash
 NODE_ENV=debug npm run specs
 ```
 
-To update the stored pdf images you can run
-
-```bash
-npm run specs -- --updateSnapshot
-```
-
 ### Docker
 
-A `pagedmedia/pagedjs` docker image contains all the dependencies needed to run the `pagedjs` development server, as well as the pdf comparison tests.
-
-To build the image run
-
-```bash
-docker build -t pagedmedia/pagedjs .
-```
-
-By default the container will run the development server with `npm start`
+The Docker image supplies the matching Playwright browsers, system dependencies,
+and fonts. Dependencies are installed from the lockfile with `npm ci`.
 
 ```bash
-docker run -it -p 9090:9090 pagedmedia/pagedjs
+npm run docker-build
+npm run docker-test
+npm run docker-specs
 ```
 
-The tests and specs can be run within the container by passing a `seccomp` file for Chrome and running `npm test`
+The specs commands mount `test-results` so generated snapshots and test artifacts
+remain available on the host. Generate or refresh those snapshots with:
 
 ```bash
-docker run -it --security-opt 'seccomp=seccomp.json' pagedmedia/pagedjs npm test && npm run specs
+npm run docker-update-specs
 ```
 
+To run the development server:
 
-## Licence
+```bash
+docker run --rm -p 9090:9090 pagedmedia/pagedjs
+```
+
+## License
 
 MIT License (MIT), which you can read [here](https://github.com/pagedjs/pagedjs-cli?tab=MIT-1-ov-file)

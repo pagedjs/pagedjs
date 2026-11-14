@@ -3,8 +3,10 @@ node_modules
 dist
 lib
 __diff_output__
+test-results
 specs/**/*.pdf
 specs/temp
 .vscode
 docs/
 
+.playwright-mcp/

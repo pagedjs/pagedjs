@@ -1,9 +1,3 @@
-# Paged-page
-A webcomponent to preview on screen the result of your CSS Print
-Absolutely — here is the complete **Markdown version** (no commentary, ready to paste into a README), **including an SVG diagram** of the page grid with bleed, margins, and the page-area.
-
----
-
 # PagedPage
 
 The **`paged-page`** component represents a printable page with full CSS-controlled geometry, dynamic `@page` sizing, bleed, page-marks, and integrated margin-box rendering via `<paged-margins>`.
@@ -20,7 +14,7 @@ A `<paged-page>` represents a single page, childnodes are inserted into the defa
 ```html
 <paged-page>
     <p>Your page content goes here.</p>
-</paged-page>`
+</paged-page>
 ```
 
 ### Page sizing
@@ -45,12 +39,12 @@ The attribute `name` allows to define a named page.
 <paged-page name="cover">
     <h1>Cover Page</h1>
 </paged-page>
-````
+```
 
 This allows to target this page with CSS:
 
 ```css
-@page cover {   size: 210mm 297mm;   margin: 0; }`
+@page cover {   size: 210mm 297mm;   margin: 0; }
 ```
 
 ### Custom margins
@@ -58,11 +52,11 @@ This allows to target this page with CSS:
 Override the default `<paged-margins>` by providing your own and assign it to the slot `margins`:
 
 ```html
-`<paged-page>
+<paged-page>
     <paged-margins slot="margins">
         <paged-margin-content slot="top-center">Header</paged-margin-content>
     </paged-margins>
-</paged-page>`
+</paged-page>
 ```
 
 ### Page marks (crop & cross)
@@ -111,7 +105,7 @@ Note: marks render only when the bleed is bigger than 0.
 | Property | Attribute | Type | Default | Description |
 | --- | --- | --- | --- | --- |
 | name | name | string | auto-generated | Name used in `@page` rule; reflected. |
-| index | index | number | null | null | Optional index for multi-page systems. |
+| index | index | number | null | Optional index for multi-page systems. |
 | width | width | string \| null | `null` | Page width; falls back to `"8.5in"` when `inject` is enabled. |
 | height | height | string \| null | `null` | Page height; falls back to `"11in"` when `inject` is enabled. |
 | bleed | bleed | string | `"0mm"` | Bleed around the page. |
@@ -170,7 +164,7 @@ When no valid `margin` attribute is provided, all margins default to **1in**.
 With `inject` enabled, each `<paged-page>` instance installs its own:
 
 ```css
-page <name> { size: … }`
+@page <name> { size: … }
 ```
 
 This ensures print dimensions match the element’s rendered size.

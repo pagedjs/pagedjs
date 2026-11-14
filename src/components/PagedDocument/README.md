@@ -1,0 +1,74 @@
+# PagedDocument
+
+The `<paged-document>` component contains `<paged-page>` elements in document
+order. It sets a zero-based `index` attribute on every element assigned to its
+default slot. It also sets `--paged-page-count`, which initializes the `pages`
+CSS counter. It assigns `first` to index 0, `recto` to even indexes, and `verso`
+to odd indexes.
+
+## Adding pages
+
+Import `PagedDocument` from the components entry point and use `addPage()` to
+create a page:
+
+```html
+<script type="module">
+  import { PagedDocument } from "pagedjs/components.js";
+
+  const documentElement = new PagedDocument();
+  document.body.append(documentElement);
+  documentElement.addPage(document.createTextNode("First page"));
+</script>
+```
+
+The first argument can be any DOM node. The second argument can set the page's
+`name` and `blank` properties. The document derives `first`, `recto`, and `verso`
+from slot order; positional values in the second argument are ignored.
+
+## Adding pages in HTML
+
+Pages can also be assigned directly to the default slot:
+
+```html
+<paged-document>
+  <paged-page>First page</paged-page>
+  <paged-page>Second page</paged-page>
+</paged-document>
+```
+
+The `pages` getter returns assigned elements in document order. It does not
+filter them by tag name and returns an empty array before the first render.
+Native DOM insertions, removals, reordering, and slot reassignment update the
+indexes and positional states. Appending pages indexes only the new suffix.
+The document preserves each page's `name` and `blank` state and does not infer
+`blank` from its contents.
+
+Initial markup is indexed after the document's first render. Later native edits
+are reconciled by the mutation observer; reading `pages` processes pending edits
+synchronously once the default slot is ready. `addPage()` also indexes its new
+page synchronously after the first render.
+
+Await `updateComplete` to wait for the document's own Lit update, followed by the
+`updateComplete` promises of the pages assigned at that point. This includes those
+pages' reflected positional attributes and custom states. The wait is asynchronous
+and does not block the main thread or guarantee browser paint.
+
+The resolved boolean is the document's original Lit completion result, captured
+before waiting for pages. Child boolean results are not combined.
+
+## Inserting several pages
+
+Append a `DocumentFragment` to insert several pages together:
+
+```js
+const batch = document.createDocumentFragment();
+batch.append(firstPage, secondPage);
+documentElement.append(batch);
+```
+
+`totalPages` optionally supplies the total used by the `pages` CSS counter
+while only part of a document is inserted. Set it before insertion when the
+final total is known. Its default, `null`, counts assigned elements automatically;
+setting it back to `null` resumes automatic counting. Explicit totals must be
+nonnegative integers. The `pages` getter always reports the elements currently
+assigned, regardless of the explicit total.

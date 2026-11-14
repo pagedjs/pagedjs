@@ -291,10 +291,11 @@ export class PagedMargins extends LitElement {
   }
 
   /**
-   * Resolves when the margins and their boxes finish updating.
+   * Wait for this component's Lit update, then its internal margin boxes in parallel.
+   * Awaiting these updates leaves the main thread available; paint is not awaited.
    *
-   * @returns {Promise<boolean>} Whether the margins finished without scheduling
-   *   another update.
+   * @returns {Promise<boolean>} This component's original Lit result: true if its
+   *   update scheduled no further update. Box results are not combined.
    */
   async getUpdateComplete() {
     const result = await super.getUpdateComplete();

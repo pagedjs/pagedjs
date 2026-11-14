@@ -321,10 +321,10 @@ export class PagedPage extends LitElement {
     if (!this.name?.trim()) this.name = `page-${crypto.randomUUID()}`;
     // validate value for width and height
     if (!this.width || !CSS.supports("width", this.width)) {
-      this.width = "210mm";
+      this.width = "8.5in";
     }
     if (!this.height || !CSS.supports("height", this.height)) {
-      this.height = "297mm";
+      this.height = "11in";
     }
     // calc() addition requires matching types, so normalize unitless zero to a length.
     if (!this.bleed || this.bleed === "0") this.bleed = "0mm";

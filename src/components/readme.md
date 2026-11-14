@@ -1,15 +1,9 @@
-# Paged-page
-A webcomponent to preview on screen the result of your CSS Print
-Absolutely — here is the complete **Markdown version** (no commentary, ready to paste into a README), **including an SVG diagram** of the page grid with bleed, margins, and the page-area.
-
----
-
 # PagedPage
 
 The **`paged-page`** component represents a printable page with full CSS-controlled geometry, dynamic `@page` sizing, bleed, page-marks, and integrated margin-box rendering via `<paged-margins>`.
 It is designed to work seamlessly with `<paged-margins>` but can also be used by itself.
 
-Each page instance auto-generates a unique `@page <name>` rule so that print and preview rendering stay synchronized.
+With `inject` enabled, each page instance creates an `@page <name>` rule so that print and preview rendering stay synchronized.
 
 ---
 
@@ -20,15 +14,19 @@ A `<paged-page>` represents a single page, childnodes are inserted into the defa
 ```html
 <paged-page>
     <p>Your page content goes here.</p>
-</paged-page>`
+</paged-page>
 ```
 
 ### Page sizing
 
-The dimensions of the page are defined with the attributes `width`, `height` and `bleed`.
+Standalone pages default to Letter (`8.5in` × `11in`) through `--paged-width`
+and `--paged-height`. The `width` and `height` properties default to `null`.
+With `inject` enabled, missing or invalid dimensions fall back to `8.5in` and
+`11in`; valid explicit dimensions are preserved. The `bleed` attribute adds bleed
+to the injected page size.
 
 ```html
-<paged-page width="148mm" height="210mm" bleed="3mm">
+<paged-page inject width="148mm" height="210mm" bleed="3mm">
     <p>A5 page with bleed.</p>
 </paged-page>
 ```
@@ -41,12 +39,12 @@ The attribute `name` allows to define a named page.
 <paged-page name="cover">
     <h1>Cover Page</h1>
 </paged-page>
-````
+```
 
 This allows to target this page with CSS:
 
 ```css
-@page cover {   size: 210mm 297mm;   margin: 0; }`
+@page cover {   size: 210mm 297mm;   margin: 0; }
 ```
 
 ### Custom margins
@@ -54,11 +52,11 @@ This allows to target this page with CSS:
 Override the default `<paged-margins>` by providing your own and assign it to the slot `margins`:
 
 ```html
-`<paged-page>
+<paged-page>
     <paged-margins slot="margins">
         <paged-margin-content slot="top-center">Header</paged-margin-content>
     </paged-margins>
-</paged-page>`
+</paged-page>
 ```
 
 ### Page marks (crop & cross)
@@ -107,9 +105,9 @@ Note: marks render only when the bleed is bigger than 0.
 | Property | Attribute | Type | Default | Description |
 | --- | --- | --- | --- | --- |
 | name | name | string | auto-generated | Name used in `@page` rule; reflected. |
-| index | index | number | null | null | Optional index for multi-page systems. |
-| width | width | string | `"210mm"` | Page width. |
-| height | height | string | `"297mm"` | Page height. |
+| index | index | number | null | Optional index for multi-page systems. |
+| width | width | string \| null | `null` | Page width; falls back to `"8.5in"` when `inject` is enabled. |
+| height | height | string \| null | `null` | Page height; falls back to `"11in"` when `inject` is enabled. |
 | bleed | bleed | string | `"0mm"` | Bleed around the page. |
 | margin | margin | string | `""` | Shorthand margin value (`"20mm 10mm"` etc). |
 | marks | marks | string | `""` | Defines which marks are displayed. Valid values are: `"crop"`, `"cross"` or `"crop cross"`. |
@@ -147,8 +145,8 @@ _Additional parts come from the forwarded `<paged-margins>` element._
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| \--paged-width | length | 210mm | Internal page width including bleed. |
-| \--paged-height | length | 297mm | Internal page height including bleed. |
+| \--paged-width | length | 8.5in | Internal page width including bleed. |
+| \--paged-height | length | 11in | Internal page height including bleed. |
 | \--paged-bleed | length | 0mm | Bleed area around the page. |
 | \--paged-margin-top | length | Implementation default | Size of the top margin. |
 | \--paged-margin-right | length | Implementation default | Size of the right margin. |
@@ -161,23 +159,15 @@ When no valid `margin` attribute is provided, all margins default to **1in**.
 
 ## Behavior
 
-### Automatic `@page` rule injection
+### Optional `@page` rule injection
 
-Each `<paged-page>` instance installs its own:
+With `inject` enabled, each `<paged-page>` instance installs its own:
 
 ```css
-page <name> { size: … }`
+@page <name> { size: … }
 ```
 
 This ensures print dimensions match the element’s rendered size.
-
-### Global print cleanup
-
-The component injects the following once:
-
-```css
-@media print {   body {     margin: 0 !important;     padding: 0 !important;   } }
-```
 
 ### Print marks
 

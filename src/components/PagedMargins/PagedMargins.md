@@ -14,6 +14,18 @@ used with a paged-page component. But can also be used by itself:
 ```
 
 
+### Update completion
+
+`await margins.updateComplete` waits for the margins component's own Lit update,
+then waits concurrently for the internal `<paged-margin-box>` components. Await
+this promise before reading `marginBoxes` or a box's slot assignments.
+
+The wait is asynchronous and leaves the main thread available. Resolution covers
+these component updates; it does not guarantee that the browser has painted them.
+The resolved boolean is the margins component's original Lit completion result:
+`true` if its own update scheduled no further update. Margin-box results are not
+combined.
+
 ### Assigning content
 
 The paged-margins component renders a series of page-margin boxes. Content can be assigned through CSS, as defined in the standard, or the DOM, beyond the standard.

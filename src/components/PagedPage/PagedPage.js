@@ -405,10 +405,11 @@ export class PagedPage extends LitElement {
   }
 
   /**
-   * Resolves when the page and its margins finish updating.
+   * Wait for this page's Lit update, then its active margins component.
+   * Awaiting these updates leaves the main thread available; paint is not awaited.
    *
-   * @returns {Promise<boolean>} Whether the page finished without scheduling
-   *   another update.
+   * @returns {Promise<boolean>} This page's original Lit result: true if its
+   *   update scheduled no further update. Child results are not combined.
    */
   async getUpdateComplete() {
     const result = await super.getUpdateComplete();

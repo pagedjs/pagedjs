@@ -48,8 +48,13 @@ are reconciled by the mutation observer; reading `pages` processes pending edits
 synchronously once the default slot is ready. `addPage()` also indexes its new
 page synchronously after the first render.
 
-Await `updateComplete` to wait for the document and its assigned pages to finish
-their Lit updates, including reflected positional attributes and custom states.
+Await `updateComplete` to wait for the document's own Lit update, followed by the
+`updateComplete` promises of the pages assigned at that point. This includes those
+pages' reflected positional attributes and custom states. The wait is asynchronous
+and does not block the main thread or guarantee browser paint.
+
+The resolved boolean is the document's original Lit completion result, captured
+before waiting for pages. Child boolean results are not combined.
 
 ## Inserting several pages
 

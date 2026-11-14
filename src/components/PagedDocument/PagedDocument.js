@@ -66,10 +66,12 @@ export class PagedDocument extends LitElement {
 	}
 
 	/**
-	 * Resolves when the document and its assigned pages finish updating.
+	 * Wait for this document's Lit update, then the updateComplete promises of the
+	 * pages assigned at that point. The asynchronous wait does not block the main
+	 * thread or guarantee browser paint.
 	 *
-	 * @returns {Promise<boolean>} Whether the document finished without scheduling
-	 *   another update.
+	 * @returns {Promise<boolean>} This document's original Lit completion result;
+	 *   child boolean results are not combined.
 	 */
 	async getUpdateComplete() {
 		const result = await super.getUpdateComplete();

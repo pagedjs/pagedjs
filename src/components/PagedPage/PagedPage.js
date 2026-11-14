@@ -393,6 +393,30 @@ export class PagedPage extends LitElement {
     return this.querySelector(":scope > :not([slot])") ?? null;
   }
 
+  /**
+   * Returns the assigned `<paged-margins>` element or the default fallback.
+   *
+   * @returns {Element|null} The margins element, or `null` when unavailable.
+   */
+  get marginsArea() {
+    const slot = this.renderRoot?.querySelector("slot[name='margins']");
+    const assigned = slot?.assignedElements({ flatten: true }) ?? [];
+    return assigned.find((node) => node.localName === "paged-margins") ?? null;
+  }
+
+  /**
+   * Wait for this page's Lit update, then its active margins component.
+   * Awaiting these updates leaves the main thread available; paint is not awaited.
+   *
+   * @returns {Promise<boolean>} This page's original Lit result: true if its
+   *   update scheduled no further update. Child results are not combined.
+   */
+  async getUpdateComplete() {
+    const result = await super.getUpdateComplete();
+    await this.marginsArea?.updateComplete;
+    return result;
+  }
+
   firstUpdated() {
     this.dispatchEvent(
       new CustomEvent("first-updated", { detail: null, bubbles: false }),

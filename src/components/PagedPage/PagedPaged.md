@@ -58,6 +58,26 @@ Copy code
 
 `<paged-page>   <paged-margins slot="margins">     <paged-margin-content slot="top-center">Header</paged-margin-content>   </paged-margins> </paged-page>`
 
+### Margin slots
+
+Margin content belongs in the named slots of `<paged-margins slot="margins">`.
+Its children stay in light DOM so publication selectors can style them.
+After `await page.updateComplete`, use `page.marginsArea.marginBoxes.topCenter`
+to access a box, and native DOM operations on the margins component to manage
+its content. `PagedPage` exposes only the `margins` slot for this component.
+
+### Update completion
+
+`await page.updateComplete` waits for the page's own Lit update, then the active
+`<paged-margins>` component. The margins component waits for its internal
+margin-box updates concurrently.
+
+The wait is asynchronous and leaves the main thread available. Resolution covers
+these component updates; it does not guarantee that the browser has painted them.
+The resolved boolean is the page's original Lit completion result: `true` if its
+own update scheduled no further update. Margin and margin-box results are not
+combined.
+
 ### Page marks (crop & cross)
 
 Marks only render when bleed > 0:

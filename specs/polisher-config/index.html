@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>pagedjs module</title>
+
+		<script type="module">
+			import { Previewer } from "../../dist/paged.esm.js";
+
+			let paged = new Previewer();
+
+			let flow = paged
+				.preview(
+					document.querySelector("#content").innerHTML,
+					[
+						"./css/thisisnotthecssyourlookinfor.css",
+						"./css/main",
+						"css/test.css",
+						"@page{size: 210mm 297mm;}",
+						{ url: "./css/chaussette.css" },
+						{ css: "p{color:orange;}" },
+					],
+					document.querySelector("#ex1"),
+				)
+				.then((flow) => {
+					console.log("Rendered", flow.total, "pages.");
+				});
+		</script>
+	</head>
+	<body>
+		<section id="content">
+			<p>
+				Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga hic
+				perferendis corrupti quidem libero aliquid a, quam eum excepturi
+				illum.pLorem ipsumpLorem ipsumpLorem ipsumpLorem ipsumpLorem ipsumpLorem
+				ipsumpLorem ipsumpLorem ipsumpLorem ipsumpLorem ipsumpLorem ipsumpLorem
+				ipsumpLorem ipsumpLorem ipsumpLorem ipsumpLorem ipsumpLorem ipsumpLorem
+				ipsumpLorem ipsum
+			</p>
+		</section>
+		<section id="ex1"></section>
+		<section id="ex2"></section>
+	</body>
+</html>

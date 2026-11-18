@@ -77,8 +77,6 @@ class UndisplayedFilter extends Handler {
 		const styledElements = content.querySelectorAll("[style]");
 		for (let i = 0; i < styledElements.length; i++) {
 			const element = styledElements[i];
-			console.log(element);
-			console.log("removable", this.removable(element));
 			if (this.removable(element)) {
 				element.dataset.undisplayed = "undisplayed";
 			}

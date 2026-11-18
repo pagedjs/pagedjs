@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<title>
+			string set specs </title>
+		<script src="../../../dist/paged.polyfill.js"></script>
+		<style>
+			:root {
+				font-size: 18px;
+			}
+
+			* {
+				font-family: Times New Roman, sans-serif;
+			}
+
+			h1 {
+				string-set: alphabet content(text);
+				font-size: 20px;
+				margin-bottom: 0;
+			}
+
+			@page {
+				size: 140mm 200mm;
+				margin: 20mm 20mm;
+
+				/* border: solid 1px black; */
+				@bottom-left {
+					content: counter(page);
+				}
+
+				@bottom-center {
+					content: string(alphabet);
+				}
+			}
+
+			p {
+				line-height: 22px;
+			}
+
+			h1 {
+				font-size: 24px;
+				line-height: 25px;
+				margin-top: 0;
+			}
+		</style>
+		<script>
+			window.addEventListener("load", previewPDF);
+
+			function previewPDF () {
+				const TEMPLATE = `
+					<section>
+						<b>Title</b>
+						<h1>aaa</h1>
+						<p>
+							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi non suscipit odio. Aenean ut ligula id mauris
+							efficitur tincidunt vitae non leo.
+						</p>
+						<h1>bbb</h1>
+						<p>
+							Nulla dignissim pellentesque magna ac maximus. Integer id tincidunt erat. Sed elementum posuere augue, quis pharetra
+							mi vehicula in.
+						</p>
+					</section>`;
+
+				const preview = document.querySelector("#preview");
+				const polisher = new Paged.Polisher();
+				const chunker = new Paged.Chunker(TEMPLATE, preview);
+				Paged.initializeHandlers(chunker, polisher);
+			}
+		</script>
+	</head>
+
+	<body>
+		<section id="preview"></section>
+	</body>
+
+</html>

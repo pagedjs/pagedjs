@@ -270,3 +270,15 @@ export const requestIdleCallback =
 export function CSSValueToString(obj) {
 	return obj.value + (obj.unit || "");
 }
+
+/**
+ * Return the base url to use for relative url
+ * 
+ * @returns {string} the root url to use for relative url solving
+ */
+export function getBaseHref() {
+	const baseTag = document.querySelector("head>base");
+	const baseHref = (baseTag && baseTag.href) ? baseTag.href : window.location.href;
+
+	return baseHref;
+}

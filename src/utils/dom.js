@@ -815,8 +815,8 @@ export function* words(node) {
 	let currentLetter;
 
 	let range;
-	const significantWhitespaces =
-		node.parentElement && node.parentElement.nodeName === "PRE";
+	const whiteSpace = node.parentElement && getComputedStyle(node.parentElement).whiteSpace;
+	const significantWhitespaces = ["pre", "pre-wrap", "break-spaces"].includes(whiteSpace);
 
 	while (currentOffset < max) {
 		currentLetter = currentText[currentOffset];

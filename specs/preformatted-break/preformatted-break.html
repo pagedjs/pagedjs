@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Preformatted indentation across a page break</title>
+<script src="../../dist/paged.polyfill.js"></script>
+<style>
+@page { size: 240px 200px; margin: 20px; }
+body { margin: 0; font: 12px/20px monospace; }
+p { margin: 0; }
+.lead { height: 110px; }
+pre { margin: 0; font: inherit; }
+</style>
+</head>
+<body>
+<p class="lead">Code sample</p>
+<pre class="code-block"><code>function demo() {
+    let x;
+    let y;
+    let z;
+    return x + y + z;
+}</code></pre>
+</body>
+</html>
